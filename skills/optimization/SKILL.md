@@ -2,7 +2,9 @@
 name: optimization
 description: |
   触发：当问题涉及资源分配、取舍、最大化/最小化目标，或在限制条件下做决策，或需要判断问题的凸性、使用拉格朗日方法、分析对偶结构时调用。
+  模式：科研模式适用于数学推导、论文审查、实验设计优化；生活模式适用于日常决策、时间管理、人际互动、生活规划。
   Trigger when a problem involves resource allocation, trade-offs, maximizing/minimizing objectives, decision-making under constraints, or when convexity analysis, Lagrangian methods, or duality structures are relevant.
+  Mode: Research mode for mathematical derivation, paper review, experimental design optimization; Life mode for daily decisions, time management, interpersonal interactions, life planning.
 ---
 
 # ⚖️ 优化思想
@@ -15,71 +17,66 @@ description: |
 
 ## 核心原则 / Core Principle
 
-**任何决策问题都可以表述为数学优化问题：在约束条件下最大化（或最小化）某个目标函数。优化的本质不是追求'最好'，而是在约束下追求'可行中的最好'。**
+**任何决策问题都可以表述为优化问题：在约束条件下最大化（或最小化）某个目标。优化的本质不是追求'最好'，而是在约束下追求'可行中的最好'。**
 
-**Any decision problem can be formulated as a mathematical optimization problem: maximizing (or minimizing) an objective function subject to constraints. The essence of optimization is not pursuing 'the best' in the abstract, but pursuing 'the best among the feasible' under constraints.**
+**Any decision problem can be formulated as an optimization problem: maximizing (or minimizing) an objective subject to constraints. The essence of optimization is not pursuing 'the best' in the abstract, but pursuing 'the best among the feasible' under constraints.**
 
-> 人生就是一场最优化——目标函数是你追求的价值，初始点是你的起点，约束是时间、健康、规则。局部最优是当前环境中看似最好的选择，全局最优或许在另一个领域。探索与利用的权衡是人生的根本张力。重要的不是找到传说中的全局最优，而是在每一步迭代中保持方向大致正确、接受噪声与约束、允许目标函数随阅历增长而优雅地演变。过程即意义，优化本身就是生活。
+> 人生就是一场最优化——目标是你追求的价值，起点是你的出身，约束是时间、健康、规则。局部最优是当前环境中看似最好的选择，全局最优或许在另一个领域。探索与利用的权衡是人生的根本张力。重要的不是找到传说中的全局最优，而是在每一步迭代中保持方向大致正确、接受噪声与约束、允许目标随阅历增长而优雅地演变。过程即意义，优化本身就是生活。
 
-> Life itself is an optimization — the objective is what you value, the starting point is where you begin, constraints are time, health, and rules. Local optima are the best-looking choices in your current environment; the global optimum might be in a completely different field. The explore-exploit tradeoff is life's fundamental tension. The point is not finding a legendary global optimum, but keeping the direction roughly right at each iteration, accepting noise and constraints, and letting the objective function evolve gracefully as experience grows. The process is the meaning; optimization itself is life.
-
-一般优化问题的数学形式：
-
-$$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \leq 0, \; i=1,\dots,m; \quad h_j(x) = 0, \; j=1,\dots,p$$
-
-其中 $f(x)$ 为目标函数，$g_i(x)$ 为不等式约束，$h_j(x)$ 为等式约束。
-
-拉格朗日函数：
-
-$$L(x, \lambda, \mu) = f(x) + \sum_{i=1}^{m} \lambda_i g_i(x) + \sum_{j=1}^{p} \mu_j h_j(x)$$
-
-KKT 条件（核心必要条件）：若 $x^*$ 为最优解且约束满足某种正则性条件（如 Slater 条件），则存在 $\lambda^* \geq 0$, $\mu^*$ 使得：
-
-1. **驻点条件**：$\nabla_x L(x^*, \lambda^*, \mu^*) = 0$
-2. **原始可行性**：$g_i(x^*) \leq 0$, $h_j(x^*) = 0$
-3. **对偶可行性**：$\lambda_i^* \geq 0$
-4. **互补松弛性**：$\lambda_i^* g_i(x^*) = 0$
-
-凸性定义与关键性质：若 $f$ 和所有 $g_i$ 为凸函数，所有 $h_j$ 为线性函数，则问题为凸优化。凸优化中，**KKT 条件变为充分条件**，且局部最优 = 全局最优。
+> Life itself is an optimization — the objective is what you value, the starting point is where you begin, constraints are time, health, and rules. Local optima are the best-looking choices in your current environment; the global optimum might be in a completely different field. The explore-exploit tradeoff is life's fundamental tension. The point is not finding a legendary global optimum, but keeping the direction roughly right at each iteration, accepting noise and constraints, and letting the objective evolve gracefully as experience grows. The process is the meaning; optimization itself is life.
 
 优化的三个核心要素：
-- **目标函数（Objective Function）**：你要最大化或最小化的量
-- **约束条件（Constraints）**：不可违反的限制
-- **可行域（Feasible Region）**：满足所有约束的解的集合
+- **目标（Objective）**：你要最大化或最小化什么
+- **约束（Constraints）**：不可违反的限制
+- **可行选项（Feasible Options）**：满足所有约束的选择范围
+
+> **数学形式化 / Mathematical Formalization**（科研模式参考）
+>
+> 一般优化问题：$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \leq 0, \; i=1,\dots,m; \quad h_j(x) = 0, \; j=1,\dots,p$
+>
+> 其中 $f(x)$ 为目标函数，$g_i(x)$ 为不等式约束，$h_j(x)$ 为等式约束。
+>
+> 拉格朗日函数：$L(x, \lambda, \mu) = f(x) + \sum_{i=1}^{m} \lambda_i g_i(x) + \sum_{j=1}^{p} \mu_j h_j(x)$
+>
+> KKT 条件（核心必要条件）：若 $x^*$ 为最优解且约束满足某种正则性条件（如 Slater 条件），则存在 $\lambda^* \geq 0$, $\mu^*$ 使得：
+> 1. **驻点条件**：$\nabla_x L(x^*, \lambda^*, \mu^*) = 0$
+> 2. **原始可行性**：$g_i(x^*) \leq 0$, $h_j(x^*) = 0$
+> 3. **对偶可行性**：$\lambda_i^* \geq 0$
+> 4. **互补松弛性**：$\lambda_i^* g_i(x^*) = 0$
+>
+> 凸性定义与关键性质：若 $f$ 和所有 $g_i$ 为凸函数，所有 $h_j$ 为线性函数，则问题为凸优化。凸优化中，**KKT 条件变为充分条件**，且局部最优 = 全局最优。
 
 ## 不适用场景 / When NOT to Use
 
-- **没有明确的评价标准**（不知道什么是"好"）——先定义目标函数再谈优化
-- **纯粹的执行性任务**（如"把这段代码格式化"）——没有优化空间
-- **用户已经确定了方案**——优化已由用户完成，无需重复
-- **问题本质是定性判断而非定量极值**——应先建模再优化
-
-- **No clear evaluation criterion** (don't know what "good" means) — define the objective first
-- **Purely executional tasks** (e.g., "format this code") — no room for optimization
-- **User has already decided on a solution** — optimization already done by user
-- **The problem is qualitative judgment, not quantitative extremum** — model first, then optimize
+- **没有明确的评价标准**（不知道什么是"好"）——先定义目标再谈优化 `[通用]`
+- **纯粹的执行性任务**（如"把这段代码格式化"）——没有优化空间 `[通用]`
+- **用户已经确定了方案**——优化已由用户完成，无需重复 `[通用]`
+- **问题本质是定性判断而非定量极值**——应先建模再优化 `[科研]`
 
 ## 何时使用 / When to Use
 
+### 科研触发条件 / Research Triggers
+
+- 需要判断问题是否为凸优化以决定求解难度
+- 科研项目的时间规划或实验设计优化
+- 需要在约束条件下做出理性决策，涉及可量化目标函数
+- 不确定当前策略是否最优，想要系统分析
+
+### 生活触发条件 / Life Triggers
+
 - 需要在有限资源（时间、精力、金钱）之间做分配
 - 面临多目标取舍（如质量 vs 速度、短期 vs 长期）
-- 不确定当前策略是否最优，想要系统分析
-- 需要在约束条件下做出理性决策
-- 科研项目的时间规划或实验设计优化
-- 需要判断问题是否为凸优化以决定求解难度
-
-- Need to allocate limited resources (time, effort, money)
-- Facing multi-objective trade-offs (e.g., quality vs speed, short-term vs long-term)
-- Unsure whether current strategy is optimal, want systematic analysis
-- Need rational decision-making under constraints
-- Research project time planning or experimental design optimization
-- Need to determine if the problem is convex to decide solving difficulty
+- 想搞清楚"在当前限制下，我最好的选择是什么"
+- 需要判断该优先争取什么资源（哪些限制一旦放宽收益最大）
+- 感觉自己陷入"眼前看似最好但可能不是真正最好"的困境
 
 ## 方法流程 / Method
 
-### 第一步：定义目标函数 / Define the Objective Function
+### 第一步：定义目标 / Define the Objective
 
-明确你要最大化或最小化什么。这是最重要的一步——目标函数不清晰，优化没有方向。
+明确你要最大化或最小化什么。这是最重要的一步——目标不清晰，优化没有方向。
+
+#### 科研模式 / Research Mode
 
 **关键问题**：
 - 单一目标还是多目标？
@@ -87,7 +84,22 @@ KKT 条件（核心必要条件）：若 $x^*$ 为最优解且约束满足某种
 - 目标是时间相关的吗？（静态优化 vs 动态优化）
 - **$f$ 是否为凸函数？** 若凸，则局部最优即全局最优；若非凸，需警惕局部极值。
 
-### 第二步：列出约束条件 / List the Constraints
+#### 生活模式 / Life Mode
+
+明确你要优化什么——这不是数学公式，而是人生方向。
+
+- 你真正想要的是什么？（一个明确的目标，还是多个相互矛盾的追求？）
+- 这个目标可以衡量吗？如果不能，用什么代理指标来判断"够好"？
+- 目标会不会随时间变化？（短期目标 vs 长期方向）
+- 核心追问：你追求的是当前环境下"看起来最好的"，还是可能存在一个完全不同的领域更契合你？
+
+#### 共通要点 / Common Key Points
+
+目标定义是优化的方向——方向错了，走得越远越偏。必须先回答"我要什么"再回答"怎么要"。
+
+### 第二步：列出约束 / List the Constraints
+
+#### 科研模式 / Research Mode
 
 区分**硬约束**与**软约束**，同时对约束进行数学分类：
 
@@ -97,7 +109,21 @@ KKT 条件（核心必要条件）：若 $x^*$ 为最优解且约束满足某种
 - **等式约束 $h_j(x) = 0$**：减少可行域维度，通常对应物理守恒或精确要求
 - **线性约束 vs 非线性约束**：线性约束保持可行域为凸多面体；非线性约束可能使可行域非凸
 
+#### 生活模式 / Life Mode
+
+搞清楚哪些限制是不可逾越的，哪些是可以协商的。
+
+- **不可逾越的限制**：法律法规、物理极限、硬性截止日期——你不能突破这些
+- **可以协商的限制**：个人偏好、舒适区、习惯——这些看似限制但其实是软约束，你可以选择突破
+- 核心追问：你以为的限制中，有多少是真正的硬约束？有多少只是你给自己设的软约束？
+
+#### 共通要点 / Common Key Points
+
+约束定义了你的选择范围。区分硬约束和软约束至关重要——混淆两者要么让你错过可行选项，要么让你追逐不可行方案。
+
 ### 第三步：类型分类 / Classify the Problem Type
+
+#### 科研模式 / Research Mode
 
 根据目标函数和约束的结构，判定问题类别：
 
@@ -110,7 +136,22 @@ KKT 条件（核心必要条件）：若 $x^*$ 为最优解且约束满足某种
 | 组合优化 | 离散域 | 任意 | NP-hard 常见 | 分支定界、启发式 |
 | 随机优化 | 含随机项 | 可能含随机 | 期望最优 vs 随机可行 | SAA、鲁棒优化 |
 
+#### 生活模式 / Life Mode
+
+判断你的问题属于哪种类型——这决定了你的求解策略：
+
+- **有明确最优答案**的问题：目标清晰、限制明确，存在一个"最好的"选择——直接找到它
+- **看似最好但未必真正最好的问题**：你可能在局部最优中——当前环境下最好的选择，换一个环境可能更好
+- **没有完美方案的问题**：多个目标互相矛盾，不可能同时满足——必须取舍
+- **信息不足的问题**：不确定选项的后果——找到"足够好"的方案即可，不必追求最优
+
+#### 共通要点 / Common Key Points
+
+问题类型决定求解策略。不同类型需要不同方法——对"没有完美方案"的问题追求最优是浪费时间。
+
 ### 第四步：寻找最优解 / Find the Optimal Solution
+
+#### 科研模式 / Research Mode
 
 根据类型分类选择求解策略：
 - **LP/QP/凸优化**：利用凸性，梯度类方法或内点法可保证收敛到全局最优
@@ -119,13 +160,42 @@ KKT 条件（核心必要条件）：若 $x^*$ 为最优解且约束满足某种
 - **随机优化**：样本平均近似（SAA）将随机问题转化为确定性近似问题
 - **信息不足**：使用满意解（satisficing）——找到"足够好"的解即可
 
+#### 生活模式 / Life Mode
+
+根据问题类型采取不同策略：
+
+- **有明确最优答案**：系统比较各选项，直接选最优
+- **可能陷入局部最优**：多探索不同领域，避免过早锁定——"多试几个方向再决定"比"在当前领域精雕细琢"有时更有效
+- **没有完美方案**：明确各目标的权重，在取舍中找平衡——接受"不完美但足够好"
+- **信息不足**：先收集关键信息，或采用"满意解"策略——找到"足够好"就行动，不必等"最优"
+
+#### 共通要点 / Common Key Points
+
+求解策略必须匹配问题类型。对没有完美方案的问题追求最优是徒劳——满意解往往比最优解更务实。
+
 ### 第五步：灵敏度分析 / Sensitivity Analysis
+
+#### 科研模式 / Research Mode
 
 拉格朗日乘子的经济学含义：$\lambda_i^*$ 为第 $i$ 个不等式约束的**影子价格**——约束放松一个单位，目标函数改善约 $\lambda_i^*$ 个单位。互补松弛性表明：若 $\lambda_i^* = 0$，则该约束对最优解无影响（非活跃约束）；若 $\lambda_i^* > 0$，则约束活跃且最优解恰好在其边界上。
 
 **关键问题**：如果约束条件或目标函数发生微小变化，最优解会如何变化？哪些约束是活跃的？影子价格是多少？
 
+#### 生活模式 / Life Mode
+
+搞清楚哪个限制最重要——如果某个限制放宽一点，你的选择空间会大幅扩展。
+
+- **关键限制的优先级**：哪个限制一旦放宽，你获得的选择改善最大？——这告诉你应该优先争取什么资源
+- **限制的活跃性**：有些限制根本不影响你的最佳选择（你离它的边界很远），有些限制恰好卡住你（你就在它的边界上）——只关注活跃的限制
+- 核心追问：如果我只能放宽一个限制，应该选哪个？这往往指向你该优先争取的资源
+
+#### 共通要点 / Common Key Points
+
+灵敏度分析告诉你"什么最重要"——不是所有限制都同等重要，活跃限制对结果的影响远大于非活跃限制。
+
 ### 第六步：多目标与帕累托 / Multi-Objective and Pareto
+
+#### 科研模式 / Research Mode
 
 当存在多个目标 $f_1, f_2, \dots, f_k$ 时，通常不存在单一最优解。帕累托最优解集定义：不存在另一个可行解使所有目标同时改善。
 
@@ -133,28 +203,64 @@ KKT 条件（核心必要条件）：若 $x^*$ 为最优解且约束满足某种
 - **加权求和法**：$\min \sum w_i f_i(x)$，权重 $w_i > 0$——不同权重对应帕累托前沿上不同点
 - **$\epsilon$-约束法**：将一个目标作为主目标，其余转为不等式约束 $\min f_1(x)$ s.t. $f_i(x) \leq \epsilon_i$——遍历 $\epsilon_i$ 可覆盖帕累托前沿
 
+#### 生活模式 / Life Mode
+
+当追求多个目标且它们互相矛盾时，没有完美方案——必须取舍。
+
+- **取舍的本质**：有些目标之间必须牺牲一个来成就另一个，不存在同时满足所有目标的完美方案
+- **如何取舍**：明确各目标的权重——哪个对你更重要？或者先把最重要的目标做到位，其余只要"不太差"就行
+- 核心追问：你的各目标之间，哪些可以同时满足，哪些必须取舍？取舍时你优先保哪个？
+
+#### 共通要点 / Common Key Points
+
+多目标问题没有唯一最优解——取舍是不可避免的。关键不是"找到完美方案"，而是"在取舍中做出有意识的选择"。
+
 ### 第七步：监控约束变化 / Monitor Constraint Changes
+
+#### 科研模式 / Research Mode
 
 最优解不是永恒的——当约束条件变化时，需要重新优化。活跃约束的变化对最优解影响最大（影子价格高），非活跃约束的微小变化通常不影响最优解。
 
+#### 生活模式 / Life Mode
+
+你的最佳选择不是一成不变的——当限制条件变了，你该重新审视选择。
+
+- **什么变化最值得关注**：那些恰好卡住你的限制如果变化了，你的最优选择会随之改变；离你很远的限制即使变化，对你的选择也没什么影响
+- **何时需要重新决策**：当你面临的限制发生了明显变化（新的机会出现、旧的约束消失），就该重新审视选择
+- 核心追问：最近我的限制条件有没有变化？如果有，我的选择是否还合适？
+
+#### 共通要点 / Common Key Points
+
+最优解依赖约束——约束变了，最优解就变了。定期审视限制条件是否发生变化，是持续优化的关键。
+
 ## 常见错误 / Common Errors
 
-| 错误 / Error | 数学批评 / Mathematical Critique | 正确做法 / Correct Approach |
-|-------------|-------------------------------|---------------------------|
-| 没有明确目标就优化 | 目标函数不清晰，$\nabla f$ 方向不确定 | 先精确定义目标函数 $f(x)$ |
-| 忽略隐式约束 | 未发现的约束使"最优解"不可行，破坏原始可行性 | 穷尽检查所有可能的约束 |
-| 陷入局部最优 | 非凸问题中贪心策略不保证全局最优 | 验证凸性；非凸时用多起点或全局方法 |
-| 把最优当唯一 | 最优解可能不唯一（$f$ 在可行域某区域为常数） | 检查是否存在多个等价最优解 |
-| 多目标用单目标方法 | 不同目标需 trade-off，不能简单加权覆盖全部帕累托解 | 使用帕累托前沿分析 |
-| 忘记重新优化 | 约束变了但未更新，旧解不再满足 KKT | 定期检查约束是否变化 |
-| 未验证凸性 | 非凸问题误用凸优化方法，可能收敛到局部极值而非全局最优 | 先判断 $f$ 与约束的凸性，再选方法 |
-| 忽略对偶理论 | 对偶问题可能更易求解，且对偶间隙提供最优性界 | 构造对偶问题，利用强对偶性（凸+Slater） |
-| 混淆可行与最优 | 可行解满足约束但不一定使 $f$ 最小；最优解必须可行且极值 | 先验证可行性，再验证最优性（KKT） |
-| 忽略计算复杂度 | 组合优化问题可能 NP-hard，精确求解时间指数增长 | 对大规模问题使用启发式或近似算法 |
+| 错误 / Error | 批评 / Critique | 正确做法 / Correct Approach | 模式 |
+|-------------|-------------------------------|---------------------------|------|
+| 没有明确目标就优化 | 目标不清晰，方向不确定 | 先精确定义目标 | `[通用]` |
+| 忽略隐式约束 | 未发现的约束使"最优解"不可行 | 穷尽检查所有可能的约束 | `[通用]` |
+| 陷入局部最优 | 非凸问题中贪心策略不保证全局最优 | 验证凸性；非凸时用多起点或全局方法 | `[科研]` |
+| 把最优当唯一 | 最优解可能不唯一 | 检查是否存在多个等价最优解 | `[科研]` |
+| 多目标用单目标方法 | 不同目标需 trade-off | 使用帕累托分析 | `[科研]` |
+| 忘记重新优化 | 约束变了但未更新 | 定期检查约束是否变化 | `[通用]` |
+| 未验证凸性 | 非凸问题误用凸优化方法 | 先判断凸性，再选方法 | `[科研]` |
+| 忽略对偶理论 | 对偶问题可能更易求解 | 构造对偶问题，利用强对偶性 | `[科研]` |
+| 混淆可行与最优 | 可行解不一定最优；最优解必须可行 | 先验证可行性，再验证最优性 | `[科研]` |
+| 忽略计算复杂度 | 组合优化问题可能 NP-hard | 对大规模问题使用启发式或近似算法 | `[科研]` |
+| 把软约束当硬约束 | 以为不可突破的限制其实可以协商 | 严格区分不可逾越的限制和可以协商的限制 | `[生活]` |
+| 追求完美方案 | 多目标问题不存在完美方案，取舍不可避免 | 有意识地做取舍，接受"足够好" | `[生活]` |
+| 不关注哪个限制最关键 | 所有限制看似同等重要，但活跃限制的影响远大于非活跃限制 | 找出哪个限制一旦放宽收益最大，优先争取 | `[生活]` |
+| 在当前领域死磕 | 可能陷入局部最优——换个领域可能更好 | 多探索不同方向，不要过早锁定 | `[生活]` |
 
 ## 操作规程 / Operating Procedure
 
-当本 skill 被触发时，执行以下具体步骤：
+**模式选择**：根据问题性质自动选择——
+- **科研模式**触发条件：涉及数学推导、定理证明、算法设计、论文审查、实验设计优化、需要判断凸性或使用对偶理论
+- **生活模式**触发条件：涉及日常决策、人际互动、时间管理、生活规划、资源分配、取舍判断
+
+当本 skill 被触发时，根据选择的模式执行以下步骤：
+
+### 科研模式输出格式 / Research Mode Output Format
 
 1. **目标函数**：用一句话明确"我们要最大化/最小化什么" `[目标]: [描述]`，并判断凸性 `[凸性]: [凸/非凸/未知]`
 2. **约束清单**：标注每个约束为 `[硬约束]` 或 `[软约束]`，并分类 `[不等式/等式]` `[线性/非线性]`
@@ -164,7 +270,18 @@ KKT 条件（核心必要条件）：若 $x^*$ 为最优解且约束满足某种
 6. **灵敏度分析**：关键约束的影子价格是多少？若关键约束变化 X%，结论如何变化？
 7. **行动建议**：明确写出"接下来我将……"
 
-**输出必须包含以上 7 项，不得只输出分析性文字而不给出结论。**
+**科研模式输出必须包含以上 7 项，不得只输出分析性文字而不给出结论。**
+
+### 生活模式输出格式 / Life Mode Output Format
+
+1. **核心追求**：一句话说清"我最想要什么" `[追求]: [描述]`——单一目标还是多个矛盾目标？
+2. **现实限制**：标注每个限制 `[不可逾越]` 或 `[可以协商]`——哪些是真正的硬约束，哪些只是你给自己设的软约束？
+3. **可选范围**：在这些限制下，我实际有哪些选择？最受限的选择维度是什么？
+4. **最优选择/满意选择**：标注策略 `[策略]: [系统比较/多方向探索/取舍平衡/满意即可]`
+5. **关键限制的优先级**：哪个限制一旦放宽收益最大？——这告诉我该优先争取什么资源
+6. **行动建议**：明确写出"接下来我将……"
+
+**生活模式输出必须包含以上 6 项，不得只输出分析性文字而不给出结论。**
 
 ## 与其他 skill 的关系 / Relations to Other Skills
 

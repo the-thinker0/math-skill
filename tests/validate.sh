@@ -53,7 +53,7 @@ check_file "package.json"
 # Check skills directories and files
 echo ""
 echo "--- Skills ---"
-SKILLS="axiomatization abstraction logic-deduction modeling optimization probability-statistics transformation symmetry-invariance induction-analogy algorithmic-thinking information-theory game-theory causal-inference topological-thinking discrete-combinatorial"
+SKILLS="axiomatization abstraction logic-deduction modeling optimization probability-statistics transformation symmetry-invariance induction-analogy algorithmic-thinking information-theory game-theory causal-inference topological-thinking discrete-combinatorial meta-selector"
 
 for skill in $SKILLS; do
     check_dir "skills/$skill"
@@ -69,13 +69,18 @@ done
 # Check command files
 echo ""
 echo "--- Commands ---"
-COMMANDS="axiomatization abstraction logic-deduction modeling optimization probability-statistics transformation symmetry-invariance induction-analogy algorithmic-thinking information-theory game-theory causal-inference topological-thinking discrete-combinatorial"
+COMMANDS="axiomatization abstraction logic-deduction modeling optimization probability-statistics transformation symmetry-invariance induction-analogy algorithmic-thinking information-theory game-theory causal-inference topological-thinking discrete-combinatorial ask"
 
 for cmd in $COMMANDS; do
     check_file "commands/$cmd.md"
 
     # Check that command references the correct skill
-    check_content "commands/$cmd.md" "skills/$cmd/SKILL.md"
+    # 'ask' command references 'meta-selector' skill, not 'ask' skill
+    if [ "$cmd" = "ask" ]; then
+        check_content "commands/$cmd.md" "skills/meta-selector/SKILL.md"
+    else
+        check_content "commands/$cmd.md" "skills/$cmd/SKILL.md"
+    fi
 done
 
 # Check knowledge base

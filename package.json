@@ -25,7 +25,11 @@
     "causal-inference",
     "topology",
     "combinatorics",
-    "discrete-math"
+    "discrete-math",
+    "meta-selector",
+    "ask",
+    "weapon-selector",
+    "tool-selection"
   ],
   "license": "MIT",
   "author": "the-thinker0",

@@ -50,7 +50,7 @@ Check-File "package.json"
 # Check skills directories and files
 Write-Host ""
 Write-Host "--- Skills ---"
-$skills = @("axiomatization", "abstraction", "logic-deduction", "modeling", "optimization", "probability-statistics", "transformation", "symmetry-invariance", "induction-analogy", "algorithmic-thinking", "information-theory", "game-theory", "causal-inference", "topological-thinking", "discrete-combinatorial")
+$skills = @("axiomatization", "abstraction", "logic-deduction", "modeling", "optimization", "probability-statistics", "transformation", "symmetry-invariance", "induction-analogy", "algorithmic-thinking", "information-theory", "game-theory", "causal-inference", "topological-thinking", "discrete-combinatorial", "meta-selector")
 
 foreach ($skill in $skills) {
     Check-Dir "skills/$skill"
@@ -64,9 +64,17 @@ foreach ($skill in $skills) {
 # Check command files
 Write-Host ""
 Write-Host "--- Commands ---"
-foreach ($cmd in $skills) {
+$commands = @("axiomatization", "abstraction", "logic-deduction", "modeling", "optimization", "probability-statistics", "transformation", "symmetry-invariance", "induction-analogy", "algorithmic-thinking", "information-theory", "game-theory", "causal-inference", "topological-thinking", "discrete-combinatorial", "ask")
+
+foreach ($cmd in $commands) {
     Check-File "commands/$cmd.md"
-    Check-Content "commands/$cmd.md" "skills/$cmd/SKILL.md"
+
+    # 'ask' command references 'meta-selector' skill, not 'ask' skill
+    if ($cmd -eq "ask") {
+        Check-Content "commands/$cmd.md" "skills/meta-selector/SKILL.md"
+    } else {
+        Check-Content "commands/$cmd.md" "skills/$cmd/SKILL.md"
+    }
 }
 
 # Check knowledge base

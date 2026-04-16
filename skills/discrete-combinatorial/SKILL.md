@@ -2,7 +2,11 @@
 name: discrete-combinatorial
 description: |
   触发：当需要计数、枚举、发现有限结构中的规律、或处理离散对象时调用。
+  科研模式：组合计数、图论分析、生成函数计算。
+  生活模式：系统性枚举、鸽巢推理、组织有限选项。
   English: Trigger when you need to count, enumerate, find patterns in finite structures, or handle discrete objects.
+  Research mode: combinatorial counting, graph theory analysis, generating function computation.
+  Life mode: systematic enumeration, pigeonhole reasoning, organizing finite options.
 ---
 
 # 🧮 离散与组合思想
@@ -19,10 +23,17 @@ description: |
 
 Combinatorial thinking means: (1) counting finite structures systematically, (2) finding patterns that govern enumeration, (3) using algebraic methods (generating functions) to transform counting problems into algebraic ones. These three pillars form the foundation — without systematic counting there is no reliable conclusion, without pattern discovery there is no predictive power, without algebraic transformation there is no efficient solution.
 
-关键工具：
-- **鸽巢原理 (Pigeonhole Principle)**：若 n 个物品放入 m < n 个盒子，则必有某个盒子含至少 2 个物品。看似简单，却是存在性证明的利器——不构造具体对象，仅证明其必然存在。
-- **容斥原理 (Inclusion-Exclusion)**：|A∪B| = |A| + |B| − |A∩B|。推广到 n 个集合：|A₁∪A₂∪...∪A_n| = Σ|A_i| − Σ|A_i∩A_j| + ... ± |A₁∩...∩A_n|。直接计数困难时，计数补集："不具有性质 P 的数量" = 全部 − "具有 P 的数量"。
-- **生成函数 (Generating Functions)**：将序列 {a_n} 变换为幂级数 A(x) = Σa_n x^n。计数问题变为代数运算——乘法编码组合（A(x)·C(x) 的系数 = a_n 与 c_n 的组合计数），微分编码移位，积分编码累积。Euler 的洞察：将 1+2+3+... 的"发散级数"重新诠释为分拆计数的生成函数。
+> **数学形式化**（科研模式参考）
+>
+> **鸽巢原理 (Pigeonhole Principle)**：若 n 个物品放入 m < n 个盒子，则必有某个盒子含至少 2 个物品。推广：将 kn+1 个物品放入 n 个盒子，则某盒子至少含 k+1 个物品。看似简单，却是存在性证明的利器——不构造具体对象，仅证明其必然存在。
+>
+> **容斥原理 (Inclusion-Exclusion)**：|A∪B| = |A| + |B| − |A∩B|。推广到 n 个集合：|A₁∪A₂∪...∪A_n| = Σ|A_i| − Σ|A_i∩A_j| + ... ± |A₁∩...∩A_n|。直接计数困难时，计数补集："不具有性质 P 的数量" = 全部 − "具有性质 P 的数量"。
+>
+> **生成函数 (Generating Functions)**：
+> - 常生成函数 (OGF)：A(x) = Σa_n x^n。适用于无序选择、组合计数。乘法：A(x)·C(x) 的系数 = Σa_i·c_{n−i}（组合两个独立的计数）。
+> - 指数生成函数 (EGF)：B(x) = Σb_n x^n/n!。适用于有序选择、排列计数、有标号对象。乘法：B(x)·D(x) 的系数/n! = Σ(b_i/i!)·(d_{n−i}/(n−i)!)（排列两个有标号集合）。
+>
+> Euler 的洞察：将 1+2+3+... 的"发散级数"重新诠释为分拆计数的生成函数。
 
 关键洞察：许多无限结构受有限组合规则支配。分拆函数 p(n) 由五角数定理这一有限公式完全刻画；Catalan 数 C_n 由递推 C_n = ΣC_i·C_{n−1−i} 这一有限规则生成。组合思想揭示：无限的复杂可以由有限的简单来掌控。
 
@@ -32,19 +43,25 @@ Key insight: many infinite structures are governed by finite combinatorial rules
 
 ## 不适用场景 / When NOT to Use
 
-1. **连续/分析性问题，无离散结构**——当问题涉及连续变量的极限、微分、积分而非有限对象的计数时，组合工具不适用。例如求连续函数的最优值或证明实数的稠密性，这些是分析而非组合的领域。
+1. **连续/分析性问题，无离散结构** `[科研]` ——当问题涉及连续变量的极限、微分、积分而非有限对象的计数时，组合工具不适用。例如求连续函数的最优值或证明实数的稠密性，这些是分析而非组合的领域。
 
 Continuous/analytical problems with no discrete structure — when the problem involves limits, derivatives, integrals of continuous variables rather than counting finite objects, combinatorial tools are inappropriate. Finding the optimum of a continuous function or proving density of real numbers belongs to analysis, not combinatorics.
 
-2. **精确计算可行，无需计数**——当问题有闭式公式直接给出答案时，组合枚举是多余的开销。例如求 n·(n−1) 直接用代数运算，无需枚举所有排列。
+2. **精确计算可行，无需计数** `[通用]` ——当问题有闭式公式直接给出答案时，组合枚举是多余的开销。例如求 n·(n−1) 直接用代数运算，无需枚举所有排列。
 
 Exact computation is possible without counting — when a closed-form formula gives the answer directly, combinatorial enumeration is unnecessary overhead. Computing n·(n−1) directly via algebra is preferable to enumerating all permutations.
 
-3. **纯粹概率问题，无组合结构**——当问题仅涉及连续分布的参数估计或贝叶斯更新，不涉及有限集合的计数时，组合方法不是核心工具。概率密度函数的积分不是组合问题。
+3. **纯粹概率问题，无组合结构** `[科研]` ——当问题仅涉及连续分布的参数估计或贝叶斯更新，不涉及有限集合的计数时，组合方法不是核心工具。概率密度函数的积分不是组合问题。
 
 Purely probabilistic with no combinatorial structure — when the problem involves parameter estimation for continuous distributions or Bayesian updating without counting finite sets, combinatorial methods are not the central tool. Integrating a probability density function is not a combinatorial problem.
 
+4. **情绪化决策，无结构化选择** `[生活]` ——当选择基于直觉、偏好或情感而非可枚举的有限选项时，组合枚举无法提供有效指导。"我喜欢哪个"不是计数问题。
+
+Emotional decisions with no structured choices — when choices are based on intuition, preference, or emotion rather than enumerable finite options, combinatorial enumeration cannot provide effective guidance. "Which one do I like" is not a counting problem.
+
 ## 何时使用 / When to Use
+
+### 科研触发条件 / Research Triggers
 
 1. **需要计数配置数量**——"有多少种排列/选择/分配方式？"是组合思想的原问题。当答案不是 1 或"无穷"，而是一个具体的有限数时，组合计数是核心方法。
 
@@ -70,11 +87,33 @@ Need graph/network analysis — when the problem involves relational structures 
 
 Need to solve recurrence relations — when the answer is defined by a recurrence (e.g., C_n = ΣC_i·C_{n−1−i}) and a closed formula or asymptotic behavior is needed, generating functions are the standard tool. Recurrence → generating function → algebraic solution → extract coefficients.
 
+### 生活触发条件 / Life Triggers
+
+1. **需要在有限选项中做选择**——面对有限的选项（餐厅、路线、日程安排），系统性枚举比随机尝试更有效。
+
+Need to choose among finite options — when facing limited options (restaurants, routes, schedules), systematic enumeration is more effective than random attempts.
+
+2. **直觉感到"选项比需求多，必然有重复"**——鸽巢原理的生活版：如果 5 个人抢 3 个车位，必然有人抢不到或有人共享。
+
+Intuition that "more demands than slots means collision" — pigeonhole principle in life: if 5 people compete for 3 parking spots, someone must miss out or share.
+
+3. **需要组织或安排有限资源**——将任务分配给时间段、将物品归入类别——这些都是排列和分配问题的日常版。
+
+Need to organize or arrange finite resources — assigning tasks to time slots, categorizing items — these are everyday versions of arrangement and allocation problems.
+
+4. **需要发现日常规律**——"每周总是有两天最忙"——这是有限结构中的规律发现，组合思维帮助确认规律而非错觉。
+
+Need to discover everyday patterns — "there are always two busiest days each week" — this is pattern discovery in finite structures; combinatorial thinking helps confirm patterns rather than illusions.
+
+5. **需要分析人际关系或依赖结构**——谁和谁是朋友、谁依赖谁——这是图结构的生活版：社交网络就是图。
+
+Need to analyze interpersonal relations or dependency structures — who is friends with whom, who depends on whom — this is graph structure in life: social networks are graphs.
+
 ## 方法流程 / Method
 
 ### 第一步：识别离散结构与计数问题 / Identify Discrete Structure and Counting Problem
 
-明确：
+**科研模式**：明确：
 - **要计数的对象**是什么？（排列、组合、分拆、安排）
 - **计数的目标**是什么？（总数、带约束的子集、概率）
 - **约束条件**是什么？（互不相交、有序/无序、有标号/无标号）
@@ -85,15 +124,30 @@ Need to solve recurrence relations — when the answer is defined by a recurrenc
 - **分拆 (Partitions)**：将 n 分为若干组（整数分拆 p(n)，集合分拆 B(n)）
 - **安排 (Arrangements)**：将物品放入位置（盒子、格子、座位）
 
+**生活模式**：你面对的是什么类型的有限选择/排列/分配问题？——搞清楚问题类型是第一步。是"选几个"的问题，还是"排顺序"的问题，还是"分到不同组"的问题？
+
+**共通要点**：识别问题的结构是所有后续步骤的基础——不同类型需要不同方法。
+
+---
+
 ### 第二步：应用基本计数原理 / Apply Basic Counting Principles
 
+**科研模式**：
 - **乘法原理 (Multiplication Principle)**：k 个独立选择 → k₁ × k₂ × ... × k_n 种结果。每步独立，总数相乘。
 - **加法原理 (Addition Principle)**：互斥选项 → 总数相加。|A∪B| = |A| + |B|（当 A∩B = ∅）。
 - **鸽巢原理 (Pigeonhole Principle)**：n > m 时碰撞不可避免。将 n 个物品放入 m 个盒子（n > m），则某盒子至少含 ⌈n/m⌉ 个物品。推广：将 kn+1 个物品放入 n 个盒子，则某盒子至少含 k+1 个物品。
 
 应用要点：先判断选择是否独立（乘法）还是互斥（加法），再判断是否需要存在性结论（鸽巢）。
 
+**生活模式**：粗略估计有多少种可能——"很多"还是"只有几种"？如果选项比需要分配的数量多，必然有选项被重复选择（鸽巢原理的生活版）。
+
+**共通要点**：无论正式计算还是粗略估计，判断数量规模是决策的关键输入。
+
+---
+
 ### 第三步：使用容斥原理 / Apply Inclusion-Exclusion
+
+**科研模式**：
 
 |A₁∪A₂∪...∪A_n| = Σ|A_i| − Σ|A_i∩A_j| + Σ|A_i∩A_j∩A_k| − ... ± |A₁∩...∩A_n|
 
@@ -103,16 +157,31 @@ Need to solve recurrence relations — when the answer is defined by a recurrenc
 
 **符号规则**：奇数个集合的交集取正号，偶数个集合的交集取负号。第 k 层贡献 = (−1)^{k+1} Σ|A_{i₁}∩...∩A_{i_k}|。
 
+**生活模式**：有重叠的情况怎么算？——不是简单地相加，重叠部分要扣除。A或B的情况 = A的情况 + B的情况 − 同时是A和B的情况。
+
+**共通要点**：重叠修正是一般性原则——不修正重叠就是错误估计。
+
+---
+
 ### 第四步：构造生成函数 / Construct Generating Functions
 
-- **常生成函数 (Ordinary GF)**：A(x) = Σa_n x^n。适用于无序选择、组合计数。系数 a_n 是第 n 项的计数。乘法：A(x)·C(x) 的系数 = Σa_i·c_{n−i}（组合两个独立的计数）。
-- **指数生成函数 (Exponential GF)**：B(x) = Σb_n x^n/n!。适用于有序选择、排列计数、有标号对象。乘法：B(x)·D(x) 的系数/n! = Σ(b_i/i!)·(d_{n−i}/(n−i)!)（排列两个有标号集合）。
+**科研模式**：
+- **常生成函数 (OGF)**：A(x) = Σa_n x^n。适用于无序选择、组合计数。系数 a_n 是第 n 项的计数。乘法：A(x)·C(x) 的系数 = Σa_i·c_{n−i}（组合两个独立的计数）。
+- **指数生成函数 (EGF)**：B(x) = Σb_n x^n/n!。适用于有序选择、排列计数、有标号对象。乘法：B(x)·D(x) 的系数/n! = Σ(b_i/i!)·(d_{n−i}/(n−i)!)（排列两个有标号集合）。
 
 经典实例：
 - 分拆函数生成函数：P(x) = Σp(n)x^n = 1/((1−x)(1−x²)(1−x³)...)，分拆 = 无限制地选择1、2、3、...的组合。
 - Catalan 数生成函数：C(x) = ΣC_n x^n = (1−√(1−4x))/(2x)，由递推 C_n = ΣC_i·C_{n−1−i} 得 C(x) = 1 + x·C(x)²。
 
+**生活模式**：有没有一个系统的方法来追踪所有可能性？——用结构化的方式列出所有选项，而不是逐个枚举。
+
+**共通要点**：结构化追踪优于随机枚举——这是组合效率的核心。
+
+---
+
 ### 第五步：分析图结构 / Analyze Graph Structure
+
+**科研模式**：
 
 图 G = (V, E)：顶点集 V，边集 E。
 
@@ -125,36 +194,65 @@ Need to solve recurrence relations — when the answer is defined by a recurrenc
 - **匹配**：二分图匹配（Hall 婚姻定理）；最大匹配、完美匹配；König 定理：二分图中最大匹配 = 最小顶点覆盖
 - **环与割**：Euler 环（每边恰好一次 iff 连通且所有度数为偶）；Hamilton 环（每顶点恰好一次，NP-complete）
 
+**生活模式**：事物之间的关系是什么？——谁和谁连接，连接的方式是什么，整体的结构是什么样的？
+
+**共通要点**：关系结构决定可行方案——理解连接方式是理解系统的前提。
+
+---
+
 ### 第六步：发现递推与封闭公式 / Discover Recurrence and Closed Formula
 
+**科研模式**：
 - **递推关系 (Recurrence)**：Catalan 数 C_n = ΣC_i·C_{n−1−i}，Fibonacci F_n = F_{n−1} + F_{n−2}，错排 D_n = (n−1)(D_{n−1} + D_{n−2})
 - **通过生成函数求解**：将递推乘以 x^n，对 n 求和，解出 A(x)，再提取 a_n 的封闭公式。例如 Fibonacci：F(x) = x/(1−x−x²)，部分分式分解得 F_n = (φ^n − ψ^n)/√5（φ = (1+√5)/2）。
 - **直接公式**：当组合结构有清晰解释时可直接推导。C(n,k) = n!/(k!(n−k)!) 来自"n 选 k 无序"的计数；Catalan C_n = C(2n,n)/(n+1) 来自"合法括号序列"的组合论证。
 
+**生活模式**：找到规律——如果知道前几步的结果，能否推导下一步？规律一旦找到就不需要逐个计算。
+
+**共通要点**：规律发现是效率的来源——从已知推导未知优于逐个计算。
+
+---
+
 ### 第七步：验证与推广 / Verify and Generalize
 
+**科研模式**：
 - **检查小案例**：n=0, 1, 2, 3 时公式是否给出正确计数？手动枚举验证。
 - **验证公式计数正确**：公式的值是否等于实际枚举数？递推是否自洽？边界条件是否正确？
 - **推广规律**：公式是否对所有 n 成立？是否可推广到更一般的参数？是否有更深的组合解释？
 
 > **验证不是可选的——未经验证的计数公式是不可信的。** n=3 的手动枚举与公式的对比是最低验证要求。
 
+**生活模式**：验证你的枚举是否完整——有没有遗漏的选项？结论能否推广到类似情况？
+
+**共通要点**：验证是必须的——遗漏一个选项或一个规律反例就足以推翻整个推理。
+
 ## 常见错误 / Common Errors
 
-| 错误 / Error | 数学批评 / Mathematical Critique | 正确做法 / Correct Approach |
-|---|---|---|
-| 漏计与重计 (Under/Overcounting) | 漏计：遗漏约束的交互导致少计；重计：同一配置被多次计算 | 明确约束交互，用容斥修正重计，用补集计数修正漏计 |
-| 忽略约束条件的交互作用 | 约束不是独立的，交集的影响必须用容斥处理 | 用容斥原理：|A₁∪A₂| = |A₁| + |A₂| − |A₁∩A₂| |
-| 混淆排列与组合 | 排列计序 P(n,k) = n!/(n−k)!，组合不计序 C(n,k) = n!/(k!(n−k)!) | 先判断有序/无序，再选择公式 |
-| 错误使用容斥原理的符号 | 奇数层取正、偶数层取负，符号错误导致结果偏差 | 严格按 (−1)^{k+1} 规定符号：第 k 层交集取 (−1)^{k+1} |
-| 忽略生成函数的收敛域 | 生成函数作为形式幂级数可忽略收敛，但提取封闭公式需收敛域内操作 | 区分形式幂级数操作与解析操作；封闭公式提取需 x 在收敛域内 |
-| 混淆有标号与无标号计数 | 有标号用指数生成函数 Σb_n x^n/n!，无标号用常生成函数 Σa_n x^n | 有标号（排列/分布）→ EGF；无标号（组合/分拆）→ OGF |
-| 鸽巢原理使用不当 | 仅证明存在性，不构造具体实例；且需 n > m 条件才成立 | 确认 n > m 条件满足，结论为"至少一个"而非"恰好一个" |
-| 递推边界条件错误 | C₀ = 1（空结构计数为 1）而非 C₀ = 0；F₀ = 0, F₁ = 1 | 空结构 = 1（空排列、空组合各一种），检查 n=0,1 边界 |
+| 错误 / Error | 数学批评 / Mathematical Critique | 正确做法 / Correct Approach | 标签 |
+|---|---|---|---|
+| 漏计与重计 (Under/Overcounting) | 漏计：遗漏约束的交互导致少计；重计：同一配置被多次计算 | 明确约束交互，用容斥修正重计，用补集计数修正漏计 | `[科研]` |
+| 忽略约束条件的交互作用 | 约束不是独立的，交集的影响必须用容斥处理 | 用容斥原理：|A₁∪A₂| = |A₁| + |A₂| − |A₁∩A₂| | `[科研]` |
+| 混淆排列与组合 | 排列计序 P(n,k) = n!/(n−k)!，组合不计序 C(n,k) = n!/(k!(n−k)!) | 先判断有序/无序，再选择公式 | `[通用]` |
+| 错误使用容斥原理的符号 | 奇数层取正、偶数层取负，符号错误导致结果偏差 | 严格按 (−1)^{k+1} 规定符号：第 k 层交集取 (−1)^{k+1} | `[科研]` |
+| 忽略生成函数的收敛域 | 生成函数作为形式幂级数可忽略收敛，但提取封闭公式需收敛域内操作 | 区分形式幂级数操作与解析操作；封闭公式提取需 x 在收敛域内 | `[科研]` |
+| 混淆有标号与无标号计数 | 有标号用指数生成函数 Σb_n x^n/n!，无标号用常生成函数 Σa_n x^n | 有标号（排列/分布）→ EGF；无标号（组合/分拆）→ OGF | `[科研]` |
+| 鸽巢原理使用不当 | 仅证明存在性，不构造具体实例；且需 n > m 条件才成立 | 确认 n > m 条件满足，结论为"至少一个"而非"恰好一个" | `[通用]` |
+| 递推边界条件错误 | C₀ = 1（空结构计数为 1）而非 C₀ = 0；F₀ = 0, F₁ = 1 | 空结构 = 1（空排列、空组合各一种），检查 n=0,1 边界 | `[科研]` |
+| 枚举遗漏 (Enumeration omission) | 列出选项时遗漏某些可能性，导致决策基础不完整 | 系统性枚举：按类别分组，检查每组是否完整 | `[生活]` |
+| 忽略重叠情况 (Ignoring overlap) | 多个选项同时满足时简单相加，导致过度估计 | A或B的情况 = A的情况 + B的情况 − 重叠部分 | `[生活]` |
+| 逐个尝试而非找规律 (Trial-by-trial instead of pattern) | 逐个检查所有选项而不是发现规律，效率低且易遗漏 | 先看前几步能否推导规律，有规律就不需要逐个计算 | `[生活]` |
 
 ## 操作规程 / Operating Procedure
 
 当本 skill 被触发时，执行以下具体步骤：
+
+**模式选择 / Mode Selector**：
+- 若问题涉及正式计数、公式推导、存在性证明、生成函数 → **科研模式**
+- 若问题涉及日常选择、有限选项枚举、规律发现、关系分析 → **生活模式**
+
+---
+
+### 科研模式输出格式 / Research Mode Output Format
 
 1. **结构识别**：[结构]: [离散对象描述] — 明确计数对象、约束、分类
 2. **计数类型**：[计数类型]: [排列/组合/分割/安排] — 判断有序/无序、有标号/无标号
@@ -165,6 +263,19 @@ Need to solve recurrence relations — when the answer is defined by a recurrenc
 7. **验证**：[验证]: [小案例检查] — 至少 n=0,1,2,3 的手动枚举与公式对比
 
 **输出必须包含以上 7 项，不得只输出分析性文字而不给出结论。**
+
+---
+
+### 生活模式输出格式 / Life Mode Output Format
+
+1. **[问题类型]:[分类]** — 有限选择/排列/分配/关系
+2. **[可能数量]:[粗略估计]** — 选项很多还是只有几种
+3. **[系统性枚举]:[方法]** — 有没有遗漏
+4. **[关系结构]:[分析]** — 事物之间的连接方式
+5. **[规律发现]:[模式]** — 能否从已知推导未知
+6. **[行动建议]:[步骤]** — 基于枚举和规律的结论
+
+**输出必须包含以上 6 项，不得只输出分析性文字而不给出结论。**
 
 ## 与其他 skill 的关系 / Relations to Other Skills
 
