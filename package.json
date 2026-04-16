@@ -1,0 +1,56 @@
+{
+  "name": "math-skill",
+  "version": "1.0.0",
+  "description": "数学思想武器：将数学思维应用到科研和生活中。Mathematical Thinking Weapons: Apply Mathematical Thinking to Research and Daily Life.",
+  "keywords": [
+    "math",
+    "mathematics",
+    "thinking",
+    "skill",
+    "claude",
+    "cursor",
+    "ai",
+    "axiomatization",
+    "abstraction",
+    "logic",
+    "modeling",
+    "optimization",
+    "probability",
+    "transformation",
+    "symmetry",
+    "induction",
+    "algorithm",
+    "information-theory",
+    "game-theory",
+    "causal-inference",
+    "topology",
+    "combinatorics",
+    "discrete-math"
+  ],
+  "license": "MIT",
+  "author": "the-thinker0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/the-thinker0/math-skill.git"
+  },
+  "homepage": "https://github.com/the-thinker0/math-skill#readme",
+  "bugs": {
+    "url": "https://github.com/the-thinker0/math-skill/issues"
+  },
+  "files": [
+    "README.md",
+    "LICENSE",
+    "commands/",
+    "skills/",
+    "agents/",
+    "knowledge-base/",
+    "docs/"
+  ],
+  "scripts": {
+    "validate": "bash tests/validate.sh || powershell -ExecutionPolicy Bypass -File tests/validate.ps1",
+    "validate:sh": "bash tests/validate.sh",
+    "validate:win": "powershell -ExecutionPolicy Bypass -File tests/validate.ps1",
+    "pack": "npm pack",
+    "prepublishOnly": "npm run validate"
+  }
+}
