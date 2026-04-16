@@ -1,6 +1,6 @@
 # ⚔️ Math Skill — 数学思想武器
 
-> **数学思想武器：将数学思维应用到科研和生活中。**
+> **数学思想武器：将数学思维应用到科研和生活中。**\
 > **Mathematical Thinking Weapons: Apply Mathematical Thinking to Research and Daily Life.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -13,7 +13,7 @@
 
 这个 skill 将数学中最核心的思想方法提取为**可操作的思维框架**，帮助你在科研中发现新角度、在生活中做出更理性的决策。它既是研究者的思维武器，也是一套生活问题的理性工具。
 
-> "数学不只是计算，它是关于结构、关系和变化的系统性思考方式。"
+> "数学不只是计算，它是关于结构、关系和变化的系统性思考方式。"\
 > "Mathematics is not just computation — it is a systematic way of thinking about structure, relationships, and change."
 
 ---
