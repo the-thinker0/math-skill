@@ -1,0 +1,23 @@
+# Note: The "files" field in package.json acts as a whitelist for npm publish.
+# This .npmignore file only applies within those whitelisted directories
+# (e.g., excluding .DS_Store inside skills/ or commands/).
+# Top-level exclusions below are redundant with "files" but kept for clarity.
+
+# Development-only files (already excluded by "files" whitelist)
+TODO.md
+context.md
+
+# Local configuration (already excluded by "files" whitelist)
+.claude/
+
+# Test scripts (already excluded by "files" whitelist)
+tests/
+
+# OS-generated files (can appear inside any whitelisted directory)
+.DS_Store
+Thumbs.db
+
+# Editor swap/backup files (can appear inside any whitelisted directory)
+*.swp
+*.swo
+*~
