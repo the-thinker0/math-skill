@@ -85,7 +85,25 @@ npm pack math-skill --dry-run
 
 **自动触发**：当工作区出现模型 / 算法代码（`model.py`、attention / transformer / MoE、`*.cu` / kernel、Triton）或对话涉及算子 / 复杂度 / 显存 / KV-Cache / 并行策略时，`math-research-activator` 会主动介入，走「诊断→映射→GPU 筛选」。
 
-**手动触发**（不确定该用哪个武器时先 `/ask`）：
+### 正常聊天时会自动调用吗？/ Will it auto-trigger in normal chat?
+
+会，但取决于安装平台是否支持 **skill metadata 自动路由**。在 Claude Code / Codex 这类支持 skills 的环境里，安装后你不需要每次输入 `/ask`。只要普通聊天或当前工作区命中触发条件，Agent 会根据 `skills/math-research-activator/SKILL.md` 的 `description` 自动加载本 skill。
+
+例如你可以直接这样问：
+
+```
+我想设计一个更省 KV-Cache 的长上下文 attention，有没有现代数学视角？
+```
+
+或：
+
+```
+这个 Triton kernel 的访存和融合方式能不能从算法结构上优化？
+```
+
+这类问题会触发 `math-research-activator`，并按需加载 `references/gpu-friendly-math.md` 与 `references/books/*.md`。`/ask` 和下面的 slash commands 是**显式入口 / 兜底入口**：当平台没有自动 skill 触发机制，或你想强制指定某个思想武器时再使用。
+
+**手动触发 / Manual fallback**（不确定该用哪个武器时先 `/ask`）：
 
 ```
 /ask <你的问题>                     # 激活器：诊断+映射+路由+GPU 筛选
