@@ -1,34 +1,13 @@
 ---
 name: axiomatization
 description: |
-  用公理化思想审查理论体系的假设合理性、构建新理论框架、发现理论内部矛盾。
-  模式：科研模式适用于审查论文假设、构建理论框架、验证公理系统的相容性/独立性/完备性；生活模式适用于分析隐含假设、识别隐藏前提、发现日常推理中的前提矛盾。
-  English: Examine theoretical framework assumptions, build new frameworks, discover internal contradictions using axiomatic thinking.
-  Mode: Research mode for reviewing paper assumptions, constructing theoretical frameworks, verifying consistency/independence/completeness; Life mode for analyzing implicit assumptions, identifying hidden premises, finding contradictory premises in everyday reasoning.
+  审查假设合理性、构建公理系统、发现理论矛盾、验证相容性/独立性/完备性，或为算法/算子定公理与不变量并检验可计算性时调用。路由到 ../skills/axiomatization/SKILL.md。
+  English: Trigger when auditing assumptions, building axiom systems, discovering contradictions, verifying consistency/independence/completeness, or defining axioms/invariants for algorithms/operators and checking computability. Routes to ../skills/axiomatization/SKILL.md.
 ---
 
-读取并遵循 `skills/axiomatization/SKILL.md`。
-
-**模式选择**：如果问题涉及论文理论基础审查、理论框架构建、公理系统分析，使用**科研模式**；如果问题涉及分析论证的隐含假设、识别决策中的隐藏前提、发现日常推理的前提矛盾，使用**生活模式**。
+读取并遵循 `../skills/axiomatization/SKILL.md`，按其操作规程输出（用于算法/算子/GPU 设计时含 [GPU 可行性] 项）。
 
 如果输入包含 "in English"，请使用英文输出；否则使用中文输出。
 
 当前问题：
 $ARGUMENTS
-
-科研模式输出要求：
-1. **公理清单**：列出所有可识别的基本假设，格式为 `[公理N]: [内容]（来源：显式/隐式/背景）`
-2. **形式语言规定**：明确该体系使用一阶逻辑、二阶逻辑还是构造性逻辑，标注 `[语言类型]: [一阶/二阶/构造性]（理由：...）`
-3. **相容性检查**：判断公理集合是否自洽，标注 `✅ 相容` 或 `❌ 发现矛盾：[具体矛盾]`；若使用相对一致性，注明嵌入的目标系统
-4. **独立性分析**：标注是否存在冗余公理 `⚠️ [公理N] 可能由 [公理M] 推出`
-5. **完备性评估**：评估是否足以覆盖该领域的核心问题 `✅ 完备` / `⚠️ 不完备：缺少 [X]`；注明是否属于哥德尔不完备定理适用范围，标注可判定性
-6. **公理变更分析**：如果改变某条公理（如去除排中律、添加/去除选择公理），理论会如何变化？
-7. **结论**：明确写出对该理论体系的整体评价，包括其相容性、独立性、完备性、范畴性、可判定性的综合判定
-
-生活模式输出要求：
-1. **[前提假设]:[列表]** — 明确所有前提，包括隐含的。列出你在基于什么得出结论，以及你没有说出来但默认了的前提
-2. **[概念定义]:[澄清]** — 关键概念的精确含义。确认争论中核心词汇的定义是否一致，避免"看似矛盾实则不在同一层面"
-3. **[前提一致性]:[检查]** — 前提之间是否矛盾。如果两个前提不能同时成立，需要协调或取舍
-4. **[前提必要性]:[审查]** — 哪些前提真正不可或缺，哪些可以从其他前提推导出来。去掉可推导的前提，让论证更简洁
-5. **[前提完备性]:[评估]** — 前提是否足够推导出结论。前提不够则结论不成立，前提过多则论证臃肿
-6. **[结论可靠性]:[判断]** — 前提没问题则结论可靠，否则需修正前提或补充论证。明确指出前提的薄弱点在哪里

@@ -9,9 +9,23 @@ Thumbs.db
 
 # Claude Code local settings (machine-specific, not shareable)
 .claude/
+CLAUDE.md
+
+# Local agent/subagent state (machine-specific, may contain absolute paths)
+.deepseek/
 
 # Node.js
 node_modules/
 
 # npm pack output
 *.tgz
+
+# Local-only math source PDFs — build-time input for book distillation.
+# Never shipped: large (110MB+) and mostly copyrighted. The published skill
+# ships only the distilled references/books/*.md, which are self-sufficient.
+math_book/
+
+# Defense-in-depth: never commit any PDF anywhere in the repo.
+# (math_book/ above already excludes the known location; this catches any
+# PDF accidentally placed inside skills/, commands/, references/, docs/, etc.)
+*.pdf

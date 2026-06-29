@@ -9,6 +9,7 @@ context.md
 
 # Local configuration (already excluded by "files" whitelist)
 .claude/
+.deepseek/
 
 # Test scripts (already excluded by "files" whitelist)
 tests/
@@ -21,3 +22,7 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# PDFs never ship (copyright + size). math_book/ is already excluded by the
+# "files" whitelist; this catches any PDF placed inside a whitelisted directory.
+*.pdf

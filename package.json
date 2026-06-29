@@ -1,7 +1,7 @@
 {
   "name": "math-skill",
-  "version": "1.0.0",
-  "description": "数学思想武器：将数学思维应用到科研和生活中。Mathematical Thinking Weapons: Apply Mathematical Thinking to Research and Daily Life.",
+  "version": "2.0.0",
+  "description": "数学思想武器 v2：自动触发的现代数学能力激活器，把代数几何/微分几何/李理论等现代数学激活到算法与 GPU 协同设计研究中——既在 math 上 beautiful，又 GPU friendly。Mathematical Thinking Weapons v2: an auto-triggered activator that brings modern mathematics (algebraic geometry, differential geometry, Lie theory, …) into algorithm & GPU co-design research — beautiful in math, friendly to GPUs.",
   "keywords": [
     "math",
     "mathematics",
@@ -26,10 +26,22 @@
     "topology",
     "combinatorics",
     "discrete-math",
-    "meta-selector",
+    "math-research-activator",
     "ask",
-    "weapon-selector",
-    "tool-selection"
+    "tool-selection",
+    "algebraic-geometry",
+    "differential-geometry",
+    "lie-theory",
+    "manifolds",
+    "category-theory",
+    "matrix-analysis",
+    "gpu",
+    "tensor-core",
+    "gpu-friendly",
+    "agentic-workflow",
+    "auto-trigger",
+    "co-design",
+    "research"
   ],
   "license": "MIT",
   "author": "the-thinker0",
@@ -48,6 +60,7 @@
     "skills/",
     "agents/",
     "knowledge-base/",
+    "references/",
     "docs/"
   ],
   "scripts": {
