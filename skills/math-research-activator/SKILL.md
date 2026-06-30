@@ -1,8 +1,8 @@
 ---
 name: math-research-activator
 description: |
-  自动触发：当用户在设计/分析模型结构、注意力机制、GPU kernel/算子、训练或推理 Infra，或需要把现代数学（代数几何、微分几何、李理论、抽象代数、矩阵分析、最优化）激活进算法/硬件协同设计时使用。当工作区出现 ML/模型代码、CUDA/kernel、或算法研究笔记且存在结构、复杂度、显存、数值、并行或数学建模判断时主动介入。职责：问题诊断 → 现代数学结构映射 → 思想武器路由 → GPU 可行性筛选，强制每个产出同时满足「math beautiful × GPU friendly」。也作为手动 /ask 入口（武器选择器）。
-  English: Auto-trigger when designing/analyzing model architectures, attention mechanisms, GPU kernels/operators, training/inference infra, or activating modern mathematics (algebraic geometry, differential geometry, Lie theory, abstract algebra, matrix analysis, optimization) for algorithm/hardware co-design. Proactively engages when the workspace contains ML/model code, CUDA/kernels, or algorithm research notes and the task involves structure, complexity, memory, numerics, parallelism, or mathematical modeling judgment. It diagnoses the problem, maps modern-math structures, routes to thinking weapons, and screens GPU feasibility — every output must be both beautiful in math and friendly to GPUs. Also the manual /ask entry (weapon selector).
+  自动触发（需同时满足环境+任务双重信号）：仅当用户在**设计或改进**新的模型架构/算子/注意力机制，或**分析**算法理论性质（复杂度、收敛性、表达力），或**迁移**现代数学结构（代数几何、微分几何、李理论、抽象代数、矩阵分析、最优化）到算法/GPU 协同设计时使用。不触发于：代码审查、debug、参数传递核查、重构、调参、loss 实现修改等纯工程任务。也作为手动 /ask 入口（武器选择器）。
+  English: Auto-trigger (requires BOTH environment AND task signals): only when **designing/improving** new model architectures/operators/attention mechanisms, **analyzing** algorithm theoretical properties (complexity, convergence, expressivity), or **transferring** modern math structures (algebraic geometry, differential geometry, Lie theory, abstract algebra, matrix analysis, optimization) into algorithm/GPU co-design. Does NOT trigger for: code review, debugging, parameter tracing, refactoring, hyperparameter tuning, or loss implementation edits. Also the manual /ask entry (weapon selector).
 ---
 
 # 🧭 数学研究激活器 / Math Research Activator
@@ -21,13 +21,43 @@ description: |
 
 ## 何时自动介入 / When to Auto-Engage
 
-**环境信号（任一命中即考虑介入）：**
-- 工作区含模型/算法代码：`model.py`、`config.json`、attention/transformer/MoE 实现、`*.cu`/`*.cuh`/kernel、Triton/CUDA。
-- 对话涉及：注意力变体、稀疏/线性注意力、KV-Cache、路由、算子/复杂度/显存、训练动力学、并行策略、芯片/微架构协同。
-- 研究笔记/论文审查涉及把数学结构用于算法。
+**必须同时满足「环境信号」AND「任务信号」才考虑介入（缺一不可）：**
+
+### Gate 0 · 排除门（优先判定，命中即不介入）
+
+以下任务**无论工作区含什么代码**都不得触发本激活器：
+- 代码审查 / debug / 参数传递链核查 / 接口一致性检查
+- 重构、重命名、删除冗余代码、清理死代码
+- 构建 / 打包 / CI / 部署 / 环境配置
+- 纯事实查询（"这个函数干什么"、"这个参数传给了谁"）
+- 通用软件工程（文件 I/O、网络、数据加载、日志）
+- 训练脚本调参、超参搜索、实验对比
+- 添加 / 修改 loss 项的实现细节（非设计新 loss 的数学结构）
+
+**判断口诀：如果任务可以用"阅读代码 → 追踪调用链 → 报告结果"完成，就不需要数学武器。**
+
+### Gate 1 · 环境信号（必要条件，非充分条件）
+
+工作区含以下至少一类：
+- 模型架构核心代码（非训练脚本/数据管道）：attention/transformer/MoE 实现、`*.cu`/`*.cuh`/kernel、Triton/CUDA 算子。
+- 算法研究笔记 / 论文审查文档。
+- 新架构 / 新算子的设计稿或数学推导。
+
+> 仅有 `model.py`、`trainer.py`、`config.json` 等常规 ML 工程文件**不构成环境信号**。
+
+### Gate 2 · 任务信号（必要条件，非充分条件）
+
+用户当前任务明确涉及以下至少一项：
+- **设计或改进**一个新的模型架构 / 算子 / 注意力机制（非修复已有实现）。
+- **选择或论证**数学结构的适用性（如"该不该用流形约束"、"这个结构有没有等变性"）。
+- **分析**算法的理论性质（复杂度下界、收敛性、表达力、信息瓶颈）。
+- 把某个数学领域的结构**迁移**到算法/GPU 设计中。
+
+> 如果任务信号仅为"代码跑不通"、"参数没传过去"、"loss 没生效"等工程问题，即使环境信号命中也**不触发**。
 
 **不介入 / When NOT to use：**
-- 纯事实查询、与算法无关的通用编码、纯工程实现且无数学决策。
+- Gate 0 命中（排除门）。
+- Gate 1 或 Gate 2 任一未命中。
 - 问题不属于数学能帮助的范畴。
 
 ## 主流程 / The Activation Loop

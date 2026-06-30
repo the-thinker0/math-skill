@@ -1,8 +1,8 @@
 ---
 name: ask
 description: |
-  手动调用数学研究激活器（武器选择器）：不确定该用哪个思想武器、或要把现代数学激活进算法/GPU 设计时使用。
-  English: Manually invoke the math research activator (weapon selector): when unsure which weapon to use, or to activate modern mathematics into algorithm/GPU design.
+  手动调用数学研究激活器（武器选择器）：当你明确想把现代数学激活进算法/GPU 设计时使用。注意：纯工程任务（debug、代码审查、重构、调参）不适合本命令。
+  English: Manually invoke the math research activator (weapon selector): when you explicitly want to activate modern mathematics into algorithm/GPU design. Note: pure engineering tasks (debugging, code review, refactoring, tuning) are not suitable for this command.
 ---
 
 读取并遵循 `../skills/math-research-activator/SKILL.md`。

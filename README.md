@@ -22,9 +22,9 @@
 
 ---
 
-## v2.0.0 能力边界 / What v2.0.0 Does
+## v2.0.1 能力边界 / What v2.0.1 Does
 
-- **自动触发入口**：`math-research-activator` 在工作区出现 ML / 模型代码、CUDA / kernel、算法研究笔记，且任务涉及结构、复杂度、显存、数值、并行或数学建模判断时主动介入。
+- **自动触发入口**：`math-research-activator` 需同时满足环境信号（工作区含架构核心代码/CUDA kernel/研究笔记）和任务信号（设计新架构/算子、分析理论性质、迁移数学结构）才介入；纯工程任务（debug、代码审查、重构、调参）不触发。
 - **现代数学激活层**：`references/books/*.md` × 7（代数几何、微分几何、李理论、抽象代数、矩阵分析、最优化、流形）作为低 token 的激活索引，按问题类型加载，不替代原书全文。
 - **GPU 八维横切**：15 个思想武器都显式落到 `references/gpu-friendly-math.md` 的正式八维：张量化 / GEMM 可映射 / 复杂度 / 显存与 KV-Cache / 低精度稳定 / 并行与通信 / 稀疏结构 / 算子融合。
 - **单一研究路径**：面向科研、算法、算子和训练/推理 Infra；不再保留生活建议模式。
@@ -36,7 +36,7 @@
 
 | # | 思想武器 | 核心要义 | 算法 / GPU 应用 |
 |---|---------|---------|----------------|
-| 0 | 🧭 [数学研究激活器](skills/math-research-activator/SKILL.md) | 自动触发入口：诊断→映射→路由→GPU 筛选，双验收门把关 | 工作区出现 kernel / 模型代码时主动介入 |
+| 0 | 🧭 [数学研究激活器](skills/math-research-activator/SKILL.md) | 自动触发入口：诊断→映射→路由→GPU 筛选，双验收门把关 | 环境+任务双重信号命中时介入，纯工程任务不触发 |
 | 1 | 📐 [公理化思想](skills/axiomatization/SKILL.md) | 从最少假设出发，严格逻辑构建 | 审查算法假设、为结构定公理与不变量 |
 | 2 | 🧩 [抽象化思想](skills/abstraction/SKILL.md) | 抓住本质，忽略非本质细节 | 提炼可迁移结构、发现跨域共性 |
 | 3 | 🧠 [逻辑演绎](skills/logic-deduction/SKILL.md) | 从真命题严格推理新真命题 | 形式验证算法正确性、循环不变量 |
@@ -83,11 +83,11 @@ npm pack math-skill --dry-run
 
 ### 使用 / Usage
 
-**自动触发**：当工作区出现模型 / 算法代码（`model.py`、attention / transformer / MoE、`*.cu` / kernel、Triton）或对话涉及算子 / 复杂度 / 显存 / KV-Cache / 并行策略时，`math-research-activator` 会主动介入，走「诊断→映射→GPU 筛选」。
+**自动触发**：需同时满足两个条件才触发——（1）工作区含架构核心代码（attention/transformer/MoE、`*.cu`/kernel、Triton）或研究笔记；（2）用户任务涉及**设计/改进**新架构/算子、**分析**理论性质、或**迁移**数学结构。纯工程任务（debug、参数传递核查、重构、调参、loss 实现修改）不会触发。
 
 ### 正常聊天时会自动调用吗？/ Will it auto-trigger in normal chat?
 
-会，但取决于安装平台是否支持 **skill metadata 自动路由**。在 Claude Code / Codex 这类支持 skills 的环境里，安装后你不需要每次输入 `/ask`。只要普通聊天或当前工作区命中触发条件，Agent 会根据 `skills/math-research-activator/SKILL.md` 的 `description` 自动加载本 skill。
+会，但取决于安装平台是否支持 **skill metadata 自动路由**。在 Claude Code / Codex 这类支持 skills 的环境里，安装后你不需要每次输入 `/ask`。但 v2.0.1 起触发条件已收紧：必须**环境信号和任务信号同时命中**才会自动加载，普通代码审查、debug、重构等工程任务不会触发。
 
 例如你可以直接这样问：
 
@@ -138,7 +138,7 @@ npm pack math-skill --dry-run
 
 ### 自动触发（研究 / 算法 / GPU）
 
-工作区有 kernel 或注意力实现时，激活器会主动给出：问题诊断、可迁移的现代数学结构候选、武器路由、八维 GPU 筛选。范例见 `skills/math-research-activator/SKILL.md` 的 **Tropical Sheaf Attention**：它是候选探索模板，不是预设成立的 benchmark 结论；必须经复杂度、显存、低精度稳定性和 kernel 可融合性验证后才能采用。
+工作区有 kernel 或注意力核心代码**且任务涉及设计/分析/迁移**时，激活器才会介入：给出问题诊断、可迁移的现代数学结构候选、武器路由、八维 GPU 筛选。纯工程任务（debug、代码审查、调参）不会触发。范例见 `skills/math-research-activator/SKILL.md` 的 **Tropical Sheaf Attention**：它是候选探索模板，不是预设成立的 benchmark 结论；必须经复杂度、显存、低精度稳定性和 kernel 可融合性验证后才能采用。
 
 ### 手动触发（研究场景）
 
@@ -185,7 +185,7 @@ npm pack math-skill --dry-run
 
 ```
 math-skill/
-├── package.json             # v2.0.0，files[] 含 references/
+├── package.json             # v2.0.1，files[] 含 references/
 ├── .gitignore / .npmignore  # 排除 math_book/ PDF
 ├── commands/                # 手动 slash 命令入口（15 武器 + ask）
 ├── skills/                  # 16 思想武器（15 武器 + math-research-activator）
@@ -230,6 +230,19 @@ math-skill/
 ## 灵感来源 / Inspiration
 
 Sophus Lie 打造"屠龙刀"的故事告诉我们：为解微分方程发明的李群-李代数，最终成为描述对称性、机器人状态估计的通用语言——数学工具的价值远超初衷，这正是「跨领域激活」的原型。详见 [`docs/inspiration.md`](docs/inspiration.md)。
+
+---
+
+## 变更日志 / Changelog
+
+### v2.0.1
+- **收紧自动触发条件**：`math-research-activator` 从"环境信号 OR 对话信号任一命中即触发"改为"环境信号 AND 任务信号必须同时命中"（Gate 1 + Gate 2 双必要条件）。
+- **新增排除门（Gate 0）**：代码审查、debug、参数传递链核查、重构、调参、loss 实现修改等纯工程任务明确列入排除列表，优先级最高。
+- **环境信号收窄**：仅有 `model.py`、`trainer.py`、`config.json` 等常规 ML 工程文件不再构成环境信号；需要架构核心代码（attention/transformer/MoE、CUDA/Triton kernel）或研究笔记。
+- **description 字段更新**：显式标注"不触发于"场景列表，减少 AI 平台的 skill metadata 误匹配。
+
+### v2.0.0
+- 初始 v2 发布：16 思想武器、现代数学激活层、GPU 八维横切、渐进式披露。
 
 ---
 
