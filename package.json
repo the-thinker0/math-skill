@@ -60,8 +60,7 @@
     "skills/",
     "agents/",
     "knowledge-base/",
-    "references/",
-    "docs/"
+    "references/"
   ],
   "scripts": {
     "validate": "bash tests/validate.sh || powershell -ExecutionPolicy Bypass -File tests/validate.ps1",

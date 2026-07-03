@@ -1,15 +1,17 @@
-# ⚔️ Math Skill — 数学研究激活器 / Math Research Activator
+<p align="right">
+  <a href="README.md">中文</a> | <a href="README.en-US.md">English</a>
+</p>
+
+# ⚔️ Math Skill — 数学研究激活器
 
 > **把现代数学（代数几何 / 微分几何 / 李理论 / 范畴论 / 矩阵分析 / 最优化）激活进算法与 GPU 协同设计——既在 math 上 beautiful，又 GPU friendly。**
->
-> **Activating modern mathematics (algebraic geometry / differential geometry / Lie theory / category theory / matrix analysis / optimization) into algorithm × GPU co-design — beautiful in math, friendly to GPUs.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![npm version](https://img.shields.io/npm/v/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 
 ---
 
-## 核心理念 / Philosophy
+## 核心理念
 
 这次 AI 革命的数学基础，是 **20 世纪数学第一次登上商用计算舞台**——范畴论、代数拓扑、代数几何。当前主流算法的数学基础大多还停留在 1800–1900 年代的微积分 / 线性代数。把现代数学激活进算法设计，是算法探索阶段最重要的事。
 
@@ -22,7 +24,7 @@
 
 ---
 
-## v2.0.1 能力边界 / What v2.0.1 Does
+## v2.0.1 能力边界
 
 - **自动触发入口**：`math-research-activator` 需同时满足环境信号（工作区含架构核心代码/CUDA kernel/研究笔记）和任务信号（设计新架构/算子、分析理论性质、迁移数学结构）才介入；纯工程任务（debug、代码审查、重构、调参）不触发。
 - **现代数学激活层**：`references/books/*.md` × 7（代数几何、微分几何、李理论、抽象代数、矩阵分析、最优化、流形）作为低 token 的激活索引，按问题类型加载，不替代原书全文。
@@ -32,7 +34,7 @@
 
 ---
 
-## 十六思想武器 / Sixteen Thinking Weapons
+## 十六思想武器
 
 | # | 思想武器 | 核心要义 | 算法 / GPU 应用 |
 |---|---------|---------|----------------|
@@ -55,9 +57,9 @@
 
 ---
 
-## 快速开始 / Quick Start
+## 快速开始
 
-### 安装 / Installation
+### 安装
 
 直接粘贴下面这段给 Claude Code 或其他终端型 AI 助手即可：
 
@@ -81,11 +83,11 @@ Cursor / 其他 Markdown 规则平台：把 `commands/*.md` 作为手动入口�
 npm pack math-skill --dry-run
 ```
 
-### 使用 / Usage
+### 使用
 
 **自动触发**：需同时满足两个条件才触发——（1）工作区含架构核心代码（attention/transformer/MoE、`*.cu`/kernel、Triton）或研究笔记；（2）用户任务涉及**设计/改进**新架构/算子、**分析**理论性质、或**迁移**数学结构。纯工程任务（debug、参数传递核查、重构、调参、loss 实现修改）不会触发。
 
-### 正常聊天时会自动调用吗？/ Will it auto-trigger in normal chat?
+### 正常聊天时会自动调用吗？
 
 会，但取决于安装平台是否支持 **skill metadata 自动路由**。在 Claude Code / Codex 这类支持 skills 的环境里，安装后你不需要每次输入 `/ask`。但 v2.0.1 起触发条件已收紧：必须**环境信号和任务信号同时命中**才会自动加载，普通代码审查、debug、重构等工程任务不会触发。
 
@@ -103,7 +105,7 @@ npm pack math-skill --dry-run
 
 这类问题会触发 `math-research-activator`，并按需加载 `references/gpu-friendly-math.md` 与 `references/books/*.md`。`/ask` 和下面的 slash commands 是**显式入口 / 兜底入口**：当平台没有自动 skill 触发机制，或你想强制指定某个思想武器时再使用。
 
-**手动触发 / Manual fallback**（不确定该用哪个武器时先 `/ask`）：
+**手动触发**（不确定该用哪个武器时先 `/ask`）：
 
 ```
 /ask <你的问题>                     # 激活器：诊断+映射+路由+GPU 筛选
@@ -134,7 +136,7 @@ npm pack math-skill --dry-run
 
 ---
 
-## 使用场景示例 / Usage Examples
+## 使用场景示例
 
 ### 自动触发（研究 / 算法 / GPU）
 
@@ -169,7 +171,7 @@ npm pack math-skill --dry-run
 
 ---
 
-## 三层渐进式披露 / Progressive Disclosure
+## 三层渐进式披露
 
 | 层 | 内容 | 加载时机 |
 |----|------|---------|
@@ -181,7 +183,7 @@ npm pack math-skill --dry-run
 
 ---
 
-## 目录结构 / Directory Structure
+## 目录结构
 
 ```
 math-skill/
@@ -194,10 +196,10 @@ math-skill/
 ├── references/              # v2 新增：方法论 + 书籍激活层
 │   ├── agentic-workflow.md        # 协作方式
 │   ├── gpu-friendly-math.md       # 八维 GPU 验收门
+│   ├── inspiration.md             # 灵感来源
 │   └── books/                     # 7 本现代数学蒸馏稿
 ├── agents/math-critic.md    # 审视 Agent（18 维，含 GPU + 现代数学激活）
 ├── knowledge-base/overview.md
-├── docs/{CLAUDE.md, inspiration.md}
 ├── tests/{validate.sh, validate.ps1}
 ├── math_book/               # 本地 PDF（git/npm 忽略，不发布）
 └── README.md / LICENSE
@@ -205,7 +207,7 @@ math-skill/
 
 ---
 
-## 每个思想武器包含什么 / What Each Skill Contains
+## 每个思想武器包含什么
 
 每个 `skills/*/SKILL.md`（v2 单一研究 / 算法路径）：
 
@@ -221,19 +223,19 @@ math-skill/
 
 ---
 
-## 数学知识体系 / Mathematical Knowledge System
+## 数学知识体系
 
 `knowledge-base/overview.md` 提供数学知识地图：三大支柱（代数 / 几何 / 分析）、主要分支、知识层次（地基→代数→综合→前沿）、思维武器与数学分支映射。
 
 ---
 
-## 灵感来源 / Inspiration
+## 灵感来源
 
-Sophus Lie 打造"屠龙刀"的故事告诉我们：为解微分方程发明的李群-李代数，最终成为描述对称性、机器人状态估计的通用语言——数学工具的价值远超初衷，这正是「跨领域激活」的原型。详见 [`docs/inspiration.md`](docs/inspiration.md)。
+Sophus Lie 打造"屠龙刀"的故事告诉我们：为解微分方程发明的李群-李代数，最终成为描述对称性、机器人状态估计的通用语言——数学工具的价值远超初衷，这正是「跨领域激活」的原型。详见 [`references/inspiration.md`](references/inspiration.md)。
 
 ---
 
-## 变更日志 / Changelog
+## 变更日志
 
 ### v2.0.1
 - **收紧自动触发条件**：`math-research-activator` 从"环境信号 OR 对话信号任一命中即触发"改为"环境信号 AND 任务信号必须同时命中"（Gate 1 + Gate 2 双必要条件）。
@@ -244,15 +246,24 @@ Sophus Lie 打造"屠龙刀"的故事告诉我们：为解微分方程发明的�
 ### v2.0.0
 - 初始 v2 发布：16 思想武器、现代数学激活层、GPU 八维横切、渐进式披露。
 
+### v1.0.0
+- 初始发布：十五思想武器（公理化 / 抽象 / 逻辑演绎 / 建模 / 优化 / 概率统计 / 变换 / 对称与不变性 / 归纳与类比 / 算法与计算 / 信息论 / 博弈论 / 因果推断 / 拓扑 / 离散与组合）+ 科研与生活的双路径模式。
+- 十五个 `skills/*/SKILL.md`（含核心原则、不适用场景、方法流程、常见错误、操作规程）+ 对应 `original-texts.md`（数学出处与经典文献）。
+- 十五个手动触发的 slash 命令入口（`commands/*.md`）。
+- `knowledge-base/overview.md`（三大支柱 / 主要分支 / 知识层次 / 武器映射）。
+- `agents/math-critic.md` 审视 Agent。
+- 校验脚本 `tests/{validate.sh, validate.ps1}`。
+- 发布至 npm（`math-skill`），MIT 协议。
+
 ---
 
-## 许可证 / License
+## 许可证
 
 MIT License. 详见 `LICENSE`。
 
 ---
 
-## 贡献 / Contributing
+## 贡献
 
 欢迎提交 Issue 和 Pull Request，与大家一起交流！
 

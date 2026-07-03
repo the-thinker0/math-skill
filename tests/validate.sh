@@ -227,11 +227,9 @@ for ref in $(grep -rhoE '\.\./\.\./references/[A-Za-z0-9/_.-]+\.md' skills/*/SKI
 done
 check_no_output "$BROKEN_REFS" "all skills -> references links resolve to existing files"
 
-# Check docs
+# Check top-level files
 echo ""
 echo "--- Documentation ---"
-check_dir "docs"
-check_file "docs/CLAUDE.md"
 check_file "README.md"
 check_file "LICENSE"
 
@@ -262,7 +260,7 @@ if command -v npm &>/dev/null; then
         PASS=$((PASS + 1))
 
         # Check that essential files are included in the pack
-        for item in "README.md" "LICENSE" "commands/" "skills/" "agents/" "knowledge-base/" "references/" "docs/"; do
+        for item in "README.md" "LICENSE" "commands/" "skills/" "agents/" "knowledge-base/" "references/"; do
             if echo "$PACK_OUTPUT" | grep -q "$item"; then
                 echo -e "${GREEN}[PASS]${NC} npm pack includes $item"
                 PASS=$((PASS + 1))

@@ -231,11 +231,9 @@ foreach ($m in $refMatches) {
 }
 Check-NoOutput $brokenRefLinks "all skills -> references links resolve to existing files"
 
-# Check docs
+# Check top-level files
 Write-Host ""
 Write-Host "--- Documentation ---"
-Check-Dir "docs"
-Check-File "docs/CLAUDE.md"
 Check-File "README.md"
 Check-File "LICENSE"
 
@@ -265,7 +263,7 @@ if ($npmCmd) {
         Write-Host "[PASS] npm pack --dry-run succeeded" -ForegroundColor Green
         $script:pass++
 
-        $packItems = @("README.md", "LICENSE", "commands/", "skills/", "agents/", "knowledge-base/", "references/", "docs/")
+        $packItems = @("README.md", "LICENSE", "commands/", "skills/", "agents/", "knowledge-base/", "references/")
         foreach ($item in $packItems) {
             if ($packOutput -match $item) {
                 Write-Host "[PASS] npm pack includes $item" -ForegroundColor Green
