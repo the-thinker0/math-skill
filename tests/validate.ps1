@@ -197,12 +197,47 @@ foreach ($dp in $dpFiles) {
             $script:fail++
             $xrefFail++
         }
+    # Also check knowledge-base references
+    $kbRefs = [regex]::Matches($content, 'knowledge-base/([a-z-]+)/([a-z-]+)\.md')
+    foreach ($ref in $kbRefs) {
+        $target = "knowledge-base\" + $ref.Groups[1].Value + "\" + $ref.Groups[2].Value + ".md"
+        if (-not (Test-Path $target)) {
+            Write-Host "[FAIL] $($dp.Name) references missing $($ref.Value)" -ForegroundColor Red
+            $script:fail++
+            $xrefFail++
+        }
     }
 }
 if ($xrefFail -eq 0) {
     Write-Host "[PASS] All cross-references resolved" -ForegroundColor Green
     $script:pass++
 }
+
+# --- Count Verification (synced with validate.sh) ---
+Write-Host "`n--- Count Verification ---"
+$cnLenses = (Get-ChildItem -Path "lenses" -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" }).Count
+$enLenses = (Get-ChildItem -Path "lenses" -Filter "*.en.md").Count
+$cnKB = (Get-ChildItem -Path "knowledge-base" -Recurse -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" -and $_.Name -notlike "overview*" }).Count
+$enKB = (Get-ChildItem -Path "knowledge-base" -Recurse -Filter "*.en.md" | Where-Object { $_.Name -notlike "overview.en.md" }).Count
+$cnDP = (Get-ChildItem -Path "design-patterns" -Recurse -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" }).Count
+$enDP = (Get-ChildItem -Path "design-patterns" -Recurse -Filter "*.en.md").Count
+
+if ($cnLenses -eq $enLenses) {
+    Write-Host "[PASS] Lenses: $cnLenses CN = $enLenses EN" -ForegroundColor Green; $script:pass++
+} else {
+    Write-Host "[FAIL] Lenses: $cnLenses CN != $enLenses EN" -ForegroundColor Red; $script:fail++
+}
+if ($cnKB -eq $enKB) {
+    Write-Host "[PASS] Knowledge cards: $cnKB CN = $enKB EN" -ForegroundColor Green; $script:pass++
+} else {
+    Write-Host "[FAIL] Knowledge cards: $cnKB CN != $enKB EN" -ForegroundColor Red; $script:fail++
+}
+if ($cnDP -eq $enDP) {
+    Write-Host "[PASS] Design patterns: $cnDP CN = $enDP EN" -ForegroundColor Green; $script:pass++
+} else {
+    Write-Host "[FAIL] Design patterns: $cnDP CN != $enDP EN" -ForegroundColor Red; $script:fail++
+}
+Write-Host "  Totals: $cnLenses lenses, $cnKB knowledge cards, $cnDP design patterns" -ForegroundColor Cyan
 
 # --- Results ---
 Write-Host "`n========================================"
