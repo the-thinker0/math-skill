@@ -10,8 +10,8 @@
 
 ## 数学思想来源
 - 透镜：lenses/variational.md（凸优化、对偶理论）、lenses/geometric.md（Wasserstein 距离）
-- 知识：knowledge-base/optimization/lagrangian-duality.md（线性规划、Sinkhorn 算法）、
-  knowledge-base/probability/entropy.md（耦合分布、边缘约束）
+- 知识：knowledge-base/optimization/lagrangian-duality.md（对偶理论、约束优化）、
+  knowledge-base/probability/entropy.md（熵正则化、边际约束）
 
 ## 需要的数学知识
 - **离散最优传输**：min_{P∈Π(μ,ν)} ⟨C, P⟩ = Σ_{ij} C_{ij} P_{ij}

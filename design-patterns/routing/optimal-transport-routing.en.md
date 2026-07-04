@@ -1,6 +1,5 @@
 # Optimal Transport Routing
 > **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Applicable Problems
 Use when a set of input tokens/samples must be assigned to a set of experts/sub-modules while pursuing globally optimal matching cost.
@@ -9,8 +8,8 @@ Core requirement: **globally optimal assignment, rather than greedy per-point de
 
 ## Mathematical Inspiration
 - Lenses: lenses/variational.md (convex variational, duality theory), lenses/geometric.md (Wasserstein distance)
-- Knowledge: knowledge-base/optimization/lagrangian-duality.md (linear programming, Sinkhorn algorithm),
-  knowledge-base/probability/entropy.md (coupling distributions, marginal constraints)
+- Knowledge: knowledge-base/optimization/lagrangian-duality.md (duality theory, constrained optimization),
+  knowledge-base/probability/entropy.md (entropy regularization, marginal constraints)
 
 ## Required Mathematical Background
 - **Discrete Optimal Transport**: min_{P in Pi(mu,nu)} <C, P> = sum_{ij} C_{ij} P_{ij}

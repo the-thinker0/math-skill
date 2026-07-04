@@ -1,6 +1,5 @@
 # Leverage Score Selection
 > **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Target Problem
 Use when selecting the most representative rows / columns / tokens from a large-scale matrix while guaranteeing the precision of downstream linear algebra operations: KV-Cache token selection, data coreset construction, Nystrom landmark sampling, distributed gradient compression. Core objective: **sample based on statistical leverage scores derived from subspace projections, with probabilistic guarantees of approximating full-computation accuracy**.

@@ -173,7 +173,7 @@ Step 2 — Lens Selection:
 
 Step 3 — Knowledge Query:
   → low-rank-approximation (Matrix Analysis)
-  → leverage-score-selection (Matrix Analysis)
+  → leverage-score-selection (Design Pattern: compression)
   → information-bottleneck (Probability & Information)
 
 Step 4 — Design Translation:
