@@ -7,7 +7,7 @@ The mathematical knowledge system is the structured framework of the discipline 
 This overview is designed to help you:
 
 - Quickly locate the discipline and method area to which a mathematical problem belongs;
-- Understand the correspondence between the 16 thinking weapons in this project (15 weapons + math-research-activator) and mathematical sub-disciplines;
+- Understand the correspondence between the 15 thinking lenses in this project (15 weapons + math-research-activator) and mathematical sub-disciplines;
 - Build a holistic understanding from problem to tool, from concept to application.
 
 The development of mathematics has been jointly driven by logical reasoning, scientific needs, and cross-disciplinary applications.
@@ -65,7 +65,7 @@ The study of integer properties, such as prime distribution, congruences, and Di
 
 ### 2. Probability & Statistics
 
-The study of random phenomena and data analysis, widely applied in finance, biology, and social sciences. Corresponding thinking weapons: **Probability & Statistics**, **Information Theory**, **Causal Inference**.
+The study of random phenomena and data analysis, widely applied in finance, biology, and social sciences. Corresponding thinking lenses: **Probability & Statistics**, **Information Theory**, **Causal Inference**.
 
 - **Probability Theory**: Random variables, distributions, limit theorems → See **Probability & Statistics** (Kolmogorov axioms)
 - **Mathematical Statistics**: Parameter estimation, hypothesis testing, regression analysis → See **Probability & Statistics** (regression modeling, experimental design)
@@ -82,7 +82,7 @@ The study of invariant properties of spaces under continuous deformation. Corres
 
 ### 4. Discrete Mathematics
 
-Set theory, graph theory, mathematical logic, etc. — the mathematical foundation of computer science. Corresponding thinking weapons: **Algorithmic & Computational Thinking**, **Discrete & Combinatorial Thinking**.
+Set theory, graph theory, mathematical logic, etc. — the mathematical foundation of computer science. Corresponding thinking lenses: **Algorithmic & Computational Thinking**, **Discrete & Combinatorial Thinking**.
 
 - **Set Theory**: Sets, relations, functions, cardinality, ordinals
 - **Graph Theory**: Graphs, paths, connectivity, coloring, network flows
@@ -92,7 +92,7 @@ Set theory, graph theory, mathematical logic, etc. — the mathematical foundati
 
 ### 5. Applied Mathematics Branches
 
-Applying mathematical methods to real-world problems. Corresponding thinking weapons: **Optimization**, **Information Theory**, **Game Theory**, **Algorithmic & Computational Thinking**, **Causal Inference**.
+Applying mathematical methods to real-world problems. Corresponding thinking lenses: **Optimization**, **Information Theory**, **Game Theory**, **Algorithmic & Computational Thinking**, **Causal Inference**.
 
 - **Operations Research**: Linear programming, integer programming, dynamic programming, queueing theory → See **Optimization** (LP/IP/DP taxonomy), **Algorithmic & Computational Thinking** (solution algorithms)
 - **Control Theory**: System control, optimal control, robust control → See **Optimization** (optimal control as variational optimization)
@@ -169,7 +169,7 @@ Mathematical analysis, advanced algebra, analytic/differential geometry, number 
 
 ## 6. Mapping Thinking Weapons to Mathematical Branches
 
-The 16 thinking weapons in this project (15 specialized weapons + 1 math-research-activator auto-trigger entry point) do not exist in isolation; they form a complementary toolkit with mathematical branches. Below is a simplified mapping to help you find suitable mathematical methods directly from problem types. v2 also includes `references/books/*.md` × 7 volumes covering algebraic geometry / differential geometry / Lie theory / abstract algebra / matrix analysis / optimization / manifolds and other modern mathematical structures, activated on demand into algorithm design (see README "Three-Layer Progressive Disclosure").
+The 15 thinking lenses in this project (15 specialized weapons + 1 math-research-activator auto-trigger entry point) do not exist in isolation; they form a complementary toolkit with mathematical branches. Below is a simplified mapping to help you find suitable mathematical methods directly from problem types. v2 also includes `references/books/*.md` × 7 volumes covering algebraic geometry / differential geometry / Lie theory / abstract algebra / matrix analysis / optimization / manifolds and other modern mathematical structures, activated on demand into algorithm design (see README "Three-Layer Progressive Disclosure").
 
 | Thinking Weapon | Corresponding Mathematical Branch | Typical Methods / Concepts |
 |----------------|----------------------------------|---------------------------|
@@ -212,7 +212,7 @@ When facing a problem, the most important first step is not "analyze hard," but 
 
 ### Using the Activator
 
-If you are unsure which tool to use, simply invoke the math-research-activator via the `/ask` command. It will diagnose the problem, map to modern mathematical structures, recommend the 1–3 most suitable thinking weapons, and perform GPU feasibility filtering. When algorithm / kernel / model code appears in the workspace, the activator will also intervene automatically.
+If you are unsure which tool to use, simply invoke the math-research-activator via the `/ask` command. It will diagnose the problem, map to modern mathematical structures, recommend the 1–3 most suitable thinking lenses, and perform GPU feasibility filtering. When algorithm / kernel / model code appears in the workspace, the activator will also intervene automatically.
 
 ### Path
 
@@ -223,6 +223,6 @@ v2 has removed the "research / life dual-path" and unified into a single researc
 - Start from the problem characteristics: determine whether it is "structural," "dynamic," "stochastic," "interactive," or "countable."
 - Consult the Quick Selection Guide or use the `/ask` command to find the closest thinking weapon.
 - Combined with the "Hierarchical Structure of the Knowledge System," judge whether the current problem is better suited to foundational approaches or frontier methods.
-- If the problem spans multiple categories, invoke multiple thinking weapons simultaneously — e.g., "Modeling + Optimization," "Probability + Causation," "Abstraction + Algorithms."
+- If the problem spans multiple categories, invoke multiple thinking lenses simultaneously — e.g., "Modeling + Optimization," "Probability + Causation," "Abstraction + Algorithms."
 - For algorithm / operator design problems, let the activator transfer modern mathematical structures (algebraic geometry / Lie theory / topology, etc.) into the design and pass them through the GPU 8-dimension gate.
 - When studying or reading literature, use this overview as an organizing framework to place scattered concepts into a unified knowledge map.

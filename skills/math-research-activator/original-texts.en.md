@@ -1,4 +1,4 @@
-# Intellectual Sources for the Weapon Selector
+# Intellectual Sources for the Math Research OS
 
 ## The Tradition of Problem Classification and Tool Selection
 
@@ -22,7 +22,7 @@ Pólya's central insight: **different types of problems require different proble
 
 > "Problem solving is a practical skill, like swimming — you can learn it by imitation and practice." — Pólya
 
-Pólya's taxonomy of heuristics provides the intellectual foundation for our weapon selector: **the core characteristics of a problem (such as "does it involve uncertain quantities," "does it exhibit symmetry," "can it be decomposed into subproblems") determine the most appropriate problem-solving method**.
+Pólya's taxonomy of heuristics provides the intellectual foundation for our activator: **the core characteristics of a problem (such as "does it involve uncertain quantities," "does it exhibit symmetry," "can it be decomposed into subproblems") determine the most appropriate problem-solving method**.
 
 ### Newell & Simon's Problem Space Theory
 
@@ -42,10 +42,10 @@ Alan H. Schoenfeld, in *Mathematical Problem Solving* (1985), analyzed why stude
 
 - **Resources**: Knowledge, skills, tools — corresponding to our 15 intellectual weapons
 - **Heuristics**: How to use resources — corresponding to the methodological workflow for each intellectual weapon
-- **Control**: When to use which resource — corresponding to the function of the weapon selector
+- **Control**: When to use which resource — corresponding to the function of the activator
 - **Belief Systems**: Beliefs about mathematics and about oneself — affecting whether the appropriate tool is selected
 
-Core insight: **mastery of tools ≠ ability to solve problems. The critical difference lies at the 'control' level — knowing when to deploy which tool**. This is precisely the problem the weapon selector is designed to address.
+Core insight: **mastery of tools ≠ ability to solve problems. The critical difference lies at the 'control' level — knowing when to deploy which tool**. This is precisely the problem the activator is designed to address.
 
 > "The students' problem is not a lack of knowledge or skill, but a lack of strategic decision-making ability — they do not know when to use which method." — Schoenfeld
 
@@ -65,7 +65,7 @@ Characteristics of wicked problems:
 - Solutions are not right or wrong, only better or worse
 - Span multiple domains
 
-Core insight: **wicked problems require combinations of cross-domain intellectual weapons, whereas tame problems can be solved with a single tool**. The weapon selector recommends multi-tool combinations when facing wicked problems and single-tool focus when facing tame problems.
+Core insight: **wicked problems require combinations of cross-domain intellectual weapons, whereas tame problems can be solved with a single tool**. The activator recommends multi-tool combinations when facing wicked problems and single-tool focus when facing tame problems.
 
 > "Wicked problems have no right or wrong answers, only better or worse ways of dealing with them." — Rittel & Webber
 
@@ -76,7 +76,7 @@ Daniel Kahneman, in *Thinking, Fast and Slow* (2011), proposed the dual-system t
 - **System 1**: Fast, intuitive, automatic — responsible for the majority of everyday decisions
 - **System 2**: Slow, rational, deliberate — required for decisions demanding careful thought
 
-Core insight: **not all problems require System 2-level rational analysis**. Many everyday decisions require only intuition (System 1), and forcibly deploying intellectual weapons constitutes over-analysis. The weapon selector's "inapplicable scenarios" list is grounded in this insight — simple problems do not need tools; wicked problems do.
+Core insight: **not all problems require System 2-level rational analysis**. Many everyday decisions require only intuition (System 1), and forcibly deploying intellectual weapons constitutes over-analysis. The activator's "inapplicable scenarios" list is grounded in this insight — simple problems do not need tools; wicked problems do.
 
 > "Overthinking is the enemy of decision-making — some decisions are best left to intuition." — Kahneman
 
@@ -87,15 +87,15 @@ Imre Lakatos, in *Proofs and Refutations* (1976), demonstrated that mathematical
 - **Progressive Problemshift**: Each revision gives rise to new, deeper questions
 - **Degenerative Problemshift**: Revisions merely accommodate counterexamples without generating new insights
 
-Core insight: **tool selection itself should be a progressive problemshift** — the initial choice may not be ideal, but through post-use reflection, the ability to choose improves progressively. The weapon selector's "combination sequencing" and "auxiliary perspectives" recommendations embody this dialectical thinking.
+Core insight: **tool selection itself should be a progressive problemshift** — the initial choice may not be ideal, but through post-use reflection, the ability to choose improves progressively. The activator's "combination sequencing" and "auxiliary perspectives" recommendations embody this dialectical thinking.
 
 > "Knowledge is not truth descending from above, but conjecture continually refined through criticism and refutation." — Lakatos
 
 ## Mapping Ideas to Practice
 
-Our weapon selector integrates all of the above intellectual traditions:
+Our activator integrates all of the above intellectual traditions:
 
-| Intellectual Source | Manifestation in the Weapon Selector |
+| Intellectual Source | Manifestation in the Math Research OS |
 |---------|-------------------|
 | Pólya's Heuristics | 11 characteristic branches in the decision tree — each branch corresponds to a class of heuristic strategies |
 | Newell & Simon's Problem Space | Problem characteristic dimensions — interactivity, uncertainty, constraint, structure, dynamism |
