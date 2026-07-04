@@ -37,16 +37,6 @@ This skill packages sixteen core mathematical ideas into callable thinking frame
 
 ---
 
-## What v2.0.1 Does
-
-- **Auto-trigger entry**: `math-research-activator` only intervenes when both environment signals (workspace contains architecture core code / CUDA kernel / research notes) AND task signals (designing new architectures / operators, analyzing theoretical properties, transferring mathematical structures) are hit. Pure engineering tasks (debugging, code review, refactoring, hyperparameter tuning) do NOT trigger.
-- **Modern math activation layer**: `references/books/*.md` × 7 (algebraic geometry, differential geometry, Lie theory, abstract algebra, matrix analysis, optimization, manifolds) serve as low-token activation indices, loaded by problem type — they do not replace the full books.
-- **GPU 8-D cross-cut**: all 15 thinking weapons are explicitly mapped to the formal eight dimensions of `references/gpu-friendly-math.md`: tensorization / GEMM-mappability / complexity / memory & KV-Cache / low-precision stability / parallelism & communication / sparse structure / operator fusion.
-- **Single research path**: oriented toward research, algorithms, operators, and training/inference infra; the life-advice mode has been dropped.
-- **Progressive disclosure**: resident layer (activator + description) → methodology layer (on demand) → book layer (on demand), keeping irrelevant context out of the prompt.
-
----
-
 ## Sixteen Thinking Weapons
 
 | # | Thinking Weapon | Core Idea | Algorithm / GPU Application |
