@@ -7,7 +7,7 @@
 MoE 专家差异化、多任务 head 去相关。核心诉求：**让不同模块看到不同的东西**。
 
 ## 数学思想来源
-- 透镜：lenses/geometric.md（正交投影与子空间分解）、lenses/variational.md（正则化与鞍点）
+- 透镜：lenses/projection.md（正交投影与子空间分解）、lenses/variational.md（正则化与鞍点）
 - 知识：knowledge-base/matrix-analysis/projection.md（谱定理、SVD、Schur 分解）、
   knowledge-base/probability/kl-divergence.md（冗余度与互信息）
 

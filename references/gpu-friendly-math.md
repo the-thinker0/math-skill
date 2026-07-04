@@ -3,9 +3,9 @@
 # GPU 友好性总清单 / GPU-Friendly Math Checklist
 
 > 本文件是「GPU 可行性」验收门的**唯一权威来源（single source of truth）**。
-> activator、16 个思想武器、`books/*.md`、以及 `../agents/math-critic.md` 都引用此处，不重复定义。
+> activator、15 个思想透镜、`books/*.md`、以及 `../agents/math-critic.md` 都引用此处，不重复定义。
 >
-> This file is the single source of truth for the "GPU-feasibility" acceptance gate. The activator, the 16 weapons, the book references, and the math-critic all point here.
+> This file is the single source of truth for the "GPU-feasibility" acceptance gate. The activator, the 15 thinking lenses, the book references, and the math-critic all point here.
 
 ## 核心命题 / Core Proposition
 

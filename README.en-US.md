@@ -53,7 +53,7 @@ Critic: Mathematically sound? Engineering-feasible?
 |-------|------|-----------|-------|
 | **Thinking Lenses** | Diagnose problem structure, recommend math perspectives | `lenses/*.md` | 15 |
 | **Math Knowledge** | Provide concrete math tools (definitions/theorems/formulas) | `knowledge-base/*/*.md` | 31 |
-| **Design Translation** | Bridge math to AI modules/losses/operators | `design-patterns/*/*.md` | 15+ |
+| **Design Translation** | Bridge math to AI modules/losses/operators | `design-patterns/*/*.md` | 22 |
 
 Supporting layers:
 - `references/books/*.md`: 7 book distillations for deep context

@@ -9,7 +9,7 @@ Typical scenarios: (1) Multi-task MoE -- Shared experts handle linguistic common
 Core requirement: **explicitly separate commonality from individuality to prevent negative transfer and catastrophic forgetting**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/geometric.md (subspace decomposition, direct sum decomposition), lenses/probabilistic.md (information decomposition)
+- Lenses: lenses/projection.md (subspace decomposition, direct sum decomposition), lenses/probabilistic.md (information decomposition)
 - Knowledge: knowledge-base/matrix-analysis/projection.md (direct sum decomposition V = U + W, projection operators),
   knowledge-base/probability/kl-divergence.md (information decomposition: shared/synergy/unique)
 

@@ -149,7 +149,7 @@ Scenario E (Engineering): No intervention
 ## GPU Eight-Dimension Acceptance Gate
 
 Formal terminology (single authoritative source: `../../references/gpu-friendly-math.md`):
-**Tensorization / GEMM-Mappability / Complexity / Memory & KV-Cache / Low-Precision Stability / Parallelism & Communication / Sparse structure / Operator Fusion**
+**Tensorization / GEMM-mappability / Complexity / Memory & KV-Cache / Low-Precision Stability / Parallelism & Communication / Sparse Structure / Operator Fusion**
 
 ## Depth-of-Consultation Protocol
 

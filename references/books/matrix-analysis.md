@@ -104,15 +104,15 @@
 - 病态/非正规 → **重参数化 + 谱归一化**稳低精度（维度 5）；
 - Jordan 等不可算标准型 → 只留作**理论证明**，数值上换 Schur/SVD。
 
-## 该调用哪个思想武器
+## 该调用哪个思想透镜
 
 配合 `skills/` 下的现有武器使用：
 
-- **`transformation`（变换）**：相似 / 酉等价 / 合同、SVD、对角化——本书的灵魂就是"换坐标让结构显形"。
+- **`duality`（变换）**：相似 / 酉等价 / 合同、SVD、对角化——本书的灵魂就是"换坐标让结构显形"。
 - **`algorithmic-thinking`（算法与计算）**：power iteration、Newton–Schulz、QR algorithm、随机化 NLA——把定理变成可跑的 kernel。
 - **`optimization`（优化）**：变分刻画（§4.2）、条件数与预条件、二阶法、Loewner 偏序下的矩阵不等式。
-- **`symmetry-invariance`（对称与不变性）**：酉不变性、相似不变量（特征值/迹/行列式）、正规矩阵的良态谱。
-- **`abstraction`（抽象化）**：标准型即"等价类的代表元"——用最简形态抓住本质、忽略坐标细节。
+- **`symmetry`（对称与不变性）**：酉不变性、相似不变量（特征值/迹/行列式）、正规矩阵的良态谱。
+- **`categorical`（抽象化）**：标准型即"等价类的代表元"——用最简形态抓住本质、忽略坐标细节。
 - **`probability-statistics`（概率与统计）**：随机化 NLA、随机矩阵谱、Perron–Frobenius/Markov 链平稳分布。
 
 ## 反模式

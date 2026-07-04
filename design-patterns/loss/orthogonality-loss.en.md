@@ -5,7 +5,7 @@
 In multi-expert / multi-task settings, representations learned by submodules are highly overlapping and redundant, leading to poor parameter utilization. This loss is used when the $d$-dimensional feature space needs to be partitioned into $K$ non-interfering subspaces -- such as Shared-Private separation, MoE expert differentiation, and multi-task head decorrelation. Core objective: **ensure different modules see different things**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/geometric.md (orthogonal projection and subspace decomposition), lenses/variational.md (regularization and saddle points)
+- Lenses: lenses/projection.md (orthogonal projection and subspace decomposition), lenses/variational.md (regularization and saddle points)
 - Knowledge: knowledge-base/matrix-analysis/projection.md (spectral theorem, SVD, Schur decomposition), knowledge-base/probability/kl-divergence.md (redundancy and mutual information)
 
 ## Required Mathematical Knowledge

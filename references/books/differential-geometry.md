@@ -98,15 +98,15 @@
 
 **结论**：黎曼 / 信息几何方法**只有在度量被结构化因子化（Kronecker / 块对角 / 低秩）后才 GPU 可行**；精确求逆与精确平行移动都属于"美但不可算"，须改造或淘汰。
 
-## 该调用哪个思想武器
+## 该调用哪个思想透镜
 
-- **symmetry-invariance（⚛️ 对称与不变性）—— 首选。** 规范等变、李群对称、纤维丛 = 把"frame / 坐标选择无关"编码成对称性，是本书与 DL 最强的接口。
+- **symmetry（⚛️ 对称与不变性）—— 首选。** 规范等变、李群对称、纤维丛 = 把"frame / 坐标选择无关"编码成对称性，是本书与 DL 最强的接口。
 - **optimization（⚖️ 优化）—— 并列首选。** 自然梯度、Riemannian SGD、曲率正则都是"在弯曲约束空间里找最优"。
 - **transformation（🔄 变换）**：指数 / 对数映射、retraction、坐标变换简化问题。
 - **modeling（🌉 建模）**：把参数 / 数据空间显式建模为流形，再翻译回算法。
 - **topological-thinking（🌀 拓扑）**：辅助——de Rham 上同调 / 整体不变量用于守恒量与可积性诊断。
 
-组合建议：先 `symmetry-invariance` 定对称结构 → `optimization` 落到自然梯度 / Riemannian 优化 → `transformation` 处理 retraction → 过 `../gpu-friendly-math.md` 验收门。
+组合建议：先 `symmetry` 定对称结构 → `optimization` 落到自然梯度 / Riemannian 优化 → `duality` 处理 retraction → 过 `../gpu-friendly-math.md` 验收门。
 
 ## 反模式
 

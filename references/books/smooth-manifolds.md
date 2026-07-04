@@ -71,11 +71,11 @@
 4. **结构化 Jacobian**：归一化流坚持三角/耦合结构，杜绝通用 LU 求 det。
 5. **精度护栏**：凡矩阵 exp/log/eig，强制 fp32 累加并做数值稳定（log-sum-exp 式）。
 
-## 该调用哪个思想武器
+## 该调用哪个思想透镜
 
 - **optimization（⚖️ 优化思想）**：主武器——约束下寻最优、黎曼/流形优化、retraction 选型。
-- **symmetry-invariance（⚛️ 对称与不变性）**：李群、等变、商流形、群作用下的不变量。
-- **transformation（🔄 变换思想）**：坐标卡变换、pushforward/pullback、归一化流的变量替换、微分同胚。
+- **symmetry（⚛️ 对称与不变性）**：李群、等变、商流形、群作用下的不变量。
+- **duality（对偶透镜）**：坐标卡变换、pushforward/pullback、归一化流的变量替换、微分同胚。
 - **topological-thinking（🌀 拓扑思想）**：de Rham 上同调、全局障碍、隐空间的"洞"与连通性。
 - **abstraction（🧩 抽象化思想）**：从高维杂乱的环境数据中抽出"局部线性 + 光滑拼接"的流形骨架（流形假设）。
 

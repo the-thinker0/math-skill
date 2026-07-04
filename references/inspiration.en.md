@@ -108,6 +108,6 @@ What matters is not finding the legendary "global optimum," but rather, at each 
 
 The inspiration for this project stems precisely from these two insights:
 
-1. **The value of mathematical tools far exceeds their original intent** — Sophus Lie's dragon-slaying blade story teaches us that a tool invented for solving differential equations ultimately became the universal language for describing symmetry. This is the core idea behind "thinking weapons": every mathematical concept carries transferable value far beyond its original application domain.
+1. **The value of mathematical tools far exceeds their original intent** — Sophus Lie's dragon-slaying blade story teaches us that a tool invented for solving differential equations ultimately became the universal language for describing symmetry. This is the core idea behind "thinking lenses": every mathematical concept carries transferable value far beyond its original application domain.
 
 2. **Mathematics is a lens for understanding life** — Optimization theory is not just about algorithms; it is a framework for understanding the structure of life decisions. When you transfer the "exploration–exploitation trade-off" from reinforcement learning to career choices, or the "local optimum trap" from convex optimization to everyday decisions, mathematics steps off the blackboard and into daily life.

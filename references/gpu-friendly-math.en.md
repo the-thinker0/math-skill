@@ -1,9 +1,9 @@
 # GPU-Friendly Math Checklist
 
 > This file is the **single source of truth** for the "GPU-feasibility" acceptance gate.
-> The activator, the 16 thinking weapons, `books/*.md`, and `../agents/math-critic.md` all reference this file; no duplicate definitions elsewhere.
+> The activator, the 15 thinking lenses, `books/*.md`, and `../agents/math-critic.md` all reference this file; no duplicate definitions elsewhere.
 >
-> This file is the single source of truth for the "GPU-feasibility" acceptance gate. The activator, the 16 weapons, the book references, and the math-critic all point here.
+> This file is the single source of truth for the "GPU-feasibility" acceptance gate. The activator, the 15 thinking lenses, the book references, and the math-critic all point here.
 
 ## Core Proposition
 

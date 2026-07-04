@@ -88,15 +88,15 @@
 | 有限域编码压缩 KV/梯度 | 22, 31 | 2❌ 非浮点 MAC，1/6✅ int 并行 | ❌主干 / ✅前后处理 |
 | 循环群表示（FFT/RoPE token mixing）| 4, 11 | 1✅ 2✅ 3✅（n log n）| ✅ |
 
-## 该调用哪个思想武器
+## 该调用哪个思想透镜
 
-- **主：`symmetry-invariance`（对称与不变性）**——群作用、等变/不变、轨道-稳定子是本书与 ML 的最大接口。
-- **副：`abstraction`**——提取群/环/域的公共结构，看穿"不同模块其实是同一代数对象"。
+- **主：`symmetry`（对称与不变性）**——群作用、等变/不变、轨道-稳定子是本书与 ML 的最大接口。
+- **副：`categorical`**——提取群/环/域的公共结构，看穿"不同模块其实是同一代数对象"。
 - **副：`axiomatization`**——放松环公理得半环、逐条核对所设代数性质是否真成立（防伪对称）。
-- **副：`transformation`**——同态/同构作等价转换、FFT/频域变换简化问题。
+- **副：`duality`**——同态/同构作等价转换、FFT/频域变换简化问题。
 - **副：`discrete-combinatorial`**——有限群计数（Burnside, 29）、编码（31）、有限域枚举（22）。
 
-典型组合链：先 `symmetry-invariance` 识别问题里的群与不变量 → `abstraction` 抽出公共代数结构 → `axiomatization` 核对公理是否真成立（防伪对称、防误用减法）→ `transformation` 落成可学习线性映射 → 最后过 `../gpu-friendly-math.md` 八维门。
+典型组合链：先 `symmetry` 识别问题里的群与不变量 → `categorical` 抽出公共代数结构 → `axiomatization` 核对公理是否真成立（防伪对称、防误用减法）→ `duality` 落成可学习线性映射 → 最后过 `../gpu-friendly-math.md` 八维门。
 
 ## 反模式
 
