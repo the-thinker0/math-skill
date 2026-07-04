@@ -126,7 +126,7 @@ git clone https://github.com/the-thinker0/math-skill.git
 |----------|--------|------|
 | Problem Analysis | "Is this design sound?" | Lenses → Critic |
 | Mechanism Design | "Design a new attention" | Lenses → Knowledge → Design → Critic |
-| Knowledge Query | "What is tangent space?" | Knowledge |
+| Knowledge Query | "What is tangent space and how does it relate to gradient optimization?" | Knowledge |
 | Verification | "Does this formula hold?" | Knowledge → Critic |
 | Pure Engineering | debug, refactoring, tuning | **Not triggered** |
 

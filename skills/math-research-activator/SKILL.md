@@ -64,13 +64,13 @@ description: |
 
 | 领域 | 目录 | 知识卡片 |
 |------|------|---------|
-| 矩阵分析 | `knowledge-base/matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
-| 最优化 | `knowledge-base/optimization/` | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
-| 微分几何 | `knowledge-base/differential-geometry/` | manifold, tangent-space, metric-tensor, geodesic, curvature, connection |
-| 李理论 | `knowledge-base/lie-theory/` | group-action, lie-group, lie-algebra, representation, equivariance |
-| 拓扑 | `knowledge-base/topology/` | persistent-homology, euler-characteristic, fundamental-group |
-| 概率与信息 | `knowledge-base/probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
-| 信息几何 | `knowledge-base/information-geometry/` | natural-gradient, fisher-metric |
+| 矩阵分析 | `../../knowledge-base/matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
+| 最优化 | `../../knowledge-base/optimization/` | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
+| 微分几何 | `../../knowledge-base/differential-geometry/` | manifold, tangent-space, metric-tensor, geodesic, curvature, connection |
+| 李理论 | `../../knowledge-base/lie-theory/` | group-action, lie-group, lie-algebra, representation, equivariance |
+| 拓扑 | `../../knowledge-base/topology/` | persistent-homology, euler-characteristic, fundamental-group |
+| 概率与信息 | `../../knowledge-base/probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
+| 信息几何 | `../../knowledge-base/information-geometry/` | natural-gradient, fisher-metric |
 
 ## 设计模式库（按 AI 组件组织）
 
@@ -78,11 +78,11 @@ description: |
 
 | 组件类型 | 目录 | 模式 |
 |---------|------|------|
-| 注意力 | `design-patterns/attention/` | projection-attention, spectral-attention, equivariant-attention, geometry-aware-attention, information-bottleneck-attention |
-| 损失函数 | `design-patterns/loss/` | orthogonality-loss, contrastive-loss, variational-loss, information-bottleneck-loss, constraint-penalty |
-| 路由 | `design-patterns/routing/` | optimal-transport-routing, graph-routing, moe-routing, spectral-clustering-routing |
-| 表示 | `design-patterns/representation/` | shared-private-decomposition, manifold-representation, equivariant-split, subspace-alignment |
-| 压缩 | `design-patterns/compression/` | low-rank-kv-cache, spectral-token-pruning, topology-preserving-compression, leverage-score-selection |
+| 注意力 | `../../design-patterns/attention/` | projection-attention, spectral-attention, equivariant-attention, geometry-aware-attention, information-bottleneck-attention |
+| 损失函数 | `../../design-patterns/loss/` | orthogonality-loss, contrastive-loss, variational-loss, information-bottleneck-loss, constraint-penalty |
+| 路由 | `../../design-patterns/routing/` | optimal-transport-routing, graph-routing, moe-routing, spectral-clustering-routing |
+| 表示 | `../../design-patterns/representation/` | shared-private-decomposition, manifold-representation, equivariant-split, subspace-alignment |
+| 压缩 | `../../design-patterns/compression/` | low-rank-kv-cache, spectral-token-pruning, topology-preserving-compression, leverage-score-selection |
 
 ## 自动触发条件
 

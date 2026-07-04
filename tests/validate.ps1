@@ -181,3 +181,38 @@ if ($script:fail -eq 0) {
     Write-Host "Some checks failed!" -ForegroundColor Red
     exit 1
 }
+
+# --- CN/EN Pairing (synced with validate.sh) ---
+Write-Host "`n--- CN/EN File Pairing ---"
+$cnLenses = Get-ChildItem -Path "lenses" -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" }
+foreach ($cn in $cnLenses) {
+    $enName = $cn.BaseName + ".en.md"
+    if (Test-Path "lenses\$enName") {
+        Write-Host "[PASS] $($cn.Name) has EN pair" -ForegroundColor Green
+        $script:pass++
+    } else {
+        Write-Host "[FAIL] $($cn.Name) missing EN pair" -ForegroundColor Red
+        $script:fail++
+    }
+}
+
+# --- Cross-Reference Integrity (synced with validate.sh) ---
+Write-Host "`n--- Cross-Reference Integrity ---"
+$xrefFail = 0
+$dpFiles = Get-ChildItem -Path "design-patterns" -Recurse -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" }
+foreach ($dp in $dpFiles) {
+    $content = Get-Content $dp.FullName -Raw
+    $lensRefs = [regex]::Matches($content, 'lenses/([a-z-]+)\.md')
+    foreach ($ref in $lensRefs) {
+        $target = "lenses\" + $ref.Groups[1].Value + ".md"
+        if (-not (Test-Path $target)) {
+            Write-Host "[FAIL] $($dp.Name) references missing $($ref.Value)" -ForegroundColor Red
+            $script:fail++
+            $xrefFail++
+        }
+    }
+}
+if ($xrefFail -eq 0) {
+    Write-Host "[PASS] All cross-references resolved" -ForegroundColor Green
+    $script:pass++
+}

@@ -58,7 +58,7 @@ scores = (Q @ eigenvecs) @ (K @ eigenvecs).T / sqrt(r)
 - **维度 5 低精度 ✅**：投影矩阵正交/近正交时数值稳定，bf16 可接受
 - **维度 6 并行 ✅**：投影可与注意力流水线并行，Multi-Head 天然跨头并行
 - **维度 7 稀疏 ⚠️**：投影矩阵本身稠密；若用稀疏投影（CountSketch），可能引入 gather/scatter
-- **维度 8 算子融合 ✅**：投影可融入 FlashAttention 的 online softmax 循环中
+- **维度 8 算子融合 ⚠️可改造需验证**：投影可融入 FlashAttention 的 online softmax 循环中
 
 ## 论文表述方式
 "我们将注意力计算分解为低维子空间投影与投影空间注意力两步，在保持注意力质量的同时将 KV-Cache 压缩 $d/r$ 倍，并保证 Johnson-Lindenstrauss 距离保持性。"

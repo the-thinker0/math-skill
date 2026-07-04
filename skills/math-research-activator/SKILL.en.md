@@ -63,13 +63,13 @@ Each knowledge card answers: Minimal definition, core formulas, applicable probl
 
 | Domain | Directory | Knowledge Cards |
 |--------|-----------|----------------|
-| Matrix Analysis | `knowledge-base/matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
-| Optimization | `knowledge-base/optimization/` | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
-| Differential Geometry | `knowledge-base/differential-geometry/` | manifold, tangent-space, metric-tensor, geodesic, curvature, connection |
-| Lie Theory | `knowledge-base/lie-theory/` | group-action, lie-group, lie-algebra, representation, equivariance |
-| Topology | `knowledge-base/topology/` | persistent-homology, euler-characteristic, fundamental-group |
-| Probability & Information | `knowledge-base/probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
-| Information Geometry | `knowledge-base/information-geometry/` | natural-gradient, fisher-metric |
+| Matrix Analysis | `../../knowledge-base/matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
+| Optimization | `../../knowledge-base/optimization/` | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
+| Differential Geometry | `../../knowledge-base/differential-geometry/` | manifold, tangent-space, metric-tensor, geodesic, curvature, connection |
+| Lie Theory | `../../knowledge-base/lie-theory/` | group-action, lie-group, lie-algebra, representation, equivariance |
+| Topology | `../../knowledge-base/topology/` | persistent-homology, euler-characteristic, fundamental-group |
+| Probability & Information | `../../knowledge-base/probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
+| Information Geometry | `../../knowledge-base/information-geometry/` | natural-gradient, fisher-metric |
 
 ## Design Pattern Library (Organized by AI Component)
 
@@ -77,11 +77,11 @@ Each design pattern answers: Mathematical origin, AI module form, implementable 
 
 | Component Type | Directory | Patterns |
 |---------------|-----------|----------|
-| Attention | `design-patterns/attention/` | projection-attention, spectral-attention, equivariant-attention, geometry-aware-attention, information-bottleneck-attention |
-| Loss Functions | `design-patterns/loss/` | orthogonality-loss, contrastive-loss, variational-loss, information-bottleneck-loss, constraint-penalty |
-| Routing | `design-patterns/routing/` | optimal-transport-routing, graph-routing, moe-routing, spectral-clustering-routing |
-| Representation | `design-patterns/representation/` | shared-private-decomposition, manifold-representation, equivariant-split, subspace-alignment |
-| Compression | `design-patterns/compression/` | low-rank-kv-cache, spectral-token-pruning, topology-preserving-compression, leverage-score-selection |
+| Attention | `../../design-patterns/attention/` | projection-attention, spectral-attention, equivariant-attention, geometry-aware-attention, information-bottleneck-attention |
+| Loss Functions | `../../design-patterns/loss/` | orthogonality-loss, contrastive-loss, variational-loss, information-bottleneck-loss, constraint-penalty |
+| Routing | `../../design-patterns/routing/` | optimal-transport-routing, graph-routing, moe-routing, spectral-clustering-routing |
+| Representation | `../../design-patterns/representation/` | shared-private-decomposition, manifold-representation, equivariant-split, subspace-alignment |
+| Compression | `../../design-patterns/compression/` | low-rank-kv-cache, spectral-token-pruning, topology-preserving-compression, leverage-score-selection |
 
 ## Automatic Trigger Conditions
 

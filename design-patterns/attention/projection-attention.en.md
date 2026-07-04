@@ -6,7 +6,7 @@
 When the token/key space dimensionality is too high, the standard attention $Q K^T$ inner product tends to become uniform in high-dimensional spaces ("attention collapse"). In such cases, key/query vectors must first be projected onto a **subspace with superior geometric structure** before computing attention. Typical scenarios include: KV-Cache compression for long-context LLMs, attention sparsification in high-dimensional embedding spaces, and attention alignment of heterogeneous features in multimodal fusion.
 
 ## Mathematical Inspiration
-- Lenses: [duality, categorical]
+- Lenses: [projection, spectral, probabilistic]
 - Knowledge: [`probability/concentration-inequality.md` (high-dimensional concentration inequalities provide theoretical explanation for attention collapse), `probability/entropy.md` (entropy of attention distributions as a quality metric)]
 
 ## Required Mathematical Knowledge
