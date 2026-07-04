@@ -9,9 +9,9 @@ Use when two or more representation spaces need to be aligned to a common subspa
 Core requirement: **find the optimal linear/nonlinear mapping between two spaces such that corresponding semantics are aligned**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/geometry.md (Grassmann manifold, principal angles), lenses/optimization.md (Procrustes problem)
-- Knowledge: knowledge-base/fundamentals/linear-algebra.md (SVD, orthogonal Procrustes),
-  knowledge-base/fundamentals/geometry.md (Grassmann distance, geodesics)
+- Lenses: lenses/geometric.md (Grassmann manifold, principal angles), lenses/variational.md (Procrustes problem)
+- Knowledge: knowledge-base/matrix-analysis/projection.md (SVD, orthogonal Procrustes),
+  knowledge-base/differential-geometry/manifold.md (Grassmann distance, geodesics)
 
 ## Required Mathematical Background
 - **Orthogonal Procrustes Problem**: min_{W in O(d)} ||AW - B||_F^2
@@ -73,9 +73,9 @@ Online Subspace Tracking (adaptation at inference):
 - **Tensorization**: A^T @ B is standard GEMM (d x N) @ (N x d); SVD has cuSOLVER implementations
 - **GEMM-mappable**: Procrustes core requires 1 GEMM + 1 SVD; CCA requires 2 GEMMs + 1 SVD
 - **Complexity**: GEMM O(N * d^2); SVD O(d^3) (d typically < 1024, acceptable); online tracking O(d^2)
-- **Memory and KV-Cache**: Storing covariance matrix d x d (~4 MB for d = 1024); no KV-Cache overhead
+- **Memory & KV-Cache**: Storing covariance matrix d x d (~4 MB for d = 1024); no KV-Cache overhead
 - **Low-precision stability**: SVD strongly recommended in fp32; whitening matrix inversion requires fp32 + epsilon regularization
-- **Parallelism and communication**: Subspace angle computations for multiple expert pairs are independent and parallel; CCA GEMMs are highly parallel
+- **Parallelism & Communication**: Subspace angle computations for multiple expert pairs are independent and parallel; CCA GEMMs are highly parallel
 - **Sparse structure**: When source/target representations are sparse, covariance matrix Sigma is sparse, enabling sparse SVD
 - **Operator fusion**: Whitening (mean-sub -> cov -> inv_sqrt -> transform) can be partially fused
 

@@ -54,7 +54,7 @@ attn = ifft(scores_freq)
 
 ## GPU Feasibility
 - **Dimension 1 Tensorization**: FFT and matrix multiplication are both standard tensor operations
-- **Dimension 2 GEMM Mappability**: Spectral projection $U^T Q$ is a standard GEMM; although FFT is not GEMM, highly optimized cuFFT implementations are available
+- **Dimension 2 GEMM-mappability**: Spectral projection $U^T Q$ is a standard GEMM; although FFT is not GEMM, highly optimized cuFFT implementations are available
 - **Dimension 3 Complexity**: FFT attention $O(n \log n \cdot d)$, far superior to $O(n^2 d)$
 - **Dimension 4 Memory**: Frequency-domain representation introduces no extra dimensions; spectral projection can reduce to $k \ll n$ dimensions
 - **Dimension 5 Low Precision**: Complex-valued FFT suffers precision loss under fp16; fp32 or real-valued FFT (RFFT) is required

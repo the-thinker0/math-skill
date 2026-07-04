@@ -55,7 +55,7 @@ loss = -info_nce + beta * kl_bottleneck
 
 ## GPU Feasibility
 - **Dimension 1 Tensorization**: KL regularization involves element-wise operations; VIB reparameterization sampling is element-wise
-- **Dimension 2 GEMM Mappability**: The main body $QK^T$ and $attn \cdot V$ are standard GEMM; regularization introduces no new GEMM operations
+- **Dimension 2 GEMM-mappability**: The main body $QK^T$ and $attn \cdot V$ are standard GEMM; regularization introduces no new GEMM operations
 - **Dimension 3 Complexity**: KL regularization is $O(n)$ per token, adding no asymptotic complexity
 - **Dimension 4 Memory**: VIB requires additional $\mu_z$ and $\log\sigma_z$, approximately doubling attention weight memory
 - **Dimension 5 Low Precision**: log/exp in KL computations are stable under bf16 (standard log-softmax tricks)

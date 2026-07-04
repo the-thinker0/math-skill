@@ -26,7 +26,7 @@ This is an "engineer's" perspective — decomposing problems into finitely execu
 - Data structures: storage and query efficiency directly affects algorithmic performance
 - Computation theory (Turing machines / the halting problem): understanding the absolute boundaries of computability
 
-## What AI Designs It May Produce
+## What AI Designs It May Inspire
 
 - Complexity classifier: input → automatic determination of P / NP-hard / undecidable, with recommended response strategies
 - Algorithmic paradigm selector: automatic paradigm selection based on subproblem independence / overlap / greedy properties

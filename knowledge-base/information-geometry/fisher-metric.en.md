@@ -34,7 +34,7 @@ $$\Gamma_{ijk}^{(\alpha)} = \mathbb{E}\left[\left(\partial_i \partial_j \ell + \
 
 ## Engineering Feasibility
 - **Dimension 1 Tensorization ❌**: The full metric tensor $g_{ij}$ is $d \times d$; infeasible to materialize when $d \sim 10^{10}$
-- **Dimension 2 GEMM Mappability ⚠️**: Kronecker/diagonal approximations can be mapped; the exact metric cannot
+- **Dimension 2 GEMM-mappability ⚠️**: Kronecker/diagonal approximations can be mapped; the exact metric cannot
 - **Dimension 3 Complexity ❌**: Geodesic computation requires solving a second-order ODE; exact computation is intractable
 - **Dimension 4 Memory ❌**: Full metric tensor storage is $O(d^2)$; completely impossible at LLM scale
 - **Dimension 5 Low Precision ⚠️**: The condition number of the metric tensor may be very large, leading to instability under low precision

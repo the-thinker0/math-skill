@@ -35,7 +35,7 @@ GPU friendliness: the key factor is whether exp/log has a closed form.
 - **Low-precision critical issue**: $\sin\theta/\theta$ produces division by zero as $\theta \to 0$; $\log$ is singular as $\theta \to \pi$; fp16/bf16 yields NaN directly -- **must** implement Taylor expansion switching for small angles
 - **Kinematic chain seriality**: Discrete integration via successive $\exp$ multiplication is serial; rewriting as a parallel scan is required for parallelism
 
-## Risks and Failure Modes
+## Risks and Failure Conditions
 
 - **Low-precision singularities**: Without Taylor expansion fallbacks at $\theta \to 0/\pi$, fp16 training produces NaN directly; fallback branches introduce warp divergence
 - **Mixing left and right perturbations**: Mixing $\oplus_R$ (right version / local frame) with $\oplus_L$ (left version / global frame) causes misalignment of covariances and gradients

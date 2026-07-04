@@ -36,7 +36,7 @@ GPU friendliness: the core difficulty of curvature is that "the full tensor cann
 - **Jacobi fields**: Require integrating a second-order ODE along a trajectory, serial recurrence, GPU-unfriendly; in practice, discrete finite-difference approximations are used
 - Low precision: second-order derivatives in HVP are noisy under fp16, requiring fp32 accumulation
 
-## Risks and Failure Modes
+## Risks and Failure Conditions
 
 - **Materializing the full Riemann/Hessian tensor**: $O(N^2)$ to $O(N^4)$ memory, impossible when $N \sim 10^9$
 - **Low signal-to-noise ratio in curvature estimation**: Monte Carlo estimation of HVP has high variance; with small batches, the signal may be drowned in noise

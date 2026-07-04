@@ -16,20 +16,20 @@ Many "beautiful on paper" modern mathematical structures cannot run at high perf
 
 ## The 8-Dimension Scorecard
 
-For any candidate structure (operator, attention variant, routing mechanism, regularization term, compression scheme…) rate each dimension as `Friendly / Adaptable / Unfriendly` and provide adaptation recommendations.
+For any candidate structure (operator, attention variant, routing mechanism, regularization term, compression scheme…) rate each dimension as `Friendly / Retrofittable / Unfriendly` and provide adaptation recommendations.
 
 | # | Dimension | Key Question | Friendly ✅ | Unfriendly ❌ |
 |---|-----------|-------------|------------|--------------|
 | 1 | **Tensorization** | Can it be expressed as dense tensor operations, avoiding element-wise irregular control flow? | Batched tensor algebra | Scalar loops, data-dependent branches |
-| 2 | **GEMM Mappability** | Can it be reduced to matrix multiplication / batched GEMM / convolution to fully utilize Tensor Cores? | Expressible as a GEMM chain | Irregular computations that cannot be expressed as matrix operations |
+| 2 | **GEMM-mappability** | Can it be reduced to matrix multiplication / batched GEMM / convolution to fully utilize Tensor Cores? | Expressible as a GEMM chain | Irregular computations that cannot be expressed as matrix operations |
 | 3 | **Complexity** | Is the forward/backward pass sub-quadratic? How does it scale with sequence length / model size? | Linear / sub-quadratic, blockable | $O(n^2)$ or worse memory/compute blowup |
 | 4 | **Memory & KV-Cache** | Peak memory usage; activation / state / KV footprint; can it be compressed? | Low-rank / quantized / block-summary compressible | Must materialize large intermediate tensors |
 | 5 | **Low-Precision Stability** | Is it stable under fp16/bf16/fp8 with deterministic reproducibility? | Controlled dynamic range, numerically robust | Catastrophic cancellation, ill-conditioned, requires fp64 |
 | 6 | **Parallelism & Communication** | Can it be parallelized across SMs / devices? Communication-to-compute ratio; can overlap be achieved? | Highly parallel, communication overlap-able | Long serial recurrences, communication bottleneck |
-| 7 | **Sparsity** | Structured or unstructured sparsity? | Block / banded structured sparsity | Random gather/scatter |
-| 8 | **Kernel Fusion** | Can kernels be fused to avoid materializing large intermediates (FlashAttention-style)? | Fusible, recomputable | Frequent small kernels, divergent control flow |
+| 7 | **Sparse structure** | Structured or unstructured sparsity? | Block / banded structured sparsity | Random gather/scatter |
+| 8 | **Operator Fusion** | Can kernels be fused to avoid materializing large intermediates (FlashAttention-style)? | Fusible, recomputable | Frequent small kernels, divergent control flow |
 
-**Scoring conclusion**: Retain only candidates that are **mathematically beautiful AND (all eight dimensions friendly or adaptable)**; any dimension rated "unfriendly and non-adaptable" means the candidate must be adapted or eliminated.
+**Scoring conclusion**: Retain only candidates that are **mathematically beautiful AND (all eight dimensions friendly or retrofittable)**; any dimension rated "unfriendly and non-retrofittable" means the candidate must be adapted or eliminated.
 
 ## Common "Beautiful but Non-Computable" Anti-Patterns
 
@@ -48,7 +48,7 @@ Common techniques for transforming "beautiful but non-computable" into "both bea
 - **Block sparsification**: Dense attention within blocks, structured sparse between blocks (e.g., DeepSeek CSA-style blocking).
 - **Low-rank / projection compression**: Restriction maps via low-rank linear transformations; **low-rank basis-style block summaries** for KV-Cache compression (store the basis rather than Plücker coordinates — the latter expands when low-rank).
 - **Numerical reparameterization**: log-sum-exp, normalization, stable softmax — ensuring low-precision stability.
-- **Kernel fusion / recomputation**: Fused kernels, activation recompute to save memory.
+- **Operator fusion / recomputation**: Fused kernels, activation recompute to save memory.
 - **Embedding structure into GEMM**: Express algebraic/geometric transformations as **learnable linear maps** so they naturally map onto Tensor Cores.
 
 ## Worked Example: Tropical Sheaf Attention

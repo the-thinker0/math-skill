@@ -1,49 +1,50 @@
-# 🧮 Projection Lens
+# 🧮 Projection & Decomposition Lens
 
-> Counting is the oldest mathematical activity — finite objects encode infinite patterns. Project complex wholes onto discrete structures, and use systematic counting and algebraic transformations to reveal hidden order.
+> Complex wholes can be orthogonally decomposed into independent components — conflicts are exposed in subspaces, signal and noise are separated under projection.
 
 ## What Perspective It Offers
 
-This is a "disassembler's" perspective — projecting continuous or chaotic wholes into discrete, countable structures, then using combinatorial principles and algebraic tools (generating functions, recurrences) to discover the deep laws governing enumeration. It rests on the conviction that finite, simple rules can govern infinitely complex phenomena. Behind every "how many ways" question lies a structure that can be unlocked algebraically.
+This is a "separator's" perspective — projecting mixed wholes onto orthogonal subspaces, splitting shared information from conflicting information, signal from noise, global structure from local detail. The core conviction: any vector can be decomposed into a parallel component plus an orthogonal component, and this decomposition is the first step toward understanding conflicts, eliminating redundancy, and compressing information.
 
 ## What Problems It Is Suited to Diagnose
 
-- Counting configurations (permutations / combinations / partitions / distributions)
-- Discovering recurrence relations or closed-form formulas for enumerative sequences
-- Graph and network analysis (connectivity / paths / matchings / colorings / coverings)
-- Transforming counting problems into algebraic ones (recurrence → generating function → coefficient extraction)
+- Multiple information sources are mixed; need to separate shared components from specific components (multi-domain learning, multimodal fusion)
+- Representations contain conflicting gradients or contradictory signals (multi-task learning, adversarial training)
+- Need to reduce dimensions or compress while preserving key structure (KV-Cache compression, feature selection)
+- Need to eliminate redundancy or orthogonalize multiple objectives (decorrelation, diversity constraints)
 
 ## What Problems It Is Not Suited For
 
-- Continuous or analytical problems with no discrete structure — limits, derivatives, and integrals belong to analysis, not combinatorics
-- Problems where an exact closed-form formula directly yields the answer — combinatorial enumeration is unnecessary overhead
-- Purely probabilistic problems with no combinatorial structure — continuous distribution parameter estimation does not involve finite-set counting
+- The problem itself is an indecomposable whole (strongly coupled systems, chaotic dynamics)
+- The subspace assumption is too strong — data does not lie on a low-dimensional subspace
+- Scenarios that require retaining all information with zero loss
 
 ## Which Knowledge Domains It Routes To
 
-- Combinatorics (counting principles / inclusion-exclusion / pigeonhole): foundational tools for the systematic counting of finite structures
-- Generating functions (OGF / EGF): the core method for transforming counting problems into algebraic ones
-- Graph theory (paths / matchings / colorings / connectivity): discrete modeling and analysis of relational structures
-- Abstract algebra (group actions / Burnside / Pólya): counting equivalence classes under symmetry
+- **matrix-analysis/projection**: Orthogonal projection matrices, Courant-Fischer variational characterization
+- **matrix-analysis/spectral-decomposition**: EVD/SVD, principal component analysis
+- **matrix-analysis/low-rank-approximation**: Eckart-Young theorem, truncated SVD
+- **optimization/constrained-optimization**: Orthogonality-constrained optimization, Stiefel manifold
 
-## What AI Designs It May Produce
+## What AI Designs It May Inspire
 
-- Counting-type classifier: permutation / combination / partition, ordered / unordered, labeled / unlabeled → automatic formula selection
-- Generating function solver: recurrence → construct GF → algebraic solution → extract coefficients → closed-form formula
-- Small-case automatic verification: manual enumeration for n = 0, 1, 2, 3 compared against the formula to ensure counting correctness
+- **Shared-Private Decomposition**: Project multi-domain representations into a shared subspace plus domain-specific orthogonal complements
+- **Orthogonal Gradient Projection**: In multi-task learning, project new-task gradients onto the orthogonal complement of old-task gradients
+- **Low-Rank KV-Cache Compression**: Project K/V into a low-dimensional subspace, truncating weak components
+- **Head Diversity Constraint**: Force different attention heads to project onto approximately orthogonal subspaces
 
 ## Reasoning Protocol
 
-1. **Identify the discrete structure**: Clarify the objects being counted, the constraints, and the classification scheme (ordered / unordered, labeled / unlabeled)
-2. **Select a counting principle**: Multiplication / addition / pigeonhole / inclusion-exclusion — chosen according to the independence and interaction of constraints
-3. **Construct a generating function** (if recurrences are involved): Recurrence → OGF / EGF → algebraic equation → solve
-4. **Extract formulas or asymptotics**: Extract coefficients from the generating function to obtain a closed-form formula, or analyze asymptotic behavior
-5. **Verify and generalize**: Compare manual enumeration of small cases against the formula; check boundary conditions (empty structure = 1); generalize to broader settings
+1. **Identify mixed sources**: Which information, gradients, or representations are mixed together? Where do conflicts arise?
+2. **Define subspaces**: How are the dimensions of the shared space versus the specific space determined? What is the effective rank?
+3. **Construct projection operators**: $P = AA^H$ (orthonormal basis) or $P = A(A^HA)^{-1}A^H$ (general basis)
+4. **Perform decomposition**: $x = Px + (I-P)x$; evaluate the contribution of each component separately
+5. **Verify orthogonality**: Are $P^2 = P$ and $P = P^H$ satisfied? Is the condition number well-controlled?
 
 ## Acceptance Criteria
 
-- The classification of counting objects is explicit (permutation / combination / partition, ordered / unordered)
-- Constraint interactions have been handled (inclusion-exclusion corrects overcounting, complement corrects undercounting)
-- A recurrence relation has been provided (if applicable), and a generating function constructed
-- A closed-form formula or asymptotic expression has been extracted
-- Manual enumeration for at least n = 0, 1, 2, 3 has been compared against the formula — unverified counts are not to be trusted
+- The subspace decomposition is explicitly defined (dimensions, basis vectors, projection matrices)
+- The contributions of both components after projection have been separately quantified
+- Orthogonality conditions have been verified ($P^2 = P$, numerical condition number checked)
+- Compression/discard decisions are supported by quantified information-loss evidence
+- The output includes actionable conclusions, not merely the decomposition process

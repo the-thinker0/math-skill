@@ -4,8 +4,8 @@
 When a representation $Z$ must achieve an optimal balance between "retaining task-relevant information" and "compressing input redundancy." Typical scenarios: (1) Shared representations should retain only cross-task common information, discarding task-specific noise; (2) Private representations should retain only single-task unique information; (3) Routing features should maximize expert-task matching information. Core objective: **optimal information compression -- nothing more, nothing less, retaining only what is useful**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/information.md (information bottleneck principle, mutual information optimization), lenses/optimization.md (Lagrangian duality)
-- Knowledge: knowledge-base/fundamentals/information-theory.md (IB theory, rate-distortion function), knowledge-base/fundamentals/probability.md (mutual information and conditional entropy)
+- Lenses: lenses/probabilistic.md (information bottleneck principle, mutual information optimization), lenses/variational.md (Lagrangian duality)
+- Knowledge: knowledge-base/probability/kl-divergence.md (IB theory, rate-distortion function), knowledge-base/probability/entropy.md (mutual information and conditional entropy)
 
 ## Required Mathematical Knowledge
 - **Information Bottleneck Objective**: $\min I(X;Z) - \beta \cdot I(Z;Y)$, compressing $X \to Z$ while preserving the predictive power of $Z$ for $Y$
@@ -50,11 +50,11 @@ Method 3 - Shared/Private IB Decomposition:
 
 ## GPU Feasibility
 - **Tensorization**: Mutual information estimator is a standard MLP -> GEMM chain; KL is element-wise
-- **GEMM Mappability**: VIB method requires only encoder GEMM + KL computation; contrastive method adds 1 GEMM for shuffled negatives
+- **GEMM-mappability**: VIB method requires only encoder GEMM + KL computation; contrastive method adds 1 GEMM for shuffled negatives
 - **Complexity**: One additional KL term $O(B \cdot d)$ or one discriminator forward pass $O(B \cdot d^2)$ beyond the standard network; acceptable
-- **Memory and KV-Cache**: Requires additional storage for discriminator parameters (small MLP) and intermediate activations, <10MB
+- **Memory & KV-Cache**: Requires additional storage for discriminator parameters (small MLP) and intermediate activations, <10MB
 - **Low Precision Stability**: The exp operation in the MINE estimator requires clipping under fp16; VIB KL is recommended in fp32
-- **Parallelism and Communication**: Discriminator and main network forward passes can run in parallel; gradients are synchronized through the shared representation layer
+- **Parallelism & Communication**: Discriminator and main network forward passes can run in parallel; gradients are synchronized through the shared representation layer
 - **Sparse Structure**: Compressed $Z$ dimensions can be dynamically pruned (Automatic Relevance Determination, ARD)
 - **Operator Fusion**: Encoder forward + KL computation + discriminator forward can be partially fused
 

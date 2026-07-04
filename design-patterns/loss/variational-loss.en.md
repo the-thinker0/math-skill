@@ -4,8 +4,8 @@
 When sampling from latent variable distributions is required to generate diverse outputs. Typical scenarios: (1) Expert selection introduces discrete latent variables $z$ that need end-to-end optimization; (2) Representation spaces need to model uncertainty; (3) Generative routing requires sampling from posterior distributions $p(z|x)$; (4) Bayesian mixture of experts. Core objective: **model distributions rather than point estimates in latent space, enabling uncertainty awareness and diversity**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/information.md (variational inference and ELBO), lenses/probability.md (posterior and prior)
-- Knowledge: knowledge-base/fundamentals/probability.md (KL divergence, variational families), knowledge-base/fundamentals/information-theory.md (ELBO derivation)
+- Lenses: lenses/probabilistic.md (variational inference and ELBO), lenses/probabilistic.md (posterior and prior)
+- Knowledge: knowledge-base/probability/entropy.md (KL divergence, variational families), knowledge-base/probability/kl-divergence.md (ELBO derivation)
 
 ## Required Mathematical Knowledge
 - **ELBO (Evidence Lower Bound)**: $\log p(x) \geq \mathbb{E}_{q(z|x)}[\log p(x|z)] - \text{KL}(q(z|x) \| p(z))$ -- the first term is reconstruction likelihood, the second regularizes the posterior toward the prior
@@ -42,11 +42,11 @@ Method 3 - Variational Information Bottleneck:
 
 ## GPU Feasibility
 - **Tensorization**: Computation of mu and sigma^2 is a Linear layer (GEMM); KL involves element-wise operations
-- **GEMM Mappability**: Encoder 1 GEMM -> split -> reparameterization -> decoder 1 GEMM
+- **GEMM-mappability**: Encoder 1 GEMM -> split -> reparameterization -> decoder 1 GEMM
 - **Complexity**: Same order as standard feedforward networks $O(B \cdot d^2)$; KL computation $O(B \cdot d_z)$ is negligible
-- **Memory and KV-Cache**: Additional storage of mu and sigma^2, two $B \times d_z$ matrices; minimal overhead
+- **Memory & KV-Cache**: Additional storage of mu and sigma^2, two $B \times d_z$ matrices; minimal overhead
 - **Low Precision Stability**: log/exp operations in KL are recommended in fp32; Gumbel softmax log-log requires fp32
-- **Parallelism and Communication**: The $K$ samples in multi-particle IWAE can be sampled and computed in parallel
+- **Parallelism & Communication**: The $K$ samples in multi-particle IWAE can be sampled and computed in parallel
 - **Sparse Structure**: Discrete latent variables (Gumbel) degenerate to one-hot as $\tau \to 0$, naturally sparse
 - **Operator Fusion**: The Linear layers for mu and sigma^2 can share a single GEMM followed by split; KL exp/sub/add can be fused
 

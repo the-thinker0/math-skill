@@ -9,9 +9,9 @@ Typical scenarios: (1) Token permutation equivariance -- representation should c
 Core requirement: **encode symmetry priors into network architecture to reduce learning burden and improve generalization**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/geometry.md (group actions, invariant/equivariant maps), lenses/information.md (symmetry and information redundancy)
-- Knowledge: knowledge-base/fundamentals/linear-algebra.md (group representation theory, irreducible representations),
-  knowledge-base/fundamentals/geometry.md (Lie groups, homogeneous spaces)
+- Lenses: lenses/geometric.md (group actions, invariant/equivariant maps), lenses/probabilistic.md (symmetry and information redundancy)
+- Knowledge: knowledge-base/matrix-analysis/projection.md (group representation theory, irreducible representations),
+  knowledge-base/differential-geometry/manifold.md (Lie groups, homogeneous spaces)
 
 ## Required Mathematical Background
 - **Group Action and Equivariance**: A map f is equivariant with respect to group G if and only if f(g * x) = g * f(x) for all g in G
@@ -70,9 +70,9 @@ Method 3 - Group convolution / group pooling:
 - **Tensorization**: Processing irreducible components is batched GEMM; group convolution is sparse GEMM or batched matmul
 - **GEMM-mappable**: Each block of EquivariantLinear is an independent GEMM (N x d_i) @ (d_i x d_i_out), batchable
 - **Complexity**: Same order as standard networks (Schur constraints actually reduce parameters); group convolution incurs an extra |G| factor
-- **Memory and KV-Cache**: Group convolution requires storing |G| copies of features; significant memory pressure when |G| is large
+- **Memory & KV-Cache**: Group convolution requires storing |G| copies of features; significant memory pressure when |G| is large
 - **Low-precision stability**: Spherical harmonics Y_l^m computations involve factorials and square roots; fp32 recommended
-- **Parallelism and communication**: Irreducible components are independent, perfectly parallel; different g in group convolution can be parallelized
+- **Parallelism & Communication**: Irreducible components are independent, perfectly parallel; different g in group convolution can be parallelized
 - **Sparse structure**: Permutation matrices in group convolution are extremely sparse (exactly one nonzero per row/column); SpMM is efficient
 - **Operator fusion**: Split -> batched matmul -> concat can be fused; group pooling scatter + reduce can be fused
 

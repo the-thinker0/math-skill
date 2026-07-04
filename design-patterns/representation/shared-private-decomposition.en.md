@@ -8,9 +8,9 @@ Typical scenarios: (1) Multi-task MoE -- Shared experts handle linguistic common
 Core requirement: **explicitly separate commonality from individuality to prevent negative transfer and catastrophic forgetting**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/geometry.md (subspace decomposition, direct sum decomposition), lenses/information.md (information decomposition)
-- Knowledge: knowledge-base/fundamentals/linear-algebra.md (direct sum decomposition V = U + W, projection operators),
-  knowledge-base/fundamentals/information-theory.md (information decomposition: shared/synergy/unique)
+- Lenses: lenses/geometric.md (subspace decomposition, direct sum decomposition), lenses/probabilistic.md (information decomposition)
+- Knowledge: knowledge-base/matrix-analysis/projection.md (direct sum decomposition V = U + W, projection operators),
+  knowledge-base/probability/kl-divergence.md (information decomposition: shared/synergy/unique)
 
 ## Required Mathematical Background
 - **Direct Sum Decomposition**: R^d = S + P, where S intersect P = {0}, and every x = x_S + x_P is unique
@@ -67,9 +67,9 @@ Dimension Allocation Principle:
 - **Tensorization**: Two encoder forward passes are independent GEMM chains, executable in parallel
 - **GEMM-mappable**: Shared/private encoders are each standard Transformer FFNs (2x GEMM)
 - **Complexity**: Shared O(N * d^2) + T private encoders O(N * d^2 / T), total approximately 2x a single encoder
-- **Memory and KV-Cache**: All T private encoder parameters stored; LoRA compression needed when T is large
+- **Memory & KV-Cache**: All T private encoder parameters stored; LoRA compression needed when T is large
 - **Low-precision stability**: Additive/gated fusion is safe in fp16; adversarial training gradient reversal requires fp32
-- **Parallelism and communication**: Shared and private encoders can be assigned to different GPUs; multi-task batches mixed for training
+- **Parallelism & Communication**: Shared and private encoders can be assigned to different GPUs; multi-task batches mixed for training
 - **Sparse structure**: Private encoders can be sparsified (only the current task's is activated); only 1 out of T activated
 - **Operator fusion**: Additive fusion is trivial; gated fusion sigmoid -> multiply -> add can be fused
 

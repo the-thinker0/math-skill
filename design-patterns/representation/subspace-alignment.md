@@ -9,9 +9,9 @@
 核心诉求：**找到两个空间之间的最优线性/非线性映射，使对应语义对齐**。
 
 ## 数学思想来源
-- 透镜：lenses/geometry.md（Grassmann 流形、主角度）、lenses/optimization.md（Procrustes 问题）
-- 知识：knowledge-base/fundamentals/linear-algebra.md（SVD、正交 Procrustes）、
-  knowledge-base/fundamentals/geometry.md（Grassmann 距离、测地线）
+- 透镜：lenses/geometric.md（Grassmann 流形、主角度）、lenses/variational.md（Procrustes 问题）
+- 知识：knowledge-base/matrix-analysis/projection.md（SVD、正交 Procrustes）、
+  knowledge-base/differential-geometry/manifold.md（Grassmann 距离、测地线）
 
 ## 需要的数学知识
 - **正交 Procrustes 问题**：min_{W∈O(d)} ‖AW - B‖_F²

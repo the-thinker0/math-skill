@@ -4,8 +4,8 @@
 In multi-expert / multi-task settings, representations learned by submodules are highly overlapping and redundant, leading to poor parameter utilization. This loss is used when the $d$-dimensional feature space needs to be partitioned into $K$ non-interfering subspaces -- such as Shared-Private separation, MoE expert differentiation, and multi-task head decorrelation. Core objective: **ensure different modules see different things**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/geometry.md (orthogonal projection and subspace decomposition), lenses/optimization.md (regularization and saddle points)
-- Knowledge: knowledge-base/fundamentals/linear-algebra.md (spectral theorem, SVD, Schur decomposition), knowledge-base/fundamentals/information-theory.md (redundancy and mutual information)
+- Lenses: lenses/geometric.md (orthogonal projection and subspace decomposition), lenses/variational.md (regularization and saddle points)
+- Knowledge: knowledge-base/matrix-analysis/projection.md (spectral theorem, SVD, Schur decomposition), knowledge-base/probability/kl-divergence.md (redundancy and mutual information)
 
 ## Required Mathematical Knowledge
 - **Frobenius Inner Product and Orthogonality**: $\langle A, B \rangle_F = \text{tr}(A^T B)$; when $\langle A, B \rangle_F = 0$, $A \perp B$
@@ -38,11 +38,11 @@ Method 3 - Efficient Cosine Decorrelation:
 
 ## GPU Feasibility
 - **Tensorization**: Core operation is matmul ($W^T W$) -- standard GEMM, perfectly mapped to Tensor Cores
-- **GEMM Mappability**: Method 3 requires only 1 GEMM + 1 element-wise mask + Frobenius norm
+- **GEMM-mappability**: Method 3 requires only 1 GEMM + 1 element-wise mask + Frobenius norm
 - **Complexity**: $O(K \cdot d \cdot r)$ storage + $O(d \cdot r^2 \cdot K)$ or $O(K^2 \cdot d \cdot r^2)$ computation; negligible when $K < 16$
-- **Memory and KV-Cache**: Intermediate matrices are on the order of $d \times r \cdot K$, adding no KV-Cache overhead
+- **Memory & KV-Cache**: Intermediate matrices are on the order of $d \times r \cdot K$, adding no KV-Cache overhead
 - **Low Precision Stability**: Frobenius norm is a sum of squares, safe under fp16; Grassmann SVD is recommended in fp32
-- **Parallelism and Communication**: The $K$ pairs are embarrassingly parallel; can be distributed across GPUs with all-reduce
+- **Parallelism & Communication**: The $K$ pairs are embarrassingly parallel; can be distributed across GPUs with all-reduce
 - **Sparse Structure**: If $W_k$ is itself sparse (e.g., MoE gate), masking further increases sparsity
 - **Operator Fusion**: matmul -> mask -> square -> sum can be fused into a single CUDA kernel
 

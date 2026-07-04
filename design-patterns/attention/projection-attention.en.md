@@ -51,7 +51,7 @@ scores = (Q @ eigenvecs) @ (K @ eigenvecs).T / sqrt(r)
 
 ## GPU Feasibility
 - **Dimension 1 Tensorization**: Projection = matrix multiplication, attention = matrix multiplication chain; entirely tensor operations
-- **Dimension 2 GEMM Mappability**: $Q P_Q$ and $K P_K$ are both standard GEMM operations, fully utilizing Tensor Cores
+- **Dimension 2 GEMM-mappability**: $Q P_Q$ and $K P_K$ are both standard GEMM operations, fully utilizing Tensor Cores
 - **Dimension 3 Complexity**: Projection cost $O(ndr)$ is far below attention cost $O(n^2 d)$, and after projection $r \ll d$ reduces attention to $O(n^2 r)$
 - **Dimension 4 Memory**: KV-Cache compressed by $d/r$, directly reducing peak memory
 - **Dimension 5 Low Precision**: Projection matrices are orthogonal or near-orthogonal, yielding numerical stability; bf16 is acceptable

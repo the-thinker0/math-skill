@@ -31,7 +31,7 @@ $$I(X; Y) = H(X) - H(X|Y) = H(Y) - H(Y|X) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}
 
 ## Engineering Feasibility
 - **Dimension 1 Tensorization ✅**: $-\sum p \log p$ is an element-wise operation, perfectly vectorizable
-- **Dimension 2 GEMM Mappability ⚠️**: Entropy itself is not a GEMM, but the gradient computation of the cross-entropy loss involves a softmax-to-matmul chain
+- **Dimension 2 GEMM-mappability ⚠️**: Entropy itself is not a GEMM, but the gradient computation of the cross-entropy loss involves a softmax-to-matmul chain
 - **Dimension 3 Complexity ✅**: $O(|\mathcal{X}|)$ linear; acceptable for vocabulary-level computation
 - **Dimension 5 Low Precision ✅**: $\log$ and exp are stable in bf16; softmax benefits from the log-sum-exp trick
 - **Dimension 8 Operator Fusion ✅**: softmax + cross-entropy is a classic fused operator (FusedSoftmaxCrossEntropy)

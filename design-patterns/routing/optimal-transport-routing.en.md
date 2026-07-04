@@ -6,9 +6,9 @@ Typical scenarios: (1) Load-balanced MoE routing -- assigning N tokens to K expe
 Core requirement: **globally optimal assignment, rather than greedy per-point decisions**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/optimization.md (convex optimization, duality theory), lenses/geometry.md (Wasserstein distance)
-- Knowledge: knowledge-base/fundamentals/optimization.md (linear programming, Sinkhorn algorithm),
-  knowledge-base/fundamentals/probability.md (coupling distributions, marginal constraints)
+- Lenses: lenses/variational.md (convex optimization, duality theory), lenses/geometric.md (Wasserstein distance)
+- Knowledge: knowledge-base/optimization/lagrangian-duality.md (linear programming, Sinkhorn algorithm),
+  knowledge-base/probability/entropy.md (coupling distributions, marginal constraints)
 
 ## Required Mathematical Background
 - **Discrete Optimal Transport**: min_{P in Pi(mu,nu)} <C, P> = sum_{ij} C_{ij} P_{ij}
@@ -51,9 +51,9 @@ Capacity constraint (b vector):
 - **Tensorization**: Sinkhorn core is matrix-vector multiplication K @ v of shape (N x K) * (K x 1), standard GEMV
 - **GEMM-mappable**: Computation of C via X @ E^T is GEMM (N x d) @ (d x K); Sinkhorn iterations are GEMV
 - **Complexity**: O(N * K * T) where T = 10 ~ 20; for N = 2048, K = 64 approximately 2.6M FLOPs, negligible
-- **Memory and KV-Cache**: Storing C (N x K) and P (N x K); for N = 2048, K = 64 approximately 1 MB
+- **Memory & KV-Cache**: Storing C (N x K) and P (N x K); for N = 2048, K = 64 approximately 1 MB
 - **Low-precision stability**: Sinkhorn in fp16 may cause exp(-C/eps) overflow; log-domain + fp32 recommended
-- **Parallelism and communication**: Batch dimension is independent; Sinkhorn iterations have sequential dependencies, but each iteration's matvec is highly parallel
+- **Parallelism & Communication**: Batch dimension is independent; Sinkhorn iterations have sequential dependencies, but each iteration's matvec is highly parallel
 - **Sparse structure**: As eps -> 0, P approaches sparsity (permutation matrix); top-k approximation can be used for acceleration
 - **Operator fusion**: The exp -> matvec -> division pipeline in a single Sinkhorn step can be fused into a CUDA kernel
 

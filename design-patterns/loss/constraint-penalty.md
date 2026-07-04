@@ -7,9 +7,9 @@
 核心诉求：**将数学约束转化为可微惩罚项，融入梯度优化流程**。
 
 ## 数学思想来源
-- 透镜：lenses/optimization.md（约束优化、拉格朗日对偶、KKT 条件）、lenses/geometry.md（流形投影）
-- 知识：knowledge-base/fundamentals/optimization.md（增广拉格朗日法、惩罚函数法）、
-  knowledge-base/fundamentals/linear-algebra.md（投影算子、约束集）
+- 透镜：lenses/variational.md（约束优化、拉格朗日对偶、KKT 条件）、lenses/geometric.md（流形投影）
+- 知识：knowledge-base/optimization/lagrangian-duality.md（增广拉格朗日法、惩罚函数法）、
+  knowledge-base/matrix-analysis/projection.md（投影算子、约束集）
 
 ## 需要的数学知识
 - **罚函数法**：min f(x) s.t. g(x)=0 → min f(x) + ρ/2 · ‖g(x)‖²

@@ -26,7 +26,7 @@ This is an "interventionist's" perspective — unsatisfied with observed associa
 - Probability and statistics: conditional probability is the foundation of the association tier; causal effects require additional structural assumptions
 - Experimental design (RCT / IV / DD): validation tools for causal conclusions — randomization severs confounding paths
 
-## What AI Designs It May Produce
+## What AI Designs It May Inspire
 
 - DAG builder: encoding causal directions among variables, automatically identifying confounding paths and back-door / front-door conditions
 - Interventional effect calculator: back-door adjustment / do-calculus → P(y|do(x)), compared with P(y|x) to quantify confounding bias

@@ -8,9 +8,9 @@
 核心诉求：**稀疏激活、负载均衡、端到端可训练**。
 
 ## 数学思想来源
-- 透镜：lenses/optimization.md（离散优化松弛、Gumbel-Softmax）、lenses/information.md（信息论路由）
-- 知识：knowledge-base/fundamentals/optimization.md（组合优化、整数规划松弛）、
-  knowledge-base/fundamentals/probability.md（混合模型、EM 算法）
+- 透镜：lenses/variational.md（离散优化松弛、Gumbel-Softmax）、lenses/probabilistic.md（信息论路由）
+- 知识：knowledge-base/optimization/lagrangian-duality.md（组合优化、整数规划松弛）、
+  knowledge-base/probability/entropy.md（混合模型、EM 算法）
 
 ## 需要的数学知识
 - **混合模型 EM**：p(y|x) = Σ_k π_k(x) · p(y|x,θ_k)

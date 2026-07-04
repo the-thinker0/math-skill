@@ -7,9 +7,9 @@
 核心诉求：**信息最优压缩——不多不少，只保留有用的**。
 
 ## 数学思想来源
-- 透镜：lenses/information.md（信息瓶颈原理、互信息优化）、lenses/optimization.md（拉格朗日对偶）
-- 知识：knowledge-base/fundamentals/information-theory.md（IB 理论、率失真函数）、
-  knowledge-base/fundamentals/probability.md（互信息与条件熵）
+- 透镜：lenses/probabilistic.md（信息瓶颈原理、互信息优化）、lenses/variational.md（拉格朗日对偶）
+- 知识：knowledge-base/probability/kl-divergence.md（IB 理论、率失真函数）、
+  knowledge-base/probability/entropy.md（互信息与条件熵）
 
 ## 需要的数学知识
 - **信息瓶颈目标**：min I(X;Z) - β·I(Z;Y)，压缩 X→Z 同时保留 Z 对 Y 的预测力

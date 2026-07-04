@@ -1,49 +1,52 @@
-# 📡 Spectral Lens
+# 📡 Spectral Decomposition Lens
 
-> Information is the reduction of uncertainty — knowing more means suspecting less. Any complex signal can be decomposed into components; the key question is: which components dominate, and which can be discarded?
+> Any linear operator can be decomposed into a superposition of eigencomponents — eigenvalues reveal dominant structure, eigenvectors reveal dominant directions.
 
 ## What Perspective It Offers
 
-This is a "decomposer's" perspective — breaking a complex whole into independently understandable spectral components, identifying dominant structures, and discarding noise and redundancy. Its concern is not merely "how much information there is," but rather "where information is concentrated and where it can be compressed." Every complex object is a superposition of components, and the task of spectral thinking is to find the principal feature that determines global behavior.
+This is a "decomposer's" perspective — breaking complex linear operators (matrices, kernel functions, graph Laplacians) into spectra of eigenvalues and singular values, using dominant eigencomponents to capture global behavior and tail eigenvalues to quantify noise and redundancy. The core conviction: the spectrum — the distribution of eigenvalues — determines everything about an operator: its condition number, rank, stability, and convergence rate.
 
 ## What Problems It Is Suited to Diagnose
 
-- Identifying dominant structures and redundant components in complex signals or data
-- Quantifying uncertainty and measuring which observation would most reduce it
-- Designing compression / quantization / pruning strategies — trading off information loss against resource savings
-- Making information-optimal selections among multiple candidate models or features
+- What is the dominant structure of a matrix or operator? What is its effective rank?
+- Optimizer convergence is slow — is the condition number too large? How should a preconditioner be designed?
+- Where are the critical bottlenecks in a graph or network? Is the spectral gap too small?
+- Need to reduce dimensions while preserving maximum variance — are the first k principal components sufficient?
+- How large is the spectral drift after quantization or pruning? Has stability been compromised?
 
 ## What Problems It Is Not Suited For
 
-- Problems lacking probabilistic structure (pure symbolic reasoning / logical deduction) — without a distribution there is no spectrum to analyze
-- Purely deterministic scenarios with no uncertainty — when entropy is zero, decomposition degenerates into triviality
-- Qualitative judgments that require no quantification (aesthetics / emotions) — information theory quantifies probabilistic uncertainty
+- Problems dominated by nonlinear effects — spectral decomposition is a linear tool
+- Operators that are not diagonalizable (non-normal matrices, defective matrices) — Jordan form is required
+- Problems that require preserving global topological structure — spectral methods may destroy topology
 
 ## Which Knowledge Domains It Routes To
 
-- Information theory (entropy / mutual information / KL divergence): foundational measures for quantifying uncertainty, information gain, and distributional distance
-- Linear algebra (eigendecomposition / singular value decomposition): the algebraic realization of spectral decomposition — principal components are dominant spectral components
-- Coding theory (source / channel coding): the insurmountable limits of compression and reliable communication
-- Statistical inference (AIC / BIC / MDL): quantifying the trade-off between model complexity and fit from an information-theoretic perspective
+- **matrix-analysis/spectral-decomposition**: EVD, Schur decomposition, normal matrices
+- **matrix-analysis/low-rank-approximation**: Eckart-Young theorem, randomized SVD
+- **matrix-analysis/matrix-perturbation**: Weyl's inequality, Davis-Kahan theorem
+- **matrix-analysis/positive-semidefinite**: Spectral properties of PSD matrices, Cholesky factorization
 
-## What AI Designs It May Produce
+## What AI Designs It May Inspire
 
-- Information gain ranker: computing I(X;Y) for each observation Y with respect to target X, prioritizing acquisition by value
-- Spectral compression pipeline: identify dominant components → truncate weak components → quantize retained components → evaluate information loss
-- KL divergence monitor: real-time detection of the degree and direction of deviation of a decision distribution Q from a target distribution P
+- **Spectral Normalization**: Constrain the largest singular value of weight matrices to stabilize training
+- **Low-Rank Adaptation (LoRA)**: Fine-tune in a truncated SVD subspace
+- **Spectral Graph Attention**: Use graph Laplacian eigenvectors for positional encoding
+- **Spectral Clustering Routing**: Use top-k eigenvectors for MoE token assignment
+- **Effective Rank Monitoring**: Track the stable rank of weight matrices to detect overfitting
 
 ## Reasoning Protocol
 
-1. **Identify the information source**: Define the random variable X; compute H(X) to quantify the current level of uncertainty
-2. **Decompose into spectral components**: Break the whole into independently evaluable components (features / dimensions / frequency bands / modules)
-3. **Measure each component's contribution**: Use mutual information I(X;Y), KL divergence, or eigenvalue ranking to identify which components dominate and which can be discarded
-4. **Make information-optimal decisions**: Select observations by maximizing information gain; design compression under entropy constraints; choose models by MDL
-5. **Evaluate trade-off costs**: Quantify the information loss caused by discarded components and confirm it falls within an acceptable range
+1. **Identify the operator**: Which matrix, kernel, or graph requires spectral analysis? What are its dimensions?
+2. **Compute or estimate the spectrum**: Full EVD (small matrices) / power iteration for dominant eigenvalues / randomized SVD
+3. **Analyze the spectral distribution**: Condition number, spectral gap, effective rank, decay rate
+4. **Identify dominant components**: What proportion of the variance or Frobenius norm is explained by the first k eigenvalues?
+5. **Assess truncation impact**: Quantify the error introduced by discarding tail eigenvalues (Eckart-Young provides a sharp bound)
 
 ## Acceptance Criteria
 
-- The entropy H(X) of the information source has been computed and the uncertainty level quantified
-- Spectral components are explicitly listed, with each component's contribution ranked
-- Compression / discard decisions are supported by quantitative information-loss evidence (KL divergence or rate-distortion)
-- The choice of information criterion (AIC / BIC / MDL / mutual information) is justified
-- The output includes not only the decomposition process but also actionable conclusions derived from it
+- The target operator is clearly defined
+- The spectrum (or dominant eigenvalues/singular values) has been computed or estimated
+- Spectral distribution metrics are reported (condition number, spectral gap, effective rank)
+- Truncation and approximation decisions are backed by quantitative error bounds (Weyl / Davis-Kahan / Eckart-Young)
+- The output includes actionable conclusions (preconditioner design, dimensionality selection, stability guarantees)

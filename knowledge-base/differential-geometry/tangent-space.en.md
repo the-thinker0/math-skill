@@ -33,7 +33,7 @@ High GPU friendliness. The core operations of the tangent space are linear algeb
 - Tangent space projection $P = I - WW^T$ (Stiefel): a chain of matrix multiplications, GPU-friendly
 - Metric index raising $g^{-1}\nabla L$: depends on the structure of $g$ -- diagonal/Kronecker-factored yields $O(n)$ to $O(n^2)$, full matrix $O(n^3)$ is infeasible
 
-## Risks and Failure Modes
+## Risks and Failure Conditions
 
 - **Confusing gradient with descent direction**: Forgetting the metric index-raising and directly using the raw autodiff output (covector) as a descent direction (tangent vector) leads to incorrect directions in curved spaces
 - **Large matrix inversion**: Natural gradients require $g^{-1}$; the full Fisher matrix $O(N^3)$ is infeasible and necessitates Kronecker/block-diagonal/low-rank factorization

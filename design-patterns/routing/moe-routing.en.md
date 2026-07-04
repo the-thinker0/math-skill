@@ -8,9 +8,9 @@ Typical scenarios: (1) Sparse MoE layers -- each token selects top-k experts (k 
 Core requirement: **sparse activation, load balancing, end-to-end trainability**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/optimization.md (discrete optimization relaxation, Gumbel-Softmax), lenses/information.md (information-theoretic routing)
-- Knowledge: knowledge-base/fundamentals/optimization.md (combinatorial optimization, integer programming relaxation),
-  knowledge-base/fundamentals/probability.md (mixture models, EM algorithm)
+- Lenses: lenses/variational.md (discrete optimization relaxation, Gumbel-Softmax), lenses/probabilistic.md (information-theoretic routing)
+- Knowledge: knowledge-base/optimization/lagrangian-duality.md (combinatorial optimization, integer programming relaxation),
+  knowledge-base/probability/entropy.md (mixture models, EM algorithm)
 
 ## Required Mathematical Background
 - **Mixture Model EM**: p(y|x) = sum_k pi_k(x) * p(y|x, theta_k)
@@ -68,9 +68,9 @@ Auxiliary loss:
 - **Tensorization**: Gate logits = X @ W_gate is standard GEMM (N x d) @ (d x K); expert computation is batched GEMM
 - **GEMM-mappable**: Gate requires 1 GEMM; each expert internally is a standard FFN (2 GEMMs + activation)
 - **Complexity**: Gate O(N * d * K); per expert O(N * d * d_ff / k); total FLOPs approximately standard FFN x k
-- **Memory and KV-Cache**: All K expert parameters stored but only k activated; activation memory approximately standard FFN x k
+- **Memory & KV-Cache**: All K expert parameters stored but only k activated; activation memory approximately standard FFN x k
 - **Low-precision stability**: Gate softmax + top-k is safe in fp16; Router Z-loss requires fp32 logsumexp
-- **Parallelism and communication**: Expert parallelism requires all-to-all communication (each GPU sends/receives N/K tokens); bandwidth-sensitive
+- **Parallelism & Communication**: Expert parallelism requires all-to-all communication (each GPU sends/receives N/K tokens); bandwidth-sensitive
 - **Sparse structure**: Top-k routing is naturally sparse (activates k/K fraction of parameters); sparsity = 1 - k/K
 - **Operator fusion**: Gate -> top-k -> softmax -> weighted-sum can be fused; intra-expert FFN can be fused
 

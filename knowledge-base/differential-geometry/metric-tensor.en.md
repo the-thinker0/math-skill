@@ -35,7 +35,7 @@ GPU friendliness depends on the structure of the metric:
 - **Full dense metric**: $n \times n$ matrix inversion $O(n^3)$ + memory $O(n^2)$; with parameter count $N \sim 10^9$, this is immediately ruled out
 - Low-precision risk: the Fisher matrix is often ill-conditioned; inversion under fp16 catastrophically amplifies errors -- **must add damping $F + \lambda I$ and invert in fp32**
 
-## Risks and Failure Modes
+## Risks and Failure Conditions
 
 - **Ill-conditioned metric matrix**: The condition number of the Fisher matrix can exceed $10^6$; low-precision inversion results are entirely noise
 - **Materializing the full metric matrix**: An $N \times N$ matrix ($N \sim 10^9$) requires $\sim 4$ PB of memory, making materialization impossible

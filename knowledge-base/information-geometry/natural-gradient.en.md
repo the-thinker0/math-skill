@@ -35,7 +35,7 @@ where $A_l = \mathbb{E}[a_l a_l^T]$ (activation covariance) and $B_l = \mathbb{E
 
 ## Engineering Feasibility
 - **Dimension 1 Tensorization ⚠️**: The Kronecker factors of the FIM are dense matrices and can be tensorized; the full FIM cannot
-- **Dimension 2 GEMM Mappability ✅**: K-FAC's $A_l^{-1} (\nabla W_l) B_l^{-1}$ is two matrix multiplications, naturally GEMM
+- **Dimension 2 GEMM-mappability ✅**: K-FAC's $A_l^{-1} (\nabla W_l) B_l^{-1}$ is two matrix multiplications, naturally GEMM
 - **Dimension 3 Complexity ⚠️**: K-FAC adds $O(d_A^2 + d_B^2)$ per-layer covariance estimation + $O(d_A^3 + d_B^3)$ matrix inversion; diagonal approximation is $O(d)$
 - **Dimension 4 Memory ⚠️**: Requires additional storage of $A_l$ and $B_l$ per layer ($O(d_A^2 + d_B^2)$); acceptable for LLMs but non-trivial
 - **Dimension 5 Low Precision ⚠️**: Matrix inversion may be unstable in fp16; fp32 or Tikhonov regularization $(A + \epsilon I)^{-1}$ is needed

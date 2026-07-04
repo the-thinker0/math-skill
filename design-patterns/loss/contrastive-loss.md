@@ -7,9 +7,9 @@
 (3) 专家嵌入空间中相似输入应路由到同一专家。核心诉求：**学习相对关系而非绝对值**。
 
 ## 数学思想来源
-- 透镜：lenses/geometry.md（度量空间与距离函数）、lenses/information.md（互信息最大化）
-- 知识：knowledge-base/fundamentals/probability.md（条件分布与似然）、
-  knowledge-base/fundamentals/geometry.md（测地线与曲率）
+- 透镜：lenses/geometric.md（度量空间与距离函数）、lenses/probabilistic.md（互信息最大化）
+- 知识：knowledge-base/probability/entropy.md（条件分布与似然）、
+  knowledge-base/differential-geometry/manifold.md（测地线与曲率）
 
 ## 需要的数学知识
 - **InfoNCE 损失**：L = -log[exp(sim(q,k⁺)/τ) / Σ_j exp(sim(q,k_j)/τ)]

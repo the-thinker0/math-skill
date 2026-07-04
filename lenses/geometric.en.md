@@ -1,49 +1,53 @@
 # 🌉 Geometric Lens
 
-> Translate real-world problems into mathematical structures, and explain and predict reality by solving mathematical problems. All models are wrong, but some are useful.
+> Metric, curvature, and spatial structure on manifolds — seeing problems through the eyes of differential geometry, where distance, bending, and optimal paths reveal the intrinsic shape of data
 
-## What Perspective It Offers
+## What This Perspective Is
 
-This is a "translator's" perspective — converting the chaotic real world into the precise language of mathematics, solving problems in mathematical space, and then translating the results back into reality. Its focus is not on "what the answer is," but rather on "what mathematical structure should be used to describe this problem." Every real-world problem is a round-trip journey from the concrete to the abstract, and back again.
+This is a "surveyor's" perspective — endowing the problem space with a metric tensor (defining distance and angle), characterizing spatial bending through curvature, and finding optimal paths via geodesics. The core conviction: many seemingly complex nonlinear problems become natural once the correct manifold structure is recognized — the geometry of parameter space determines the optimization landscape, and the intrinsic dimensionality of data sets the ultimate compression limit.
 
-## What Problems It Is Suited to Diagnose
+## Problems It Diagnoses Well
 
-- Translating vague real-world requirements into computable mathematical formulations
-- Selecting the bias-variance-optimal model from among multiple candidates
-- Assessing whether a given parameterization scheme is genuinely computationally feasible
-- Conducting sensitivity analysis on a system to identify which assumptions are most critical
+- The geometry of parameter space — is a Euclidean metric adequate, or is a Riemannian metric needed?
+- The intrinsic dimensionality of data is far below the embedding dimension — does the manifold hypothesis hold?
+- Distance between two distributions or models — the difference between Fisher metric and Euclidean distance
+- Optimization landscape analysis — high-curvature directions converge fast, low-curvature directions converge slowly
+- The importance of preserving intrinsic geometry in representation learning
 
-## What Problems It Is Not Suited For
+## Problems It Doesn't Fit
 
-- Problems that cannot be quantified or lack basic data — a model without data is merely speculation
-- Situations requiring only qualitative understanding ("what's roughly going on") — modeling would be excessively precise
-- Pure logical deduction problems — no translation from reality is needed; reasoning proceeds directly within a formal system
+- Problems with no natural geometric structure — forcing a metric only introduces spurious structure
+- Purely algebraic or combinatorial problems — no concept of distance, angle, or bending is involved
+- Manifold dimension close to embedding dimension — the manifold hypothesis offers no compression benefit
 
-## Which Knowledge Domains It Routes To
+## Knowledge Domains It Routes To
 
-- Differential equations / Difference equations: dynamical systems describing causal relationships among variables
-- Probabilistic models and statistics: modeling and parameter estimation under uncertainty
-- Optimization theory: mathematical foundations for model parameterization and bias-variance trade-offs
-- Linear algebra and matrix analysis: low-rank parameterization, condition numbers, compressibility
+- **differential-geometry/manifold**: Manifold definitions, atlases, coordinate transformations — the stage for geometric reasoning
+- **differential-geometry/metric-tensor**: Metric tensors defining distance and inner product; Fisher information matrix as the natural metric
+- **differential-geometry/curvature**: Curvature tensors and sectional curvature — precise measures of spatial bending
+- **differential-geometry/geodesic**: Geodesic equations and exponential maps — shortest paths on manifolds
+- **optimization/riemannian-optimization**: Riemannian gradient descent and retraction operators — optimization algorithms on manifolds
+- **information-geometry/natural-gradient**: Natural gradient as steepest descent direction under the Fisher metric
 
-## What AI Designs It May Produce
+## AI Designs It May Inspire
 
-- Golden-loop design: reality → mathematics → solution → back-translation → verification, forming a closed feedback loop
-- Assumption inventory + sensitivity dashboard: explicitly recording every assumption and annotating its impact on outputs
-- Model selection pipeline: automated comparison of candidate models via AIC/BIC/CV to prevent overfitting
+- **Riemannian Optimizer**: Perform natural gradient descent on parameter spaces with manifold constraints
+- **Geometry-Aware Attention**: Replace Euclidean distance with geodesic distance when computing attention weights
+- **Manifold Regularization**: Add curvature penalties to the loss function to maintain geometric smoothness of the representation space
+- **Intrinsic Dimension Estimator**: Estimate the intrinsic dimension of the data manifold online to guide bottleneck layer width selection
 
 ## Reasoning Protocol
 
-1. **Define problem boundaries**: What are the system's inputs, outputs, and objectives (prediction / explanation / optimization)?
-2. **Document the assumption inventory**: Which factors are important and which can be neglected? What is the real-world justification for each assumption?
-3. **Select a mathematical framework**: Match mathematical structures to the phenomena's characteristics (ODE/PDE/graph/probabilistic/optimization); perform dimensional consistency checks
-4. **Solve and back-translate**: Obtain analytical solutions / numerical solutions / qualitative analysis; translate mathematical conclusions back into real-world language
-5. **Validate and iterate**: Compare against independent data, conduct sensitivity analysis, and annotate the scope of applicability and failure conditions
+1. **Identify the manifold structure**: What is the natural parameter space? What type of manifold is it (sphere, Grassmannian, SPD matrix space)?
+2. **Choose a metric**: Is the Euclidean metric sufficient, or is a Fisher information metric or other Riemannian metric required?
+3. **Analyze curvature**: What is the curvature of the space? Positive (spherical) vs. negative (hyperbolic) vs. flat — what does this imply for optimization and representation?
+4. **Compute geodesics**: What is the optimal path between two points? Can the exponential and logarithmic maps be computed efficiently?
+5. **Design geometry-consistent algorithms**: Ensure optimization steps respect the manifold structure (retraction to manifold, Riemannian gradient)
 
 ## Acceptance Criteria
 
-- Every assumption is explicitly documented with a plausibility rating (high / medium / low)
-- Dimensional consistency has been verified — both sides of every equation match dimensionally
-- A validation plan exists (independent data or experimental comparison)
-- The scope of applicability is clearly stated — specifying the conditions under which the model is valid and those under which it fails
-- The output includes not only the analytical process but also actionable conclusions
+- The manifold type and coordinate parameterization are clearly defined
+- The metric tensor has been chosen with theoretical or empirical justification
+- Curvature properties have been analyzed and their implications for optimization and representation are annotated
+- Geodesic distance and exponential maps have a computationally feasible scheme
+- Algorithm design respects manifold structure — intrinsic vs. extrinsic quantities are distinguished

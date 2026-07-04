@@ -9,9 +9,9 @@
 核心诉求：**让网络结构编码对称性先验，减少学习负担，提升泛化**。
 
 ## 数学思想来源
-- 透镜：lenses/geometry.md（群作用、不变/等变映射）、lenses/information.md（对称性与信息冗余）
-- 知识：knowledge-base/fundamentals/linear-algebra.md（群表示论、不可约表示）、
-  knowledge-base/fundamentals/geometry.md（李群、齐性空间）
+- 透镜：lenses/geometric.md（群作用、不变/等变映射）、lenses/probabilistic.md（对称性与信息冗余）
+- 知识：knowledge-base/matrix-analysis/projection.md（群表示论、不可约表示）、
+  knowledge-base/differential-geometry/manifold.md（李群、齐性空间）
 
 ## 需要的数学知识
 - **群作用与等变性**：映射 f 对群 G 等变 ⟺ f(g·x) = g·f(x), ∀g∈G

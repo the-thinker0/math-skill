@@ -12,14 +12,14 @@ Optimization on smooth manifolds $\mathcal{M}$ (e.g., the orthogonal group $O(n)
 - Cayley retraction for the orthogonal group: $R_Q(\xi) = Q(I + \frac{1}{2}\Omega)^{-1}(I - \frac{1}{2}\Omega)$, $\xi = Q\Omega$
 - Polar decomposition retraction: $R_Q(\xi) = (Q + \xi)(I + \xi^T\xi)^{-1/2}$ (projection onto the nearest orthogonal matrix)
 - Newton-Schulz orthogonalization: $X_{k+1} = \frac{1}{2}X_k(3I - X_k^T X_k)$, converging to the nearest orthogonal matrix
-- Hyperbolic space (Poincare ball): $\text{grad}_{\mathcal{H}} f = \frac{(1-\|x\|^2)^2}{4} \nabla f(x)$
+- Hyperbolic space (Poincaré ball): $\text{grad}_{\mathcal{H}} f = \frac{(1-\|x\|^2)^2}{4} \nabla f(x)$
 
 ## Applicable Problems
 
 - Orthogonal weight constraints: $W^TW = I$ preserves eigenvalue moduli at 1, stabilizing RNN/SSM training
 - Muon optimizer: projects the gradient onto the nearest orthogonal matrix as the update direction (a cheap surrogate with "second-order flavor")
 - Low-rank subspace tracking: online PCA on the Grassmann manifold
-- Hyperbolic embeddings: Poincare embeddings for hierarchical structures (trees, taxonomies)
+- Hyperbolic embeddings: Poincaré embeddings for hierarchical structures (trees, taxonomies)
 - Metric learning: distance metrics on the SPD matrix manifold (covariance matrix space)
 
 ## AI Design Translation
@@ -27,7 +27,7 @@ Optimization on smooth manifolds $\mathcal{M}$ (e.g., the orthogonal group $O(n)
 - **Muon optimizer (orthogonalized gradient updates)**: Projects the momentum matrix $M$ onto the nearest orthogonal matrix via Newton-Schulz iteration: $X_{k+1} = \frac{1}{2}X_k(3I - X_k^TX_k)$, converging in 5 steps. Update $W \leftarrow W - \alpha \cdot U$ ($U$ being the orthogonalized result). The core is a pure matmul chain, 2 matmul operations per step, fully tensor-core-friendly, stable under bf16.
 - **Manifold perspective on spectral normalization**: The constraint $\sigma_{\max}(W) = 1$ is equivalent to projection onto a tangent direction of the Stiefel manifold. Power iteration for direction estimation + normalization = an approximate Riemannian gradient projection. Implementation is identical to standard spectral norm.
 - **Orthogonal RNN**: Hidden state recurrence $h_t = \sigma(W h_{t-1} + U x_t)$, constraining $W \in O(n)$ to avoid vanishing/exploding gradients. During training, uses the Cayley parameterization $W = (I-A)(I+A)^{-1}$ ($A$ skew-symmetric), with backpropagation computing unconstrained gradients with respect to $A$. The core is matrix inversion $O(n^3)$ (acceptable for small layer dimensions).
-- **Poincare embeddings (hyperbolic space)**: Embeds hierarchical data into the Poincare ball $\mathcal{B}^n = \{x : \|x\| < 1\}$. Distance $d(x,y) = \text{arcosh}(1 + 2\|x-y\|^2 / ((1-\|x\|^2)(1-\|y\|^2)))$. The gradient is simply scaled by the metric factor $(1-\|x\|^2)^2/4$. Implemented as elementwise scaling, $O(d)$.
+- **Poincaré embeddings (hyperbolic space)**: Embeds hierarchical data into the Poincaré ball $\mathcal{B}^n = \{x : \|x\| < 1\}$. Distance $d(x,y) = \text{arcosh}(1 + 2\|x-y\|^2 / ((1-\|x\|^2)(1-\|y\|^2)))$. The gradient is simply scaled by the metric factor $(1-\|x\|^2)^2/4$. Implemented as elementwise scaling, $O(d)$.
 - **Subspace learning on the Grassmann manifold**: Treats low-rank subspaces as points on the Grassmann manifold, updated online via Riemannian SGD. More suitable for streaming data than SVD. The projection $P = QQ^T$ update is implemented via QR decomposition, with the core being matmul + thin QR.
 
 ## Engineering Feasibility

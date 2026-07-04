@@ -9,9 +9,9 @@ Use when input data resides in a high-dimensional space but is actually distribu
 Core requirement: **leverage the low-dimensional manifold structure of data to improve representation efficiency and generalization**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/geometry.md (Riemannian geometry, geodesics, curvature), lenses/information.md (intrinsic dimensionality)
-- Knowledge: knowledge-base/fundamentals/geometry.md (manifolds, tangent spaces, exponential maps),
-  knowledge-base/fundamentals/linear-algebra.md (SVD, low-rank approximation, PCA)
+- Lenses: lenses/geometric.md (Riemannian geometry, geodesics, curvature), lenses/probabilistic.md (intrinsic dimensionality)
+- Knowledge: knowledge-base/differential-geometry/manifold.md (manifolds, tangent spaces, exponential maps),
+  knowledge-base/matrix-analysis/projection.md (SVD, low-rank approximation, PCA)
 
 ## Required Mathematical Background
 - **Manifold Hypothesis**: Data x in R^D actually lies on a smooth d-dimensional manifold M with d << D
@@ -68,9 +68,9 @@ Method 3 - Riemannian Optimization (optimize directly on the manifold):
 - **Tensorization**: Local linear projections are GEMM (d x D) @ (D x N); graph Laplacian regularization is SpMM
 - **GEMM-mappable**: K linear projections in Chart MoE form a batched GEMM (K x d x D) @ (D x N)
 - **Complexity**: k-NN construction O(N * D * log N) requires FAISS; manifold regularization O(N^2) requires sampling approximation
-- **Memory and KV-Cache**: K chart parameters K * d * D typically < 10 MB; k-NN graph N * k * 4 bytes
+- **Memory & KV-Cache**: K chart parameters K * d * D typically < 10 MB; k-NN graph N * k * 4 bytes
 - **Low-precision stability**: Distance computations and exp in fp16 require attention to numerical range; Riemannian retract recommended in fp32
-- **Parallelism and communication**: K charts computed independently, perfectly parallel; k-NN search accelerated with FAISS GPU
+- **Parallelism & Communication**: K charts computed independently, perfectly parallel; k-NN search accelerated with FAISS GPU
 - **Sparse structure**: k-NN graph is naturally sparse; manifold regularization L is a sparse matrix, enabling SpMM acceleration
 - **Operator fusion**: Matmul + bias + activation within a chart can be fused; gating softmax + weighted-sum can be fused
 

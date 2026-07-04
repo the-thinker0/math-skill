@@ -130,11 +130,11 @@ The following dimensions correspond to the fifteen mathematical thinking toolkit
 - Were multiple candidate structures enumerated (rather than only one)?
 - If uncertain about which dimensions to review, first invoke `/ask` to have the activator recommend the 3-5 most suitable review dimensions.
 
-### 17. GPU-Feasibility Review ↔ `references/gpu-friendly-math.md`
+### 17. GPU-Feasibility Review ↔ `references/gpu-friendly-math.en.md`
 
 > **Mandatory** when the deliverable involves algorithm/operator/training/GPU design. Corresponds to the second gate of the "dual-acceptance gate."
 
-- Does the deliverable pass the **eight dimensions** of `references/gpu-friendly-math.md`? Tensorization / GEMM-mappability / Complexity (sub-quadratic) / Memory and KV-Cache / Low-precision stability / Parallelism and communication / Sparse structure / Operator fusion -- rate each as "friendly / retrofittable / unfriendly."
+- Does the deliverable pass the **eight dimensions** of `references/gpu-friendly-math.en.md`? Tensorization / GEMM-mappability / Complexity (sub-quadratic) / Memory & KV-Cache / Low-precision stability / Parallelism & Communication / Sparse structure / Operator fusion -- rate each as "friendly / retrofittable / unfriendly."
 - Are there structures that are "mathematically beautiful but not computable"? (Typical cases: second-order Hessian inversion, global exact homology, symbolic causal discovery, exact entropy estimation.) Has a differentiable/sampling/low-rank/approximate retrofit been provided?
 - Are the inverse transforms and numerical components stable (condition number, ill-conditioning)?
 - Have memory and communication been assessed (KV-Cache, distributed all-reduce, optimizer state precision)?

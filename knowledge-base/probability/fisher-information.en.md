@@ -29,7 +29,7 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 
 ## Engineering Feasibility
 - **Dimension 1 Tensorization ⚠️**: The full FIM is a $d \times d$ matrix ($d$ = number of parameters); direct materialization is infeasible (LLM parameter counts $10^{10}+$). Approximations are required.
-- **Dimension 2 GEMM Mappability ✅**: K-FAC uses Kronecker factors $A \otimes B$; $A$ and $B$ can each be computed and inverted using GEMM
+- **Dimension 2 GEMM-mappability ✅**: K-FAC uses Kronecker factors $A \otimes B$; $A$ and $B$ can each be computed and inverted using GEMM
 - **Dimension 3 Complexity ⚠️**: Exact FIM computation is $O(nd^2)$; K-FAC reduces this to $O(d)$ scale but requires per-layer maintenance
 - **Dimension 4 Memory ⚠️**: K-FAC's Kronecker factors require additional memory, though significantly compressed compared to the full FIM
 - **Dimension 5 Low Precision ✅**: FIM estimation can use fp32; fp64 is not required

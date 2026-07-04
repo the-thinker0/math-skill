@@ -35,7 +35,7 @@ GPU friendliness depends on whether a closed-form retraction exists:
 - Small-matrix exp for 3x3/4x4 (SO(3)/SE(3)) can be fused into a single kernel, but cannot fully saturate Tensor Cores
 - **Low-precision critical issue**: $\sin\theta/\theta$ and $(1-\cos\theta)/\theta^2$ produce division by zero as $\theta \to 0$; $\log$ is singular as $\theta \to \pi$; fp16 yields NaN directly
 
-## Risks and Failure Modes
+## Risks and Failure Conditions
 
 - **Step-by-step ODE integration for geodesics**: Serial recurrence kills GPU parallelism; closed-form retractions must be used instead
 - **Small-angle / large-angle singularities**: Numerical instability at $\theta \to 0$ and $\theta \to \pi$ is catastrophically amplified at low precision; Taylor expansion fallbacks are essential

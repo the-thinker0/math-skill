@@ -9,9 +9,9 @@
 核心诉求：**发现数据内在的簇结构，用于路由或专家初始化**。
 
 ## 数学思想来源
-- 透镜：lenses/geometry.md（谱图论、拉普拉斯特征映射）、lenses/optimization.md（松弛与近似）
-- 知识：knowledge-base/fundamentals/linear-algebra.md（特征值分解、Rayleigh 商）、
-  knowledge-base/fundamentals/geometry.md（流形学习、图割）
+- 透镜：lenses/geometric.md（谱图论、拉普拉斯特征映射）、lenses/variational.md（松弛与近似）
+- 知识：knowledge-base/matrix-analysis/projection.md（特征值分解、Rayleigh 商）、
+  knowledge-base/differential-geometry/manifold.md（流形学习、图割）
 
 ## 需要的数学知识
 - **谱聚类 (Ng-Jordan-Weiss)**：

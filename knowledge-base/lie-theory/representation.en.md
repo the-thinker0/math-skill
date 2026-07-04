@@ -36,7 +36,7 @@ GPU friendliness depends on the group size and representation dimension:
 - **Sparsity from Schur constraints**: Weight matrices of equivariant layers are constrained to be block-diagonal/scalar, greatly reducing parameters but requiring sparse/block GEMM
 - Key bottleneck: the Clebsch-Gordan tensor size grows rapidly for high-dimensional irreps (large $l$ spherical harmonics)
 
-## Risks and Failure Modes
+## Risks and Failure Conditions
 
 - **High-frequency spherical harmonic numerical instability**: $Y_l^m$ for large $l$ oscillates violently near the poles, causing severe precision loss under fp16
 - **Irrep completeness truncation**: Keeping only up to $l_{\max}$ spherical harmonics loses high-frequency information; truncation error must be determined experimentally

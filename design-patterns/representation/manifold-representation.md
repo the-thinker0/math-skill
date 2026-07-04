@@ -9,9 +9,9 @@
 核心诉求：**利用数据的低维流形结构，提高表示效率和泛化能力**。
 
 ## 数学思想来源
-- 透镜：lenses/geometry.md（黎曼几何、测地线、曲率）、lenses/information.md（内在维度）
-- 知识：knowledge-base/fundamentals/geometry.md（流形、切空间、指数映射）、
-  knowledge-base/fundamentals/linear-algebra.md（SVD、低秩近似、PCA）
+- 透镜：lenses/geometric.md（黎曼几何、测地线、曲率）、lenses/probabilistic.md（内在维度）
+- 知识：knowledge-base/differential-geometry/manifold.md（流形、切空间、指数映射）、
+  knowledge-base/matrix-analysis/projection.md（SVD、低秩近似、PCA）
 
 ## 需要的数学知识
 - **流形假设**：数据 x ∈ R^D 实际分布在 d << D 维的光滑流形 M 上

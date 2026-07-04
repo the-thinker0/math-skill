@@ -56,7 +56,7 @@ def manifold_attention(Q, K, V, manifold):
 
 ## GPU Feasibility
 - **Dimension 1 Tensorization**: Distance matrices and bias matrices are dense tensors with element-wise operations
-- **Dimension 2 GEMM Mappability**: The main body $Q K^T$ is standard GEMM; geometric bias is additive and does not interrupt GEMM
+- **Dimension 2 GEMM-mappability**: The main body $Q K^T$ is standard GEMM; geometric bias is additive and does not interrupt GEMM
 - **Dimension 3 Complexity**: Pairwise distance matrix construction and storage are $O(n^2)$; however, block-wise computation + online softmax can avoid materializing the full matrix
 - **Dimension 4 Memory**: The $n \times n$ distance matrix occupies GPU memory; mitigated by block/streaming computation (compatible with FlashAttention)
 - **Dimension 5 Low Precision**: Distance computation and bias addition are stable under bf16; the exp in RBF requires overflow caution (clamp distances)

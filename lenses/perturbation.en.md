@@ -1,48 +1,51 @@
 # 🧠 Perturbation Lens
 
-> Logic is the house rule of mathematics — every step in a chain of reasoning must be carried out under the supervision of formal rules
+> Propagation of small perturbations, stability, and robustness — a system's sensitivity to tiny changes determines its reliability
 
-## What Perspective It Offers
+## What This Perspective Is
 
-The perturbation perspective (formerly "Logical Deduction") is a way of "scrutinizing the rigor of a chain of reasoning": for any argument, ask, "What are the premises? Is each inference rule applied legitimately? Have quantifier orders been quietly swapped? Has the logical strength of the conclusion been overstated?" Deduction necessarily carries true premises to true conclusions, but a single unjustified leap anywhere in the chain breaks the entire argument. The nesting order of quantifiers (∀∃ vs. ∃∀) determines a fundamental difference in logical strength.
+This is a "stress-tester's" perspective — for any mathematical object or system design, ask: "If the input, parameters, or structure undergo a small change, how much does the output shift? Is the shift controllable?" The core conviction: a well-posed system's response to perturbation should be bounded and predictable; if a design collapses under infinitesimal perturbation, it is destined to fail in practice. The condition number is the precise measure of perturbation amplification.
 
-## What Problems It Is Suited to Diagnose
+## Problems It Diagnoses Well
 
-- Rigor checks on proofs and derivations in papers or code
-- Arguments that may contain logical leaps or hidden premises
-- Quantifier structure analysis of mathematical statements involving ∀ and ∃
-- Whether a conclusion genuinely follows from its premises (whether Γ ⊢ φ holds)
+- Robustness analysis of models against input noise or adversarial perturbations
+- Small parameter changes causing solution jumps in optimization — is the problem ill-conditioned?
+- Stability of eigenvalues and eigenvectors under matrix perturbation (Davis-Kahan theorem)
+- Identifying regular vs. singular perturbations in asymptotic expansions
+- Error propagation and condition number analysis in numerical algorithms
 
-## What Problems It Is Not Suited For
+## Problems It Doesn't Fit
 
-- The premises themselves are uncertain — establish the truth or falsity of premises before deducing
-- Problems requiring creative breakthroughs — deduction only discovers what is already entailed; it generates no new information
-- Second-order logic problems — Gödel's completeness theorem covers only first-order logic
+- Problems where the perturbation itself is the object of study (e.g., butterfly effect in chaotic systems is a feature, not a defect)
+- Large-deformation or global structural analysis — perturbation theory only concerns local neighborhoods
+- Discrete combinatorial problems — perturbation theory relies on continuity assumptions
 
-## Which Knowledge Domains It Routes To
+## Knowledge Domains It Routes To
 
-- **formal-logic**: Inference rules of propositional and predicate logic (modus ponens, quantifier instantiation and generalization)
-- **proof-theory**: Proof strategy selection (direct proof, proof by contradiction, contrapositive, constructive proof)
-- **set-theory**: The axiom of choice and the ZF framework — foundations for quantifier strength and existence assertions
+- **matrix-analysis/matrix-perturbation**: Weyl's inequality, Davis-Kahan theorem, perturbation bounds for eigenvalues and singular values
+- **optimization/constrained-optimization**: Stability of KKT conditions, sensitivity of optimal solutions to perturbation
+- **probability/concentration-inequality**: Concentration phenomena under random perturbation, sub-Gaussian tail bounds
+- **differential-geometry/curvature**: Curvature as a measure of geodesic deviation — perturbation amplification in geometric terms
 
-## What AI Designs It May Inspire
+## AI Designs It May Inspire
 
-- **Reasoning Chain Auditor**: Reconstructs the reasoning process step by step, annotating the inference rule used at each step
-- **Fallacy Detector**: Automatically checks for common fallacies such as affirming the consequent, quantifier shifting, and illicit universal generalization
-- **Conclusion Strength Annotator**: Distinguishes necessary, probable, and hypothetical conclusions, preventing "possibly" from being inflated to "necessarily"
+- **Perturbation Regularization**: Add input or weight perturbation terms to the loss to train models insensitive to small changes
+- **Condition Number Monitor**: Track the condition number of weight matrices or the Hessian in real time to warn of ill-conditioning
+- **Robustness Verification Layer**: Quantify maximum output shift using epsilon-delta bounds, providing formal robustness guarantees
+- **Adaptive Preconditioning**: Dynamically adjust optimizer step size based on the perturbation amplification factor
 
 ## Reasoning Protocol
 
-1. **Identify Premises**: List all premises, annotating their source (proven, axiom, assumption, or empirical) and logical level (propositional or predicate)
-2. **Reconstruct the Reasoning Chain**: Restate the argument step by step in a formal logical language, annotating each step with its inference rule
-3. **Check for Fallacies**: Systematically check for common fallacies in propositional and predicate logic
-4. **Analyze Quantifier Structure**: Annotate the nesting order and logical strength of ∀/∃ (∀∃ is weak vs. ∃∀ is strong)
-5. **Assess Conclusion Strength**: Annotate whether the conclusion is necessary, probable, or hypothetical; distinguish universal, existential, and conditional scopes
+1. **Identify the perturbation source**: Does the perturbation occur in the input, parameters, or structure? What is its magnitude epsilon?
+2. **Compute sensitivity**: Derive the Jacobian or condition number — the ratio of output shift Delta to perturbation epsilon
+3. **Classify the perturbation**: Regular perturbation (expansion converges order by order) vs. singular perturbation (leading-order term changes)
+4. **Establish perturbation bounds**: Use known theorems (Weyl, Davis-Kahan, Lipschitz constants) to provide rigorous upper bounds
+5. **Assess robustness**: Is the perturbation amplification within acceptable range? If not, what regularization is needed?
 
 ## Acceptance Criteria
 
-- All premises have been made explicit; no hidden premises remain
-- Every step in the reasoning chain is supported by a legitimate inference rule
-- Common fallacies have been individually checked and results annotated
-- Quantifier structure has been analyzed and logical strength has been annotated
-- The strength and scope of the conclusion have been clearly determined
+- The perturbation source and its magnitude epsilon are clearly defined
+- Sensitivity or condition number has been computed or estimated
+- The perturbation type has been classified (regular or singular)
+- The output shift has a quantified upper bound (not merely a heuristic estimate)
+- The robustness conclusion is actionable — pass, fail, or specification of required regularization

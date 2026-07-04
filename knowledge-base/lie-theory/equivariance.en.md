@@ -37,7 +37,7 @@ GPU friendliness depends on the degree of group discretization:
 - **Approximate equivariance (regularization)**: The equivariance loss $L_{\text{eq}}$ is a standard MSE, fully GPU-friendly, but equivariance is not exact
 - Key trade-off: strict equivariance (structural constraints) vs. approximate equivariance (regularization) -- the former has fewer parameters but complex implementation, the latter is simple but not guaranteed
 
-## Risks and Failure Modes
+## Risks and Failure Conditions
 
 - **Continuous group discretization error**: Improper sampling causes equivariance to silently break, passing verification but failing at inference
 - **Equivariance-expressiveness trade-off**: Strict equivariance constraints reduce the parameter space, potentially insufficient for fitting complex functions

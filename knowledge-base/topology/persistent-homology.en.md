@@ -37,7 +37,7 @@ Limited GPU friendliness, which is the main bottleneck for deploying persistent 
 - **Differentiable alternatives**: Persistence images are differentiable (gradients with respect to point positions can be computed), but the barcode itself is non-differentiable at birth/death events
 - Complexity: exact computation is worst-case $O(n^3)$ (2-skeleton VR); large point clouds ($n > 10^4$) require subsampling
 
-## Risks and Failure Modes
+## Risks and Failure Conditions
 
 - **Seriality of boundary matrix reduction**: The core algorithm is inherently serial, with GPU parallelism far below that of GEMM, making it infeasible for large-scale data
 - **Combinatorial explosion**: The number of simplices in the VR complex grows exponentially with dimension; truncation to 2--3 dimensions is mandatory

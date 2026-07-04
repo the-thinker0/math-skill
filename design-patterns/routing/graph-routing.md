@@ -9,9 +9,9 @@
 核心诉求：**利用结构化先验约束路由决策，减少搜索空间**。
 
 ## 数学思想来源
-- 透镜：lenses/geometry.md（图拉普拉斯、谱图论）、lenses/information.md（消息传递、信息流）
-- 知识：knowledge-base/fundamentals/linear-algebra.md（邻接矩阵、谱分解）、
-  knowledge-base/fundamentals/optimization.md（图上优化、扩散过程）
+- 透镜：lenses/geometric.md（图拉普拉斯、谱图论）、lenses/probabilistic.md（消息传递、信息流）
+- 知识：knowledge-base/matrix-analysis/projection.md（邻接矩阵、谱分解）、
+  knowledge-base/optimization/lagrangian-duality.md（图上优化、扩散过程）
 
 ## 需要的数学知识
 - **图拉普拉斯**：L = D - A（组合）或 L_sym = D^{-1/2} L D^{-1/2}（归一化）

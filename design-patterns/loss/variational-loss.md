@@ -7,9 +7,9 @@
 核心诉求：**在潜空间中建模分布而非点估计，获得不确定性感知与多样性**。
 
 ## 数学思想来源
-- 透镜：lenses/information.md（变分推断与 ELBO）、lenses/probability.md（后验与先验）
-- 知识：knowledge-base/fundamentals/probability.md（KL 散度、变分族）、
-  knowledge-base/fundamentals/information-theory.md（ELBO 推导）
+- 透镜：lenses/probabilistic.md（变分推断与 ELBO）、lenses/probabilistic.md（后验与先验）
+- 知识：knowledge-base/probability/entropy.md（KL 散度、变分族）、
+  knowledge-base/probability/kl-divergence.md（ELBO 推导）
 
 ## 需要的数学知识
 - **ELBO（证据下界）**：log p(x) ≥ E_{q(z|x)}[log p(x|z)] - KL(q(z|x) ‖ p(z))

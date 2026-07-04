@@ -27,7 +27,7 @@ This is a "player's" perspective — in environments where multiple decision-mak
 - Optimization theory (minimax / linear programming): computational tools for zero-sum games and equilibrium computation
 - Probability theory (Bayesian games / expected payoffs): handling asymmetric information and type uncertainty
 
-## What AI Designs It May Produce
+## What AI Designs It May Inspire
 
 - Game-type classifier: zero-sum / non-zero-sum / sequential / cooperative → automatic matching of solution methods
 - Equilibrium solver and stability checker: Nash equilibrium + trembling-hand perfection + evolutionary stability

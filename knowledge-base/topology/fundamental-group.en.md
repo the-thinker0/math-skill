@@ -36,7 +36,7 @@ Low GPU friendliness. Computation of the fundamental group is inherently combina
 - **Numerical implementation of covering spaces**: For known group structures (e.g., $\mathbb{Z}^n$), covering spaces can be explicitly parameterized as periodic identifications, which is tensorizable
 - Overall assessment: exact computation of $\pi_1$ belongs to the "beautiful but incomputable" category; differentiable proxies (loop integrals/cohomology) are required
 
-## Risks and Failure Modes
+## Risks and Failure Conditions
 
 - **Not tensorizable**: The group presentation of $\pi_1$ is symbolic computation with no GEMM representation; it cannot be directly inserted into a training forward pass
 - **Base-point dependence**: $\pi_1(X, x_0)$ is independent of the base point (up to isomorphism) in path-connected spaces, but different components of disconnected spaces have different $\pi_1$

@@ -55,7 +55,7 @@ output = mean(softmax((rho(g)@X@W_q) @ (rho(g)@X@W_k).T/sqrt(d)) @ (rho(g)@X@W_v
 
 ## GPU Feasibility
 - **Dimension 1 Tensorization**: Group actions implemented as $\rho(g)$ matrix multiplications; equivariant features stored as batched tensors
-- **Dimension 2 GEMM Mappability**: $\rho(g) X$ and $Q K^T$ are both GEMM operations; $|G|$ group elements map to batched GEMM
+- **Dimension 2 GEMM-mappability**: $\rho(g) X$ and $Q K^T$ are both GEMM operations; $|G|$ group elements map to batched GEMM
 - **Dimension 3 Complexity**: $|G|$-fold computation overhead; acceptable for small groups ($|D_4|=8$), infeasible for large groups ($|S_n|=n!$). Remedy: use generators + Cayley graph propagation instead of full group enumeration
 - **Dimension 4 Memory**: Requires storing $|G|$ copies of intermediate features; mitigated by chunking + gradient checkpointing
 - **Dimension 5 Low Precision**: Orthogonal representation matrices are numerically stable under bf16

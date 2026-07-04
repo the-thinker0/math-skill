@@ -29,7 +29,7 @@ $$P(|f(X_1,\ldots,X_n) - \mathbb{E}[f]| \geq t) \leq 2\exp\left(-\frac{2t^2}{\su
 
 ## Engineering Feasibility
 - **Dimension 1 Tensorization ✅**: The bounds themselves are scalar formulas with no tensor operations; zero overhead as an analytical tool
-- **Dimension 2 GEMM Mappability ✅**: Does not directly participate in GEMM, but can serve as a theoretical basis for hyperparameter selection (batch size, compression ratio)
+- **Dimension 2 GEMM-mappability ✅**: Does not directly participate in GEMM, but can serve as a theoretical basis for hyperparameter selection (batch size, compression ratio)
 - **Dimension 3 Complexity ✅**: Computing the bound itself is $O(1)$ or $O(n)$, very low cost
 - **Dimension 5 Low Precision ✅**: Bounds can be computed in fp32; does not enter the training backbone
 - **Dimension 8 Operator Fusion ✅**: Does not enter the computation graph; no fusion overhead

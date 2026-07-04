@@ -31,7 +31,7 @@ where $q_\phi(y|z)$ is the classifier/decoder, $r(z)$ is the prior distribution 
 
 ## Engineering Feasibility
 - **Dimension 1 Tensorization ✅**: The VIB encoder/decoder are standard networks; $D_{KL}$ is computed element-wise
-- **Dimension 2 GEMM Mappability ✅**: The main computation is a standard feedforward network + GEMM
+- **Dimension 2 GEMM-mappability ✅**: The main computation is a standard feedforward network + GEMM
 - **Dimension 3 Complexity ✅**: Only adds $O(d)$ computation for the KL term compared to the original network
 - **Dimension 4 Memory ⚠️**: Requires additional parameters for the prior distribution $r(z)$ and intermediate quantities for KL computation
 - **Dimension 5 Low Precision ✅**: Reparameterization trick + analytical KL solution are stable in bf16

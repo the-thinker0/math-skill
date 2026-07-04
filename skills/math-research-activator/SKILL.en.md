@@ -4,6 +4,8 @@ description: |
   Mathematical research OS — auto-diagnoses user intent, routes to thinking lenses, math knowledge base, or design translation layer. Triggers on architecture/operator design, theoretical analysis, math-to-AI transfer. Does NOT trigger for pure engineering tasks (debug, refactoring, hyperparameter tuning).
 ---
 
+
+> **File routing**: When this document references any file (lenses, knowledge-base, design-patterns, references, agents), always load the `.en.md` variant if it exists. For example, `lenses/symmetry.md` → load `lenses/symmetry.en.md`.
 # 🧭 Math Research OS
 
 > "The thinking system does not hand out theorems, the knowledge system does not indulge in loose inspiration, and the design layer does not fake profundity."
@@ -121,7 +123,7 @@ Scenario E (Engineering): No intervention
 2. **[Lens]** Recommend 1–3 mathematical perspectives (annotate why each is/is not suitable)
 3. **[Knowledge]** (Scenario B only) Required concrete mathematical tools (reference knowledge cards)
 4. **[Design]** (Scenario B only) Candidate AI module drafts (reference design patterns)
-5. **[GPU]** Run candidates through the Eight-Dimension Gate (friendly/adaptable/unfriendly)
+5. **[GPU]** Run candidates through the Eight-Dimension Gate (friendly/retrofittable/unfriendly)
 6. **[Conclusion]** Retain candidates that pass both acceptance gates + next-step recommendations
 
 **Scenario C Output** (Knowledge Activation Protocol):
@@ -145,7 +147,7 @@ Scenario E (Engineering): No intervention
 ## GPU Eight-Dimension Acceptance Gate
 
 Formal terminology (single authoritative source: `references/gpu-friendly-math.md`):
-**Tensorizability / GEMM-Mappability / Complexity / Memory & KV-Cache / Low-Precision Stability / Parallelism & Communication / Sparsity Structure / Operator Fusion**
+**Tensorization / GEMM-Mappability / Complexity / Memory & KV-Cache / Low-Precision Stability / Parallelism & Communication / Sparse structure / Operator Fusion**
 
 ## Depth-of-Consultation Protocol
 

@@ -4,8 +4,8 @@
 When the design involves hard constraints (e.g., probability simplex, orthogonality, capacity limits, load balancing) but end-to-end training is required. Typical scenarios: (1) MoE routing probabilities must lie on the $K$-simplex with load balancing; (2) Expert activation count is constrained (top-k); (3) Subspace projection matrices must satisfy orthogonality $W^T W = I$; (4) Feature norms are bounded $\|z\| \leq R$. Core objective: **transform mathematical constraints into differentiable penalty terms integrated into gradient-based optimization**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/optimization.md (constrained optimization, Lagrangian duality, KKT conditions), lenses/geometry.md (manifold projection)
-- Knowledge: knowledge-base/fundamentals/optimization.md (augmented Lagrangian method, penalty function method), knowledge-base/fundamentals/linear-algebra.md (projection operators, constraint sets)
+- Lenses: lenses/variational.md (constrained optimization, Lagrangian duality, KKT conditions), lenses/geometric.md (manifold projection)
+- Knowledge: knowledge-base/optimization/lagrangian-duality.md (augmented Lagrangian method, penalty function method), knowledge-base/matrix-analysis/projection.md (projection operators, constraint sets)
 
 ## Required Mathematical Knowledge
 - **Penalty Function Method**: $\min f(x)$ s.t. $g(x)=0 \to \min f(x) + \rho/2 \cdot \|g(x)\|^2$ -- $\rho$ is gradually increased (exterior point method), driving constraint violation $\|g(x)\| \to 0$
@@ -48,11 +48,11 @@ Method 4 - Orthogonal Constraint Projection:
 
 ## GPU Feasibility
 - **Tensorization**: Constraint violations are vector/matrix operations; penalty terms are element-wise squared sums
-- **GEMM Mappability**: Load balancing $f_k$, $P_k$ computation uses softmax + reduce_sum; orthogonal constraint uses matmul
+- **GEMM-mappability**: Load balancing $f_k$, $P_k$ computation uses softmax + reduce_sum; orthogonal constraint uses matmul
 - **Complexity**: Penalty computation is $O(m)$ or $O(m^2)$, far smaller than the main network forward pass; negligible
-- **Memory and KV-Cache**: Only additional storage for lambda ($m$ dimensions) and rho ($m$ dimensions); minimal overhead
+- **Memory & KV-Cache**: Only additional storage for lambda ($m$ dimensions) and rho ($m$ dimensions); minimal overhead
 - **Low Precision Stability**: Penalty terms are squaring operations, safe under fp16; ALM lambda updates are recommended in fp32 to avoid accumulated errors
-- **Parallelism and Communication**: Constraints are independently computable and parallelizable; on multiple GPUs, lambda updates require all-reduce of $g(x)$
+- **Parallelism & Communication**: Constraints are independently computable and parallelizable; on multiple GPUs, lambda updates require all-reduce of $g(x)$
 - **Sparse Structure**: $\max(0, h(x))^2$ has zero gradient when constraints are satisfied, naturally sparse activation
 - **Operator Fusion**: Constraint computation + weighted summation + merging with base_loss can be fused into a single kernel
 

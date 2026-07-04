@@ -36,7 +36,7 @@ GPU friendliness depends on the type of group:
 - **Fourier-accelerated group convolution**: The FFT on finite groups reduces convolution from $O(|G|^2)$ to $O(|G| \log |G|)$, but implementation is complex
 - Key bottleneck: if the discretization of a continuous group is not exact, equivariance silently breaks
 
-## Risks and Failure Modes
+## Risks and Failure Conditions
 
 - **Naive discretization of continuous groups**: Improper sampling leads to broken equivariance and irregular gather/scatter patterns, GPU-unfriendly
 - **Incorrect group action definition**: Confusing left and right actions or inconsistent group multiplication order causes equivariance verification to pass but inference to fail

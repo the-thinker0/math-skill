@@ -35,7 +35,7 @@ GPU friendliness: the core challenge of connections is "serial ODE integration."
 - **Connections in gauge-equivariant CNNs**: one $G$-element action per edge (matrix-times-feature-vector), expressible as sparse matmul or batched small GEMM
 - Key adaptation: use a single-step retraction/closed-form transport instead of step-by-step ODE integration
 
-## Risks and Failure Modes
+## Risks and Failure Conditions
 
 - **Step-by-step ODE integration for parallel transport**: Serial recurrence kills parallelism; closed-form transport or single-step approximations must be used
 - **Inconsistent left/right connection conventions**: Mixing left-invariant and right-invariant connections leads to misaligned gradients

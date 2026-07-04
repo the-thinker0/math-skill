@@ -2,7 +2,7 @@
 
 ## Minimal Definition
 
-A manifold is a topological space that is locallyally homeomorphic to Euclidean space $\mathbb{R}^n$. A smooth manifold further requires that the transition maps $\phi_\beta \circ \phi_\alpha^{-1}$ between coordinate charts are $C^\infty$-smooth, enabling calculus to be performed on curved spaces.
+A manifold is a topological space that is locally homeomorphic to Euclidean space $\mathbb{R}^n$. A smooth manifold further requires that the transition maps $\phi_\beta \circ \phi_\alpha^{-1}$ between coordinate charts are $C^\infty$-smooth, enabling calculus to be performed on curved spaces.
 
 ## Core Formulas
 
@@ -32,7 +32,7 @@ Moderate GPU friendliness. Coordinate chart transformations are element-wise map
 - Partition of unity involves locally weighted sums, expressible as sparse matmul
 - Key operation complexity depends on the specific manifold: simple manifolds $O(1)$/sample, complex manifolds may be $O(n^3)$
 
-## Risks and Failure Modes
+## Risks and Failure Conditions
 
 - **Global chart illusion**: Attempting to cover the entire manifold with a single parameterization inevitably introduces singularities (e.g., gimbal lock with Euler angles); an atlas or redundant parameterization is required
 - **Manifold hypothesis abuse**: Applying manifold structure to data that actually lives in flat Euclidean space is pure over-engineering

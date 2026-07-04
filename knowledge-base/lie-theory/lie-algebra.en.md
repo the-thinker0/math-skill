@@ -35,7 +35,7 @@ High GPU friendliness. The core advantage of the Lie algebra is that it is a "li
 - **BCH approximation**: The first few terms suffice for engineering precision; $[X,Y]$ computation is a small matrix multiplication
 - Main cost lies in $\exp$ rather than algebra operations: algebra operations are all linear; the bottleneck is the subsequent exp map
 
-## Risks and Failure Modes
+## Risks and Failure Conditions
 
 - **BCH series truncation error**: Higher-order terms are non-negligible at large angles; the first-order approximation $X+Y$ is valid only for small perturbations
 - **Misinterpreting non-zero Lie brackets**: $[X,Y] \neq 0$ for non-commutative groups means group composition is order-sensitive; operations cannot be freely interchanged

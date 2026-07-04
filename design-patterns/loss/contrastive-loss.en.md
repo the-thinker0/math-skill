@@ -4,8 +4,8 @@
 When the model needs to learn "what is similar to what and what is different from what." Typical scenarios: (1) Different augmented views of the same input should be pulled closer (positive pairs), while different inputs should be pushed apart (negative pairs); (2) Shared representations should capture cross-task commonalities, while Private representations should distinguish task-specific features; (3) In the expert embedding space, similar inputs should be routed to the same expert. Core objective: **learn relative relationships rather than absolute values**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/geometry.md (metric spaces and distance functions), lenses/information.md (mutual information maximization)
-- Knowledge: knowledge-base/fundamentals/probability.md (conditional distributions and likelihood), knowledge-base/fundamentals/geometry.md (geodesics and curvature)
+- Lenses: lenses/geometric.md (metric spaces and distance functions), lenses/probabilistic.md (mutual information maximization)
+- Knowledge: knowledge-base/probability/entropy.md (conditional distributions and likelihood), knowledge-base/differential-geometry/manifold.md (geodesics and curvature)
 
 ## Required Mathematical Knowledge
 - **InfoNCE Loss**: $L = -\log[\exp(\text{sim}(q,k^+)/\tau) / \sum_j \exp(\text{sim}(q,k_j)/\tau)]$ -- essentially a lower-bound estimate of mutual information in contrastive learning; $\tau$ is the temperature parameter controlling distribution sharpness
@@ -40,11 +40,11 @@ Hard Negative Mining:
 
 ## GPU Feasibility
 - **Tensorization**: Similarity computation is $z_a @ z_n^T$ -- standard GEMM $(B \times d) @ (d \times N) = B \times N$
-- **GEMM Mappability**: Core computation is 1-2 matrix multiplications, perfectly mapped to cuBLAS
+- **GEMM-mappability**: Core computation is 1-2 matrix multiplications, perfectly mapped to cuBLAS
 - **Complexity**: $O(B \cdot N \cdot d)$ computation + $O(B \cdot N)$ storage for the logits matrix; approximately 64MB when B=256, N=65536
-- **Memory and KV-Cache**: Negative sample queue occupies $N \cdot d \cdot 4$ bytes, approximately 65536 * 256 * 4 = 64MB, fixed overhead
+- **Memory & KV-Cache**: Negative sample queue occupies $N \cdot d \cdot 4$ bytes, approximately 65536 * 256 * 4 = 64MB, fixed overhead
 - **Low Precision Stability**: Cosine similarity + softmax under fp16 requires caution for exp overflow; use log-sum-exp trick
-- **Parallelism and Communication**: On multiple GPUs, use all-gather to collect negatives from other GPUs to enlarge $N$ (MoCo v3 strategy)
+- **Parallelism & Communication**: On multiple GPUs, use all-gather to collect negatives from other GPUs to enlarge $N$ (MoCo v3 strategy)
 - **Sparse Structure**: After hard negative mining, only $k \ll N$ negatives are retained, effectively sparsifying the logits
 - **Operator Fusion**: L2-norm -> matmul -> scale -> log-softmax -> nll_loss can be fused
 

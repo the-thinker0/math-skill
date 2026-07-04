@@ -34,7 +34,7 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 
 ## Engineering Feasibility
 - **Dimension 1 Tensorization ✅**: Element-wise $p \log(p/q)$ is fully vectorizable
-- **Dimension 2 GEMM Mappability ⚠️**: KL itself is not a GEMM, but its inputs (logits) come from GEMM layers
+- **Dimension 2 GEMM-mappability ⚠️**: KL itself is not a GEMM, but its inputs (logits) come from GEMM layers
 - **Dimension 3 Complexity ✅**: $O(|\mathcal{X}|)$ linear
 - **Dimension 4 Memory ⚠️**: For large vocabularies, both $p$ and $q$ probability vectors must be held simultaneously; chunked computation is possible
 - **Dimension 5 Low Precision ✅**: Log-softmax differences are stable in bf16; note that $\log q$ diverges as $q \to 0$, requiring clamping

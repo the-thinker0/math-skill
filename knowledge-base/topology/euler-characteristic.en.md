@@ -38,7 +38,7 @@ High GPU friendliness. Computing the Euler characteristic is extremely cheap:
 - **Euler characteristic curve**: Scanning $\chi(\epsilon)$ along $\epsilon$, implementable with sorting + cumulative sum, $O(n \log n)$
 - Overall complexity: linear or sub-quadratic, fully computable in real time during the training loop
 
-## Risks and Failure Modes
+## Risks and Failure Conditions
 
 - **Extreme information compression**: $\chi$ is a single integer; many distinct topological spaces share the same $\chi$ value ($\chi = 0$ can correspond to a torus, Klein bottle, etc.)
 - **Sensitivity to noise**: Small perturbations of a point cloud can add/remove simplices, changing $c_k$ and hence $\chi$; should be combined with scale analysis from persistent homology

@@ -9,9 +9,9 @@ Use when routing needs to be based on the intrinsic similarity structure of toke
 Core requirement: **discover the intrinsic cluster structure of data for routing or expert initialization**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/geometry.md (spectral graph theory, Laplacian eigenmaps), lenses/optimization.md (relaxation and approximation)
-- Knowledge: knowledge-base/fundamentals/linear-algebra.md (eigendecomposition, Rayleigh quotient),
-  knowledge-base/fundamentals/geometry.md (manifold learning, graph cuts)
+- Lenses: lenses/geometric.md (spectral graph theory, Laplacian eigenmaps), lenses/variational.md (relaxation and approximation)
+- Knowledge: knowledge-base/matrix-analysis/projection.md (eigendecomposition, Rayleigh quotient),
+  knowledge-base/differential-geometry/manifold.md (manifold learning, graph cuts)
 
 ## Required Mathematical Background
 - **Spectral Clustering (Ng-Jordan-Weiss)**:
@@ -71,9 +71,9 @@ Method 3 - Anchor Spectral Clustering (large-scale):
 - **Tensorization**: Similarity matrix X @ X^T is GEMM; Laplacian construction is element-wise + diagonal matrix operations
 - **GEMM-mappable**: Z^T @ Z in Method 3 is GEMM (m x N) @ (N x m); Z @ U_k is GEMM (N x m) @ (m x K)
 - **Complexity**: Full spectral clustering O(N^2 * K) does not scale; Nystrom O(N * m * K + m^3); power iteration O(N^2 * K * T)
-- **Memory and KV-Cache**: N x N similarity matrix exceeds 64 MB when N > 4096; sampling-based dimensionality reduction is essential
+- **Memory & KV-Cache**: N x N similarity matrix exceeds 64 MB when N > 4096; sampling-based dimensionality reduction is essential
 - **Low-precision stability**: Eigendecomposition recommended in fp32; exp(-dist/sigma^2) in fp16 requires distance clipping
-- **Parallelism and communication**: Power iteration matvec is highly parallel; k-means assign + update steps can be batch-parallelized
+- **Parallelism & Communication**: Power iteration matvec is highly parallel; k-means assign + update steps can be batch-parallelized
 - **Sparse structure**: k-NN graph replaces fully connected graph; W sparsity > 95%, enabling SpMM acceleration
 - **Operator fusion**: Diagonal scaling in D^{-1/2} @ A @ D^{-1/2} can be fused; cdist + exp + normalize can be fused
 
