@@ -5,6 +5,8 @@ description: |
   English: Auto-trigger (requires BOTH environment AND task signals): only when **designing/improving** new model architectures/operators/attention mechanisms, **analyzing** algorithm theoretical properties (complexity, convergence, expressivity), or **transferring** modern math structures (algebraic geometry, differential geometry, Lie theory, abstract algebra, matrix analysis, optimization) into algorithm/GPU co-design. Does NOT trigger for: code review, debugging, parameter tracing, refactoring, hyperparameter tuning, or loss implementation edits. Also the manual /ask entry (weapon selector).
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # 🧭 数学研究激活器 / Math Research Activator
 
 > "模型内部已有足够的数学知识，缺的只是一次跨领域的激活。人选方向，Agent 搜索、枚举、验证。"

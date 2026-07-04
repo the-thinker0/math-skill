@@ -5,6 +5,8 @@ description: |
   English: Trigger when examining the reasonableness of a theory's assumptions, constructing an axiom system, discovering internal contradictions, verifying consistency/independence/completeness; or defining axioms and invariants for an algorithm/operator/structure and checking their computability.
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # 📐 公理化思想 / Axiomatization
 
 > "从最少假设出发，用严格逻辑构建——审查前提比检查结论更重要"

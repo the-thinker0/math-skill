@@ -5,6 +5,8 @@ description: |
   English: Trigger for group theory analysis, invariant computation, Galois theory, Noether's theorem, orbit classification, quotient space reasoning, symmetry breaking; or designing equivariance/conservation/invariant structures (e.g. SO(3)/SE(3) equivariant nets, tropical semiring) for algorithms.
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # ⚛️ 对称与不变性 / Symmetry & Invariance
 
 > "寻找事物在变换下保持不变的性质，揭示其内在规律。"

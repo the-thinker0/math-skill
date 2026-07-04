@@ -5,6 +5,8 @@ description: |
   English: Trigger when translating real-world problems into mathematics (reality→math→interpretation), building predictive/explanatory models, performing dimensional analysis and model selection, or establishing computable models for algorithms/operators/structures.
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # 🌉 建模思想 / Modeling
 
 > "将现实世界的问题转化为数学问题，通过求解数学问题来解释和预测现实。所有模型都是错的，但有些是有用的。"

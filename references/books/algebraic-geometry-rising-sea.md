@@ -154,6 +154,10 @@
 
 ## 深挖入口
 
+> **📖 书目信息**：Ravi Vakil, *The Rising Sea: Foundations of Algebraic Geometry*, Princeton University Press, 2025. ISBN 978-0-691-26866-8.
+>
+> **启用方式**：将 `The Rising Sea Foundations of Algebraic Geometry.pdf` 放入项目根目录的 `math_book/` 文件夹，Agent 即可自动搜索原文。PDF 不随 npm/git 分发（版权原因），需自行获取。
+
 **全保真回查（full-fidelity lookup）**：当摘要不足以支撑设计时，让 Agent 自动检索本地 PDF
 `math_book/The Rising Sea Foundations of Algebraic Geometry.pdf`
 （用 `pdftotext -f <start> -l <end>` 取定向页，**不要 dump 整本**）。

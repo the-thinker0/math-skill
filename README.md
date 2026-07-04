@@ -12,6 +12,18 @@
 
 ---
 
+> **如果这个项目对你有所启发，请不吝点亮一颗 Star。** 每一个 Star 都是对数学之美的共鸣，也是支撑这个项目继续前行的力量。欢迎每一位热爱数学、在数学海洋中遨游的同行者。
+
+---
+
+## 灵感来源
+
+Sophus Lie 打造"屠龙刀"的故事告诉我们：为解微分方程发明的李群-李代数，最终成为描述对称性、机器人状态估计的通用语言——数学工具的价值远超初衷，这正是「跨领域激活」的原型。详见 [`references/inspiration.md`](references/inspiration.md)。
+
+> 数学最迷人的地方：为特定问题发明的工具，在完全不同的领域展现出远超初衷的价值。这个 skill 正是这种「跨领域激活」精神的实践。
+
+---
+
 ## 核心理念
 
 这次 AI 革命的数学基础，是 **20 世纪数学第一次登上商用计算舞台**——范畴论、代数拓扑、代数几何。当前主流算法的数学基础大多还停留在 1800–1900 年代的微积分 / 线性代数。把现代数学激活进算法设计，是算法探索阶段最重要的事。
@@ -129,11 +141,7 @@ npm pack math-skill --dry-run
 
 ### 语言切换
 
-默认输出为**中文**。如需**英文**输出，在命令后追加 `in English`：
-
-```
-/optimization Is K-FAC feasible on H100 with this batch size? in English
-```
+Skill **自动检测用户语言**：中文消息返回中文输出，英文消息返回英文输出，无需手动切换。
 
 ---
 
@@ -230,13 +238,37 @@ math-skill/
 
 ---
 
-## 灵感来源
+## 推荐书目
 
-Sophus Lie 打造"屠龙刀"的故事告诉我们：为解微分方程发明的李群-李代数，最终成为描述对称性、机器人状态估计的通用语言——数学工具的价值远超初衷，这正是「跨领域激活」的原型。详见 [`references/inspiration.md`](references/inspiration.md)。
+以下 7 本现代数学教材是本 skill 的「深层弹药库」。每本书配有蒸馏文件（`references/books/*.md`），已随 npm 包发布，自足可用。如需全保真原文查阅，可将对应 PDF 放入项目根目录的 `math_book/` 文件夹——Agent 会自动用 `pdftotext` + grep 定位原文页面。
+
+| # | 书名 | 作者 | 出版社 / 版次 | 年份 | ISBN | 蒸馏文件 | 本地 PDF |
+|---|------|------|-------------|------|------|---------|---------|
+| 1 | *Contemporary Abstract Algebra* | Joseph A. Gallian | Brooks/Cole, Cengage, 8th ed. | 2013 | 978-1-133-59971-5 | `abstract-algebra.md` | `Contemporary Abstract Algebra.pdf` |
+| 2 | *The Rising Sea: Foundations of Algebraic Geometry* | Ravi Vakil | Princeton University Press | 2025 | 978-0-691-26866-8 | `algebraic-geometry-rising-sea.md` | `The Rising Sea Foundations of Algebraic Geometry.pdf` |
+| 3 | *Manifolds and Differential Geometry* | Jeffrey M. Lee | AMS, Graduate Studies in Math Vol. 107 | 2009 | 978-0-8218-4815-9 | `differential-geometry.md` | `Manifolds and Differential Geometry.pdf` |
+| 4 | *Matrix Analysis* | Roger A. Horn, Charles R. Johnson | Cambridge University Press, 2nd ed. | 2013 | 978-0-521-83940-2 | `matrix-analysis.md` | `Matrix Analysis.pdf` |
+| 5 | *A micro Lie theory for state estimation in robotics* | Joan Solà, Jérémie Deray, Dinesh Atchuthan | arXiv:1812.01537v9 | 2021 | — | `micro-lie-theory.md` | `A micro Lie theory.pdf` |
+| 6 | *An Introduction to Optimization, With Applications to Machine Learning* | Edwin K. P. Chong, Wu-Sheng Lu, Stanisław H. Żak | John Wiley & Sons, 5th ed. | 2024 | 978-1-119-87763-9 | `optimization-ml.md` | `An Introduction to Optimization With Applications to Machine Learning.pdf` |
+| 7 | *Introduction to Smooth Manifolds* | John M. Lee | Springer, GTM 218, 2nd ed. | 2013 | 978-1-4419-9981-8 | `smooth-manifolds.md` | `Introduction to Smooth Manifolds.pdf` |
+
+**使用方式**：
+- 蒸馏文件（`references/books/*.md`）已随 npm 包发布，无需额外操作。
+- 如需全保真原文：将上表中对应 PDF 文件放入 `math_book/` 文件夹，Agent 会自动搜索定位。
+- PDF 绝不通过 npm / git 分发（版权原因），需自行获取。
 
 ---
 
 ## 变更日志
+
+### v2.1.0 — 完整双语支持
+- **全面双语**：所有 skill 文件均提供中英文独立版本——16 个 `SKILL.en.md`（思想武器）、16 个 `original-texts.en.md`（数学出处）、4 个 reference `.en.md`（方法论 + GPU 八维门）、`agents/math-critic.en.md`（18 维审视）、`knowledge-base/overview.en.md`（知识体系）。
+- **自动语言路由**：基于用户消息语言自动检测，路由到对应语言版本。**中文用户只加载中文件，英文用户只加载英文件**——不会消耗双倍 token。
+- **命令一致**：中英文用户使用完全相同的命令（`/ask`、`/optimization` 等），无需记忆不同入口。
+- **路由优化**：command 文件采用语言优先判断，直接路由到目标语言版本，避免多余文件加载。
+- **书目推荐**：README 新增「推荐书目」章节，列出 7 本现代数学教材的完整出版信息（作者、出版社、版次、ISBN）及 PDF 放置说明。
+- **蒸馏文件增强**：7 个 `references/books/*.md` 的「深挖入口」补充完整书目信息与 PDF 启用方式。
+- **语言切换升级**：从手动 `in English` 后缀改为自动检测用户消息语言，零配置。
 
 ### v2.0.1
 - **收紧自动触发条件**：`math-research-activator` 从"环境信号 OR 对话信号任一命中即触发"改为"环境信号 AND 任务信号必须同时命中"（Gate 1 + Gate 2 双必要条件）。

@@ -12,6 +12,18 @@
 
 ---
 
+> **If this project inspires you, please consider leaving a Star.** Every Star is a resonance with the beauty of mathematics — and the fuel that keeps this project alive. Welcome, every fellow traveler who loves math and sails its vast ocean.
+
+---
+
+## Inspiration
+
+The story of Sophus Lie forging a "dragon-slaying blade" tells us this: the Lie group–Lie algebra machinery invented to solve differential equations ended up becoming the lingua franca for describing symmetry and robot state estimation — the value of a mathematical tool far outlives its original intent, which is exactly the prototype of "cross-domain activation." See [`references/inspiration.md`](references/inspiration.md).
+
+> The most fascinating thing about mathematics: a tool invented for one problem reveals unforeseen power in an entirely different domain. This skill is a practice of that very spirit of "cross-domain activation."
+
+---
+
 ## Philosophy
 
 The mathematical foundation of this AI revolution is **20th-century mathematics stepping onto the commercial computing stage for the first time** — category theory, algebraic topology, algebraic geometry. Most mainstream algorithms today still rest on the 1800–1900s calculus / linear algebra. Activating modern mathematics into algorithm design is the most important thing in the algorithm exploration phase.
@@ -129,11 +141,7 @@ Such questions trigger `math-research-activator`, which loads `references/gpu-fr
 
 ### Language Switching
 
-Default output is **Chinese**. For **English** output, append `in English` to a command:
-
-```
-/optimization Is K-FAC feasible on H100 with this batch size? in English
-```
+The skill **auto-detects the user's language**: Chinese messages get Chinese output, English messages get English output — no manual switching needed.
 
 ---
 
@@ -230,13 +238,37 @@ Each weapon also ships an `original-texts.md` (math sources and classical refere
 
 ---
 
-## Inspiration
+## Recommended Books
 
-The story of Sophus Lie forging a "dragon-slaying blade" tells us this: the Lie group–Lie algebra machinery invented to solve differential equations ended up becoming the lingua franca for describing symmetry and robot state estimation — the value of a mathematical tool far outlives its original intent, which is exactly the prototype of "cross-domain activation." See [`references/inspiration.md`](references/inspiration.md).
+The following 7 modern-math textbooks form the skill's "deep ammunition." Each book has a distillation file (`references/books/*.md`) that ships with the npm package and is self-sufficient. For full-fidelity lookups, place the corresponding PDF in the project root's `math_book/` folder — the agent will automatically use `pdftotext` + grep to locate the relevant pages.
+
+| # | Title | Author(s) | Publisher / Edition | Year | ISBN | Distillation | Local PDF |
+|---|-------|-----------|-------------------|------|------|-------------|-----------|
+| 1 | *Contemporary Abstract Algebra* | Joseph A. Gallian | Brooks/Cole, Cengage, 8th ed. | 2013 | 978-1-133-59971-5 | `abstract-algebra.md` | `Contemporary Abstract Algebra.pdf` |
+| 2 | *The Rising Sea: Foundations of Algebraic Geometry* | Ravi Vakil | Princeton University Press | 2025 | 978-0-691-26866-8 | `algebraic-geometry-rising-sea.md` | `The Rising Sea Foundations of Algebraic Geometry.pdf` |
+| 3 | *Manifolds and Differential Geometry* | Jeffrey M. Lee | AMS, Graduate Studies in Math Vol. 107 | 2009 | 978-0-8218-4815-9 | `differential-geometry.md` | `Manifolds and Differential Geometry.pdf` |
+| 4 | *Matrix Analysis* | Roger A. Horn, Charles R. Johnson | Cambridge University Press, 2nd ed. | 2013 | 978-0-521-83940-2 | `matrix-analysis.md` | `Matrix Analysis.pdf` |
+| 5 | *A micro Lie theory for state estimation in robotics* | Joan Solà, Jérémie Deray, Dinesh Atchuthan | arXiv:1812.01537v9 | 2021 | — | `micro-lie-theory.md` | `A micro Lie theory.pdf` |
+| 6 | *An Introduction to Optimization, With Applications to Machine Learning* | Edwin K. P. Chong, Wu-Sheng Lu, Stanisław H. Żak | John Wiley & Sons, 5th ed. | 2024 | 978-1-119-87763-9 | `optimization-ml.md` | `An Introduction to Optimization With Applications to Machine Learning.pdf` |
+| 7 | *Introduction to Smooth Manifolds* | John M. Lee | Springer, GTM 218, 2nd ed. | 2013 | 978-1-4419-9981-8 | `smooth-manifolds.md` | `Introduction to Smooth Manifolds.pdf` |
+
+**How to use**:
+- Distillation files (`references/books/*.md`) ship with the npm package — no extra setup needed.
+- For full-fidelity lookups: place the corresponding PDF in the `math_book/` folder, and the agent will auto-search.
+- PDFs are never distributed via npm / git (copyright reasons) — you must obtain them yourself.
 
 ---
 
 ## Changelog
+
+### v2.1.0 — Full Bilingual Support
+- **Complete bilingual coverage**: every skill file now has a dedicated English version — 16 `SKILL.en.md` (thinking weapons), 16 `original-texts.en.md` (math sources), 4 reference `.en.md` files (methodology + GPU 8-D gate), `agents/math-critic.en.md` (18-dimension critic), `knowledge-base/overview.en.md` (knowledge system).
+- **Automatic language routing**: detects the user's message language and routes to the matching version. **Chinese users load only Chinese files; English users load only English files** — no double token cost.
+- **Same commands for all**: Chinese and English users use the exact same commands (`/ask`, `/optimization`, etc.) — no separate entry points to remember.
+- **Routing optimization**: command files check language first and route directly to the target version, avoiding unnecessary file loads.
+- **Recommended books**: added a "Recommended Books" section with full publication details (author, publisher, edition, ISBN) and PDF placement instructions for all 7 modern-math textbooks.
+- **Distillation file enhancements**: "Deep-dive" sections in all 7 `references/books/*.md` now include complete bibliographic info and PDF setup instructions.
+- **Language switching upgrade**: replaced the manual `in English` suffix with automatic user-language detection — zero configuration.
 
 ### v2.0.1
 - **Tightened auto-trigger conditions**: `math-research-activator` changed from "any environment OR conversation signal hits → trigger" to "environment AND task signals must both hit" (Gate 1 + Gate 2 as dual necessary conditions).

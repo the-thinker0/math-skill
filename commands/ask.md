@@ -5,9 +5,7 @@ description: |
   English: Manually invoke the math research activator (weapon selector): when you explicitly want to activate modern mathematics into algorithm/GPU design. Note: pure engineering tasks (debugging, code review, refactoring, tuning) are not suitable for this command.
 ---
 
-读取并遵循 `../skills/math-research-activator/SKILL.md`。
-
-如果输入包含 "in English"，请使用英文输出；否则使用中文输出。
+若用户消息为英文，读取并遵循 `../skills/math-research-activator/SKILL.en.md`；否则读取并遵循 `../skills/math-research-activator/SKILL.md`，按其操作规程输出。
 
 当前问题：
 $ARGUMENTS

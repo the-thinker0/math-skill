@@ -90,6 +90,10 @@
 
 ## 深挖入口
 
+> **📖 书目信息**：John M. Lee, *Introduction to Smooth Manifolds*, 2nd Edition, Graduate Texts in Mathematics 218, Springer, 2013. ISBN 978-1-4419-9981-8.
+>
+> **启用方式**：将 `Introduction to Smooth Manifolds.pdf` 放入项目根目录的 `math_book/` 文件夹，Agent 即可自动搜索原文。PDF 不随 npm/git 分发（版权原因），需自行获取。
+
 > **全保真回查**：需要原文定义/定理/证明时，让 Agent **自动搜索本地 PDF** `math_book/Introduction to Smooth Manifolds.pdf`（按章号/关键词定位，勿凭记忆复述）。下列为真实章号（2nd ed.）：
 
 - **Ch 3 Tangent Vectors** — 切空间、微分/pushforward、切丛：局部线性化与反传的几何原型。

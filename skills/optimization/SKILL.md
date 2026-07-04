@@ -5,6 +5,8 @@ description: |
   English: Trigger when a problem involves resource allocation, trade-offs, maximizing/minimizing objectives, decisions under constraints; or needs convexity analysis, Lagrangian/KKT methods, duality structure; or choosing optimization methods for algorithm/operator/training design.
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # ⚖️ 优化思想 / Optimization
 
 > "在最一般的约束条件下，寻找目标函数的极值——凸性决定难度，KKT 给出必要条件，对偶揭示结构。"

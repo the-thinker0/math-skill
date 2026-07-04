@@ -1,3 +1,5 @@
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `agentic-workflow.en.md`。
+
 # Agentic 研究工作方式 / Human-in-the-Agent-Loop
 
 > 提炼自一线 auto-research 实践（Infra / 算法 / 芯片 Co-design）。它定义本 skill 期望的**协作思维方式**：人做什么、Agent 做什么、用什么循环把"激发数学能力"落地。

@@ -110,6 +110,10 @@
 
 ## 深挖入口
 
+> **📖 书目信息**：Joseph A. Gallian, *Contemporary Abstract Algebra*, 8th Edition, Brooks/Cole, Cengage Learning, 2013. ISBN 978-1-133-59971-5.
+>
+> **启用方式**：将 `Contemporary Abstract Algebra.pdf` 放入项目根目录的 `math_book/` 文件夹，Agent 即可自动搜索原文。PDF 不随 npm/git 分发（版权原因），需自行获取。
+
 > **全保真回查 = Agent 自动搜索本地 PDF**：`math_book/Contemporary Abstract Algebra.pdf`。需要精确定义/定理/例子时，让 Agent 按下列真实章号定向略读，不要凭记忆；若安装环境没有 `math_book/`，停在本蒸馏稿层。
 
 - **Ch 5 Permutation Groups**——轨道 orbit / 稳定子 stabilizer：等变权重共享的根。

@@ -127,6 +127,10 @@
 
 ## 深挖入口
 
+> **📖 书目信息**：Jeffrey M. Lee, *Manifolds and Differential Geometry*, Graduate Studies in Mathematics Vol. 107, American Mathematical Society, 2009. ISBN 978-0-8218-4815-9.
+>
+> **启用方式**：将 `Manifolds and Differential Geometry.pdf` 放入项目根目录的 `math_book/` 文件夹，Agent 即可自动搜索原文。PDF 不随 npm/git 分发（版权原因），需自行获取。
+
 > 全保真回查 = 让 Agent **自动搜索本地 PDF** `math_book/Manifolds and Differential Geometry.pdf`（按章号 / 节号定位，勿凭记忆复述）。本摘要只给坐标，不替代原文。
 
 - **§6.8 Principal and Associated Bundles** + **§12.12 G-Connections**：规范等变的几何基础（主丛 + 联络 = 规范场）。

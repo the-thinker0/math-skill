@@ -150,6 +150,10 @@
 
 ## 深挖入口
 
+> **📖 书目信息**：Edwin K. P. Chong, Wu-Sheng Lu, Stanisław H. Żak, *An Introduction to Optimization, With Applications to Machine Learning*, 5th Edition, John Wiley & Sons, 2024. ISBN 978-1-119-87763-9.
+>
+> **启用方式**：将 `An Introduction to Optimization With Applications to Machine Learning.pdf` 放入项目根目录的 `math_book/` 文件夹，Agent 即可自动搜索原文。PDF 不随 npm/git 分发（版权原因），需自行获取。
+
 全保真回查 = 让 Agent 直接搜索本地 PDF
 `math_book/An Introduction to Optimization With Applications to Machine Learning.pdf`，按真实章号定位：
 

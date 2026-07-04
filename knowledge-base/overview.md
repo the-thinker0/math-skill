@@ -1,3 +1,5 @@
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `overview.en.md`。
+
 # 数学知识体系概述 / Mathematical Knowledge System Overview
 
 ## 概述

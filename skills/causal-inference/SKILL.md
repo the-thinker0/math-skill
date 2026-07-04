@@ -5,6 +5,8 @@ description: |
   English: Trigger when a problem concerns correlation≠causation, intervention/counterfactual reasoning, do-calculus, causal DAG modeling, confounder identification, policy/treatment effect estimation; or needs explicit causal assumptions for model interpretability, out-of-distribution generalization, or data-generating process modeling.
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # 🔗 因果推断思想 / Causal Inference
 
 > "相关不等于因果——但因果可以理清。关键区别：'看到X时Y如何'≠'如果做了X会怎样'"

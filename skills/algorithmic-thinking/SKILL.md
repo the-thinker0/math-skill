@@ -5,6 +5,8 @@ description: |
   English: Trigger when a problem needs finite-step solving, algorithm design, complexity analysis (time/space), tractability & parallelism assessment (P/NP-hard/undecidable); or termination/correctness proofs; or designing executable algorithms/operators for GPU (assessing complexity order, parallelism, memory access & fusion).
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # 🖥️ 算法与计算思想 / Algorithmic Thinking
 
 > "算法是思想的自动化——将洞察转化为可重复执行的精确步骤。"

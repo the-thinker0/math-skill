@@ -5,6 +5,8 @@ description: |
   English: Trigger when a problem needs to quantify uncertainty, measure information value as "information = reduction of uncertainty"; or compute entropy / mutual information / KL divergence / channel capacity, or design information criteria for compression / KV-cache compression / quantization / routing.
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # 📡 信息论思想 / Information Theory
 
 > "信息是不确定性的减少——知道更多意味着怀疑更少。"

@@ -5,9 +5,7 @@ description: |
   English: Trigger when measuring information value as "information = reduction of uncertainty," computing entropy/mutual information/KL divergence/channel capacity, or designing information criteria for compression/quantization/routing. Routes to ../skills/information-theory/SKILL.md.
 ---
 
-读取并遵循 `../skills/information-theory/SKILL.md`，按其操作规程输出（用于算法/算子/GPU 设计时含 [GPU 可行性] 项）。
-
-如果输入包含 "in English"，请使用英文输出；否则使用中文输出。
+若用户消息为英文，读取并遵循 `../skills/information-theory/SKILL.en.md`，按其操作规程输出；否则读取并遵循 `../skills/information-theory/SKILL.md`，按其操作规程输出（用于算法/算子/GPU 设计时含 [GPU 可行性] 项）。
 
 当前问题：
 $ARGUMENTS

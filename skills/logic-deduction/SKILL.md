@@ -5,6 +5,8 @@ description: |
   English: Trigger when checking proof rigor, formal logic analysis, premise auditing, predicate logic verification, quantifier structure analysis, discovering logical loopholes; or doing formal derivation and proof verification for algorithm correctness or invariants.
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # 🧠 逻辑演绎 / Logic Deduction
 
 > "逻辑是数学的家规——一切推理必须在形式规则的监督下进行。"

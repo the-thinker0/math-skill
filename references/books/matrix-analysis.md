@@ -130,6 +130,10 @@
 
 ## 深挖入口
 
+> **📖 书目信息**：Roger A. Horn & Charles R. Johnson, *Matrix Analysis*, 2nd Edition, Cambridge University Press, 2013. ISBN 978-0-521-83940-2.
+>
+> **启用方式**：将 `Matrix Analysis.pdf` 放入项目根目录的 `math_book/` 文件夹，Agent 即可自动搜索原文。PDF 不随 npm/git 分发（版权原因），需自行获取。
+
 **全保真回查 = 让 Agent 自动搜索本地 PDF `math_book/Matrix Analysis.pdf`**：用 `pdftotext` 抽取 → `grep` 定位关键词/定理名 → `Read` 命中页精读。本文件是"激活索引"，不是替代品；需要精确陈述、证明或常数时，回原书核对。
 
 值得深读的真实章节：

@@ -1,6 +1,6 @@
 {
   "name": "math-skill",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "数学思想武器 v2：自动触发的现代数学能力激活器，把代数几何/微分几何/李理论等现代数学激活到算法与 GPU 协同设计研究中——既在 math 上 beautiful，又 GPU friendly。Mathematical Thinking Weapons v2: an auto-triggered activator that brings modern mathematics (algebraic geometry, differential geometry, Lie theory, …) into algorithm & GPU co-design research — beautiful in math, friendly to GPUs.",
   "keywords": [
     "math",
@@ -41,7 +41,8 @@
     "agentic-workflow",
     "auto-trigger",
     "co-design",
-    "research"
+    "research",
+    "bilingual"
   ],
   "license": "MIT",
   "author": "the-thinker0",
@@ -55,6 +56,7 @@
   },
   "files": [
     "README.md",
+    "README.en-US.md",
     "LICENSE",
     "commands/",
     "skills/",

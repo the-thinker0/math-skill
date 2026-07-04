@@ -5,6 +5,8 @@ description: |
   English: Trigger when you need to count, enumerate, find patterns in finite structures, or handle graph theory, combinatorial structures, generating functions, recurrences; or design combinatorial schemes for sparse/routing/topological structures.
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # 🧮 离散与组合思想 / Discrete & Combinatorial
 
 > "计数是最古老的数学活动——有限对象蕴含无限规律。"

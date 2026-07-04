@@ -5,6 +5,8 @@ description: |
   English: Trigger for topological data analysis (TDA), persistent homology, homology/fundamental group computation, simplicial complexes & filtrations; or designing connectivity/robustness/cohomology-consistency criteria (e.g. Čech cohomology as hallucination regularizer, sheaf attention) for algorithms.
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # 🌀 拓扑思想 / Topological Thinking
 
 > "可以拉伸弯曲但不能撕裂——真正重要的性质在连续变形中不变。"

@@ -5,6 +5,8 @@ description: |
   English: Trigger when a problem involves quantifying uncertainty, probability distributions, Bayesian inference, hypothesis testing, regression modeling, experimental design, causal effect estimation; or designing probabilistic mechanisms for random algorithms/sampling/quantization/training dynamics.
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # 🎲 概率与统计 / Probability & Statistics
 
 > "不确定性是可量化的——概率不只是数学公式，而是理解随机世界的方式。量化不确定性，从数据中提取规律，做出理性的推断和决策。"

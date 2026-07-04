@@ -5,6 +5,8 @@ description: |
   English: Trigger when optimal strategy depends on others' choices, needing Nash equilibrium computation, zero-sum/non-zero-sum analysis, mechanism design; or designing strategies for multi-agent systems, adversarial training, routing games.
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # 🎯 博弈论思想 / Game Theory
 
 > "你的最优选择取决于他人的选择——思考不仅要深入，还要互动。"

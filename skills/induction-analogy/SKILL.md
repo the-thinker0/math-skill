@@ -5,6 +5,8 @@ description: |
   English: Trigger when finding patterns from data/experience, specific→general, known→unknown, mathematical induction proofs (weak/strong/structural/transfinite), cross-domain analogical transfer of structures, or borrowing structures from other fields for algorithm/operator design.
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # 📈 归纳与类比 / Induction & Analogy
 
 > "从特殊到一般，从已知到未知——归纳发现规律，类比迁移经验，两者都不等于证明"

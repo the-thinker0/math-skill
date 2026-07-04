@@ -5,6 +5,8 @@ description: |
   English: Trigger when a problem is intractable in its current representation and needs a mathematical transform into an equivalent simpler problem; or finding an equivalent but more GPU-friendly representation (e.g. convolution→GEMM, spectral transform) for algorithm/operator design.
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # 🔄 变换思想 / Transformation
 
 > "复杂问题→等价简单问题，关键是找到合适的变换和逆变换。"

@@ -5,9 +5,7 @@ description: |
   English: Trigger when doing topological data analysis/persistent homology/homology and fundamental group computation, or designing connectivity/robustness/cohomology-consistency criteria for algorithms. Routes to ../skills/topological-thinking/SKILL.md.
 ---
 
-读取并遵循 `../skills/topological-thinking/SKILL.md`，按其操作规程输出（用于算法/算子/GPU 设计时含 [GPU 可行性] 项）。
-
-如果输入包含 "in English"，请使用英文输出；否则使用中文输出。
+若用户消息为英文，读取并遵循 `../skills/topological-thinking/SKILL.en.md`，按其操作规程输出；否则读取并遵循 `../skills/topological-thinking/SKILL.md`，按其操作规程输出（用于算法/算子/GPU 设计时含 [GPU 可行性] 项）。
 
 当前问题：
 $ARGUMENTS

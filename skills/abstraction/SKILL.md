@@ -5,6 +5,8 @@ description: |
   English: Trigger when extracting mathematical structures from complex problems, discovering cross-domain commonalities, building general theories; or finding transferable abstract structures (category/algebra/topology) for algorithm/operator design.
 ---
 
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+
 # 🧩 抽象化思想 / Abstraction
 
 > "数学的力量在于抽象：忽略偶然细节，揭示必然结构。"

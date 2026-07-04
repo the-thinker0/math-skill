@@ -103,6 +103,10 @@
 
 ## 深挖入口
 
+> **📖 书目信息**：Joan Solà, Jérémie Deray, Dinesh Atchuthan, *A micro Lie theory for state estimation in robotics*, arXiv:1812.01537v9, 2021. 配套开源 C++ 库 [manif](https://github.com/artivis/manif)。
+>
+> **启用方式**：将 `A micro Lie theory.pdf` 放入项目根目录的 `math_book/` 文件夹，Agent 即可自动搜索原文。PDF 不随 npm/git 分发（版权原因），需自行获取。
+
 > 全保真回查 = 让 Agent 自动检索本地 PDF：`math_book/A micro Lie theory.pdf`（用 `pdftotext` 或 Read PDF pages）。下列为该 PDF 内的真实章节/公式块定位：
 
 1. **§II-D 指数映射 + Fig. 1**：exp/log 与大写 Exp/Log 算子（式 23–24）——流形↔切空间桥梁与闭式来源；配 Ex. 3（SO(3) 的李代数 `[ω]×`）、Ex. 4（SO(3) 的 exp = Rodrigues）。

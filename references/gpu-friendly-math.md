@@ -1,3 +1,5 @@
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `gpu-friendly-math.en.md`。
+
 # GPU 友好性总清单 / GPU-Friendly Math Checklist
 
 > 本文件是「GPU 可行性」验收门的**唯一权威来源（single source of truth）**。
