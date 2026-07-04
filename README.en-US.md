@@ -12,7 +12,7 @@
 
 ---
 
-> **If this project inspires you, please consider leaving a Star.** Every Star is a resonance with the beauty of mathematics — and the fuel that keeps this project alive. Welcome, every fellow traveler who loves math and sails its vast ocean.
+> **If this project inspires you, please consider leaving a Star⭐.** Every Star is a resonance with the beauty of mathematics — and the fuel that keeps this project alive. Welcome, every fellow traveler who loves math and sails its vast ocean.
 
 ---
 
