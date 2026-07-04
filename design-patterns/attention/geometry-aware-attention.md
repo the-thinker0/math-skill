@@ -6,7 +6,7 @@
 
 ## 数学思想来源
 - 透镜：[symmetry（对称透镜 — 度量不变性）, duality（对偶透镜 — 坐标系无关表达）]
-- 知识：[`information-geometry/fisher-metric.md`（分布空间的几何度量）, `probability/concentration-inequality.md`（几何约束下的浓度行为）]
+- 知识：[`../../knowledge-base/information-geometry/fisher-metric.md`（分布空间的几何度量）, `../../knowledge-base/probability/concentration-inequality.md`（几何约束下的浓度行为）]
 
 ## 需要的数学知识
 - **度量空间与距离函数**：欧氏距离、测地距、树距离、Wasserstein 距离

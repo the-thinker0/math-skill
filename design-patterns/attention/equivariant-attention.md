@@ -6,7 +6,7 @@
 
 ## 数学思想来源
 - 透镜：[symmetry（对称透镜）, categorical（范畴化透镜 — 群作用的统一框架）]
-- 知识：[`probability/concentration-inequality.md`（等变约束下的样本效率提升 — 轨道上的数据等价性）, `probability/entropy.md`（等变约束降低输出分布熵 → 更强的归纳偏置）]
+- 知识：[`../../knowledge-base/probability/concentration-inequality.md`（等变约束下的样本效率提升 — 轨道上的数据等价性）, `../../knowledge-base/probability/entropy.md`（等变约束降低输出分布熵 → 更强的归纳偏置）]
 
 ## 需要的数学知识
 - **群表示论基础**：群 $G$ 的线性表示 $\rho: G \to GL(V)$，不可约表示分解

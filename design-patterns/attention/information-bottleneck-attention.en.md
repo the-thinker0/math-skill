@@ -7,7 +7,7 @@ When the attention mechanism needs to **selectively transmit useful information 
 
 ## Mathematical Inspiration
 - Lenses: [categorical (information-theoretic framework unifying attention design), variational (constrained variational and Lagrangian duality)]
-- Knowledge: [`probability/information-bottleneck.md` (IB objective and variational lower bound), `probability/kl-divergence.md` (implementation of KL regularization), `probability/entropy.md` (mutual information estimation)]
+- Knowledge: [`../../knowledge-base/probability/information-bottleneck.md` (IB objective and variational lower bound), `../../knowledge-base/probability/kl-divergence.md` (implementation of KL regularization), `../../knowledge-base/probability/entropy.md` (mutual information estimation)]
 
 ## Required Mathematical Knowledge
 - **Information Bottleneck Objective**: $\min I(X;Z) - \beta I(Z;Y)$, balancing compression and prediction

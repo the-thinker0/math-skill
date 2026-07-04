@@ -6,7 +6,7 @@
 
 ## 数学思想来源
 - 透镜：[duality（对偶透镜 — 频域变换）, symmetry（对称透镜 — 循环/平移不变性）]
-- 知识：[`probability/entropy.md`（谱熵度量信号复杂度）, `probability/concentration-inequality.md`（频域浓度不等式）]
+- 知识：[`../../knowledge-base/probability/entropy.md`（谱熵度量信号复杂度）, `../../knowledge-base/probability/concentration-inequality.md`（频域浓度不等式）]
 
 ## 需要的数学知识
 - **离散傅里叶变换 DFT / FFT**：$O(n \log n)$ 频域变换，循环卷积定理

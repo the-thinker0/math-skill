@@ -169,19 +169,6 @@ if ($packOutput -match "design-patterns/") {
     Write-Host "[FAIL] npm pack missing design-patterns/" -ForegroundColor Red; $script:fail++
 }
 
-# --- Results ---
-Write-Host "`n========================================"
-Write-Host "  Results: $($script:pass) passed, $($script:fail) failed, $($script:warn) warnings"
-Write-Host "========================================"
-
-if ($script:fail -eq 0) {
-    Write-Host "All checks passed!" -ForegroundColor Green
-    exit 0
-} else {
-    Write-Host "Some checks failed!" -ForegroundColor Red
-    exit 1
-}
-
 # --- CN/EN Pairing (synced with validate.sh) ---
 Write-Host "`n--- CN/EN File Pairing ---"
 $cnLenses = Get-ChildItem -Path "lenses" -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" }
@@ -216,3 +203,17 @@ if ($xrefFail -eq 0) {
     Write-Host "[PASS] All cross-references resolved" -ForegroundColor Green
     $script:pass++
 }
+
+# --- Results ---
+Write-Host "`n========================================"
+Write-Host "  Results: $($script:pass) passed, $($script:fail) failed, $($script:warn) warnings"
+Write-Host "========================================"
+
+if ($script:fail -eq 0) {
+    Write-Host "All checks passed!" -ForegroundColor Green
+    exit 0
+} else {
+    Write-Host "Some checks failed!" -ForegroundColor Red
+    exit 1
+}
+

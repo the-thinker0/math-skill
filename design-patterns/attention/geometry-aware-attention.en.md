@@ -7,7 +7,7 @@ When **known geometric relationships** exist between tokens/keys (spatial distan
 
 ## Mathematical Inspiration
 - Lenses: [symmetry (metric invariance), duality (coordinate-system-independent representation)]
-- Knowledge: [`information-geometry/fisher-metric.md` (geometric metrics on distribution spaces), `probability/concentration-inequality.md` (concentration behavior under geometric constraints)]
+- Knowledge: [`../../knowledge-base/information-geometry/fisher-metric.md` (geometric metrics on distribution spaces), `../../knowledge-base/probability/concentration-inequality.md` (concentration behavior under geometric constraints)]
 
 ## Required Mathematical Knowledge
 - **Metric Spaces and Distance Functions**: Euclidean distance, geodesic distance, tree distance, Wasserstein distance

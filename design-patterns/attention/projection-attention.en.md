@@ -7,7 +7,7 @@ When the token/key space dimensionality is too high, the standard attention $Q K
 
 ## Mathematical Inspiration
 - Lenses: [projection, spectral, probabilistic]
-- Knowledge: [`probability/concentration-inequality.md` (high-dimensional concentration inequalities provide theoretical explanation for attention collapse), `probability/entropy.md` (entropy of attention distributions as a quality metric)]
+- Knowledge: [`../../knowledge-base/probability/concentration-inequality.md` (high-dimensional concentration inequalities provide theoretical explanation for attention collapse), `../../knowledge-base/probability/entropy.md` (entropy of attention distributions as a quality metric)]
 
 ## Required Mathematical Knowledge
 - **Johnson-Lindenstrauss Lemma**: High-dimensional point sets can be projected onto an $O(\log n / \epsilon^2)$-dimensional subspace while approximately preserving distances
@@ -62,7 +62,7 @@ scores = (Q @ eigenvecs) @ (K @ eigenvecs).T / sqrt(r)
 - **Dimension 8 Operator Fusion**: Projection can be fused into FlashAttention's online softmax loop
 
 ## Paper Phrasing
-"We decompose attention computation into two steps -- low-dimensional subspace projection and projected-space attention -- achieving a $d/r$-fold KV-Cache compression while preserving attention quality and guaranteeing Johnson-Lindenstrauss distance preservation."
+"We decompose attention computation into two steps -- low-dimensional subspace projection and projected-space attention -- achieving a $d/r$-fold Key-cache compression (full KV-Cache compression requires separate V compression/reconstruction) while preserving attention quality and guaranteeing Johnson-Lindenstrauss distance preservation."
 
 ## Risks
 - **Projection Direction Degeneracy**: Learnable projections may collapse onto a few directions (deterioration of the condition number of $P^T P$), causing attention distributions to degenerate. Orthogonal regularization $\|P^T P - I\|_F^2$ is required.

@@ -6,7 +6,7 @@
 
 ## 数学思想来源
 - 透镜：[categorical（范畴化透镜 — 信息论框架统一注意力设计）, variational（变分透镜 — 约束优化与拉格朗日对偶）]
-- 知识：[`probability/information-bottleneck.md`（IB 目标函数与变分下界）, `probability/kl-divergence.md`（KL 正则项的实现）, `probability/entropy.md`（互信息估计）]
+- 知识：[`../../knowledge-base/probability/information-bottleneck.md`（IB 目标函数与变分下界）, `../../knowledge-base/probability/kl-divergence.md`（KL 正则项的实现）, `../../knowledge-base/probability/entropy.md`（互信息估计）]
 
 ## 需要的数学知识
 - **信息瓶颈 IB 目标**：$\min I(X;Z) - \beta I(Z;Y)$，压缩-预测权衡

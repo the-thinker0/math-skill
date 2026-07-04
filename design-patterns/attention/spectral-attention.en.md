@@ -7,7 +7,7 @@ When the input signal exhibits **frequency-domain/spectral structure** (periodic
 
 ## Mathematical Inspiration
 - Lenses: [duality (frequency-domain transform), symmetry (cyclic/translation invariance)]
-- Knowledge: [`probability/entropy.md` (spectral entropy for measuring signal complexity), `probability/concentration-inequality.md` (frequency-domain concentration inequalities)]
+- Knowledge: [`../../knowledge-base/probability/entropy.md` (spectral entropy for measuring signal complexity), `../../knowledge-base/probability/concentration-inequality.md` (frequency-domain concentration inequalities)]
 
 ## Required Mathematical Knowledge
 - **Discrete Fourier Transform (DFT/FFT)**: $O(n \log n)$ frequency-domain transform and the cyclic convolution theorem

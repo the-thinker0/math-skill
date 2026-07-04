@@ -7,7 +7,7 @@ When the input possesses an **explicit symmetry group $G$ action** (rotation, tr
 
 ## Mathematical Inspiration
 - Lenses: [symmetry, categorical (unified framework for group actions)]
-- Knowledge: [`probability/concentration-inequality.md` (sample efficiency gains under equivariant constraints -- data equivalence along orbits), `probability/entropy.md` (equivariant constraints reduce output distribution entropy, yielding stronger inductive bias)]
+- Knowledge: [`../../knowledge-base/probability/concentration-inequality.md` (sample efficiency gains under equivariant constraints -- data equivalence along orbits), `../../knowledge-base/probability/entropy.md` (equivariant constraints reduce output distribution entropy, yielding stronger inductive bias)]
 
 ## Required Mathematical Knowledge
 - **Group Representation Theory Basics**: Linear representation of a group $G$, $\rho: G \to GL(V)$, and irreducible representation decomposition
