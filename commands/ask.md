@@ -1,18 +1,11 @@
 ---
 name: ask
 description: |
-  手动调用数学研究激活器（武器选择器）：当你明确想把现代数学激活进算法/GPU 设计时使用。注意：纯工程任务（debug、代码审查、重构、调参）不适合本命令。
-  English: Manually invoke the math research activator (weapon selector): when you explicitly want to activate modern mathematics into algorithm/GPU design. Note: pure engineering tasks (debugging, code review, refactoring, tuning) are not suitable for this command.
+  数学研究操作系统入口：自动诊断用户意图，路由到思想透镜、数学知识库或设计翻译层。
+  English: Math Research OS entry: auto-diagnose user intent, route to thinking lenses, math knowledge base, or design translation layer.
 ---
 
-若用户消息为英文，读取并遵循 `../skills/math-research-activator/SKILL.en.md`；否则读取并遵循 `../skills/math-research-activator/SKILL.md`，按其操作规程输出。
+若用户消息为英文，读取并遵循 `../skills/math-research-activator/SKILL.en.md`；否则读取并遵循 `../skills/math-research-activator/SKILL.md`。
 
 当前问题：
 $ARGUMENTS
-
-输出要求（遵循激活器操作规程）：
-1. **[诊断]** 一句话点明问题核心特征/瓶颈（互动性/不确定性/约束/结构/动态/复杂度/显存/数值/并行）。
-2. **[映射]** 枚举可迁移的现代数学结构候选（≥2 个，标注来自哪本书 `../references/books/*`）；若与算法/算子设计无关可略。
-3. **[武器路由]** 推荐 1–3 个思想武器，标主/辅 + 触发命令（如 `/optimization`）；多个时说明组合顺序。
-4. **[GPU 筛选]** 候选过 `../references/gpu-friendly-math.md` 八维，给「友好/可改造/不友好」+ 改造建议；若与硬件无关可略。
-5. **[结论]** 保留通过双验收门的候选；标注哪些武器不适用；若不适合任何武器，明确说明。

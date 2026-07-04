@@ -1,136 +1,186 @@
 ---
 name: math-research-activator
 description: |
-  自动触发（需同时满足环境+任务双重信号）：仅当用户在**设计或改进**新的模型架构/算子/注意力机制，或**分析**算法理论性质（复杂度、收敛性、表达力），或**迁移**现代数学结构（代数几何、微分几何、李理论、抽象代数、矩阵分析、最优化）到算法/GPU 协同设计时使用。不触发于：代码审查、debug、参数传递核查、重构、调参、loss 实现修改等纯工程任务。也作为手动 /ask 入口（武器选择器）。
-  English: Auto-trigger (requires BOTH environment AND task signals): only when **designing/improving** new model architectures/operators/attention mechanisms, **analyzing** algorithm theoretical properties (complexity, convergence, expressivity), or **transferring** modern math structures (algebraic geometry, differential geometry, Lie theory, abstract algebra, matrix analysis, optimization) into algorithm/GPU co-design. Does NOT trigger for: code review, debugging, parameter tracing, refactoring, hyperparameter tuning, or loss implementation edits. Also the manual /ask entry (weapon selector).
+  数学研究操作系统：自动诊断用户意图，路由到思想透镜、数学知识库或设计翻译层。触发于设计/改进模型架构/算子/注意力、分析理论性质、迁移数学结构到 AI 设计。不触发于纯工程任务（debug、重构、调参）。
+  English: Mathematical research OS — auto-diagnoses user intent, routes to thinking lenses, math knowledge base, or design translation layer. Triggers on architecture/operator design, theoretical analysis, math-to-AI transfer. Does NOT trigger for pure engineering tasks.
 ---
 
-> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`，按其操作规程以英文输出；中文消息则继续使用本文件。
+> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`；中文消息则继续使用本文件。
 
-# 🧭 数学研究激活器 / Math Research Activator
+# 🧭 数学研究操作系统 / Math Research OS
 
-> "模型内部已有足够的数学知识，缺的只是一次跨领域的激活。人选方向，Agent 搜索、枚举、验证。"
-> "The model already holds enough mathematics inside; what's missing is a cross-domain activation. The human picks the direction; the agent searches, enumerates, verifies."
+> "思想系统不负责给定理，知识系统不负责乱启发，设计层不负责装深刻。"
 
-## 核心原则 / Core Principle
+本系统是面向 AI 架构创新的数学参谋部——不是武器库，而是告诉你：**这场仗是什么仗、该用什么兵种、怎么部署、哪里会翻车。**
 
-**不做大段数学科普。** 一旦触发，立即进入「诊断 → 映射 → GPU 筛选」三步，把现代数学激活进算法/硬件设计，并让每个产出过**双验收门**：
+## 三层正交架构
 
-1. **数学正确（beautiful in math）**——自洽、可微（或可松弛为可微）、有正确性保证。
-2. **GPU 可行（friendly to GPU）**——见 `../../references/gpu-friendly-math.md` 八维。
+| 层 | 职责 | 目录 | 核心问题 |
+|----|------|------|---------|
+| **思想透镜** | 诊断问题结构，推荐数学视角 | `lenses/*.md` | 这个问题该用什么视角看？ |
+| **数学知识** | 提供具体数学工具（定义/定理/公式） | `knowledge-base/*/*.md` | 这个视角需要哪些具体数学？ |
+| **设计翻译** | 把数学变成 AI 模块/loss/算子 | `design-patterns/*/*.md` | 这些数学怎么变成模型结构？ |
 
-> 这是本技能包的**唯一自动入口**。它按需加载方法论层（`../../references/agentic-workflow.md`、`../../references/gpu-friendly-math.md`）、书籍激活层（`../../references/books/*.md`）和 16 个思想武器（同级目录 `../*/SKILL.md`），常驻只保留最短的触发与诊断逻辑——渐进式披露，省 token。
+辅助层：
+- `references/books/*.md`：7 本书的蒸馏稿，需要深入时的完整上下文
+- `references/gpu-friendly-math.md`：GPU 八维验收门（唯一权威）
+- `agents/math-critic.md`：数学-工程双重批判器
 
-## 何时自动介入 / When to Auto-Engage
+## 意图诊断（5 场景）
 
-**必须同时满足「环境信号」AND「任务信号」才考虑介入（缺一不可）：**
+| 场景 | 诊断信号 | 调用路径 |
+|------|---------|---------|
+| **A. 问题分析** | "这个设计合理吗？""逻辑链有没有漏洞？" | 透镜 → critic |
+| **B. 机制设计** | "设计新 attention""把 X 迁移到 Y" | 透镜 → 知识 → 设计 → critic |
+| **C. 知识查询** | "流形上的切空间是什么？""投影定理怎么用？" | 知识 |
+| **D. 验证审查** | "这个公式成立吗？""loss 能保证什么？" | 知识 → critic |
+| **E. 纯工程** | debug、重构、调参、代码审查 | **不调用数学系统** |
 
-### Gate 0 · 排除门（优先判定，命中即不介入）
+## 透镜库（15 个数学视角）
 
-以下任务**无论工作区含什么代码**都不得触发本激活器：
-- 代码审查 / debug / 参数传递链核查 / 接口一致性检查
-- 重构、重命名、删除冗余代码、清理死代码
-- 构建 / 打包 / CI / 部署 / 环境配置
-- 纯事实查询（"这个函数干什么"、"这个参数传给了谁"）
-- 通用软件工程（文件 I/O、网络、数据加载、日志）
-- 训练脚本调参、超参搜索、实验对比
-- 添加 / 修改 loss 项的实现细节（非设计新 loss 的数学结构）
+每个透镜回答：这是什么视角？适合诊断什么问题？会路由到哪些知识域？
 
-**判断口诀：如果任务可以用"阅读代码 → 追踪调用链 → 报告结果"完成，就不需要数学武器。**
+| 透镜 | 文件 | 核心视角 |
+|------|------|---------|
+| 公理化 | `lenses/axiomatization.md` | 审查假设的相容性/独立性/完备性 |
+| 对偶 | `lenses/duality.md` | 转换到对偶空间暴露约束与不变量 |
+| 对称性 | `lenses/symmetry.md` | 变换下的不变量与守恒律 |
+| 谱分解 | `lenses/spectral.md` | 特征值/奇异值揭示主导结构 |
+| 几何 | `lenses/geometric.md` | 度量/曲率/流形上的空间结构 |
+| 投影与分解 | `lenses/projection.md` | 正交分解、子空间分离、冲突消除 |
+| 变分 | `lenses/variational.md` | 约束下极值、能量最小化 |
+| 局部到整体 | `lenses/local-to-global.md` | 局部性质拼接为全局、层上同调障碍 |
+| 拓扑 | `lenses/topological.md` | 连续变形不变量、连通性、空洞 |
+| 范畴化 | `lenses/categorical.md` | 泛性质、函子、自然变换 |
+| 扰动 | `lenses/perturbation.md` | 小扰动的传播、稳定性、鲁棒性 |
+| 因果 | `lenses/causal.md` | 相关≠因果、干预、反事实 |
+| 博弈 | `lenses/game.md` | 多方策略互动、均衡、机制设计 |
+| 概率统计 | `lenses/probabilistic.md` | 量化不确定性、贝叶斯更新 |
+| 算法 | `lenses/algorithmic.md` | 复杂度、可行性、并行性 |
 
-### Gate 1 · 环境信号（必要条件，非充分条件）
+## 知识库（按数学领域组织）
 
-工作区含以下至少一类：
-- 模型架构核心代码（非训练脚本/数据管道）：attention/transformer/MoE 实现、`*.cu`/`*.cuh`/kernel、Triton/CUDA 算子。
-- 算法研究笔记 / 论文审查文档。
-- 新架构 / 新算子的设计稿或数学推导。
+每个知识卡片回答：最小定义、核心公式、适用问题、AI 设计翻译、工程可行性、风险。
 
-> 仅有 `model.py`、`trainer.py`、`config.json` 等常规 ML 工程文件**不构成环境信号**。
+| 领域 | 目录 | 知识卡片 |
+|------|------|---------|
+| 矩阵分析 | `knowledge-base/matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
+| 最优化 | `knowledge-base/optimization/` | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
+| 微分几何 | `knowledge-base/differential-geometry/` | manifold, tangent-space, metric-tensor, geodesic, curvature, connection |
+| 李理论 | `knowledge-base/lie-theory/` | group-action, lie-group, lie-algebra, representation, equivariance |
+| 拓扑 | `knowledge-base/topology/` | persistent-homology, euler-characteristic, fundamental-group |
+| 概率与信息 | `knowledge-base/probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
+| 信息几何 | `knowledge-base/information-geometry/` | natural-gradient, fisher-metric |
 
-### Gate 2 · 任务信号（必要条件，非充分条件）
+## 设计模式库（按 AI 组件组织）
 
-用户当前任务明确涉及以下至少一项：
-- **设计或改进**一个新的模型架构 / 算子 / 注意力机制（非修复已有实现）。
-- **选择或论证**数学结构的适用性（如"该不该用流形约束"、"这个结构有没有等变性"）。
-- **分析**算法的理论性质（复杂度下界、收敛性、表达力、信息瓶颈）。
-- 把某个数学领域的结构**迁移**到算法/GPU 设计中。
+每个设计模式回答：数学来源、AI 模块形式、可实现结构、GPU 可行性、论文表述、风险。
 
-> 如果任务信号仅为"代码跑不通"、"参数没传过去"、"loss 没生效"等工程问题，即使环境信号命中也**不触发**。
+| 组件类型 | 目录 | 模式 |
+|---------|------|------|
+| 注意力 | `design-patterns/attention/` | projection-attention, spectral-attention, equivariant-attention, geometry-aware-attention, information-bottleneck-attention |
+| 损失函数 | `design-patterns/loss/` | orthogonality-loss, contrastive-loss, variational-loss, information-bottleneck-loss, constraint-penalty |
+| 路由 | `design-patterns/routing/` | optimal-transport-routing, graph-routing, moe-routing, spectral-clustering-routing |
+| 表示 | `design-patterns/representation/` | shared-private-decomposition, manifold-representation, equivariant-split, subspace-alignment |
+| 压缩 | `design-patterns/compression/` | low-rank-kv-cache, spectral-token-pruning, topology-preserving-compression, leverage-score-selection |
 
-**不介入 / When NOT to use：**
-- Gate 0 命中（排除门）。
-- Gate 1 或 Gate 2 任一未命中。
-- 问题不属于数学能帮助的范畴。
+## 自动触发条件
 
-## 主流程 / The Activation Loop
+**必须同时满足 Gate 1 + Gate 2 + Gate 3 才介入：**
 
-> 详细工作方式见 `../../references/agentic-workflow.md`（Human-in-the-Agent-Loop）。
+### Gate 0 · 排除门（最高优先级）
+以下任务**无论工作区含什么**都不触发：代码审查、debug、重构、调参、构建部署、纯事实查询、通用软件工程。
 
-1. **诊断 / Diagnose**：算法结构或瓶颈是什么？（复杂度？显存/KV？数值？并行？表达力？）
-2. **映射 / Map**：用「现代数学工具箱」（下）扫描可迁移的结构，**枚举多个候选**（发挥大上下文优势，别只给一个）。
-3. **路由 / Route**：选 1–3 个思想武器深入（决策树见下）。
-4. **GPU 筛选 / Screen**：每个候选过 `../../references/gpu-friendly-math.md` 八维，给「友好/可改造/不友好」+ 改造建议。
-5. **双验收门 / Gate**：只保留**数学正确 AND（八维友好或可改造）**的候选。
-6. **追踪 / Track**：复杂探索用 markdown testplan 表（模板见 agentic-workflow.md）迭代收敛。
+### Gate 1 · 环境信号
+工作区含架构核心代码（attention/transformer/MoE、`*.cu`/kernel）或研究笔记。仅 `model.py`、`trainer.py` 等常规文件**不构成**环境信号。
 
-八维正式术语必须保持一致：**张量化 / GEMM 可映射 / 复杂度 / 显存与 KV-Cache / 低精度稳定 / 并行与通信 / 稀疏结构 / 算子融合**。不要用只覆盖部分维度的模糊判断替代八维门。
+### Gate 2 · 任务信号
+用户任务涉及**设计/改进**新架构/算子、**分析**理论性质、或**迁移**数学结构到 AI 设计。
 
-## 思想武器路由决策树 / Weapon Routing
+### Gate 3 · 意图匹配
+用户意图匹配场景 A/B/C/D 之一。纯工程任务匹配场景 E → 不介入。
 
-按问题核心特征匹配（最多选 3 个，标主/辅）：
+## 主流程
 
-1. **多方互动**（我的最优取决于他人）→ `/game-theory`（主）；涉资源分配＋`/optimization`；信息不对称＋`/information-theory`
-2. **不确定性/随机性** → `/probability-statistics`（主）；需因果而非相关＋`/causal-inference`
-3. **约束下求最优** → `/optimization`（主）；需先建模＋`/modeling`（前置）
-4. **当前形式难处理，需换视角/化简** → `/transformation`（主）
-5. **需提取本质结构** → `/abstraction`（主）；验证假设＋`/axiomatization`；简化＋`/symmetry-invariance`
-6. **需严格推理验证** → `/logic-deduction`（主）；验证前提＋`/axiomatization`
-7. **从数据/经验找规律** → `/induction-analogy`（主）；跨域迁移＋`/abstraction`
-8. **构建预测/解释模型** → `/modeling`（主）；优化＋`/optimization`；不确定＋`/probability-statistics`
-9. **变化中的不变性/守恒/等变** → `/symmetry-invariance`（主）；连通结构＋`/topological-thinking`
-10. **化为可执行步骤/评估可行性与复杂度** → `/algorithmic-thinking`（主）
-11. **压缩/编码/信息瓶颈/KV-Cache 压缩/量化** → `/information-theory`（主）；涉及表示变换＋`/transformation`；涉及路由信息增益＋`/game-theory`
-12. **有限对象的计数/枚举/结构** → `/discrete-combinatorial`（主）
+### 第一步：诊断意图
+1. 判断用户意图属于场景 A/B/C/D/E 哪个
+2. 提取问题核心张力：想保留什么？想抑制什么？约束是什么？工程瓶颈是什么？
+3. 输出问题类型分类
 
-> **现代数学优先提示**：当问题是「设计/改进算子或结构」时，路由武器的同时**务必先开现代数学工具箱**——很多突破来自把代数几何/微分几何/李理论的结构迁移过来，而非只在经典工具里打转。
+### 第二步：路由调用
 
-## 现代数学工具箱（Layer 3 · 按需加载）/ Modern-Math Toolbox
+```
+场景 A（分析）：选 1-3 个透镜 → 输出视角诊断 → critic 审查
+场景 B（设计）：选 1-3 个透镜 → 查知识卡片 → 生成设计模式 → critic 审查
+场景 C（查询）：直接加载知识卡片 → 按知识激活协议输出
+场景 D（验证）：加载知识卡片 → critic 审查条件与边界
+场景 E（工程）：不介入
+```
 
-按问题类型加载对应书籍激活文件（`../../references/books/`）：
+### 第三步：输出格式
 
-| 触发信号 | 加载 | 典型激活 |
-|---------|------|---------|
-| 算子=矩阵乘/谱/低秩/数值稳定 | `matrix-analysis.md` | GEMM 化、低秩压缩、谱归一化、预条件 |
-| 训练/收敛/优化器/约束 | `optimization-ml.md` | 自适应/二阶优化的可行性、对偶求解 |
-| 对称/等变/半环/置换不变 | `abstract-algebra.md` | 群等变层、热带半环路由、有限域编码 |
-| 流形约束/隐空间几何/可微结构 | `smooth-manifolds.md` | 流形优化、Stiefel/正交约束、测地插值 |
-| 度量/曲率/自然梯度/规范/纤维丛 | `differential-geometry.md` | 自然梯度/K-FAC、信息几何、gauge 等变 |
-| 位姿/SO(3)/SE(3)/状态估计/等变 | `micro-lie-theory.md` | 李群优化、SE(3) 等变、流形损失 |
-| 注意力/稀疏/全局一致性/KV 压缩 | `algebraic-geometry-rising-sea.md` | sheaf 注意力、Čech 上同调正则、Plücker KV、热带门控 |
+**场景 A/B 输出**：
+1. **[诊断]** 问题类型 + 核心张力
+2. **[透镜]** 推荐 1-3 个数学视角（标注为什么适合/不适合）
+3. **[知识]**（仅场景 B）需要的具体数学工具（引用知识卡片）
+4. **[设计]**（仅场景 B）候选 AI 模块草案（引用设计模式）
+5. **[GPU]** 候选过八维门（友好/可改造/不友好）
+6. **[结论]** 保留通过双验收门的候选 + 下一步建议
 
-## 深挖回查协议 / Deep-Dive Protocol
+**场景 C 输出**（知识激活协议）：
+1. 最小定义
+2. 核心公式
+3. 适用问题
+4. AI 设计翻译
+5. 工程可行性
+6. 风险与失效条件
+7. 深入参考（书蒸馏稿 / 原书路径）
 
-- **轻度**：读 `../../references/books/<book>.md`（蒸馏稿，发布即带，自足）。
-- **深度（需原文全保真）**：若本机存在 `math_book/<对应 PDF>`，**让 Agent 自动搜索**——`pdftotext "math_book/<file>.pdf" -` → grep 关键词 → Read 命中页。**不依赖预埋锚点。**
-- 无 PDF（如 npm 安装的他机）：停在蒸馏稿层，依然自足可用。
-
-## 范例：Tropical Sheaf Attention / Worked Example
-
-一个研究候选样板（详见 `../../references/gpu-friendly-math.md`）：热带门控（半环分段线性替代 Top-K）＋胞腔层扩散（每边低秩限制映射＝小 GEMM）＋Čech 上同调正则（H¹ 作结构一致性信号）＋Plücker KV 压缩。把它当作「math beautiful × GPU friendly」的探索模板：逐项验证复杂度、显存、低精度稳定性与 kernel 可融合性后，才能声称通过八维门。
-
-## 操作规程 / Operating Procedure
-
-触发后输出必须含：
-1. **[诊断]**：一句话点明算法结构/瓶颈（互动性/不确定性/约束/结构/动态/复杂度/显存/数值/并行）。
-2. **[映射]**：枚举可迁移的现代数学结构候选（≥2 个，标注来自哪本书）。
-3. **[武器路由]**：1–3 个思想武器，标主/辅 + 触发命令。
-4. **[GPU 筛选]**：每个候选过八维，给「友好/可改造/不友好」+ 改造建议。
-5. **[结论]**：保留同时通过双验收门的候选；必要时给 testplan 表。
+**场景 D 输出**：
+1. 成立条件
+2. 不成立条件
+3. 最多能保证什么
+4. 不能保证什么
+5. 工程可行性
 
 **必须给出结论，不得只输出分析而不收敛。**
 
-## 与其他 skill 的关系 / Relations
+## GPU 八维验收门
 
-- 本入口路由全部 16 个思想武器，并按需加载方法论层与书籍激活层。
-- 手动入口 `/ask` 等价调用本激活器（武器选择器模式）。
-- 审视产出可交 `agents/math-critic.md`（含 GPU 可行性维度）做二次把关。
+正式术语（唯一权威来源：`references/gpu-friendly-math.md`）：
+**张量化 / GEMM 可映射 / 复杂度 / 显存与 KV-Cache / 低精度稳定 / 并行与通信 / 稀疏结构 / 算子融合**
+
+## 深度查阅协议
+
+- **轻度**：读知识卡片（`knowledge-base/*/*.md`），自足可用
+- **中度**：读书蒸馏稿（`references/books/*.md`），获取更完整上下文
+- **深度**：本机有 `math_book/<PDF>` 时，Agent 自动 `pdftotext` + grep 定位原文页
+
+## 工作流范例
+
+**用户**："设计新的 KV Cache 压缩方法，保留长期依赖，不想只做 top-k"
+
+```
+第一步 诊断：场景 B（机制设计）
+  问题类型：序列记忆压缩 + 信息保留 + 长程结构
+  核心张力：压缩 token 数量 vs 不破坏长期依赖
+
+第二步 透镜选择：
+  1. 谱分解（保留主导子空间）
+  2. 信息论（保留最大互信息状态）
+  3. 拓扑（保留序列结构关键连接点）
+
+第三步 知识查询：
+  → low-rank-approximation（矩阵分析）
+  → leverage-score-selection（矩阵分析）
+  → information-bottleneck（概率与信息）
+
+第四步 设计翻译：
+  候选 A：Spectral KV Compression（低秩 + leverage score）
+  候选 B：Information-Preserving Cache（query sensitivity）
+  候选 C：Topology-Preserving Cache（图桥接节点保留）
+
+第五步 Critic 审查：
+  A 最 GPU 友好，B 需估计未来 query 有不确定性，C 图构建成本过高
+  建议：优先 A，B 作轻量 gate
+```

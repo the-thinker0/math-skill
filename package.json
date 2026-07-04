@@ -1,7 +1,7 @@
 {
   "name": "math-skill",
-  "version": "2.1.0",
-  "description": "数学思想武器 v2：自动触发的现代数学能力激活器，把代数几何/微分几何/李理论等现代数学激活到算法与 GPU 协同设计研究中——既在 math 上 beautiful，又 GPU friendly。Mathematical Thinking Weapons v2: an auto-triggered activator that brings modern mathematics (algebraic geometry, differential geometry, Lie theory, …) into algorithm & GPU co-design research — beautiful in math, friendly to GPUs.",
+  "version": "3.0.0",
+  "description": "面向 AI 架构创新的数学研究操作系统 v3：三层正交架构（思想透镜 / 数学知识库 / 设计翻译层），自动诊断用户意图并路由。Math Research OS for AI architecture design: thinking lenses + math knowledge base + design translation layer with auto intent diagnosis.",
   "keywords": [
     "math",
     "mathematics",
@@ -42,7 +42,11 @@
     "auto-trigger",
     "co-design",
     "research",
-    "bilingual"
+    "bilingual",
+    "lenses",
+    "knowledge-base",
+    "design-patterns",
+    "math-research-os"
   ],
   "license": "MIT",
   "author": "the-thinker0",
@@ -60,6 +64,8 @@
     "LICENSE",
     "commands/",
     "skills/",
+    "lenses/",
+    "design-patterns/",
     "agents/",
     "knowledge-base/",
     "references/"

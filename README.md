@@ -2,9 +2,9 @@
   <a href="README.md">中文</a> | <a href="README.en-US.md">English</a>
 </p>
 
-# ⚔️ Math Skill — 数学研究激活器
+# ⚔️ Math Skill — 面向 AI 架构创新的数学研究操作系统
 
-> **把现代数学（代数几何 / 微分几何 / 李理论 / 范畴论 / 矩阵分析 / 最优化）激活进算法与 GPU 协同设计——既在 math 上 beautiful，又 GPU friendly。**
+> **思想系统不负责给定理，知识系统不负责乱启发，设计层不负责装深刻。**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![npm version](https://img.shields.io/npm/v/math-skill.svg)](https://www.npmjs.com/package/math-skill)
@@ -12,7 +12,7 @@
 
 ---
 
-> **如果这个项目对你有所启发，请不吝点亮一颗 Star⭐。** 每一个 Star 都是对数学之美的共鸣，也是支撑这个项目继续前行的力量。欢迎每一位热爱数学、在数学海洋中遨游的同行者。
+> **如果这个项目对你有所启发，请不吝点亮一颗 Star。** 每一个 Star 都是对数学之美的共鸣，也是支撑这个项目继续前行的力量。欢迎每一位热爱数学、在数学海洋中遨游的同行者。
 
 ---
 
@@ -20,43 +20,87 @@
 
 Sophus Lie 打造"屠龙刀"的故事告诉我们：为解微分方程发明的李群-李代数，最终成为描述对称性、机器人状态估计的通用语言——数学工具的价值远超初衷，这正是「跨领域激活」的原型。详见 [`references/inspiration.md`](references/inspiration.md)。
 
-> 数学最迷人的地方：为特定问题发明的工具，在完全不同的领域展现出远超初衷的价值。这个 skill 正是这种「跨领域激活」精神的实践。
+> 数学最迷人的地方：为特定问题发明的工具，在完全不同的领域展现出远超初衷的价值。
 
 ---
 
 ## 核心理念
 
-这次 AI 革命的数学基础，是 **20 世纪数学第一次登上商用计算舞台**——范畴论、代数拓扑、代数几何。当前主流算法的数学基础大多还停留在 1800–1900 年代的微积分 / 线性代数。把现代数学激活进算法设计，是算法探索阶段最重要的事。
+当你面对一个 AI 研究问题时，这个系统帮你回答四个问题：
 
-这个 skill 把十六种数学核心思想封装为可调用的思维框架，并在工作区出现 ML / 模型代码、CUDA / kernel、算法研究笔记时**自动介入**：诊断问题 → 映射现代数学结构 → 路由思想武器 → GPU 可行性筛选，强制每个产出同时通过**双验收门**：
+1. **该用什么数学思想看？** → 思想透镜
+2. **需要查什么具体数学知识？** → 知识库
+3. **怎么把数学变成模型设计？** → 设计翻译层
+4. **这个设计是否数学上靠谱、工程上可行？** → 批判器
 
-1. **数学正确（beautiful in math）**——自洽、可微（或可松弛为可微）、有正确性保证。
-2. **GPU 可行（friendly to GPU）**——过 `references/gpu-friendly-math.md` 八维门。
-
-> "模型内部已有足够的数学知识，缺的只是一次跨领域的激活。人选方向，Agent 搜索、枚举、验证。"
+```
+问题
+ ↓
+思想透镜：这个问题该用什么视角看？
+ ↓
+数学知识：这个视角需要哪些具体数学工具？
+ ↓
+设计翻译：这些工具怎么变成模型结构 / loss / 算子？
+ ↓
+批判器：数学上站得住、工程上跑得动吗？
+```
 
 ---
 
-## 十六思想武器
+## 三层正交架构
 
-| # | 思想武器 | 核心要义 | 算法 / GPU 应用 |
-|---|---------|---------|----------------|
-| 0 | 🧭 [数学研究激活器](skills/math-research-activator/SKILL.md) | 自动触发入口：诊断→映射→路由→GPU 筛选，双验收门把关 | 环境+任务双重信号命中时介入，纯工程任务不触发 |
-| 1 | 📐 [公理化思想](skills/axiomatization/SKILL.md) | 从最少假设出发，严格逻辑构建 | 审查算法假设、为结构定公理与不变量 |
-| 2 | 🧩 [抽象化思想](skills/abstraction/SKILL.md) | 抓住本质，忽略非本质细节 | 提炼可迁移结构、发现跨域共性 |
-| 3 | 🧠 [逻辑演绎](skills/logic-deduction/SKILL.md) | 从真命题严格推理新真命题 | 形式验证算法正确性、循环不变量 |
-| 4 | 🌉 [建模思想](skills/modeling/SKILL.md) | 现实问题→数学问题→解释现实 | 构建可计算模型、参数化选择 |
-| 5 | ⚖️ [优化思想](skills/optimization/SKILL.md) | 约束条件下寻找最优解 | 优化器选择、二阶法 GPU 可行性、对偶 |
-| 6 | 🎲 [概率与统计](skills/probability-statistics/SKILL.md) | 量化不确定性，数据提取规律 | 随机算法、采样、量化、训练动力学 |
-| 7 | 🔄 [变换思想](skills/transformation/SKILL.md) | 复杂问题→等价简单问题 | 卷积→GEMM、谱变换、KV 频域压缩 |
-| 8 | ⚛️ [对称与不变性](skills/symmetry-invariance/SKILL.md) | 变换下保持不变的性质 | 等变网络（SO(3)/SE(3)）、热带半环路由 |
-| 9 | 📈 [归纳与类比](skills/induction-analogy/SKILL.md) | 从特殊到一般，已知到未知 | 跨域结构迁移、归纳偏置设计 |
-| 10 | 🖥️ [算法与计算思想](skills/algorithmic-thinking/SKILL.md) | 化为有限步骤，评估代价与可行性 | 复杂度（亚二次）、并行、算子融合 |
-| 11 | 📡 [信息论思想](skills/information-theory/SKILL.md) | 信息是不确定性的减少 | 压缩、剪枝、量化、KV 压缩、路由 |
-| 12 | 🎯 [博弈论思想](skills/game-theory/SKILL.md) | 最优策略取决于他人的选择 | 多智能体、对抗训练、路由博弈 |
-| 13 | 🔗 [因果推断思想](skills/causal-inference/SKILL.md) | 相关≠因果，但因果可形式化 | 可解释性、分布外泛化、DGP 建模 |
-| 14 | 🌀 [拓扑思想](skills/topological-thinking/SKILL.md) | 连续变形下不变的性质 | Čech 上同调正则、sheaf 注意力、TDA |
-| 15 | 🧮 [离散与组合思想](skills/discrete-combinatorial/SKILL.md) | 计数、枚举、有限对象的规律 | 稀疏结构、路由、有限域 / 半环算法 |
+| 层 | 职责 | 目录 | 文件数 |
+|----|------|------|--------|
+| **思想透镜** | 诊断问题结构，推荐数学视角 | `lenses/*.md` | 15 |
+| **数学知识** | 提供具体数学工具（定义/定理/公式） | `knowledge-base/*/*.md` | 26 |
+| **设计翻译** | 把数学变成 AI 模块/loss/算子 | `design-patterns/*/*.md` | 15+ |
+
+辅助层：
+- `references/books/*.md`：7 本书蒸馏稿，需要深入时的完整上下文
+- `references/gpu-friendly-math.md`：GPU 八维验收门
+- `agents/math-critic.md`：数学-工程双重批判器
+
+### 15 个思想透镜
+
+| 透镜 | 文件 | 核心视角 |
+|------|------|---------|
+| 公理化 | `lenses/axiomatization.md` | 审查假设的相容性/独立性/完备性 |
+| 对偶 | `lenses/duality.md` | 转换到对偶空间暴露约束与不变量 |
+| 对称性 | `lenses/symmetry.md` | 变换下的不变量与守恒律 |
+| 谱分解 | `lenses/spectral.md` | 特征值/奇异值揭示主导结构 |
+| 几何 | `lenses/geometric.md` | 度量/曲率/流形上的空间结构 |
+| 投影与分解 | `lenses/projection.md` | 正交分解、子空间分离、冲突消除 |
+| 变分 | `lenses/variational.md` | 约束下极值、能量最小化 |
+| 局部到整体 | `lenses/local-to-global.md` | 局部性质拼接为全局、层上同调障碍 |
+| 拓扑 | `lenses/topological.md` | 连续变形不变量、连通性、空洞 |
+| 范畴化 | `lenses/categorical.md` | 泛性质、函子、自然变换 |
+| 扰动 | `lenses/perturbation.md` | 小扰动的传播、稳定性、鲁棒性 |
+| 因果 | `lenses/causal.md` | 相关≠因果、干预、反事实 |
+| 博弈 | `lenses/game.md` | 多方策略互动、均衡、机制设计 |
+| 概率统计 | `lenses/probabilistic.md` | 量化不确定性、贝叶斯更新 |
+| 算法 | `lenses/algorithmic.md` | 复杂度、可行性、并行性 |
+
+### 知识库（按数学领域）
+
+| 领域 | 知识卡片 |
+|------|---------|
+| 矩阵分析 | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
+| 最优化 | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
+| 微分几何 | manifold, tangent-space, metric-tensor, geodesic, curvature, connection |
+| 李理论 | group-action, lie-group, lie-algebra, representation, equivariance |
+| 拓扑 | persistent-homology, euler-characteristic, fundamental-group |
+| 概率与信息 | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
+| 信息几何 | natural-gradient, fisher-metric |
+
+### 设计模式库（按 AI 组件）
+
+| 组件 | 设计模式 |
+|------|---------|
+| 注意力 | projection-attention, spectral-attention, equivariant-attention, geometry-aware-attention, information-bottleneck-attention |
+| 损失函数 | orthogonality-loss, contrastive-loss, variational-loss, information-bottleneck-loss, constraint-penalty |
+| 路由 | optimal-transport-routing, graph-routing, moe-routing, spectral-clustering-routing |
+| 表示 | shared-private-decomposition, manifold-representation, equivariant-split, subspace-alignment |
+| 压缩 | low-rank-kv-cache, spectral-token-pruning, topology-preserving-compression, leverage-score-selection |
 
 ---
 
@@ -64,121 +108,68 @@ Sophus Lie 打造"屠龙刀"的故事告诉我们：为解微分方程发明的�
 
 ### 安装
 
-直接粘贴下面这段给 Claude Code 或其他终端型 AI 助手即可：
-
 ```
 请帮我安装 math-skill：https://github.com/the-thinker0/math-skill，并教我如何使用
 ```
 
-手动安装备选（下载源码，不等于自动注册 skill）：
+手动安装：
 
 ```bash
 git clone https://github.com/the-thinker0/math-skill.git
 ```
 
-Claude Code / Codex 类平台：按平台的 skills / commands 目录规则复制或软链 `skills/`、`commands/`，并把 `references/` 保持在同一仓库层级。不要只复制单个 `SKILL.md`，否则 `../../references/*` 无法解析。
-
-Cursor / 其他 Markdown 规则平台：把 `commands/*.md` 作为手动入口，把 `skills/*/SKILL.md` 作为规则/技能正文，并保留 `references/`。如果平台没有自动 skill 触发机制，就用 `/ask` 或对应命令手动触发。
-
-也可先检查 npm 包内容：
-
-```bash
-npm pack math-skill --dry-run
-```
-
 ### 使用
 
-**自动触发**：需同时满足两个条件才触发——（1）工作区含架构核心代码（attention/transformer/MoE、`*.cu`/kernel、Triton）或研究笔记；（2）用户任务涉及**设计/改进**新架构/算子、**分析**理论性质、或**迁移**数学结构。纯工程任务（debug、参数传递核查、重构、调参、loss 实现修改）不会触发。
+**自动触发**：系统自动诊断用户意图，路由到合适的层：
 
-### 正常聊天时会自动调用吗？
+| 场景 | 诊断信号 | 调用路径 |
+|------|---------|---------|
+| 问题分析 | "这个设计合理吗？" | 透镜 → critic |
+| 机制设计 | "设计新 attention" | 透镜 → 知识 → 设计 → critic |
+| 知识查询 | "切空间是什么？" | 知识 |
+| 验证审查 | "这个公式成立吗？" | 知识 → critic |
+| 纯工程 | debug、重构、调参 | **不调用** |
 
-会，但取决于安装平台是否支持 **skill metadata 自动路由**。在 Claude Code / Codex 这类支持 skills 的环境里，安装后你不需要每次输入 `/ask`。但 v2.0.1 起触发条件已收紧：必须**环境信号和任务信号同时命中**才会自动加载，普通代码审查、debug、重构等工程任务不会触发。
-
-例如你可以直接这样问：
-
-```
-我想设计一个更省 KV-Cache 的长上下文 attention，有没有现代数学视角？
-```
-
-或：
+**手动触发**：
 
 ```
-这个 Triton kernel 的访存和融合方式能不能从算法结构上优化？
-```
-
-这类问题会触发 `math-research-activator`，并按需加载 `references/gpu-friendly-math.md` 与 `references/books/*.md`。`/ask` 和下面的 slash commands 是**显式入口 / 兜底入口**：当平台没有自动 skill 触发机制，或你想强制指定某个思想武器时再使用。
-
-**手动触发**（不确定该用哪个武器时先 `/ask`）：
-
-```
-/ask <你的问题>                     # 激活器：诊断+映射+路由+GPU 筛选
-/axiomatization <你的问题>          # 公理化思想
-/abstraction <你的问题>             # 抽象化思想
-/logic-deduction <你的问题>         # 逻辑演绎
-/modeling <你的问题>                # 建模思想
-/optimization <你的问题>            # 优化思想
-/probability-statistics <你的问题>  # 概率与统计
-/transformation <你的问题>          # 变换思想
-/symmetry-invariance <你的问题>     # 对称与不变性
-/induction-analogy <你的问题>       # 归纳与类比
-/algorithmic-thinking <你的问题>    # 算法与计算思想
-/information-theory <你的问题>      # 信息论思想
-/game-theory <你的问题>             # 博弈论思想
-/causal-inference <你的问题>        # 因果推断思想
-/topological-thinking <你的问题>    # 拓扑思想
-/discrete-combinatorial <你的问题>  # 离散与组合思想
+/ask <你的问题>          # 智能诊断：自动判断场景并路由
 ```
 
 ### 语言切换
 
-Skill **自动检测用户语言**：中文消息返回中文输出，英文消息返回英文输出，无需手动切换。
+自动检测用户语言：中文消息返回中文输出，英文消息返回英文输出。
 
 ---
 
-## 使用场景示例
+## 工作流范例
 
-### 自动触发（研究 / 算法 / GPU）
+**用户**："设计新的 KV Cache 压缩方法，保留长期依赖，不想只做 top-k"
 
-工作区有 kernel 或注意力核心代码**且任务涉及设计/分析/迁移**时，激活器才会介入：给出问题诊断、可迁移的现代数学结构候选、武器路由、八维 GPU 筛选。纯工程任务（debug、代码审查、调参）不会触发。范例见 `skills/math-research-activator/SKILL.md` 的 **Tropical Sheaf Attention**：它是候选探索模板，不是预设成立的 benchmark 结论；必须经复杂度、显存、低精度稳定性和 kernel 可融合性验证后才能采用。
-
-### 手动触发（研究场景）
-
-**审查算法的理论假设**：
 ```
-/axiomatization 这个注意力变体声称保持排列不变，但它的位置编码引入了隐含的全序假设，是否自洽？
-```
+第一步 诊断：场景 B（机制设计）
+  问题类型：序列记忆压缩 + 信息保留 + 长程结构
+  核心张力：压缩 token 数量 vs 不破坏长期依赖
 
-**检查证明 / 不变量**：
-```
-/logic-deduction 这个收敛性证明从第 5 行到第 6 行的推导是否有跳跃？循环不变量成立吗？
-```
+第二步 透镜选择：
+  1. 谱分解（保留主导子空间）
+  2. 信息论（保留最大互信息状态）
+  3. 拓扑（保留序列结构关键连接点）
 
-**优化器 / 二阶法可行性**：
-```
-/optimization 想用 K-FAC 替换 Adam，但显存吃紧，这个二阶法在 GPU 上可行吗？有可改造的低秩近似吗？
-```
+第三步 知识查询：
+  → low-rank-approximation（矩阵分析）
+  → leverage-score-selection（矩阵分析）
+  → information-bottleneck（概率与信息）
 
-**变换换表示**：
+第四步 设计翻译：
+  候选 A：Spectral KV Compression（低秩 + leverage score）
+  候选 B：Information-Preserving Cache（query sensitivity）
+  候选 C：Topology-Preserving Cache（图桥接节点保留）
+
+第五步 Critic 审查：
+  A 最 GPU 友好，B 需估计未来 query 有不确定性，C 图构建成本过高
+  建议：优先 A，B 作轻量 gate
 ```
-/transformation 这个自定义卷积算子能否等价改写成 GEMM 吃满 Tensor Core？逆变换数值稳定吗？
-```
-
-**等变 / 对称**：
-```
-/symmetry-invariance 设计一个 SO(3) 等变的特征提取层，群作用能张量化落到 GEMM 吗？
-```
-
----
-
-## 三层渐进式披露
-
-| 层 | 内容 | 加载时机 |
-|----|------|---------|
-| 常驻触发层 | `skills/math-research-activator/SKILL.md` + 各武器简短 `description` | 自动 / 手动触发即载 |
-| 方法论层 | `references/agentic-workflow.md`（Human-in-the-Agent-Loop）、`references/gpu-friendly-math.md`（八维门） | 激活器按需引用 |
-| 书籍激活层 | `references/books/*.md` × 7（现代数学结构蒸馏稿） | 按问题类型按需加载 |
-
-**深挖回查**：蒸馏稿自足可用；需原文全保真且本机有 `math_book/<PDF>` 时，让 Agent 自动 `pdftotext` + grep + Read 命中页（不依赖预埋锚点）。PDF 绝不打包进 npm / git（版权 + 110MB）。
 
 ---
 
@@ -186,97 +177,75 @@ Skill **自动检测用户语言**：中文消息返回中文输出，英文消�
 
 ```
 math-skill/
-├── package.json             # v2.0.1，files[] 含 references/
-├── .gitignore / .npmignore  # 排除 math_book/ PDF
-├── commands/                # 手动 slash 命令入口（15 武器 + ask）
-├── skills/                  # 16 思想武器（15 武器 + math-research-activator）
-│   ├── math-research-activator/   # 自动触发入口
-│   └── <weapon>/{SKILL.md, original-texts.md}
-├── references/              # v2 新增：方法论 + 书籍激活层
-│   ├── agentic-workflow.md        # 协作方式
-│   ├── gpu-friendly-math.md       # 八维 GPU 验收门
-│   ├── inspiration.md             # 灵感来源
-│   └── books/                     # 7 本现代数学蒸馏稿
-├── agents/math-critic.md    # 审视 Agent（18 维，含 GPU + 现代数学激活）
-├── knowledge-base/overview.md
-├── tests/{validate.sh, validate.ps1}
-├── math_book/               # 本地 PDF（git/npm 忽略，不发布）
+├── skills/
+│   └── math-research-activator/    # 总控：意图诊断 + 路由
+├── lenses/                         # 15 个思想透镜（推理方法论）
+├── knowledge-base/                 # 数学知识库（按领域组织）
+│   ├── matrix-analysis/            # 矩阵分析（5 卡片）
+│   ├── optimization/               # 最优化（5 卡片）
+│   ├── differential-geometry/      # 微分几何（6 卡片）
+│   ├── lie-theory/                 # 李理论（5 卡片）
+│   ├── topology/                   # 拓扑（3 卡片）
+│   ├── probability/                # 概率与信息（5 卡片）
+│   └── information-geometry/       # 信息几何（2 卡片）
+├── design-patterns/                # 设计翻译层（按 AI 组件组织）
+│   ├── attention/                  # 注意力机制（5 模式）
+│   ├── loss/                       # 损失函数（5 模式）
+│   ├── routing/                    # 路由（4 模式）
+│   ├── representation/             # 表示（4 模式）
+│   └── compression/                # 压缩（4 模式）
+├── references/                     # 参考层
+│   ├── books/                      # 7 本书蒸馏稿
+│   ├── gpu-friendly-math.md        # GPU 八维验收门
+│   ├── agentic-workflow.md         # 协作方式
+│   └── inspiration.md              # 灵感来源
+├── agents/math-critic.md           # 数学-工程双重批判器
+├── commands/ask.md                 # /ask 手动入口
+├── math_book/                      # 本地 PDF（不发布）
 └── README.md / LICENSE
 ```
 
 ---
 
-## 每个思想武器包含什么
-
-每个 `skills/*/SKILL.md`（v2 单一研究 / 算法路径）：
-
-1. **核心原则** + blockquote 子节 **数学形式化**（定义 / 定理 / 公式）
-2. **GPU 友好性（横切检查）**——本武器结构如何映射 GPU，过八维门
-3. **不适用场景** / **何时使用**（研究触发，含算法 / 算子设计用法）
-4. **方法流程**——单一科研路径（保留全部数学）
-5. **常见错误**——含一行 GPU 可算性
-6. **操作规程**——单一输出格式，末尾 `[GPU 可行性]` 项
-7. **与其他 skill 的关系**——含「现代数学激活」行，指向 `references/books/*`
-
-每个武器还配 `original-texts.md`（数学出处与经典文献）。审视产出可交 `agents/math-critic.md`（18 维，含 GPU 可行性 + 现代数学激活）二次把关。
-
----
-
-## 数学知识体系
-
-`knowledge-base/overview.md` 提供数学知识地图：三大支柱（代数 / 几何 / 分析）、主要分支、知识层次（地基→代数→综合→前沿）、思维武器与数学分支映射。
-
----
-
 ## 推荐书目
 
-以下 7 本现代数学教材是本 skill 的「深层弹药库」。每本书配有蒸馏文件（`references/books/*.md`），已随 npm 包发布，自足可用。如需全保真原文查阅，可将对应 PDF 放入项目根目录的 `math_book/` 文件夹——Agent 会自动用 `pdftotext` + grep 定位原文页面。
+| # | 书名 | 作者 | 出版社 / 版次 | 年份 | ISBN | 蒸馏文件 |
+|---|------|------|-------------|------|------|---------|
+| 1 | *Contemporary Abstract Algebra* | Joseph A. Gallian | Brooks/Cole, Cengage, 8th ed. | 2013 | 978-1-133-59971-5 | `abstract-algebra.md` |
+| 2 | *The Rising Sea: Foundations of Algebraic Geometry* | Ravi Vakil | Princeton University Press | 2025 | 978-0-691-26866-8 | `algebraic-geometry-rising-sea.md` |
+| 3 | *Manifolds and Differential Geometry* | Jeffrey M. Lee | AMS, Graduate Studies in Math Vol. 107 | 2009 | 978-0-8218-4815-9 | `differential-geometry.md` |
+| 4 | *Matrix Analysis* | Roger A. Horn, Charles R. Johnson | Cambridge University Press, 2nd ed. | 2013 | 978-0-521-83940-2 | `matrix-analysis.md` |
+| 5 | *A micro Lie theory for state estimation in robotics* | Joan Solà et al. | arXiv:1812.01537v9 | 2021 | — | `micro-lie-theory.md` |
+| 6 | *An Introduction to Optimization, With Applications to ML* | Chong, Lu, Żak | John Wiley & Sons, 5th ed. | 2024 | 978-1-119-87763-9 | `optimization-ml.md` |
+| 7 | *Introduction to Smooth Manifolds* | John M. Lee | Springer, GTM 218, 2nd ed. | 2013 | 978-1-4419-9981-8 | `smooth-manifolds.md` |
 
-| # | 书名 | 作者 | 出版社 / 版次 | 年份 | ISBN | 蒸馏文件 | 本地 PDF |
-|---|------|------|-------------|------|------|---------|---------|
-| 1 | *Contemporary Abstract Algebra* | Joseph A. Gallian | Brooks/Cole, Cengage, 8th ed. | 2013 | 978-1-133-59971-5 | `abstract-algebra.md` | `Contemporary Abstract Algebra.pdf` |
-| 2 | *The Rising Sea: Foundations of Algebraic Geometry* | Ravi Vakil | Princeton University Press | 2025 | 978-0-691-26866-8 | `algebraic-geometry-rising-sea.md` | `The Rising Sea Foundations of Algebraic Geometry.pdf` |
-| 3 | *Manifolds and Differential Geometry* | Jeffrey M. Lee | AMS, Graduate Studies in Math Vol. 107 | 2009 | 978-0-8218-4815-9 | `differential-geometry.md` | `Manifolds and Differential Geometry.pdf` |
-| 4 | *Matrix Analysis* | Roger A. Horn, Charles R. Johnson | Cambridge University Press, 2nd ed. | 2013 | 978-0-521-83940-2 | `matrix-analysis.md` | `Matrix Analysis.pdf` |
-| 5 | *A micro Lie theory for state estimation in robotics* | Joan Solà, Jérémie Deray, Dinesh Atchuthan | arXiv:1812.01537v9 | 2021 | — | `micro-lie-theory.md` | `A micro Lie theory.pdf` |
-| 6 | *An Introduction to Optimization, With Applications to Machine Learning* | Edwin K. P. Chong, Wu-Sheng Lu, Stanisław H. Żak | John Wiley & Sons, 5th ed. | 2024 | 978-1-119-87763-9 | `optimization-ml.md` | `An Introduction to Optimization With Applications to Machine Learning.pdf` |
-| 7 | *Introduction to Smooth Manifolds* | John M. Lee | Springer, GTM 218, 2nd ed. | 2013 | 978-1-4419-9981-8 | `smooth-manifolds.md` | `Introduction to Smooth Manifolds.pdf` |
-
-**使用方式**：
-- 蒸馏文件（`references/books/*.md`）已随 npm 包发布，无需额外操作。
-- 如需全保真原文：将上表中对应 PDF 文件放入 `math_book/` 文件夹，Agent 会自动搜索定位。
-- PDF 绝不通过 npm / git 分发（版权原因），需自行获取。
+蒸馏文件已随 npm 包发布。如需全保真原文，将 PDF 放入 `math_book/` 文件夹即可。
 
 ---
 
 ## 变更日志
 
+### v3.0.0 — 数学研究操作系统
+
+**架构重构**：从"思想武器库"升级为"数学参谋部"——三层正交架构：
+
+- **思想透镜**（15 个）：从 v2 的"思想武器"瘦身而来，只保留推理方法论，不再混入具体数学知识
+- **知识库**（26 张卡片）：按数学领域组织的具体工具卡片，含定义/公式/AI 设计翻译/GPU 可行性
+- **设计翻译层**（新增）：数学→AI 模块的桥梁，按 AI 组件（attention/loss/routing/representation/compression）组织
+- **Activator 重写**：从环境信号匹配改为意图诊断（5 场景：分析/设计/查询/验证/工程）
+- **知识激活协议**：知识卡片固定输出格式（最小定义→公式→适用问题→AI 翻译→工程可行性→风险）
+
 ### v2.1.0 — 完整双语支持
-- **全面双语**：所有 skill 文件均提供中英文独立版本——16 个 `SKILL.en.md`（思想武器）、16 个 `original-texts.en.md`（数学出处）、4 个 reference `.en.md`（方法论 + GPU 八维门）、`agents/math-critic.en.md`（18 维审视）、`knowledge-base/overview.en.md`（知识体系）。
-- **自动语言路由**：基于用户消息语言自动检测，路由到对应语言版本。**中文用户只加载中文件，英文用户只加载英文件**——不会消耗双倍 token。
-- **命令一致**：中英文用户使用完全相同的命令（`/ask`、`/optimization` 等），无需记忆不同入口。
-- **路由优化**：command 文件采用语言优先判断，直接路由到目标语言版本，避免多余文件加载。
-- **书目推荐**：README 新增「推荐书目」章节，列出 7 本现代数学教材的完整出版信息（作者、出版社、版次、ISBN）及 PDF 放置说明。
-- **蒸馏文件增强**：7 个 `references/books/*.md` 的「深挖入口」补充完整书目信息与 PDF 启用方式。
-- **语言切换升级**：从手动 `in English` 后缀改为自动检测用户消息语言，零配置。
+- 全面双语（37 个 .en.md 文件）、自动语言路由、命令一致、token 保障
 
 ### v2.0.1
-- **收紧自动触发条件**：`math-research-activator` 从"环境信号 OR 对话信号任一命中即触发"改为"环境信号 AND 任务信号必须同时命中"（Gate 1 + Gate 2 双必要条件）。
-- **新增排除门（Gate 0）**：代码审查、debug、参数传递链核查、重构、调参、loss 实现修改等纯工程任务明确列入排除列表，优先级最高。
-- **环境信号收窄**：仅有 `model.py`、`trainer.py`、`config.json` 等常规 ML 工程文件不再构成环境信号；需要架构核心代码（attention/transformer/MoE、CUDA/Triton kernel）或研究笔记。
-- **description 字段更新**：显式标注"不触发于"场景列表，减少 AI 平台的 skill metadata 误匹配。
+- 收紧自动触发条件、新增排除门、环境信号收窄
 
 ### v2.0.0
-- 初始 v2 发布：16 思想武器、现代数学激活层、GPU 八维横切、渐进式披露。
+- 16 思想武器、现代数学激活层、GPU 八维横切
 
 ### v1.0.0
-- 初始发布：十五思想武器（公理化 / 抽象 / 逻辑演绎 / 建模 / 优化 / 概率统计 / 变换 / 对称与不变性 / 归纳与类比 / 算法与计算 / 信息论 / 博弈论 / 因果推断 / 拓扑 / 离散与组合）+ 科研与生活的双路径模式。
-- 十五个 `skills/*/SKILL.md`（含核心原则、不适用场景、方法流程、常见错误、操作规程）+ 对应 `original-texts.md`（数学出处与经典文献）。
-- 十五个手动触发的 slash 命令入口（`commands/*.md`）。
-- `knowledge-base/overview.md`（三大支柱 / 主要分支 / 知识层次 / 武器映射）。
-- `agents/math-critic.md` 审视 Agent。
-- 校验脚本 `tests/{validate.sh, validate.ps1}`。
-- 发布至 npm（`math-skill`），MIT 协议。
+- 初始发布：十五思想武器 + 科研与生活双路径
 
 ---
 
@@ -288,7 +257,7 @@ MIT License. 详见 `LICENSE`。
 
 ## 贡献
 
-欢迎提交 Issue 和 Pull Request，与大家一起交流！
+欢迎提交 Issue 和 Pull Request！
 
 ---
 
