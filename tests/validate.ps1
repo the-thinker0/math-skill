@@ -189,6 +189,7 @@ $xrefFail = 0
 $dpFiles = Get-ChildItem -Path "design-patterns" -Recurse -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" }
 foreach ($dp in $dpFiles) {
     $content = Get-Content $dp.FullName -Raw
+
     $lensRefs = [regex]::Matches($content, 'lenses/([a-z-]+)\.md')
     foreach ($ref in $lensRefs) {
         $target = "lenses\" + $ref.Groups[1].Value + ".md"
@@ -197,7 +198,8 @@ foreach ($dp in $dpFiles) {
             $script:fail++
             $xrefFail++
         }
-    # Also check knowledge-base references
+    }
+
     $kbRefs = [regex]::Matches($content, 'knowledge-base/([a-z-]+)/([a-z-]+)\.md')
     foreach ($ref in $kbRefs) {
         $target = "knowledge-base\" + $ref.Groups[1].Value + "\" + $ref.Groups[2].Value + ".md"

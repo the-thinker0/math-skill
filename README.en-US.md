@@ -52,7 +52,7 @@ Critic: Mathematically sound? Engineering-feasible?
 | Layer | Role | Directory | Files |
 |-------|------|-----------|-------|
 | **Thinking Lenses** | Diagnose problem structure, recommend math perspectives | `lenses/*.md` | 15 |
-| **Math Knowledge** | Provide concrete math tools (definitions/theorems/formulas) | `knowledge-base/*/*.md` | 26 |
+| **Math Knowledge** | Provide concrete math tools (definitions/theorems/formulas) | `knowledge-base/*/*.md` | 31 |
 | **Design Translation** | Bridge math to AI modules/losses/operators | `design-patterns/*/*.md` | 15+ |
 
 Supporting layers:
@@ -230,7 +230,7 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 **Architecture overhaul**: from "thinking weapon arsenal" to "math general staff" — three-layer orthogonal architecture:
 
 - **Thinking Lenses** (15): slimmed down from v2's "thinking weapons" — reasoning methodology only, no concrete math knowledge mixed in
-- **Knowledge Base** (26 cards): concrete math tools organized by domain, with definitions/formulas/AI design translation/GPU feasibility
+- **Knowledge Base** (31 cards): concrete math tools organized by domain, with definitions/formulas/AI design translation/GPU feasibility
 - **Design Translation Layer** (new): the bridge from math to AI modules, organized by AI component (attention/loss/routing/representation/compression)
 - **Activator rewrite**: from environment-signal matching to intent diagnosis (5 scenarios: analysis/design/query/verification/engineering)
 - **Knowledge activation protocol**: fixed output format for knowledge cards (minimal definition → formula → applicable problems → AI translation → engineering feasibility → risks)
