@@ -1,10 +1,12 @@
 # Projection Attention
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Applicable Problems
 When the token/key space dimensionality is too high, the standard attention $Q K^T$ inner product tends to become uniform in high-dimensional spaces ("attention collapse"). In such cases, key/query vectors must first be projected onto a **subspace with superior geometric structure** before computing attention. Typical scenarios include: KV-Cache compression for long-context LLMs, attention sparsification in high-dimensional embedding spaces, and attention alignment of heterogeneous features in multimodal fusion.
 
 ## Mathematical Inspiration
-- Lenses: [transformation, abstraction]
+- Lenses: [duality, categorical]
 - Knowledge: [`probability/concentration-inequality.md` (high-dimensional concentration inequalities provide theoretical explanation for attention collapse), `probability/entropy.md` (entropy of attention distributions as a quality metric)]
 
 ## Required Mathematical Knowledge

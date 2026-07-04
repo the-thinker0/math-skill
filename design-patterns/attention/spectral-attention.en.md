@@ -1,10 +1,12 @@
 # Spectral Attention
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Applicable Problems
 When the input signal exhibits **frequency-domain/spectral structure** (periodicity, cyclic symmetry, graph structure), computing attention in the spectral domain rather than the spatial domain can dramatically reduce complexity while exploiting the signal's intrinsic structure. Typical scenarios include: time series forecasting (periodic signals), graph neural networks (graph Laplacian spectral decomposition), positional encoding (frequency-domain interpretation of RoPE/ALiBi), and $O(n \log n)$ acceleration of long-sequence attention.
 
 ## Mathematical Inspiration
-- Lenses: [transformation (frequency-domain transform), symmetry-invariance (cyclic/translation invariance)]
+- Lenses: [duality (frequency-domain transform), symmetry (cyclic/translation invariance)]
 - Knowledge: [`probability/entropy.md` (spectral entropy for measuring signal complexity), `probability/concentration-inequality.md` (frequency-domain concentration inequalities)]
 
 ## Required Mathematical Knowledge

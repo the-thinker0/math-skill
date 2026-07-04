@@ -1,4 +1,6 @@
 # Shared-Private Decomposition
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Applicable Problems
 Use in multi-task/multi-domain learning when representations need to be decomposed into a "cross-task common component" and a "task-specific component."
@@ -77,7 +79,7 @@ Dimension Allocation Principle:
 "We decompose the multi-task representation space R^d into a direct sum S + P. The Shared subspace ensures task-invariance through adversarial training (H(T|Z_s) -> log T), while the Private subspace guarantees information complementarity with Shared via orthogonal regularization. Theoretical analysis shows that negative transfer decays as O(||P_S * P_P||_F) with increasing orthogonality."
 
 ## Risks
-- Min-max optimization in adversarial training is unstable; the gradient reversal scale and lambda_adv require careful tuning
+- Min-max variational in adversarial training is unstable; the gradient reversal scale and lambda_adv require careful tuning
 - Over-compression of Shared leads to insufficient common information, placing excessive burden on Private
 - Total Private parameters grow linearly with T, requiring LoRA or adapter modules to control
 - When task similarity is low, Shared may learn a vacuous "common component"

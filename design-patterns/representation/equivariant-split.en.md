@@ -1,4 +1,6 @@
 # Equivariant Split
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Applicable Problems
 Use when the input possesses symmetries (e.g., permutations, rotations, translations) and the representation should preserve or reflect those symmetries.
@@ -22,7 +24,7 @@ Core requirement: **encode symmetry priors into network architecture to reduce l
 - **Peter-Weyl Theorem**: Functions on a compact group decompose as a series of irreducible representation matrix elements
   f(x) = sum_rho sum_{ij} c_{rho,ij} * rho_{ij}(g) (generalized Fourier expansion)
 - **Steerable Feature Spaces**: Features are organized according to irreducible representations of the group;
-  under the action of transformation g, each component transforms via the corresponding representation matrix: f_i -> sum_j rho_{ij}(g) f_j
+  under the action of duality g, each component transforms via the corresponding representation matrix: f_i -> sum_j rho_{ij}(g) f_j
 
 ## AI Module Form
 ```

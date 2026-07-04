@@ -1,10 +1,11 @@
 # 几何感知注意力 / Geometry-Aware Attention
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## 适用问题
 当 token/key 之间存在**已知的几何关系**（空间距离、流形测地距、层级结构、时序间隔）时，标准注意力的位置无关内积无法利用这些结构信息。几何感知注意力将**几何先验直接注入注意力权重计算**，使模型天然尊重底空间的度量结构。典型场景：3D 场景理解、分子构象、时序预测、层级文本结构（段落-句子-词）、知识图谱。
 
 ## 数学思想来源
-- 透镜：[symmetry-invariance（对称与不变性 — 度量不变性）, transformation（变换思想 — 坐标系无关表达）]
+- 透镜：[symmetry（对称透镜 — 度量不变性）, duality（对偶透镜 — 坐标系无关表达）]
 - 知识：[`information-geometry/fisher-metric.md`（分布空间的几何度量）, `probability/concentration-inequality.md`（几何约束下的浓度行为）]
 
 ## 需要的数学知识

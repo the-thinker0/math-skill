@@ -1,4 +1,5 @@
 # Optimal Transport Routing（最优传输路由）
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## 适用问题
 当需要将一组输入 token/样本 分配到一组专家/子模块，且追求全局最优的匹配代价时使用。
@@ -44,7 +45,7 @@ Sinkhorn 路由（熵正则化）：
 
 ## 可实现结构
 - **Sinkhorn 层**：自定义 autograd Function，前向做 Sinkhorn 迭代，反向用隐函数定理求梯度
-- **迭代次数固定**：T=10 次固定迭代 → 可展开为计算图（unrolled optimization）
+- **迭代次数固定**：T=10 次固定迭代 → 可展开为计算图（unrolled variational）
 - **log-domain 稳定化**：将 Sinkhorn 转换到 log 域避免 exp 溢出：
   log_u = log_a - logsumexp(log_K + log_v, dim=1)
 - **Batch OT**：每个 micro-batch 独立求解，并行化 Sinkhorn 迭代

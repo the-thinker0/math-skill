@@ -22,9 +22,9 @@ Axiomatization is not "proving things," but rather a stance of disciplined skept
 
 ## Which Knowledge Domains It Routes To
 
-- **formal-logic**: The choice among first-order, second-order, and constructive logic is the foundational decision in axiomatization
-- **set-theory**: ZFC/ZF as the background axiomatic system and the host for relative consistency proofs
-- **model-theory**: Model existence proves consistency; categoricity determines structural uniqueness
+- formal logic (no KB card yet, use critic): The choice among first-order, second-order, and constructive logic is the foundational decision in axiomatization
+- set theory (no KB card yet, use critic): ZFC/ZF as the background axiomatic system and the host for relative consistency proofs
+- model theory (no KB card yet, use critic): Model existence proves consistency; categoricity determines structural uniqueness
 
 ## What AI Designs It May Inspire
 

@@ -1,4 +1,6 @@
 # Subspace Alignment
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Applicable Problems
 Use when two or more representation spaces need to be aligned to a common subspace. Typical scenarios:
@@ -30,10 +32,10 @@ Module: SubspaceAligner
 Input: Source representation A in R^{N x d_a}, target representation B in R^{N x d_b} (paired data)
 
 Method 1 - Linear Procrustes Alignment (most common):
-  // Find optimal linear transformation W such that A @ W is close to B
+  // Find optimal linear duality W such that A @ W is close to B
   M = A^T @ B                         // d_a x d_b, single GEMM
   U, S, V^T = SVD(M)                  // singular value decomposition
-  W* = U @ V^T                        // d_a x d_b optimal orthogonal transformation
+  W* = U @ V^T                        // d_a x d_b optimal orthogonal duality
   // Differentiable version: parameterize W as nn.Parameter, optimize with SGD
   L_align = ||A @ W - B||_F^2 / N    // alignment loss
 

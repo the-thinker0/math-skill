@@ -21,7 +21,7 @@ Duality (formerly "Transform") is a way of "looking at a problem through a diffe
 
 ## Which Knowledge Domains It Routes To
 
-- **spectral-theory**: Fourier, Laplace, and Z-transforms — equivalent mappings from the time domain to the frequency domain
+- `matrix-analysis/spectral-decomposition`: Fourier, Laplace, and Z-transforms — equivalent mappings from the time domain to the frequency domain
 - **matrix-analysis**: Spectral decomposition and low-rank approximation — transforms and simplifications in matrix space
 - **optimization/duality**: Legendre and Fenchel transforms — conversion from constrained optimization to dual problems
 

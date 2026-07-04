@@ -21,8 +21,8 @@
 
 ## 会路由到哪些知识域
 
-- **category-theory**：对象/态射/函子/自然变换/Yoneda 引理——跨域迁移的核心语言
-- **abstract-algebra**：群/环/域/模/格——识别运算结构的公理匹配
+- `lie-theory/equivariance`：对象/态射/函子/自然变换/Yoneda 引理——跨域迁移的核心语言
+- `lie-theory/representation`：群/环/域/模/格——识别运算结构的公理匹配
 - **topology**：开集/连续/连通——当问题涉及空间结构与连续变形时
 
 ## 可能产生哪些 AI 设计

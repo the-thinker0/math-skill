@@ -229,6 +229,86 @@ else
     PASS=$((PASS + 1))
 fi
 
+# --- CN/EN Pairing ---
+echo ""
+echo "--- CN/EN File Pairing ---"
+for cn_file in lenses/*.md; do
+    [ "${cn_file%.en.md}" != "$cn_file" ] && continue
+    en_file="${cn_file%.md}.en.md"
+    if [ -f "$en_file" ]; then
+        echo -e "${GREEN}[PASS]${NC} $cn_file has EN pair"
+        PASS=$((PASS + 1))
+    else
+        echo -e "${RED}[FAIL]${NC} $cn_file missing EN pair: $en_file"
+        FAIL=$((FAIL + 1))
+    fi
+done
+
+# --- Cross-Reference Integrity ---
+echo ""
+echo "--- Cross-Reference Integrity ---"
+XREF_FAIL=0
+# Check that lens references in design patterns point to existing files
+for dp_file in design-patterns/*/*.md; do
+    [ "${dp_file%.en.md}" != "$dp_file" ] && continue
+    refs=$(grep -oE 'lenses/[a-z-]+\.md' "$dp_file" 2>/dev/null)
+    for ref in $refs; do
+        if [ ! -f "$ref" ]; then
+            echo -e "${RED}[FAIL]${NC} $dp_file references missing $ref"
+            FAIL=$((FAIL + 1))
+            XREF_FAIL=$((XREF_FAIL + 1))
+        fi
+    done
+    kb_refs=$(grep -oE 'knowledge-base/[a-z-]+/[a-z-]+\.md' "$dp_file" 2>/dev/null)
+    for ref in $kb_refs; do
+        if [ ! -f "$ref" ]; then
+            echo -e "${RED}[FAIL]${NC} $dp_file references missing $ref"
+            FAIL=$((FAIL + 1))
+            XREF_FAIL=$((XREF_FAIL + 1))
+        fi
+    done
+done
+if [ $XREF_FAIL -eq 0 ]; then
+    echo -e "${GREEN}[PASS]${NC} All cross-references resolve"
+    PASS=$((PASS + 1))
+fi
+
+# --- Count Verification ---
+echo ""
+echo "--- Count Verification ---"
+LENS_CN=$(ls lenses/*.md 2>/dev/null | grep -v '.en.md' | wc -l)
+LENS_EN=$(ls lenses/*.en.md 2>/dev/null | wc -l)
+KB_CN=$(find knowledge-base -name '*.md' ! -name '*.en.md' ! -name 'overview*' 2>/dev/null | wc -l)
+KB_EN=$(find knowledge-base -name '*.en.md' ! -name 'overview.en.md' 2>/dev/null | wc -l)
+DP_CN=$(find design-patterns -name '*.md' ! -name '*.en.md' 2>/dev/null | wc -l)
+DP_EN=$(find design-patterns -name '*.en.md' 2>/dev/null | wc -l)
+
+if [ "$LENS_CN" -eq "$LENS_EN" ]; then
+    echo -e "${GREEN}[PASS]${NC} Lenses: $LENS_CN CN = $LENS_EN EN"
+    PASS=$((PASS + 1))
+else
+    echo -e "${RED}[FAIL]${NC} Lenses: $LENS_CN CN ≠ $LENS_EN EN"
+    FAIL=$((FAIL + 1))
+fi
+
+if [ "$KB_CN" -eq "$KB_EN" ]; then
+    echo -e "${GREEN}[PASS]${NC} Knowledge cards: $KB_CN CN = $KB_EN EN"
+    PASS=$((PASS + 1))
+else
+    echo -e "${RED}[FAIL]${NC} Knowledge cards: $KB_CN CN ≠ $KB_EN EN"
+    FAIL=$((FAIL + 1))
+fi
+
+if [ "$DP_CN" -eq "$DP_EN" ]; then
+    echo -e "${GREEN}[PASS]${NC} Design patterns: $DP_CN CN = $DP_EN EN"
+    PASS=$((PASS + 1))
+else
+    echo -e "${RED}[FAIL]${NC} Design patterns: $DP_CN CN ≠ $DP_EN EN"
+    FAIL=$((FAIL + 1))
+fi
+
+echo -e "  ${GREEN}[INFO]${NC} Totals: $LENS_CN lenses, $KB_CN knowledge cards, $DP_CN design patterns"
+
 # --- Results ---
 echo ""
 echo "========================================"

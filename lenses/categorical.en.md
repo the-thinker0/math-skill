@@ -21,8 +21,8 @@ Categorification (formerly "Abstraction") is a way of "recognizing isomorphisms 
 
 ## Which Knowledge Domains It Routes To
 
-- **category-theory**: Objects, morphisms, functors, natural transformations, and the Yoneda lemma — the core language for cross-domain transfer
-- **abstract-algebra**: Groups, rings, fields, modules, and lattices — axiom-matching to identify algebraic structure
+- `lie-theory/equivariance`: Objects, morphisms, functors, natural transformations, and the Yoneda lemma — the core language for cross-domain transfer
+- `lie-theory/representation`: Groups, rings, fields, modules, and lattices — axiom-matching to identify algebraic structure
 - **topology**: Open sets, continuity, and connectedness — when the problem involves spatial structure and continuous deformation
 
 ## What AI Designs It May Inspire

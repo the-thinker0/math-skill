@@ -1,10 +1,11 @@
 # 谱注意力 / Spectral Attention
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## 适用问题
 当输入信号具有**频域/谱结构**（周期性、循环对称性、图结构）时，在谱域而非空域计算注意力可大幅降低复杂度并利用信号的内在结构。典型场景：时间序列预测（周期性信号）、图神经网络（图 Laplacian 谱分解）、位置编码（RoPE/ALiBi 的频率解释）、长序列注意力的 $O(n \log n)$ 加速。
 
 ## 数学思想来源
-- 透镜：[transformation（变换思想 — 频域变换）, symmetry-invariance（对称与不变性 — 循环/平移不变性）]
+- 透镜：[duality（对偶透镜 — 频域变换）, symmetry（对称透镜 — 循环/平移不变性）]
 - 知识：[`probability/entropy.md`（谱熵度量信号复杂度）, `probability/concentration-inequality.md`（频域浓度不等式）]
 
 ## 需要的数学知识

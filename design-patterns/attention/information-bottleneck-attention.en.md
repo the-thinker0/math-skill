@@ -1,10 +1,12 @@
 # Information Bottleneck Attention
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Applicable Problems
 When the attention mechanism needs to **selectively transmit useful information while suppressing redundant/noisy information**, information bottleneck theory can guide the learning of attention weights -- maximizing the mutual information $I(Z;Y)$ of the attention distribution with respect to the target $Y$, while minimizing the mutual information $I(X;Z)$ with respect to the input $X$. Typical scenarios include: long-document summarization (filtering large numbers of irrelevant tokens), multimodal alignment (cross-modal noise suppression), and interpretability (attention weights as visualization of information flow).
 
 ## Mathematical Inspiration
-- Lenses: [abstraction (information-theoretic framework unifying attention design), optimization (constrained optimization and Lagrangian duality)]
+- Lenses: [categorical (information-theoretic framework unifying attention design), variational (constrained variational and Lagrangian duality)]
 - Knowledge: [`probability/information-bottleneck.md` (IB objective and variational lower bound), `probability/kl-divergence.md` (implementation of KL regularization), `probability/entropy.md` (mutual information estimation)]
 
 ## Required Mathematical Knowledge
@@ -64,7 +66,7 @@ loss = -info_nce + beta * kl_bottleneck
 - **Dimension 8 Operator Fusion**: KL can be fused into the softmax kernel (FusedSoftmaxKL)
 
 ## Paper Phrasing
-"We propose information bottleneck attention, which models attention as an information bottleneck optimization problem. By maximizing the mutual information between output and target while minimizing redundant information transmission from the input, it achieves theoretically optimal information selection and demonstrates enhanced sparsity and interpretability in experiments."
+"We propose information bottleneck attention, which models attention as an information bottleneck variational problem. By maximizing the mutual information between output and target while minimizing redundant information transmission from the input, it achieves theoretically optimal information selection and demonstrates enhanced sparsity and interpretability in experiments."
 
 ## Risks
 - **High Variance of Mutual Information Estimators**: The MINE/NWJ/InfoNCE estimators in Scheme C exhibit high variance in high-dimensional spaces, potentially causing training instability. It is recommended to first validate the basic effect of IB attention with Scheme A (KL regularization) before attempting the full IB objective.

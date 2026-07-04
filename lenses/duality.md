@@ -21,7 +21,7 @@
 
 ## 会路由到哪些知识域
 
-- **spectral-theory**：傅里叶/拉普拉斯/Z 变换——时域到频域的等价映射
+- `matrix-analysis/spectral-decomposition`：傅里叶/拉普拉斯/Z 变换——时域到频域的等价映射
 - **matrix-analysis**：谱分解、低秩近似——矩阵空间的变换与简化
 - **optimization/duality**：Legendre/Fenchel 变换——约束优化到对偶问题的转换
 

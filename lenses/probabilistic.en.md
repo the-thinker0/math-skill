@@ -21,9 +21,9 @@ The probabilistic perspective is a way of "making rational decisions under uncer
 
 ## Which Knowledge Domains It Routes To
 
-- **probability-theory**: Kolmogorov axioms, distribution families, and the law of large numbers / CLT — the mathematical foundations of uncertainty
-- **statistical-inference**: MLE, hypothesis testing, Bayesian inference, and regression modeling — extracting patterns from data
-- **causal-inference**: DAGs, the back-door criterion, and do-calculus — the reasoning framework from association to causation
+- `probability/entropy`: Kolmogorov axioms, distribution families, and the law of large numbers / CLT — the mathematical foundations of uncertainty
+- `probability/kl-divergence`: MLE, hypothesis testing, Bayesian inference, and regression modeling — extracting patterns from data
+- causal inference (no KB card yet, use critic): DAGs, the back-door criterion, and do-calculus — the reasoning framework from association to causation
 
 ## What AI Designs It May Inspire
 

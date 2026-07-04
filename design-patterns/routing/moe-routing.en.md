@@ -1,4 +1,6 @@
 # MoE Routing (Mixture-of-Experts Routing)
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Applicable Problems
 Use in large-scale models where a small number of experts must be dynamically selected to process each token, achieving parameter scaling while keeping inference cost manageable.
@@ -8,8 +10,8 @@ Typical scenarios: (1) Sparse MoE layers -- each token selects top-k experts (k 
 Core requirement: **sparse activation, load balancing, end-to-end trainability**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/variational.md (discrete optimization relaxation, Gumbel-Softmax), lenses/probabilistic.md (information-theoretic routing)
-- Knowledge: knowledge-base/optimization/lagrangian-duality.md (combinatorial optimization, integer programming relaxation),
+- Lenses: lenses/variational.md (discrete variational relaxation, Gumbel-Softmax), lenses/probabilistic.md (information-theoretic routing)
+- Knowledge: knowledge-base/optimization/lagrangian-duality.md (combinatorial variational, integer programming relaxation),
   knowledge-base/probability/entropy.md (mixture models, EM algorithm)
 
 ## Required Mathematical Background

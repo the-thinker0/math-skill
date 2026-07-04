@@ -1,10 +1,11 @@
 # 投影注意力 / Projection Attention
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## 适用问题
 当输入的 token/key 空间维度过高，标准注意力的 $Q K^T$ 内积在高维空间中趋于均匀（"注意力坍缩"）时，需要先将 key/query 投影到一个**几何结构更优的子空间**再做注意力计算。典型场景：长上下文 LLM 的 KV-Cache 压缩、高维嵌入空间的注意力稀疏化、多模态融合中异构特征的注意力对齐。
 
 ## 数学思想来源
-- 透镜：[transformation（变换思想）, abstraction（抽象化思想）]
+- 透镜：[duality（对偶透镜）, categorical（范畴化透镜思想）]
 - 知识：[`probability/concentration-inequality.md`（高维浓度不等式 → 注意力坍缩的理论解释）, `probability/entropy.md`（注意力分布的熵作为质量指标）]
 
 ## 需要的数学知识

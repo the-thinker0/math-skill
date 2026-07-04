@@ -1,4 +1,6 @@
 # Low-Rank KV-Cache
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Target Problem
 Use when KV-Cache memory consumption becomes the bottleneck during LLM inference: long-context inference ($L > 8K$), multi-turn conversation accumulation, edge deployment, speculative decoding / beam search. Core objective: **compress the KV-Cache from $O(Ld)$ to $O(kd)$ with $k \ll L$, under controlled information loss**.

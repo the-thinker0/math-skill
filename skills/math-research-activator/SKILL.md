@@ -17,14 +17,14 @@ description: |
 
 | 层 | 职责 | 目录 | 核心问题 |
 |----|------|------|---------|
-| **思想透镜** | 诊断问题结构，推荐数学视角 | `lenses/*.md` | 这个问题该用什么视角看？ |
-| **数学知识** | 提供具体数学工具（定义/定理/公式） | `knowledge-base/*/*.md` | 这个视角需要哪些具体数学？ |
-| **设计翻译** | 把数学变成 AI 模块/loss/算子 | `design-patterns/*/*.md` | 这些数学怎么变成模型结构？ |
+| **思想透镜** | 诊断问题结构，推荐数学视角 | `../../lenses/*.md` | 这个问题该用什么视角看？ |
+| **数学知识** | 提供具体数学工具（定义/定理/公式） | `../../knowledge-base/*/*.md` | 这个视角需要哪些具体数学？ |
+| **设计翻译** | 把数学变成 AI 模块/loss/算子 | `../../design-patterns/*/*.md` | 这些数学怎么变成模型结构？ |
 
 辅助层：
-- `references/books/*.md`：7 本书的蒸馏稿，需要深入时的完整上下文
-- `references/gpu-friendly-math.md`：GPU 八维验收门（唯一权威）
-- `agents/math-critic.md`：数学-工程双重批判器
+- `../../references/books/*.md`：7 本书的蒸馏稿，需要深入时的完整上下文
+- `../../references/gpu-friendly-math.md`：GPU 八维验收门（唯一权威）
+- `../../agents/math-critic.md`：数学-工程双重批判器
 
 ## 意图诊断（5 场景）
 
@@ -42,21 +42,21 @@ description: |
 
 | 透镜 | 文件 | 核心视角 |
 |------|------|---------|
-| 公理化 | `lenses/axiomatization.md` | 审查假设的相容性/独立性/完备性 |
-| 对偶 | `lenses/duality.md` | 转换到对偶空间暴露约束与不变量 |
-| 对称性 | `lenses/symmetry.md` | 变换下的不变量与守恒律 |
-| 谱分解 | `lenses/spectral.md` | 特征值/奇异值揭示主导结构 |
-| 几何 | `lenses/geometric.md` | 度量/曲率/流形上的空间结构 |
-| 投影与分解 | `lenses/projection.md` | 正交分解、子空间分离、冲突消除 |
-| 变分 | `lenses/variational.md` | 约束下极值、能量最小化 |
-| 局部到整体 | `lenses/local-to-global.md` | 局部性质拼接为全局、层上同调障碍 |
-| 拓扑 | `lenses/topological.md` | 连续变形不变量、连通性、空洞 |
-| 范畴化 | `lenses/categorical.md` | 泛性质、函子、自然变换 |
-| 扰动 | `lenses/perturbation.md` | 小扰动的传播、稳定性、鲁棒性 |
-| 因果 | `lenses/causal.md` | 相关≠因果、干预、反事实 |
-| 博弈 | `lenses/game.md` | 多方策略互动、均衡、机制设计 |
-| 概率统计 | `lenses/probabilistic.md` | 量化不确定性、贝叶斯更新 |
-| 算法 | `lenses/algorithmic.md` | 复杂度、可行性、并行性 |
+| 公理化 | `../../lenses/axiomatization.md` | 审查假设的相容性/独立性/完备性 |
+| 对偶 | `../../lenses/duality.md` | 转换到对偶空间暴露约束与不变量 |
+| 对称性 | `../../lenses/symmetry.md` | 变换下的不变量与守恒律 |
+| 谱分解 | `../../lenses/spectral.md` | 特征值/奇异值揭示主导结构 |
+| 几何 | `../../lenses/geometric.md` | 度量/曲率/流形上的空间结构 |
+| 投影与分解 | `../../lenses/projection.md` | 正交分解、子空间分离、冲突消除 |
+| 变分 | `../../lenses/variational.md` | 约束下极值、能量最小化 |
+| 局部到整体 | `../../lenses/local-to-global.md` | 局部性质拼接为全局、层上同调障碍 |
+| 拓扑 | `../../lenses/topological.md` | 连续变形不变量、连通性、空洞 |
+| 范畴化 | `../../lenses/categorical.md` | 泛性质、函子、自然变换 |
+| 扰动 | `../../lenses/perturbation.md` | 小扰动的传播、稳定性、鲁棒性 |
+| 因果 | `../../lenses/causal.md` | 相关≠因果、干预、反事实 |
+| 博弈 | `../../lenses/game.md` | 多方策略互动、均衡、机制设计 |
+| 概率统计 | `../../lenses/probabilistic.md` | 量化不确定性、贝叶斯更新 |
+| 算法 | `../../lenses/algorithmic.md` | 复杂度、可行性、并行性 |
 
 ## 知识库（按数学领域组织）
 
@@ -95,10 +95,12 @@ description: |
 工作区含架构核心代码（attention/transformer/MoE、`*.cu`/kernel）或研究笔记。仅 `model.py`、`trainer.py` 等常规文件**不构成**环境信号。
 
 ### Gate 2 · 任务信号
-用户任务涉及**设计/改进**新架构/算子、**分析**理论性质、或**迁移**数学结构到 AI 设计。
+用户任务涉及**设计/改进**新架构/算子、**分析**理论性质、**迁移**数学结构到 AI 设计，或**查询与 AI 研究相关的数学知识**（如"切空间在优化中怎么用"）。纯百科式数学查询（如"什么是群"且无 AI 上下文）不自动触发，但可通过 `/ask` 手动进入。
 
 ### Gate 3 · 意图匹配
 用户意图匹配场景 A/B/C/D 之一。纯工程任务匹配场景 E → 不介入。
+
+> **`/ask` 入口**：手动调用时跳过 Gate 1 和 Gate 2，仅执行 Gate 0（排除门）+ Gate 3（意图匹配），可直接进入任意场景包括知识查询。
 
 ## 主流程
 
@@ -147,13 +149,13 @@ description: |
 
 ## GPU 八维验收门
 
-正式术语（唯一权威来源：`references/gpu-friendly-math.md`）：
+正式术语（唯一权威来源：`../../references/gpu-friendly-math.md`）：
 **张量化 / GEMM 可映射 / 复杂度 / 显存与 KV-Cache / 低精度稳定 / 并行与通信 / 稀疏结构 / 算子融合**
 
 ## 深度查阅协议
 
-- **轻度**：读知识卡片（`knowledge-base/*/*.md`），自足可用
-- **中度**：读书蒸馏稿（`references/books/*.md`），获取更完整上下文
+- **轻度**：读知识卡片（`../../knowledge-base/*/*.md`），自足可用
+- **中度**：读书蒸馏稿（`../../references/books/*.md`），获取更完整上下文
 - **深度**：本机有 `math_book/<PDF>` 时，Agent 自动 `pdftotext` + grep 定位原文页
 
 ## 工作流范例

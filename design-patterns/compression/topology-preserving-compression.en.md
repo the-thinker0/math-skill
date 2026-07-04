@@ -1,10 +1,12 @@
 # Topology-Preserving Compression
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Target Problem
 Use when compressing representations while homologically preserving the intrinsic topological structure of the data (connected components, loops, cavities): latent-space compression (a toroidal manifold must not collapse into a line segment), knowledge distillation (student--teacher homological equivalence), 3D mesh simplification (genus invariance), KV-Cache semantic preservation (cluster structure must not collapse). Core objective: **compress dimensions or counts while ensuring that changes in the persistence diagram of persistent homology remain controlled**.
 
 ## Mathematical Foundations
-- Lenses: lenses/topological.md (topological invariants -- connected components and hole counts are invariant under continuous deformation), lenses/spectral.md (Gauss--Bonnet linking curvature and Euler characteristic), lenses/variational.md (constrained optimization of compression ratio vs. topological fidelity)
+- Lenses: lenses/topological.md (topological invariants -- connected components and hole counts are invariant under continuous deformation), lenses/spectral.md (Gauss--Bonnet linking curvature and Euler characteristic), lenses/variational.md (constrained variational of compression ratio vs. topological fidelity)
 - Knowledge: knowledge-base/topology/persistent-homology.md (persistent homology, Vietoris--Rips filtration, bottleneck distance), knowledge-base/topology/euler-characteristic.md (Euler characteristic for rapid topological diagnostics), knowledge-base/matrix-analysis/matrix-perturbation.md (Davis--Kahan subspace perturbation bound)
 
 ## Required Mathematical Background

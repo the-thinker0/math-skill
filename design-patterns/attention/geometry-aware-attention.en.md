@@ -1,10 +1,12 @@
 # Geometry-Aware Attention
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Applicable Problems
 When **known geometric relationships** exist between tokens/keys (spatial distance, manifold geodesic distance, hierarchical structure, temporal interval), the position-agnostic inner product of standard attention cannot exploit this structural information. Geometry-aware attention **directly injects geometric priors into attention weight computation**, enabling the model to naturally respect the metric structure of the underlying space. Typical scenarios include: 3D scene understanding, molecular conformation, temporal forecasting, hierarchical text structure (paragraph-sentence-word), and knowledge graphs.
 
 ## Mathematical Inspiration
-- Lenses: [symmetry-invariance (metric invariance), transformation (coordinate-system-independent representation)]
+- Lenses: [symmetry (metric invariance), duality (coordinate-system-independent representation)]
 - Knowledge: [`information-geometry/fisher-metric.md` (geometric metrics on distribution spaces), `probability/concentration-inequality.md` (concentration behavior under geometric constraints)]
 
 ## Required Mathematical Knowledge
@@ -51,7 +53,7 @@ def manifold_attention(Q, K, V, manifold):
 
 ## Implementable Architectures
 - **RoPE Extensions**: From $SO(2)$ rotations to higher-dimensional rotation groups $SO(2k)$, encoding multi-dimensional positional information (2D image patches, 3D voxels)
-- **Hierarchical Positional Bias**: Use LCA (Lowest Common Ancestor) depth as distance in tree structures, suitable for hierarchical modeling of documents and code
+- **Hierarchical Positional Bias**: Use LCA (Lowest Common Ancestor) depth as distance in tree structures, suitable for hierarchical geometric of documents and code
 - **Molecular Conformation Attention**: 3D atomic coordinates -> distance matrix -> geometric bias, used in molecular GNNs and protein structure prediction
 
 ## GPU Feasibility

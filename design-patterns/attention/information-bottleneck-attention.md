@@ -1,10 +1,11 @@
 # 信息瓶颈注意力 / Information Bottleneck Attention
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## 适用问题
 当注意力机制需要**选择性传递有用信息、抑制冗余/噪声信息**时，用信息瓶颈理论指导注意力权重的学习——使注意力分布最大化关于目标 $Y$ 的互信息 $I(Z;Y)$，同时最小化关于输入 $X$ 的互信息 $I(X;Z)$。典型场景：长文档摘要（大量无关 token 需被过滤）、多模态对齐（跨模态噪声抑制）、可解释性（注意力权重作为信息流的可视化）。
 
 ## 数学思想来源
-- 透镜：[abstraction（抽象化 — 信息论框架统一注意力设计）, optimization（优化思想 — 约束优化与拉格朗日对偶）]
+- 透镜：[categorical（范畴化透镜 — 信息论框架统一注意力设计）, variational（变分透镜 — 约束优化与拉格朗日对偶）]
 - 知识：[`probability/information-bottleneck.md`（IB 目标函数与变分下界）, `probability/kl-divergence.md`（KL 正则项的实现）, `probability/entropy.md`（互信息估计）]
 
 ## 需要的数学知识

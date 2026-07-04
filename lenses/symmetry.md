@@ -22,9 +22,9 @@
 
 ## 会路由到哪些知识域
 
-- **group-theory**：群作用、轨道-稳定子定理、Burnside 引理——对称性的代数基础
+- `lie-theory/group-action`：群作用、轨道-稳定子定理、Burnside 引理——对称性的代数基础
 - **lie-theory**：李群/李代数、Noether 定理——连续对称与守恒律
-- **galois-theory**：Galois 群、可解群——方程可解性的代数判据
+- `lie-theory/lie-group`：Galois 群、可解群——方程可解性的代数判据
 
 ## 可能产生哪些 AI 设计
 

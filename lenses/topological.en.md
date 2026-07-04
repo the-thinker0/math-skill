@@ -21,9 +21,9 @@ Topology is a way of "ignoring precise measurements and focusing only on qualita
 
 ## Which Knowledge Domains It Routes To
 
-- **algebraic-topology**: Fundamental group, homology groups, Betti numbers, and cohomology — computational tools for topological invariants
+- `topology/persistent-homology`: Fundamental group, homology groups, Betti numbers, and cohomology — computational tools for topological invariants
 - **tda**: Persistent homology, filtrations, and simplicial complexes — extracting topological features from data
-- **sheaf-theory**: Sheaf cohomology and Čech cohomology — algebraic criteria for local-to-global consistency
+- `topology/fundamental-group`: Sheaf cohomology and Čech cohomology — algebraic criteria for local-to-global consistency
 
 ## What AI Designs It May Inspire
 

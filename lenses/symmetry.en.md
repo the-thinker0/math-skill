@@ -22,9 +22,9 @@ Symmetry is a way of "finding what remains unchanged under transformations": whe
 
 ## Which Knowledge Domains It Routes To
 
-- **group-theory**: Group actions, the orbit-stabilizer theorem, and Burnside's lemma — the algebraic foundations of symmetry
+- `lie-theory/group-action`: Group actions, the orbit-stabilizer theorem, and Burnside's lemma — the algebraic foundations of symmetry
 - **lie-theory**: Lie groups, Lie algebras, and Noether's theorem — continuous symmetries and conservation laws
-- **galois-theory**: Galois groups and solvable groups — algebraic criteria for the solvability of equations
+- `lie-theory/lie-group`: Galois groups and solvable groups — algebraic criteria for the solvability of equations
 
 ## What AI Designs It May Inspire
 

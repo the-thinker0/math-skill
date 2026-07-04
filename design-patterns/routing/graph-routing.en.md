@@ -1,4 +1,6 @@
 # Graph Routing
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Applicable Problems
 Use when there exists a known or learnable topological structure among modules/experts. Typical scenarios:
@@ -11,7 +13,7 @@ Core requirement: **leverage structural priors to constrain routing decisions an
 ## Mathematical Inspiration
 - Lenses: lenses/geometric.md (graph Laplacian, spectral graph theory), lenses/probabilistic.md (message passing, information flow)
 - Knowledge: knowledge-base/matrix-analysis/projection.md (adjacency matrix, spectral decomposition),
-  knowledge-base/optimization/lagrangian-duality.md (optimization on graphs, diffusion processes)
+  knowledge-base/optimization/lagrangian-duality.md (variational on graphs, diffusion processes)
 
 ## Required Mathematical Background
 - **Graph Laplacian**: L = D - A (combinatorial) or L_sym = D^{-1/2} L D^{-1/2} (normalized)

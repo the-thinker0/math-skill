@@ -5,7 +5,7 @@ description: |
 ---
 
 
-> **File routing**: When this document references any file (lenses, knowledge-base, design-patterns, references, agents), always load the `.en.md` variant if it exists. For example, `lenses/symmetry.md` → load `lenses/symmetry.en.md`.
+> **File routing**: When this document references any file (lenses, knowledge-base, design-patterns, references, agents), always load the `.en.md` variant if it exists. For example, `../../lenses/symmetry.md` → load `lenses/symmetry.en.md`.
 # 🧭 Math Research OS
 
 > "The thinking system does not hand out theorems, the knowledge system does not indulge in loose inspiration, and the design layer does not fake profundity."
@@ -16,14 +16,14 @@ This system is a mathematical staff office for AI architecture innovation — no
 
 | Layer | Responsibility | Directory | Core Question |
 |-------|---------------|-----------|--------------|
-| **Thinking Lenses** | Diagnose problem structure, recommend mathematical perspectives | `lenses/*.md` | Which perspective should we view this problem through? |
-| **Math Knowledge** | Provide concrete mathematical tools (definitions/theorems/formulas) | `knowledge-base/*/*.md` | What specific mathematics does this perspective require? |
-| **Design Translation** | Translate mathematics into AI modules/losses/operators | `design-patterns/*/*.md` | How does this mathematics become model architecture? |
+| **Thinking Lenses** | Diagnose problem structure, recommend mathematical perspectives | `../../lenses/*.md` | Which perspective should we view this problem through? |
+| **Math Knowledge** | Provide concrete mathematical tools (definitions/theorems/formulas) | `../../knowledge-base/*/*.md` | What specific mathematics does this perspective require? |
+| **Design Translation** | Translate mathematics into AI modules/losses/operators | `../../design-patterns/*/*.md` | How does this mathematics become model architecture? |
 
 Auxiliary layers:
-- `references/books/*.md`: Distilled notes from 7 textbooks; full context when deeper understanding is needed
-- `references/gpu-friendly-math.md`: GPU Eight-Dimension Acceptance Gate (single source of truth)
-- `agents/math-critic.md`: Math-engineering dual critic
+- `../../references/books/*.md`: Distilled notes from 7 textbooks; full context when deeper understanding is needed
+- `../../references/gpu-friendly-math.md`: GPU Eight-Dimension Acceptance Gate (single source of truth)
+- `../../agents/math-critic.md`: Math-engineering dual critic
 
 ## Intent Diagnosis (5 Scenarios)
 
@@ -41,21 +41,21 @@ Each lens answers: What is this perspective? What kinds of problems is it suited
 
 | Lens | File | Core Perspective |
 |------|------|-----------------|
-| Axiomatization | `lenses/axiomatization.md` | Examine consistency/independence/completeness of assumptions |
-| Duality | `lenses/duality.md` | Transform to the dual space to expose constraints and invariants |
-| Symmetry | `lenses/symmetry.md` | Invariants and conservation laws under transformations |
-| Spectral Decomposition | `lenses/spectral.md` | Eigenvalues/singular values reveal dominant structure |
-| Geometric | `lenses/geometric.md` | Metric/curvature/spatial structure on manifolds |
-| Projection & Decomposition | `lenses/projection.md` | Orthogonal decomposition, subspace separation, conflict elimination |
-| Variational | `lenses/variational.md` | Constrained extrema, energy minimization |
-| Local-to-Global | `lenses/local-to-global.md` | Patching local properties into global ones, cohomological obstructions |
-| Topological | `lenses/topological.md` | Invariants under continuous deformation, connectedness, holes |
-| Categorical | `lenses/categorical.md` | Universal properties, functors, natural transformations |
-| Perturbation | `lenses/perturbation.md` | Propagation of small perturbations, stability, robustness |
-| Causal | `lenses/causal.md` | Correlation ≠ causation, interventions, counterfactuals |
-| Game-Theoretic | `lenses/game.md` | Multi-agent strategic interaction, equilibria, mechanism design |
-| Probabilistic & Statistical | `lenses/probabilistic.md` | Quantifying uncertainty, Bayesian updating |
-| Algorithmic | `lenses/algorithmic.md` | Complexity, feasibility, parallelizability |
+| Axiomatization | `../../lenses/axiomatization.md` | Examine consistency/independence/completeness of assumptions |
+| Duality | `../../lenses/duality.md` | Transform to the dual space to expose constraints and invariants |
+| Symmetry | `../../lenses/symmetry.md` | Invariants and conservation laws under transformations |
+| Spectral Decomposition | `../../lenses/spectral.md` | Eigenvalues/singular values reveal dominant structure |
+| Geometric | `../../lenses/geometric.md` | Metric/curvature/spatial structure on manifolds |
+| Projection & Decomposition | `../../lenses/projection.md` | Orthogonal decomposition, subspace separation, conflict elimination |
+| Variational | `../../lenses/variational.md` | Constrained extrema, energy minimization |
+| Local-to-Global | `../../lenses/local-to-global.md` | Patching local properties into global ones, cohomological obstructions |
+| Topological | `../../lenses/topological.md` | Invariants under continuous deformation, connectedness, holes |
+| Categorical | `../../lenses/categorical.md` | Universal properties, functors, natural transformations |
+| Perturbation | `../../lenses/perturbation.md` | Propagation of small perturbations, stability, robustness |
+| Causal | `../../lenses/causal.md` | Correlation ≠ causation, interventions, counterfactuals |
+| Game-Theoretic | `../../lenses/game.md` | Multi-agent strategic interaction, equilibria, mechanism design |
+| Probabilistic & Statistical | `../../lenses/probabilistic.md` | Quantifying uncertainty, Bayesian updating |
+| Algorithmic | `../../lenses/algorithmic.md` | Complexity, feasibility, parallelizability |
 
 ## Knowledge Base (Organized by Mathematical Domain)
 
@@ -94,10 +94,12 @@ The following tasks **never** trigger the system regardless of workspace content
 The workspace contains architecture-level core code (attention/transformer/MoE, `*.cu`/kernel) or research notes. Routine files like `model.py` or `trainer.py` alone **do not** constitute an environment signal.
 
 ### Gate 2 · Task Signal
-The user's task involves **designing/improving** a new architecture/operator, **analyzing** theoretical properties, or **transferring** mathematical structures into AI design.
+The user's task involves **designing/improving** a new architecture/operator, **analyzing** theoretical properties, **transferring** mathematical structures into AI design, or **querying math knowledge relevant to AI research** (e.g., "how is tangent space used in optimization?"). Pure encyclopedic math queries (e.g., "what is a group?" with no AI context) do not auto-trigger, but can be accessed via `/ask`.
 
 ### Gate 3 · Intent Match
 The user's intent matches one of scenarios A/B/C/D. Pure engineering tasks matching scenario E → no intervention.
+
+> **`/ask` entry**: Manual invocation skips Gate 1 and Gate 2, executing only Gate 0 (exclusion) + Gate 3 (intent match), allowing direct access to any scenario including knowledge queries.
 
 ## Main Workflow
 
@@ -146,13 +148,13 @@ Scenario E (Engineering): No intervention
 
 ## GPU Eight-Dimension Acceptance Gate
 
-Formal terminology (single authoritative source: `references/gpu-friendly-math.md`):
+Formal terminology (single authoritative source: `../../references/gpu-friendly-math.md`):
 **Tensorization / GEMM-Mappability / Complexity / Memory & KV-Cache / Low-Precision Stability / Parallelism & Communication / Sparse structure / Operator Fusion**
 
 ## Depth-of-Consultation Protocol
 
-- **Light**: Read knowledge cards (`knowledge-base/*/*.md`); self-contained and immediately usable
-- **Medium**: Read distilled book notes (`references/books/*.md`) for more complete context
+- **Light**: Read knowledge cards (`../../knowledge-base/*/*.md`); self-contained and immediately usable
+- **Medium**: Read distilled book notes (`../../references/books/*.md`) for more complete context
 - **Deep**: When `math_book/<PDF>` is available locally, the agent automatically runs `pdftotext` + grep to locate the original page
 
 ## Workflow Example

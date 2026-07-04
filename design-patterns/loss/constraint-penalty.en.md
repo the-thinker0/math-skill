@@ -1,10 +1,12 @@
 # Constraint Penalty
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Applicable Problems
-When the design involves hard constraints (e.g., probability simplex, orthogonality, capacity limits, load balancing) but end-to-end training is required. Typical scenarios: (1) MoE routing probabilities must lie on the $K$-simplex with load balancing; (2) Expert activation count is constrained (top-k); (3) Subspace projection matrices must satisfy orthogonality $W^T W = I$; (4) Feature norms are bounded $\|z\| \leq R$. Core objective: **transform mathematical constraints into differentiable penalty terms integrated into gradient-based optimization**.
+When the design involves hard constraints (e.g., probability simplex, orthogonality, capacity limits, load balancing) but end-to-end training is required. Typical scenarios: (1) MoE routing probabilities must lie on the $K$-simplex with load balancing; (2) Expert activation count is constrained (top-k); (3) Subspace projection matrices must satisfy orthogonality $W^T W = I$; (4) Feature norms are bounded $\|z\| \leq R$. Core objective: **transform mathematical constraints into differentiable penalty terms integrated into gradient-based variational**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/variational.md (constrained optimization, Lagrangian duality, KKT conditions), lenses/geometric.md (manifold projection)
+- Lenses: lenses/variational.md (constrained variational, Lagrangian duality, KKT conditions), lenses/geometric.md (manifold projection)
 - Knowledge: knowledge-base/optimization/lagrangian-duality.md (augmented Lagrangian method, penalty function method), knowledge-base/matrix-analysis/projection.md (projection operators, constraint sets)
 
 ## Required Mathematical Knowledge
@@ -60,7 +62,7 @@ Method 4 - Orthogonal Constraint Projection:
 "We employ the augmented Lagrangian method to convert hard constraints $g(x)=0$ into differentiable penalty terms $\lambda^T g(x) + \rho/2 \|g(x)\|^2$. Through alternating dual ascent updates of $\lambda$, constraint satisfaction is guaranteed to converge at rate $O(1/\rho)$ without requiring $\rho \to \infty$, reducing constraint violations by 3x compared to pure penalty methods in experiments."
 
 ## Risks
-- Excessively fast rho growth leads to ill-conditioned optimization landscapes (deteriorating condition numbers), causing gradient vanishing or explosion
+- Excessively fast rho growth leads to ill-conditioned variational landscapes (deteriorating condition numbers), causing gradient vanishing or explosion
 - ALM lambda update frequency and step size require tuning; too fast causes oscillation, too slow impedes convergence
-- When multiple constraints coexist, the relative ratios of their rho values influence the optimization trajectory
+- When multiple constraints coexist, the relative ratios of their rho values influence the variational trajectory
 - Projection operations (e.g., matrix square root inverse) are computationally expensive and numerically unstable

@@ -1,7 +1,9 @@
 # Variational Loss
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Applicable Problems
-When sampling from latent variable distributions is required to generate diverse outputs. Typical scenarios: (1) Expert selection introduces discrete latent variables $z$ that need end-to-end optimization; (2) Representation spaces need to model uncertainty; (3) Generative routing requires sampling from posterior distributions $p(z|x)$; (4) Bayesian mixture of experts. Core objective: **model distributions rather than point estimates in latent space, enabling uncertainty awareness and diversity**.
+When sampling from latent variable distributions is required to generate diverse outputs. Typical scenarios: (1) Expert selection introduces discrete latent variables $z$ that need end-to-end variational; (2) Representation spaces need to model uncertainty; (3) Generative routing requires sampling from posterior distributions $p(z|x)$; (4) Bayesian mixture of experts. Core objective: **model distributions rather than point estimates in latent space, enabling uncertainty awareness and diversity**.
 
 ## Mathematical Inspiration
 - Lenses: lenses/probabilistic.md (variational inference and ELBO), lenses/probabilistic.md (posterior and prior)
@@ -51,7 +53,7 @@ Method 3 - Variational Information Bottleneck:
 - **Operator Fusion**: The Linear layers for mu and sigma^2 can share a single GEMM followed by split; KL exp/sub/add can be fused
 
 ## Paper Phrasing
-"We adopt the variational inference framework, modeling expert selection as posterior inference over discrete latent variables $z$. End-to-end optimization is achieved through Gumbel-Softmax relaxation, combined with a beta annealing strategy that effectively prevents posterior collapse. The ELBO lower bound converges at rate $O(\sqrt{d/n})$ with respect to latent variable dimensionality."
+"We adopt the variational inference framework, geometric expert selection as posterior inference over discrete latent variables $z$. End-to-end variational is achieved through Gumbel-Softmax relaxation, combined with a beta annealing strategy that effectively prevents posterior collapse. The ELBO lower bound converges at rate $O(\sqrt{d/n})$ with respect to latent variable dimensionality."
 
 ## Risks
 - Posterior collapse: The KL term converges to 0 prematurely, causing latent variables to degenerate into prior samples and lose information

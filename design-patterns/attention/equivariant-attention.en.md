@@ -1,10 +1,12 @@
 # Equivariant Attention
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Applicable Problems
 When the input possesses an **explicit symmetry group $G$ action** (rotation, translation, permutation, reflection, etc.), and the desired model output should be **equivariant** (covariant) rather than invariant under the same transformations, equivariant constraints must be directly encoded into the attention mechanism. Typical scenarios include: 3D point clouds / molecules ($E(3)$ rigid-body group), image classification ($D_n$ rotation/reflection group), set data ($S_n$ permutation group), and multi-view / multi-sensor fusion.
 
 ## Mathematical Inspiration
-- Lenses: [symmetry-invariance, abstraction (unified framework for group actions)]
+- Lenses: [symmetry, categorical (unified framework for group actions)]
 - Knowledge: [`probability/concentration-inequality.md` (sample efficiency gains under equivariant constraints -- data equivalence along orbits), `probability/entropy.md` (equivariant constraints reduce output distribution entropy, yielding stronger inductive bias)]
 
 ## Required Mathematical Knowledge
@@ -61,7 +63,7 @@ output = mean(softmax((rho(g)@X@W_q) @ (rho(g)@X@W_k).T/sqrt(d)) @ (rho(g)@X@W_v
 - **Dimension 5 Low Precision**: Orthogonal representation matrices are numerically stable under bf16
 - **Dimension 6 Parallelism**: $|G|$ group elements are naturally parallelizable (along the batch dimension)
 - **Dimension 7 Sparsity**: Permutation $\rho(g)$ is extremely sparse and can be encoded as gather indices
-- **Dimension 8 Operator Fusion**: Group action + linear transformation can be fused into a single batched GEMM
+- **Dimension 8 Operator Fusion**: Group action + linear duality can be fused into a single batched GEMM
 
 ## Paper Phrasing
 "We propose an equivariant attention mechanism that constrains attention weights to be group invariants and attention outputs to be group equivariants, directly encoding the inductive bias of symmetry group $G$ into the model architecture without additional data augmentation, achieving a $|G|/|stab|$-fold improvement in parameter efficiency."

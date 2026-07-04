@@ -1,4 +1,6 @@
 # Optimal Transport Routing
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## Applicable Problems
 Use when a set of input tokens/samples must be assigned to a set of experts/sub-modules while pursuing globally optimal matching cost.
@@ -6,7 +8,7 @@ Typical scenarios: (1) Load-balanced MoE routing -- assigning N tokens to K expe
 Core requirement: **globally optimal assignment, rather than greedy per-point decisions**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/variational.md (convex optimization, duality theory), lenses/geometric.md (Wasserstein distance)
+- Lenses: lenses/variational.md (convex variational, duality theory), lenses/geometric.md (Wasserstein distance)
 - Knowledge: knowledge-base/optimization/lagrangian-duality.md (linear programming, Sinkhorn algorithm),
   knowledge-base/probability/entropy.md (coupling distributions, marginal constraints)
 
@@ -42,7 +44,7 @@ Capacity constraint (b vector):
 
 ## Implementable Structures
 - **Sinkhorn layer**: Custom autograd Function; forward pass performs Sinkhorn iterations, backward pass uses the implicit function theorem for gradients
-- **Fixed iteration count**: T = 10 fixed iterations => can be unrolled into a computation graph (unrolled optimization)
+- **Fixed iteration count**: T = 10 fixed iterations => can be unrolled into a computation graph (unrolled variational)
 - **Log-domain stabilization**: Convert Sinkhorn to log domain to avoid exp overflow:
   log_u = log_a - logsumexp(log_K + log_v, dim=1)
 - **Batch OT**: Solve independently per micro-batch, parallelize Sinkhorn iterations

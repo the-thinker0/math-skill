@@ -21,9 +21,9 @@
 
 ## 会路由到哪些知识域
 
-- **probability-theory**：Kolmogorov 公理、分布族、大数定律/CLT——不确定性的数学基础
-- **statistical-inference**：MLE、假设检验、贝叶斯推断、回归建模——从数据中提取规律
-- **causal-inference**：DAG、后门准则、do-演算——从关联到因果的推理框架
+- `probability/entropy`：Kolmogorov 公理、分布族、大数定律/CLT——不确定性的数学基础
+- `probability/kl-divergence`：MLE、假设检验、贝叶斯推断、回归建模——从数据中提取规律
+- 因果推断（暂无知识卡，由 critic 审查）：DAG、后门准则、do-演算——从关联到因果的推理框架
 
 ## 可能产生哪些 AI 设计
 

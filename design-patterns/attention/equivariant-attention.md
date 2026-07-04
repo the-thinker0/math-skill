@@ -1,10 +1,11 @@
 # 等变注意力 / Equivariant Attention
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
 
 ## 适用问题
 当输入具有**明确的对称群 $G$ 作用**（旋转、平移、置换、反射等），且期望模型输出在相同变换下**协变**（equivariant）而非不变时，需要将等变约束直接编入注意力机制。典型场景：3D 点云/分子（$E(3)$ 刚体群）、图像分类（$D_n$ 旋转/镜像群）、集合数据（$S_n$ 置换群）、多视角/多传感器融合。
 
 ## 数学思想来源
-- 透镜：[symmetry-invariance（对称与不变性）, abstraction（抽象化 — 群作用的统一框架）]
+- 透镜：[symmetry（对称透镜）, categorical（范畴化透镜 — 群作用的统一框架）]
 - 知识：[`probability/concentration-inequality.md`（等变约束下的样本效率提升 — 轨道上的数据等价性）, `probability/entropy.md`（等变约束降低输出分布熵 → 更强的归纳偏置）]
 
 ## 需要的数学知识

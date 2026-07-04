@@ -21,7 +21,7 @@
 
 ## 会路由到哪些知识域
 
-- **convex-analysis**：凸性判定、凸集/凸函数性质——决定问题难度等级
+- `optimization/convex-optimization`：凸性判定、凸集/凸函数性质——决定问题难度等级
 - **optimization**：LP/QP/凸/非凸/组合/随机优化的求解方法
 - **matrix-analysis**：条件数、预条件、低秩近似——二阶法的可行性分析
 
