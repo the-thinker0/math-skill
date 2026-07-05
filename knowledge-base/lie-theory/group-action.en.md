@@ -45,15 +45,15 @@ GPU friendliness depends on the type of group:
 
 ## Further References
 
-- Distillation notes: references/books/micro-lie-theory.md (Section II-B Group Actions)
-- Distillation notes: references/books/smooth-manifolds.md (Ch 7 Lie Groups)
+- Distillation notes: ../../references/books/micro-lie-theory.en.md (Section II-B Group Actions)
+- Distillation notes: ../../references/books/smooth-manifolds.en.md (Ch 7 Lie Groups)
 - Original text: Joan Sola et al., *A micro Lie theory*, Section II-B (group action definition and applications in robotics)
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, Ch 7 (Lie groups and group actions)
 
 
 ## Routing Extensions
-- If equivariant map design is needed -> `equivariance.md` (equivariance under group actions)
-- If linearization of group action is needed -> `representation.md` (representations are linear group actions)
+- If equivariant map design is needed -> `equivariance.en.md` (equivariance under group actions)
+- If linearization of group action is needed -> `representation.en.md` (representations are linear group actions)
 - If invariant analysis is needed -> `symmetry` (design pattern layer for symmetry analysis)
 
 ## Extensible Directions

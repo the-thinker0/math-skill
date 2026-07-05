@@ -5,8 +5,8 @@
 Use when pruning must be based on the structural importance of tokens (rather than raw attention scores alone): KV-Cache eviction, long-document summarization, inference acceleration (reducing $O(L^2)$), multimodal vision token compression. Core objective: **quantify the structural importance of each token via spectral methods, achieving pruning with minimal information loss**.
 
 ## Mathematical Foundations
-- Lenses: lenses/spectral.md (identifying dominant spectral components, discarding redundant ones), lenses/algorithmic.md (complexity classification and approximation algorithms), lenses/perturbation.md (pruning = sparse perturbation, Weyl bound for spectral drift estimation)
-- Knowledge: knowledge-base/matrix-analysis/spectral-decomposition.md (spectral radius, eigenvector centrality), knowledge-base/matrix-analysis/matrix-perturbation.md (Geršgorin discs, perturbation bounds), knowledge-base/matrix-analysis/positive-semidefinite.md (Gram matrix PSD structure)
+- Lenses: ../../lenses/spectral.en.md (identifying dominant spectral components, discarding redundant ones), ../../lenses/algorithmic.en.md (complexity classification and approximation algorithms), ../../lenses/perturbation.en.md (pruning = sparse perturbation, Weyl bound for spectral drift estimation)
+- Knowledge: ../../knowledge-base/matrix-analysis/spectral-decomposition.en.md (spectral radius, eigenvector centrality), ../../knowledge-base/matrix-analysis/matrix-perturbation.en.md (Geršgorin discs, perturbation bounds), ../../knowledge-base/matrix-analysis/positive-semidefinite.en.md (Gram matrix PSD structure)
 
 ## Required Mathematical Background
 - **Eigenvector Centrality**: the principal eigenvector of the attention matrix $A$ satisfies $Ax = \lambda_1 x$; component $x_i$ quantifies the global influence of token $i$ (Perron--Frobenius guarantees non-negativity)
@@ -26,9 +26,9 @@ Method 1 - Spectral centrality pruning (power iteration):
   indices = topk(v, ceil(ρ * L))              // retain tokens with highest centrality
 
 Method 2 - Geršgorin cheap pruning (zero iterations):
-  A = softmax(K @ K^T / √d)
-  gersh_score = |diag(A)| + sum(|A|, dim=1)    // disc upper bound, O(L²) elementwise
-  indices = topk(gersh_score, ceil(ρ * L))
+  S = K @ K^T / √d                         // L×L raw similarity matrix (pre-softmax, so row sums vary)
+  gersh_score = sum(|S|, dim=1) - |diag(S)|  // Geršgorin disc radius R_i = sum_{j!=i}|S_{ij}|, measures connectivity
+  indices = topk(gersh_score, ceil(ρ * L))    // O(L²) elementwise, no power iteration needed
 
 Method 3 - Differentiable spectral pruning (end-to-end):
   v = power_iteration(A, T=5)

@@ -43,12 +43,12 @@ Maps a vector $v$ onto a subspace $\mathcal{S}$ such that the residual $v - Pv$ 
 
 ## Further References
 
-- Distilled notes: references/books/matrix-analysis.md (Section 2.1 QR Decomposition, Section 4.2 Courant-Fischer Variational Characterization, Section 2.6 SVD)
+- Distilled notes: ../../references/books/matrix-analysis.en.md (Section 2.1 QR Decomposition, Section 4.2 Courant-Fischer Variational Characterization, Section 2.6 SVD)
 - Original text: Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 2 (Unitary Similarity) + Chapter 4 (Hermitian Matrices Section 4.2 Variational Characterizations)
 
 
 ## Routing Extensions
-- If the goal is compression / dimensionality reduction -> `low-rank-approximation.md` (truncated SVD implementation)
+- If the goal is compression / dimensionality reduction -> `low-rank-approximation.en.md` (truncated SVD implementation)
 - If projection constraints are needed on a manifold -> `riemannian-optimization.md` (constrained optimization on Riemannian manifolds)
 - If shared vs. private subspace separation is involved -> `shared-private-decomposition` (design pattern layer)
 

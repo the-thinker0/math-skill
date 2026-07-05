@@ -53,7 +53,7 @@ Actual chapter map (2nd ed., chapter numbers match the book):
 
 ## GPU Friendliness Warning
 
-> The sole authority for the acceptance gate: the **eight dimensions** in `../gpu-friendly-math.md`. The success or failure of manifold methods almost entirely hinges on one point: **whether the retraction / exponential map can be tensorized and expressed as GEMM, or must be solved iteratively.**
+> The sole authority for the acceptance gate: the **eight dimensions** in `../gpu-friendly-math.en.md`. The success or failure of manifold methods almost entirely hinges on one point: **whether the retraction / exponential map can be tensorized and expressed as GEMM, or must be solved iteratively.**
 
 Dimension-by-dimension comparison:
 

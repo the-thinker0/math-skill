@@ -92,7 +92,7 @@ First the overview mapping, then detailed expansion:
 
 ## Possible Algorithmic Inspirations
 
-**Tropical Sheaf Attention Trilogy** (consistent with the candidate validation examples in `../gpu-friendly-math.md`):
+**Tropical Sheaf Attention Trilogy** (consistent with the candidate validation examples in `../gpu-friendly-math.en.md`):
 
 1. **Tropical Gating**
    - Replace hard Top-K routing with **piecewise-linear** scoring on the max-plus semiring.
@@ -112,7 +112,7 @@ First the overview mapping, then detailed expansion:
 
 ## GPU Friendliness Warning
 
-> **Required reading and sole authority**: `../gpu-friendly-math.md`
+> **Required reading and sole authority**: `../gpu-friendly-math.en.md`
 > Eight-dimension scorecard: D1 Tensorization, D2 GEMM-mappability, D3 Complexity, D4 Memory/KV, D5 Low-precision stability, D6 Parallelism & communication, D7 Sparse structure, D8 Operator fusion.
 > **Mathematical beauty != computable**; any dimension that is "unfriendly and not reformable" means elimination.
 

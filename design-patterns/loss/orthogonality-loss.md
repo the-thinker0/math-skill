@@ -7,9 +7,9 @@
 MoE 专家差异化、多任务 head 去相关。核心诉求：**让不同模块看到不同的东西**。
 
 ## 数学思想来源
-- 透镜：lenses/projection.md（正交投影与子空间分解）、lenses/variational.md（正则化与鞍点）
-- 知识：knowledge-base/matrix-analysis/projection.md（谱定理、SVD、Schur 分解）、
-  knowledge-base/probability/kl-divergence.md（冗余度与互信息）
+- 透镜：../../lenses/projection.md（正交投影与子空间分解）、../../lenses/variational.md（正则化与鞍点）
+- 知识：../../knowledge-base/matrix-analysis/projection.md（谱定理、SVD、Schur 分解）、
+  ../../knowledge-base/probability/kl-divergence.md（冗余度与互信息）
 
 ## 需要的数学知识
 - **Frobenius 内积与正交性**：⟨A, B⟩_F = tr(A^T B)，当 ⟨A, B⟩_F = 0 时 A⊥B
@@ -41,14 +41,14 @@ MoE 专家差异化、多任务 head 去相关。核心诉求：**让不同模�
 - **分块计算**：当 K 很大时，对 (i,j) 对做 mini-batch 采样，每步只算 C(K,2) 中的 B 对
 
 ## GPU 可行性
-- **张量化**：核心操作为 matmul（W^T W）→ 标准 GEMM，完美映射 Tensor Core
-- **GEMM 可映射**：方法3 只需 1 次 GEMM + 1 次 element-wise mask + Frobenius 范数
-- **复杂度**：O(K·d·r) 存储 + O(d·r²·K) 或 O(K²·d·r²) 计算，K<16 时 negligible
-- **显存与 KV-Cache**：中间矩阵 d×r·K 量级，不增加 KV-Cache 负担
-- **低精度稳定**：Frobenius 范数为平方和，fp16 下 OK；Grassmann SVD 建议 fp32
-- **并行与通信**：K 对之间 embarrassingly parallel，可分 GPU 计算后 all-reduce
-- **稀疏结构**：若 W_k 本身稀疏（如 MoE gate），mask 后稀疏度进一步提升
-- **算子融合**：matmul → mask → square → sum 可融合为单个 CUDA kernel
+- **D1[v]**：核心操作为 matmul（W^T W）→ 标准 GEMM，完美映射 Tensor Core
+- **D2[v]**：方法3 只需 1 次 GEMM + 1 次 element-wise mask + Frobenius 范数
+- **D3[v]**：O(K·d·r) 存储 + O(d·r²·K) 或 O(K²·d·r²) 计算，K<16 时 negligible
+- **D4[v]**：中间矩阵 d×r·K 量级，不增加 KV-Cache 负担
+- **D5[v]**：Frobenius 范数为平方和，fp16 下 OK；Grassmann SVD 建议 fp32
+- **D6[v]**：K 对之间 embarrassingly parallel，可分 GPU 计算后 all-reduce
+- **D7[v]**：若 W_k 本身稀疏（如 MoE gate），mask 后稀疏度进一步提升
+- **D8[v]**：matmul → mask → square → sum 可融合为单个 CUDA kernel
 
 ## 论文表述方式
 "我们引入正交性正则项 L_orth = Σ_{i<j}‖W_i^T W_j‖_F²，将各子模块的特征空间约束

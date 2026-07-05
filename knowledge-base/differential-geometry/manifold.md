@@ -41,8 +41,8 @@ GPU 友好度中等。坐标卡变换本身是逐元素的映射（可并行）�
 
 ## 深入参考
 
-- 蒸馏稿：references/books/smooth-manifolds.md（Ch 1-2 Smooth Manifolds / Smooth Maps）
-- 蒸馏稿：references/books/differential-geometry.md（Ch 1-2 Differentiable Manifolds / The Tangent Structure）
+- 蒸馏稿：../../references/books/smooth-manifolds.md（Ch 1-2 Smooth Manifolds / Smooth Maps）
+- 蒸馏稿：../../references/books/differential-geometry.md（Ch 1-2 Differentiable Manifolds / The Tangent Structure）
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, 2nd Edition, Ch 1-2（拓扑流形、光滑结构、单位分解）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, Ch 1-2
 

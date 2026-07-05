@@ -2,12 +2,12 @@
 
 ## Minimal Definition
 
-A Hermitian matrix $A$ is positive semidefinite (PSD) if $x^HAx \geq 0$ for all nonzero vectors $x$, denoted $A \succeq 0$. Equivalent conditions: all eigenvalues $\geq 0$; there exists $B$ such that $A = B^HB$ (Gram representation); all leading principal minors $\geq 0$. Positive definite (PD) requires strict $> 0$, denoted $A \succ 0$.
+A Hermitian matrix $A$ is positive semidefinite (PSD) if $x^HAx \geq 0$ for all nonzero vectors $x$, denoted $A \succeq 0$. Equivalent conditions: all eigenvalues $\geq 0$; there exists $B$ such that $A = B^HB$ (Gram representation); **all principal minors** $\geq 0$ (note: ALL principal minors, not just the leading ones). Positive definite (PD) requires strict $> 0$, denoted $A \succ 0$.
 
 ## Core Formulas
 
-- PSD equivalence: $A \succeq 0 \iff \lambda_i(A) \geq 0 \ \forall i \iff A = B^HB$
-- PD equivalence: $A \succ 0 \iff \lambda_i(A) > 0 \ \forall i \iff$ all leading principal minors $> 0$ (Sylvester's criterion)
+- PSD equivalence: $A \succeq 0 \iff \lambda_i(A) \geq 0 \ \forall i \iff A = B^HB \iff$ all principal minors $\geq 0$ (note: **all** principal minors, not just the leading ones)
+- PD equivalence (Sylvester's criterion): $A \succ 0 \iff \lambda_i(A) > 0 \ \forall i \iff$ all leading principal minors $> 0$ (checking only leading principal minors suffices; this is necessary and sufficient for PD)
 - Cholesky decomposition: $A \succ 0 \implies A = LL^H$, $L$ lower triangular
 - Loewner partial order: $A \succeq B \iff A - B \succeq 0$
 - Schur product theorem: $A \succeq 0, B \succeq 0 \implies A \circ B \succeq 0$ (Hadamard product preserves PSD)
@@ -46,13 +46,13 @@ A Hermitian matrix $A$ is positive semidefinite (PSD) if $x^HAx \geq 0$ for all 
 
 ## Further References
 
-- Distilled notes: references/books/matrix-analysis.md (Ch 7 Positive Definite and Semidefinite Matrices, Section 7.5 Schur Product Theorem, Section 7.7 Loewner Partial Order)
+- Distilled notes: ../../references/books/matrix-analysis.en.md (Ch 7 Positive Definite and Semidefinite Matrices, Section 7.5 Schur Product Theorem, Section 7.7 Loewner Partial Order)
 - Original text: Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 7 (Positive Definite and Semidefinite Matrices Section 7.1-7.8)
 
 
 ## Routing Extensions
 - If solving SDP problems -> `convex-optimization.md` (semidefinite programming as convex optimization)
-- If PSD matrix conditioning and perturbation are involved -> `matrix-perturbation.md` (eigenvalue perturbation bounds)
+- If PSD matrix conditioning and perturbation are involved -> `matrix-perturbation.en.md` (eigenvalue perturbation bounds)
 - If used for Fisher information matrix -> `fisher-information.md` (PSD property of Fisher information)
 
 ## Extensible Directions

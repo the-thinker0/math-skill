@@ -46,14 +46,14 @@ Low GPU friendliness. Computation of the fundamental group is inherently combina
 
 ## Further References
 
-- Distillation notes: references/books/smooth-manifolds.md (Ch 17--18 De Rham Cohomology, cohomology and topological invariants)
-- Distillation notes: references/books/algebraic-geometry-rising-sea.md (Section 18 Cech Cohomology, local gluing and global obstructions)
+- Distillation notes: ../../references/books/smooth-manifolds.en.md (Ch 17--18 De Rham Cohomology, cohomology and topological invariants)
+- Distillation notes: ../../references/books/algebraic-geometry-rising-sea.en.md (Section 18 Cech Cohomology, local gluing and global obstructions)
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, Ch 17 (de Rham cohomology, the loop integral perspective)
 - Extended reading: Hatcher, *Algebraic Topology*, Ch 1 (standard textbook treatment of the fundamental group, including the Seifert-van Kampen theorem)
 
 
 ## Routing Extensions
-- If higher-dimensional homology is needed -> `persistent-homology.md` (higher homology groups)
+- If higher-dimensional homology is needed -> `persistent-homology.en.md` (higher homology groups)
 - If geometric structure is involved -> `curvature.md` (relationship between geometry and topology)
 
 ## Extensible Directions

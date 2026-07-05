@@ -46,8 +46,8 @@ GPU 友好度取决于群的规模和表示维数：
 
 ## 深入参考
 
-- 蒸馏稿：references/books/micro-lie-theory.md（§II-F 伴随 Ad_X 与伴随矩阵）
-- 蒸馏稿：references/books/differential-geometry.md（Ch 5 Lie Groups, 伴随表示部分）
+- 蒸馏稿：../../references/books/micro-lie-theory.md（§II-F 伴随 Ad_X 与伴随矩阵）
+- 蒸馏稿：../../references/books/differential-geometry.md（Ch 5 Lie Groups, 伴随表示部分）
 - 原书：Joan Sola et al., *A micro Lie theory*, §II-F（伴随表示，式 30-35）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, Ch 5（李群的表示）
 

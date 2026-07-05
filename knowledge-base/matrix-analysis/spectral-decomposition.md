@@ -44,7 +44,7 @@
 
 ## 深入参考
 
-- 蒸馏稿：references/books/matrix-analysis.md（Ch 1 特征值与相似、§2.4-2.5 Schur 三角化与正规矩阵、§4.2 Courant-Fischer）
+- 蒸馏稿：../../references/books/matrix-analysis.md（Ch 1 特征值与相似、§2.4-2.5 Schur 三角化与正规矩阵、§4.2 Courant-Fischer）
 - 原书：Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 1 (Eigenvalues, Eigenvectors, Similarity) + Chapter 2 (Unitary Similarity §2.4-2.5)
 
 

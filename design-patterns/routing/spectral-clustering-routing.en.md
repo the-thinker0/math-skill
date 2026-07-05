@@ -10,9 +10,9 @@ Use when routing needs to be based on the intrinsic similarity structure of toke
 Core requirement: **discover the intrinsic cluster structure of data for routing or expert initialization**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/geometric.md (spectral graph theory, Laplacian eigenmaps), lenses/variational.md (relaxation and approximation)
-- Knowledge: knowledge-base/matrix-analysis/projection.md (eigendecomposition, Rayleigh quotient),
-  knowledge-base/differential-geometry/manifold.md (manifold learning, graph cuts)
+- Lenses: ../../lenses/geometric.en.md (spectral graph theory, Laplacian eigenmaps), ../../lenses/variational.en.md (relaxation and approximation)
+- Knowledge: ../../knowledge-base/matrix-analysis/projection.en.md (eigendecomposition, Rayleigh quotient),
+  ../../knowledge-base/differential-geometry/manifold.en.md (manifold learning, graph cuts)
 
 ## Required Mathematical Background
 - **Spectral Clustering (Ng-Jordan-Weiss)**:
@@ -25,7 +25,7 @@ Core requirement: **discover the intrinsic cluster structure of data for routing
 - **Spectral Relaxation Continuation**: Discrete cluster assignment => continuous eigenvectors => differentiable routing
   Use softmax(U_k * W_proj) instead of hard k-means assignment
 - **Power Iteration Acceleration**: Full eigendecomposition is unnecessary; only the top k eigenvectors are needed
-  Use Lanczos/Arnoldi iteration O(N^2 * k * iter) or randomized SVD O(N * k * log k)
+  Use Lanczos/Arnoldi iteration O(N^2 * k * iter) or randomized SVD O(N^2 * k)
 
 ## AI Module Form
 ```
@@ -79,7 +79,7 @@ Method 3 - Anchor Spectral Clustering (large-scale):
 - **Operator fusion**: Diagonal scaling in D^{-1/2} @ A @ D^{-1/2} can be fused; cdist + exp + normalize can be fused
 
 ## Paper-Worthy Formulation
-"We achieve differentiable routing via continuous relaxation of spectral clustering: constructing the normalized Laplacian of the token similarity graph, reducing the O(N^2) eigendecomposition to O(Nm + K^3) through Nystrom approximation, and enabling GPU-friendly online spectral clustering via power iteration. Clustering quality, measured by Normalized Cut, guarantees an O(sqrt(log(N/K))) approximation ratio."
+"We achieve differentiable routing via continuous relaxation of spectral clustering: constructing the normalized Laplacian of the token similarity graph, reducing the O(N^3) eigendecomposition to O(N * m * d + m^2 * K + m^3) through Nystrom approximation, and enabling GPU-friendly online spectral clustering via power iteration. Clustering quality, measured by Normalized Cut, guarantees an O(sqrt(log(N/K))) approximation ratio."
 
 ## Risks
 - The memory and computation cost of the N x N similarity matrix does not scale for long sequences; sampling or k-NN sparsification is mandatory

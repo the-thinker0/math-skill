@@ -7,7 +7,7 @@
 
 1. **The mathematical foundation of this AI revolution is the first time 20th-century mathematics has stepped onto the commercial computing stage** — category theory, algebraic topology, algebraic geometry. The mathematical foundations of most mainstream algorithms still largely rest on the calculus and linear algebra of 1800–1900. Activating modern mathematics in algorithm design is the most important task during the algorithm exploration phase.
 2. **Humility**: The breadth of knowledge from the pre-training stage already surpasses any individual. **More knowledge is learned from the model than taught to it.** Letting go of the bias toward "teaching the model" usually yields better results.
-3. **Mathematical beauty ≠ computability**: Many mathematically elegant constructs break down in the face of GPU parallelism and low-precision arithmetic errors. Every deliverable must pass the acceptance gate defined in `gpu-friendly-math.md`.
+3. **Mathematical beauty ≠ computability**: Many mathematically elegant constructs break down in the face of GPU parallelism and low-precision arithmetic errors. Every deliverable must pass the acceptance gate defined in `gpu-friendly-math.en.md`.
 
 ## Division of Labor
 
@@ -28,7 +28,7 @@
 
 1. **Diagnosis**: What is the algorithmic structure / bottleneck of the problem? (Do not start by piling on math tutorials.)
 2. **Cross-domain activation**: Scan `books/*.md` for transferable modern mathematical structures, **enumerate multiple candidates** (leveraging the model's large-context advantage).
-3. **Dual acceptance gate**: Each candidate passes two gates — (1) Mathematically correct (differentiable, self-consistent, with correctness guarantees); (2) GPU-feasible (the eight dimensions of `gpu-friendly-math.md`).
+3. **Dual acceptance gate**: Each candidate passes two gates — (1) Mathematically correct (differentiable, self-consistent, with correctness guarantees); (2) GPU-feasible (the eight dimensions of `gpu-friendly-math.en.md`).
 4. **Iterative tracking**: Record candidates, scores, and status in a markdown test plan, converging step by step.
 
 ## Markdown Test Plan Template / Tracking Template

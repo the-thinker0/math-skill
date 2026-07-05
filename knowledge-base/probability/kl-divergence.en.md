@@ -48,13 +48,13 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 - Distillation draft: `references/books/` — no dedicated information theory distillation draft at present
 - Cover & Thomas. *Elements of Information Theory*, Ch. 2-3. Wiley, 2006
 - Murphy. *Probabilistic Machine Learning: Advanced Topics*, Ch. 6. MIT Press, 2023
-- Related knowledge cards: `probability/entropy.md`, `probability/information-bottleneck.md`, `probability/fisher-information.md`
+- Related knowledge cards: `entropy.md`, `information-bottleneck.md`, `fisher-information.md`
 
 
 ## Routing Extensions
-- If used for IB objective -> `information-bottleneck.md` (IB defines objective using KL)
-- If the absolute version is needed -> `entropy.md` (KL divergence reduces to entropy)
-- If local KL geometry is needed -> `fisher-information.md` (Fisher information is local curvature of KL)
+- If used for IB objective -> `information-bottleneck.en.md` (IB defines objective using KL)
+- If the absolute version is needed -> `entropy.en.md` (KL divergence reduces to entropy)
+- If local KL geometry is needed -> `fisher-information.en.md` (Fisher information is local curvature of KL)
 
 ## Extensible Directions
 - f-divergence family (chi-squared, Hellinger, Jensen-Shannon, total variation): unified divergence framework

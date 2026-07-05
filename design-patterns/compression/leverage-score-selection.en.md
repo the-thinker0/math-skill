@@ -5,8 +5,8 @@
 Use when selecting the most representative rows / columns / tokens from a large-scale matrix while guaranteeing the precision of downstream linear algebra operations: KV-Cache token selection, data coreset construction, Nystrom landmark sampling, distributed gradient compression. Core objective: **sample based on statistical leverage scores derived from subspace projections, with probabilistic guarantees of approximating full-computation accuracy**.
 
 ## Mathematical Foundations
-- Lenses: lenses/spectral.md (leverage scores = projection energy of row vectors onto the principal subspace), lenses/probabilistic.md (probabilistic sampling and concentration inequality guarantees), lenses/algorithmic.md (complexity--accuracy trade-offs of randomized algorithms)
-- Knowledge: knowledge-base/matrix-analysis/low-rank-approximation.md (randomized SVD, nuclear norm), knowledge-base/matrix-analysis/projection.md (diagonal entries of the projection matrix = leverage scores), knowledge-base/probability/concentration-inequality.md (Bernstein matrix concentration bound)
+- Lenses: ../../lenses/spectral.en.md (leverage scores = projection energy of row vectors onto the principal subspace), ../../lenses/probabilistic.en.md (probabilistic sampling and concentration inequality guarantees), ../../lenses/algorithmic.en.md (complexity--accuracy trade-offs of randomized algorithms)
+- Knowledge: ../../knowledge-base/matrix-analysis/low-rank-approximation.en.md (randomized SVD, nuclear norm), ../../knowledge-base/matrix-analysis/projection.en.md (diagonal entries of the projection matrix = leverage scores), ../../knowledge-base/probability/concentration-inequality.en.md (Bernstein matrix concentration bound)
 
 ## Required Mathematical Background
 - **Statistical Leverage Scores**: $\ell_i = \|(V_k V_k^T)_i\|^2 = (V_k V_k^T)_{ii}$, the projection energy of the $i$-th row onto the rank-$k$ subspace; $\sum_i \ell_i = k$
@@ -53,12 +53,12 @@ Method 4 - DPP greedy diverse selection:
 - **DPP greedy extension**: leverage scores + exclusion penalty, balancing importance and diversity
 
 ## GPU Feasibility
-- Tensorization / GEMM: $A\Omega$ is a GEMM; QR via cuSOLVER; leverage scores = elementwise row-wise sum of squares
-- Complexity: $O(Ndk)$ is far superior to $O(Nd^2)$ full SVD; top-s selection in $O(N \log s)$
-- Memory: $\Omega$ is only $d \times k$ (KB-scale); $Q$ is the same size as $A$ but can be computed in batches
-- Low precision: QR recommended in fp32 (small matrix with $k+p$ columns, negligible overhead); leverage scores can be cast back to bf16
-- Parallelism: the $A\Omega$ GEMM is highly parallelizable; top-s can use parallel radix sort
-- Operator fusion: $A\Omega$ + QR + row-norm² can be fused to avoid materializing intermediate matrices
+- **D1[v]/D2[v]**: $A\Omega$ is a GEMM; QR via cuSOLVER; leverage scores = elementwise row-wise sum of squares
+- **D3[v]**: $O(Ndk)$ is far superior to $O(Nd^2)$ full SVD; top-s selection in $O(N \log s)$
+- **D4[v]**: $\Omega$ is only $d \times k$ (KB-scale); $Q$ is the same size as $A$ but can be computed in batches
+- **D5[~]**: QR recommended in fp32 (small matrix with $k+p$ columns, negligible overhead); leverage scores can be cast back to bf16
+- **D6[v]**: the $A\Omega$ GEMM is highly parallelizable; top-s can use parallel radix sort
+- **D8[v]**: $A\Omega$ + QR + row-norm² can be fused to avoid materializing intermediate matrices
 
 ## Paper-Worthy Formulation
 "We adopt statistical leverage scores as the importance metric for token selection: approximating rank-$k$ subspace leverage scores via random projection in $O(Ndk)$, with the Drineas--Mahoney theory guaranteeing that $O(k \log k / \epsilon^2)$ samples suffice for a $(1+\epsilon)$ approximation of the full subspace."

@@ -26,7 +26,7 @@ $$I(X; Y) = H(X) - H(X|Y) = H(Y) - H(Y|X) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}
 
 ## AI Design Translation
 - **Cross-Entropy Loss**: $H(p, q) = -\sum p(x)\log q(x)$, the default loss function for classification tasks; it is essentially the "coding redundancy" between the true distribution $p$ and the model distribution $q$
-- **KL Divergence** (see `kl-divergence.md`): $D_{KL}(p\|q) = H(p,q) - H(p)$, i.e., the difference between cross-entropy and entropy
+- **KL Divergence** (see `kl-divergence.en.md`): $D_{KL}(p\|q) = H(p,q) - H(p)$, i.e., the difference between cross-entropy and entropy
 - **Variational Autoencoder (VAE)**: ELBO = reconstruction likelihood $-$ KL regularization term; it fundamentally balances information compression (low $H(Z)$) against reconstruction fidelity
 
 ## Engineering Feasibility
@@ -44,13 +44,13 @@ $$I(X; Y) = H(X) - H(X|Y) = H(Y) - H(Y|X) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}
 - Distillation draft: `references/books/` — no dedicated information theory distillation draft at present
 - Cover & Thomas. *Elements of Information Theory*, 2nd Edition. Wiley, 2006
 - MacKay. *Information Theory, Inference, and Learning Algorithms*. Cambridge, 2003
-- Related knowledge cards: `probability/kl-divergence.md`, `probability/information-bottleneck.md`
+- Related knowledge cards: `kl-divergence.md`, `information-bottleneck.md`
 
 
 ## Routing Extensions
-- If relative entropy is needed -> `kl-divergence.md` (KL divergence is relative entropy)
-- If information compression is involved -> `information-bottleneck.md` (information bottleneck uses entropy and mutual information)
-- If entropy-power inequality is involved -> `fisher-information.md` (relationship between Fisher information and entropy)
+- If relative entropy is needed -> `kl-divergence.en.md` (KL divergence is relative entropy)
+- If information compression is involved -> `information-bottleneck.en.md` (information bottleneck uses entropy and mutual information)
+- If entropy-power inequality is involved -> `fisher-information.en.md` (relationship between Fisher information and entropy)
 
 ## Extensible Directions
 - Renyi entropy: parameterized family of generalized entropies

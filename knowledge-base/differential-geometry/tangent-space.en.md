@@ -13,7 +13,7 @@ The tangent space $T_pM$ is the $n$-dimensional vector space of all tangent vect
 
 ## Applicable Problems
 
-- Geometric interpretation of backpropagation: the chain rule equals pushforward along composed maps
+- Geometric interpretation of backpropagation: the chain rule equals pullback on the cotangent bundle, i.e., VJP (vector-Jacobian product) = pullback of covectors $df_p^*(\omega) = J^T \omega$. Note: pushforward corresponds to JVP (forward-mode AD), not backpropagation
 - Correct gradient direction computation: autodiff outputs are covectors (1-forms), requiring a metric to convert them into descent directions
 - Gradient projection in constrained optimization: projecting the Euclidean gradient onto the tangent space of the constraint submanifold
 - Linearized approximations on manifolds: using linear methods within the tangent space to handle local problems
@@ -42,8 +42,8 @@ High GPU friendliness. The core operations of the tangent space are linear algeb
 
 ## Further References
 
-- Distillation notes: references/books/smooth-manifolds.md (Ch 3 Tangent Vectors, Ch 11 The Cotangent Bundle)
-- Distillation notes: references/books/differential-geometry.md (Ch 1-2, Ch 7 Tensors)
+- Distillation notes: ../../references/books/smooth-manifolds.en.md (Ch 3 Tangent Vectors, Ch 11 The Cotangent Bundle)
+- Distillation notes: ../../references/books/differential-geometry.en.md (Ch 1-2, Ch 7 Tensors)
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, 2nd Edition, Ch 3 (tangent spaces, pushforward, tangent bundle)
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, Ch 11 (cotangent bundle, 1-forms, pullback)
 
@@ -51,7 +51,7 @@ High GPU friendliness. The core operations of the tangent space are linear algeb
 ## Routing Extensions
 - If gradient computation on manifolds is needed -> `riemannian-optimization.md` (gradient descent on manifolds)
 - If the tangent space of a group structure is involved -> `lie-algebra.md` (tangent space of a Lie group is its Lie algebra)
-- If covariant derivative is needed -> `connection.md` (connection defines covariant differentiation)
+- If covariant derivative is needed -> `connection.en.md` (connection defines covariant differentiation)
 
 ## Extensible Directions
 - Cotangent space: dual space and differential forms

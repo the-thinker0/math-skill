@@ -10,9 +10,9 @@ Typical scenarios: (1) Token permutation equivariance -- representation should c
 Core requirement: **encode symmetry priors into network architecture to reduce learning burden and improve generalization**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/geometric.md (group actions, invariant/equivariant maps), lenses/probabilistic.md (symmetry and information redundancy)
-- Knowledge: knowledge-base/matrix-analysis/projection.md (group representation theory, irreducible representations),
-  knowledge-base/differential-geometry/manifold.md (Lie groups, homogeneous spaces)
+- Lenses: ../../lenses/geometric.en.md (group actions, invariant/equivariant maps), ../../lenses/probabilistic.en.md (symmetry and information redundancy)
+- Knowledge: ../../knowledge-base/matrix-analysis/projection.en.md (group representation theory, irreducible representations),
+  ../../knowledge-base/differential-geometry/manifold.en.md (Lie groups, homogeneous spaces)
 
 ## Required Mathematical Background
 - **Group Action and Equivariance**: A map f is equivariant with respect to group G if and only if f(g * x) = g * f(x) for all g in G
@@ -78,7 +78,7 @@ Method 3 - Group convolution / group pooling:
 - **Operator fusion**: Split -> batched matmul -> concat can be fused; group pooling scatter + reduce can be fused
 
 ## Paper-Worthy Formulation
-"Leveraging Schur's lemma from group representation theory, we decompose the d-dimensional feature space into a direct sum of irreducible representations of symmetry group G, with each component independently processed by equivariance-constrained linear layers. This achieves a |G| / sum(m_i^2) improvement in parameter efficiency while guaranteeing network equivariance under group actions, reducing generalization error by O(1/sqrt(|G|)) on symmetric data."
+"Leveraging Schur's lemma from group representation theory, we decompose the d-dimensional feature space into a direct sum of irreducible representations of symmetry group G, with each component independently processed by equivariance-constrained linear layers. This achieves a d^2 / sum(m_i^2) improvement in parameter efficiency (where d = sum(m_i * dim(V_i)) is the total feature dimension and sum(m_i^2) is the number of free parameters under Schur constraints) while guaranteeing network equivariance under group actions, reducing generalization error by O(1/sqrt(|G|)) on symmetric data."
 
 ## Risks
 - Improper group selection (too large constrains cause underfitting, too small fails to capture symmetries)

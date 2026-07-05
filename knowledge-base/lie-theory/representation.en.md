@@ -46,15 +46,15 @@ GPU friendliness depends on the group size and representation dimension:
 
 ## Further References
 
-- Distillation notes: references/books/micro-lie-theory.md (Section II-F Adjoint $\text{Ad}_X$ and Adjoint Matrix)
-- Distillation notes: references/books/differential-geometry.md (Ch 5 Lie Groups, adjoint representation section)
+- Distillation notes: ../../references/books/micro-lie-theory.en.md (Section II-F Adjoint $\text{Ad}_X$ and Adjoint Matrix)
+- Distillation notes: ../../references/books/differential-geometry.en.md (Ch 5 Lie Groups, adjoint representation section)
 - Original text: Joan Sola et al., *A micro Lie theory*, Section II-F (adjoint representation, equations 30--35)
 - Original text: Jeffrey M. Lee, *Manifolds and Differential Geometry*, Ch 5 (representations of Lie groups)
 
 
 ## Routing Extensions
-- If equivariant network design is needed -> `equivariance.md` (representation theory drives equivariant network construction)
-- If the specific form of group action is needed -> `group-action.md` (representations are linear group actions)
+- If equivariant network design is needed -> `equivariance.en.md` (representation theory drives equivariant network construction)
+- If the specific form of group action is needed -> `group-action.en.md` (representations are linear group actions)
 - If irreducible decomposition is needed -> `spectral-decomposition.md` (analogous to spectral decomposition of matrices)
 
 ## Extensible Directions

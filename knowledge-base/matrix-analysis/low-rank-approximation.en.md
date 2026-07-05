@@ -45,13 +45,13 @@ Given a matrix $A \in \mathbb{R}^{m \times n}$, find a matrix $B$ with rank at m
 
 ## Further References
 
-- Distilled notes: references/books/matrix-analysis.md (Section 2.6 SVD, Section 7.4 Polar Decomposition and SVD, nuclear norm-spectral norm duality Section 5.5)
+- Distilled notes: ../../references/books/matrix-analysis.en.md (Section 2.6 SVD, Section 7.4 Polar Decomposition and SVD, nuclear norm-spectral norm duality Section 5.5)
 - Original text: Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 2 Section 2.6 (SVD) + Chapter 7 Section 7.3-7.4 (Polar Decomposition & SVD)
 
 
 ## Routing Extensions
-- If subspace projection implementation is needed -> `projection.md` (projection operators)
-- If detailed decomposition tools are needed -> `spectral-decomposition.md` (SVD/EVD)
+- If subspace projection implementation is needed -> `projection.en.md` (projection operators)
+- If detailed decomposition tools are needed -> `spectral-decomposition.en.md` (SVD/EVD)
 - If the goal is information-preserving compression -> `information-bottleneck.md` (information bottleneck theory)
 
 ## Extensible Directions

@@ -45,8 +45,8 @@ GPU 友好度：联络的核心挑战是"串行 ODE 积分"。
 
 ## 深入参考
 
-- 蒸馏稿：references/books/differential-geometry.md（Ch 12 Connections and Covariant Derivatives, §12.2 联络形式, §12.4 Ehresmann, §12.12 G-联络）
-- 蒸馏稿：references/books/differential-geometry.md（§6.8 Principal Bundles, §9.8 Electromagnetism）
+- 蒸馏稿：../../references/books/differential-geometry.md（Ch 12 Connections and Covariant Derivatives, §12.2 联络形式, §12.4 Ehresmann, §12.12 G-联络）
+- 蒸馏稿：../../references/books/differential-geometry.md（§6.8 Principal Bundles, §9.8 Electromagnetism）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, Ch 12（§12.1-§12.12 完整联络理论）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, §13.1 Levi-Civita Connection
 

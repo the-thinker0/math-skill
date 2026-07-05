@@ -45,8 +45,8 @@ GPU 友好度高。李代数的核心优势是"线性空间"：
 
 ## 深入参考
 
-- 蒸馏稿：references/books/micro-lie-theory.md（§II-C 切空间与李代数, hat/vee 算子）
-- 蒸馏稿：references/books/differential-geometry.md（Ch 5 Lie Groups, 李代数部分）
+- 蒸馏稿：../../references/books/micro-lie-theory.md（§II-C 切空间与李代数, hat/vee 算子）
+- 蒸馏稿：../../references/books/differential-geometry.md（Ch 5 Lie Groups, 李代数部分）
 - 原书：Joan Sola et al., *A micro Lie theory*, §II-C（李代数定义与 hat/vee）、§II-D（exp/log 桥梁）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, Ch 5（李群与李代数）
 

@@ -18,7 +18,7 @@
 
 ## Inspiration
 
-The story of Sophus Lie forging a "dragon-slaying blade" tells us this: the Lie group–Lie algebra machinery invented to solve differential equations ended up becoming the lingua franca for describing symmetry and robot state estimation — the value of a mathematical tool far outlives its original intent, which is exactly the prototype of "cross-domain activation." See [`references/inspiration.md`](references/inspiration.md).
+The story of Sophus Lie forging a "dragon-slaying blade" tells us this: the Lie group–Lie algebra machinery invented to solve differential equations ended up becoming the lingua franca for describing symmetry and robot state estimation — the value of a mathematical tool far outlives its original intent, which is exactly the prototype of "cross-domain activation." See [`references/inspiration.en.md`](references/inspiration.en.md).
 
 > The most fascinating thing about mathematics: a tool invented for one problem reveals unforeseen power in an entirely different domain.
 
@@ -59,28 +59,28 @@ Critic: Mathematically sound? Engineering-feasible?
 
 Supporting layers:
 - `references/books/*.md`: 7 book distillations for deep context
-- `references/gpu-friendly-math.md`: GPU 8-dimension acceptance gate
-- `agents/math-critic.md`: Math-engineering dual critic
+- `references/gpu-friendly-math.en.md`: GPU 8-dimension acceptance gate
+- `agents/math-critic.en.md`: Math-engineering dual critic
 
 ### 15 Thinking Lenses
 
 | Lens | File | Core Perspective |
 |------|------|-----------------|
-| Axiomatization | `lenses/axiomatization.md` | Audit assumptions for consistency/independence/completeness |
-| Duality | `lenses/duality.md` | Transform to dual space to expose constraints and invariants |
-| Symmetry | `lenses/symmetry.md` | Invariants and conservation laws under transformations |
-| Spectral | `lenses/spectral.md` | Eigenvalues/singular values reveal dominant structure |
-| Geometric | `lenses/geometric.md` | Metric/curvature/manifold spatial structure |
-| Projection | `lenses/projection.md` | Orthogonal decomposition, subspace separation, conflict elimination |
-| Variational | `lenses/variational.md` | Constrained extrema, energy minimization |
-| Local-to-Global | `lenses/local-to-global.md` | Assemble local properties into global structure |
-| Topological | `lenses/topological.md` | Continuous-deformation invariants, connectivity, holes |
-| Categorical | `lenses/categorical.md` | Universal properties, functors, natural transformations |
-| Perturbation | `lenses/perturbation.md` | Propagation of small perturbations, stability, robustness |
-| Causal | `lenses/causal.md` | Correlation ≠ causation, interventions, counterfactuals |
-| Game | `lenses/game.md` | Multi-agent strategic interaction, equilibrium, mechanism design |
-| Probabilistic | `lenses/probabilistic.md` | Quantify uncertainty, Bayesian updating |
-| Algorithmic | `lenses/algorithmic.md` | Complexity, feasibility, parallelism |
+| Axiomatization | `lenses/axiomatization.en.md` | Audit assumptions for consistency/independence/completeness |
+| Duality | `lenses/duality.en.md` | Transform to dual space to expose constraints and invariants |
+| Symmetry | `lenses/symmetry.en.md` | Invariants and conservation laws under transformations |
+| Spectral | `lenses/spectral.en.md` | Eigenvalues/singular values reveal dominant structure |
+| Geometric | `lenses/geometric.en.md` | Metric/curvature/manifold spatial structure |
+| Projection | `lenses/projection.en.md` | Orthogonal decomposition, subspace separation, conflict elimination |
+| Variational | `lenses/variational.en.md` | Constrained extrema, energy minimization |
+| Local-to-Global | `lenses/local-to-global.en.md` | Assemble local properties into global structure |
+| Topological | `lenses/topological.en.md` | Continuous-deformation invariants, connectivity, holes |
+| Categorical | `lenses/categorical.en.md` | Universal properties, functors, natural transformations |
+| Perturbation | `lenses/perturbation.en.md` | Propagation of small perturbations, stability, robustness |
+| Causal | `lenses/causal.en.md` | Correlation ≠ causation, interventions, counterfactuals |
+| Game | `lenses/game.en.md` | Multi-agent strategic interaction, equilibrium, mechanism design |
+| Probabilistic | `lenses/probabilistic.en.md` | Quantify uncertainty, Bayesian updating |
+| Algorithmic | `lenses/algorithmic.en.md` | Complexity, feasibility, parallelism |
 
 ### Activation Anchors (by math domain)
 
@@ -198,11 +198,11 @@ math-skill/
 │   └── compression/                # Compression (4 patterns)
 ├── references/                     # Reference layer
 │   ├── books/                      # 7 book distillations
-│   ├── gpu-friendly-math.md        # GPU 8-dimension gate
-│   ├── agentic-workflow.md         # Collaboration style
-│   └── inspiration.md              # Inspiration
-├── agents/math-critic.md           # Math-engineering dual critic
-├── commands/ask.md                 # /ask manual entry
+│   ├── gpu-friendly-math.en.md     # GPU 8-dimension gate
+│   ├── agentic-workflow.en.md      # Collaboration style
+│   └── inspiration.en.md           # Inspiration
+├── agents/math-critic.en.md           # Math-engineering dual critic
+├── commands/ask.en.md                 # /ask manual entry
 ├── math_book/                      # Local PDFs (not published)
 └── README.md / LICENSE
 ```
@@ -235,11 +235,11 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 - **Knowledge Gap Protocol**: 6-step procedure for generating temporary knowledge cards when existing anchors don't cover the problem (gap identification → lens fallback → candidate localization → temporary card → design translation → upgrade recommendation)
 - **Domain Extension Indexes**: each of the 7 math domains gains an `index.md` with trigger signals, extended concepts, reference directions, and temporary activation rules
 - **Knowledge Card Repositioning**: every card gains "Routing Extensions" and "Extensible Directions" sections, transforming endpoints into routing nodes
-- **Design Pattern Positioning**: new `design-patterns/overview.md` declares the library as a math→AI translation prototype collection
+- **Design Pattern Positioning**: new `design-patterns/overview.en.md` declares the library as a math→AI translation prototype collection
 
 ### v3.0.1 — Token Optimization & Bilingual Completion
 
-- **Emoji cleanup**: removed all emoji characters from skill files; GPU rating markers ✅⚠️❌ replaced with text `[v]`/`[~]`/`[x]`, saving ~1,400 tokens
+- **Emoji cleanup**: removed all emoji characters from skill files; GPU rating markers replaced with text `[v]`/`[~]`/`[x]`, saving ~1,400 tokens
 - **English distillation files**: added EN translations for all 7 book distillation notes (`references/books/*.en.md`) and `commands/ask.en.md`
 - **Mixed-language routing**: added 5-rule decision system for code-switched input (technical terms excluded from language detection; sentence frame determines primary language)
 - **GPU dimension abbreviations**: verbose labels `**Dimension N full-name**` compressed to `**DN**` (D1-D8), defined in `gpu-friendly-math.md`, saving ~800-1,000 tokens

@@ -48,13 +48,13 @@ For non-smooth or non-differentiable objective functions $f(x) = g(x) + h(x)$ ($
 
 ## Further References
 
-- Distilled notes: references/books/optimization-ml.md (Ch 8 Gradient Methods Section 8.3 Convergence Analysis, Ch 11 Quasi-Newton Section 11.5 BFGS, Ch 24 Constrained Algorithms Section 24.5 Augmented Lagrangian)
+- Distilled notes: ../../references/books/optimization-ml.en.md (Ch 8 Gradient Methods Section 8.3 Convergence Analysis, Ch 11 Quasi-Newton Section 11.5 BFGS, Ch 24 Constrained Algorithms Section 24.5 Augmented Lagrangian)
 - Original text: Chong, Lu, Zak, *An Introduction to Optimization* 5th Ed., Chapter 24 (Constrained Algorithms Section 24.5 Augmented Lagrangian) + Parikh & Boyd, *Proximal Algorithms*, Foundations and Trends in Optimization, 2014
 
 
 ## Routing Extensions
-- If the smooth part dominates -> `convex-optimization.md` (convex optimization for smooth parts)
-- If the proximal operator corresponds to a constraint -> `constrained-optimization.md` (equivalence of indicator functions and constraints)
+- If the smooth part dominates -> `convex-optimization.en.md` (convex optimization for smooth parts)
+- If the proximal operator corresponds to a constraint -> `constrained-optimization.en.md` (equivalence of indicator functions and constraints)
 - If used for variational loss regularization -> `variational-loss` (design pattern layer for proximal regularization)
 
 ## Extensible Directions

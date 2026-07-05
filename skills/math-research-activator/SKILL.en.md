@@ -5,7 +5,7 @@ description: |
 ---
 
 
-> **File routing**: When this document references any file (lenses, knowledge-base, design-patterns, references, agents), always load the `.en.md` variant if it exists. For example, `../../lenses/symmetry.md` → load `lenses/symmetry.en.md`.
+> **File routing**: When this document references any file (lenses, knowledge-base, design-patterns, references, agents), always load the `.en.md` variant if it exists. For example, `../../lenses/symmetry.en.md` → load `lenses/symmetry.en.md`.
 >
 > ## Language Routing & Mixed-Input Rules
 >
@@ -56,8 +56,8 @@ This system is a mathematical staff office for AI architecture innovation — no
 
 Auxiliary layers:
 - `../../references/books/*.md`: Distilled notes from 7 textbooks; full context when deeper understanding is needed
-- `../../references/gpu-friendly-math.md`: GPU Eight-Dimension Acceptance Gate (single source of truth)
-- `../../agents/math-critic.md`: Math-engineering dual critic
+- `../../references/gpu-friendly-math.en.md`: GPU Eight-Dimension Acceptance Gate (single source of truth)
+- `../../agents/math-critic.en.md`: Math-engineering dual critic
 
 ## Intent Diagnosis (5 Scenarios)
 
@@ -75,21 +75,21 @@ Each lens answers: What is this perspective? What kinds of problems is it suited
 
 | Lens | File | Core Perspective |
 |------|------|-----------------|
-| Axiomatization | `../../lenses/axiomatization.md` | Examine consistency/independence/completeness of assumptions |
-| Duality | `../../lenses/duality.md` | Transform to the dual space to expose constraints and invariants |
-| Symmetry | `../../lenses/symmetry.md` | Invariants and conservation laws under transformations |
-| Spectral Decomposition | `../../lenses/spectral.md` | Eigenvalues/singular values reveal dominant structure |
-| Geometric | `../../lenses/geometric.md` | Metric/curvature/spatial structure on manifolds |
-| Projection & Decomposition | `../../lenses/projection.md` | Orthogonal decomposition, subspace separation, conflict elimination |
-| Variational | `../../lenses/variational.md` | Constrained extrema, energy minimization |
-| Local-to-Global | `../../lenses/local-to-global.md` | Patching local properties into global ones, cohomological obstructions |
-| Topological | `../../lenses/topological.md` | Invariants under continuous deformation, connectedness, holes |
-| Categorical | `../../lenses/categorical.md` | Universal properties, functors, natural transformations |
-| Perturbation | `../../lenses/perturbation.md` | Propagation of small perturbations, stability, robustness |
-| Causal | `../../lenses/causal.md` | Correlation ≠ causation, interventions, counterfactuals |
-| Game-Theoretic | `../../lenses/game.md` | Multi-agent strategic interaction, equilibria, mechanism design |
-| Probabilistic & Statistical | `../../lenses/probabilistic.md` | Quantifying uncertainty, Bayesian updating |
-| Algorithmic | `../../lenses/algorithmic.md` | Complexity, feasibility, parallelizability |
+| Axiomatization | `../../lenses/axiomatization.en.md` | Examine consistency/independence/completeness of assumptions |
+| Duality | `../../lenses/duality.en.md` | Transform to the dual space to expose constraints and invariants |
+| Symmetry | `../../lenses/symmetry.en.md` | Invariants and conservation laws under transformations |
+| Spectral Decomposition | `../../lenses/spectral.en.md` | Eigenvalues/singular values reveal dominant structure |
+| Geometric | `../../lenses/geometric.en.md` | Metric/curvature/spatial structure on manifolds |
+| Projection & Decomposition | `../../lenses/projection.en.md` | Orthogonal decomposition, subspace separation, conflict elimination |
+| Variational | `../../lenses/variational.en.md` | Constrained extrema, energy minimization |
+| Local-to-Global | `../../lenses/local-to-global.en.md` | Patching local properties into global ones, cohomological obstructions |
+| Topological | `../../lenses/topological.en.md` | Invariants under continuous deformation, connectedness, holes |
+| Categorical | `../../lenses/categorical.en.md` | Universal properties, functors, natural transformations |
+| Perturbation | `../../lenses/perturbation.en.md` | Propagation of small perturbations, stability, robustness |
+| Causal | `../../lenses/causal.en.md` | Correlation ≠ causation, interventions, counterfactuals |
+| Game-Theoretic | `../../lenses/game.en.md` | Multi-agent strategic interaction, equilibria, mechanism design |
+| Probabilistic & Statistical | `../../lenses/probabilistic.en.md` | Quantifying uncertainty, Bayesian updating |
+| Algorithmic | `../../lenses/algorithmic.en.md` | Complexity, feasibility, parallelizability |
 
 ## Knowledge Base (Organized by Mathematical Domain)
 
@@ -182,8 +182,16 @@ Scenario E (Engineering): No intervention
 
 ## GPU Eight-Dimension Acceptance Gate
 
-Formal terminology (single authoritative source: `../../references/gpu-friendly-math.md`):
+Formal terminology (single authoritative source: `../../references/gpu-friendly-math.en.md`):
 **Tensorization / GEMM-mappability / Complexity / Memory & KV-Cache / Low-Precision Stability / Parallelism & Communication / Sparse Structure / Operator Fusion**
+
+**Quantitative assessment requirements**: For each candidate design, the GPU assessment should not only provide [v]/[~]/[x] labels but also answer:
+1. FLOPs of core operations and ratio vs. baseline
+2. Peak memory (bytes), whether large matrices are materialized
+3. Numerical stability strategy under bf16/fp8
+4. Number of fusible kernels and expected speedup
+
+See the quantitative checklist in `../../references/gpu-friendly-math.en.md`.
 
 ## Depth-of-Consultation Protocol
 
@@ -208,6 +216,10 @@ When the mathematical tools required by the user's problem are not in the existi
    - AI design translation
    - GPU feasibility
    - Risks and failure conditions
+   - **Source & Confidence** (required):
+     - Knowledge source: label as "Agent inference / Lens derivation / Reference book extrapolation / Requires external verification"
+     - Confidence: High (theorem-backed) / Medium (reasonable inference, not rigorously proven) / Low (exploratory hypothesis)
+     - Unverified claims: list key conclusions requiring subsequent verification
 
 5. **Design Translation**: If the user's goal is mechanism design, translate the temporary knowledge into candidate AI modules, losses, routing, attention, representation, or compression schemes.
 

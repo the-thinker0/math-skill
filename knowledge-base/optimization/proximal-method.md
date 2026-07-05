@@ -48,7 +48,7 @@
 
 ## 深入参考
 
-- 蒸馏稿：references/books/optimization-ml.md（Ch 8 梯度法 §8.3 收敛分析、Ch 11 拟牛顿 §11.5 BFGS、Ch 24 约束算法 §24.5 增广 Lagrange）
+- 蒸馏稿：../../references/books/optimization-ml.md（Ch 8 梯度法 §8.3 收敛分析、Ch 11 拟牛顿 §11.5 BFGS、Ch 24 约束算法 §24.5 增广 Lagrange）
 - 原书：Chong, Lu, Zak, *An Introduction to Optimization* 5th Ed., Chapter 24 (Constrained Algorithms §24.5 Augmented Lagrangian) + Parikh & Boyd, *Proximal Algorithms*, Foundations and Trends in Optimization, 2014
 
 

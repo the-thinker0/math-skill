@@ -6,7 +6,11 @@ Fisher-Rao 度量是概率分布族（统计模型）参数空间上的**黎曼�
 ## 核心公式
 
 **度量张量（即 Fisher 信息矩阵）**：
-$$g_{ij}(\theta) = \mathcal{I}_{ij}(\theta) = \mathbb{E}_\theta\left[\frac{\partial \log p}{\partial \theta_i} \frac{\partial \log p}{\partial \theta_j}\right]$$
+$$g_{ij}(\theta) = \mathcal{I}_{ij}(\theta) = \mathbb{E}_\theta\left[\frac{\partial \log p}{\partial \theta_i} \frac{\partial \log p}{\partial \theta_j}\right] = -\mathbb{E}_\theta\left[\frac{\partial^2 \log p}{\partial \theta_i \partial \theta_j}\right]$$
+
+**KL 散度的二阶 Taylor 展开**：Fisher 度量恰好是 KL 散度在 $\theta' = \theta$ 处的 Hessian：
+$$g_{ij}(\theta) = \frac{\partial^2}{\partial \theta_i' \partial \theta_j'} D_{KL}(p_\theta \| p_{\theta'})\bigg|_{\theta'=\theta}$$
+即 $D_{KL}(p_\theta \| p_{\theta+d\theta}) = \frac{1}{2} \sum_{i,j} g_{ij}(\theta) \, d\theta_i \, d\theta_j + O(\|d\theta\|^3)$。
 
 **线元（分布间的无穷小距离）**：
 $$ds^2 = \sum_{i,j} g_{ij}(\theta) \, d\theta_i \, d\theta_j = 2 \, D_{KL}(p_\theta \| p_{\theta+d\theta})$$
@@ -53,7 +57,7 @@ $$\Gamma_{ijk}^{(\alpha)} = \mathbb{E}\left[\left(\partial_i \partial_j \ell + \
 - Amari & Nagaoka. *Methods of Information Geometry*. AMS/Oxford, 2000
 - Amari. *Information Geometry and Its Applications*. Springer, 2016
 - Ay, Jost, Le, Schwachhofer. *Information Geometry*. Springer, 2017
-- 关联知识卡：`probability/fisher-information.md`、`information-geometry/natural-gradient.md`
+- 关联知识卡：`../probability/fisher-information.md`、`natural-gradient.md`
 
 
 ## 路由扩展

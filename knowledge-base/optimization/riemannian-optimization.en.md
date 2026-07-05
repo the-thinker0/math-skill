@@ -13,6 +13,7 @@ Optimization on smooth manifolds $\mathcal{M}$ (e.g., the orthogonal group $O(n)
 - Polar decomposition retraction: $R_Q(\xi) = (Q + \xi)(I + \xi^T\xi)^{-1/2}$ (projection onto the nearest orthogonal matrix)
 - Newton-Schulz orthogonalization: $X_{k+1} = \frac{1}{2}X_k(3I - X_k^T X_k)$, converging to the nearest orthogonal matrix
 - Hyperbolic space (Poincaré ball): $\text{grad}_{\mathcal{H}} f = \frac{(1-\|x\|^2)^2}{4} \nabla f(x)$
+- Riemannian gradient on the Stiefel manifold $St(n,p) = \{W : W^TW = I_p\}$: $\text{grad} f(W) = G - W \cdot \text{sym}(W^TG)$, where $G = \nabla f(W)$ is the Euclidean gradient and $\text{sym}(A) = \frac{A + A^T}{2}$ is the symmetric correction term. Note: one cannot simply use $G - WW^TG$ (orthogonal projection); the symmetric correction is essential to ensure the gradient lies in the tangent space.
 
 ## Applicable Problems
 
@@ -47,7 +48,7 @@ Optimization on smooth manifolds $\mathcal{M}$ (e.g., the orthogonal group $O(n)
 
 ## Further References
 
-- Distilled notes: references/books/matrix-analysis.md (Section 7.3 Polar Decomposition, Newton-Schulz Iteration, Section 2.6 SVD and Orthogonal Factors)
+- Distilled notes: ../../references/books/matrix-analysis.en.md (Section 7.3 Polar Decomposition, Newton-Schulz Iteration, Section 2.6 SVD and Orthogonal Factors)
 - Original text: Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 7 Section 7.3 (Polar Decomposition) + Absil, Mahony, Sepulchre, *Optimization Algorithms on Matrix Manifolds*, Princeton University Press, 2008
 
 

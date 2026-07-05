@@ -5,8 +5,8 @@
 当需要基于 token 的结构性重要性（而非单纯 attention score）进行剪枝时使用：KV-Cache 驱逐、长文档摘要、推理加速（降低 $O(L^2)$）、多模态视觉 token 压缩。核心诉求：**用谱方法量化每个 token 的结构性重要性，实现信息损失最小的剪枝**。
 
 ## 数学思想来源
-- 透镜：lenses/spectral.md（识别主导谱分量、丢弃冗余分量）、lenses/algorithmic.md（复杂度分类与近似算法）、lenses/perturbation.md（剪枝 = 稀疏扰动，Weyl 界估谱漂移）
-- 知识：knowledge-base/matrix-analysis/spectral-decomposition.md（谱半径、特征向量中心性）、knowledge-base/matrix-analysis/matrix-perturbation.md（Geršgorin 圆盘、扰动界）、knowledge-base/matrix-analysis/positive-semidefinite.md（Gram 矩阵 PSD 结构）
+- 透镜：../../lenses/spectral.md（识别主导谱分量、丢弃冗余分量）、../../lenses/algorithmic.md（复杂度分类与近似算法）、../../lenses/perturbation.md（剪枝 = 稀疏扰动，Weyl 界估谱漂移）
+- 知识：../../knowledge-base/matrix-analysis/spectral-decomposition.md（谱半径、特征向量中心性）、../../knowledge-base/matrix-analysis/matrix-perturbation.md（Geršgorin 圆盘、扰动界）、../../knowledge-base/matrix-analysis/positive-semidefinite.md（Gram 矩阵 PSD 结构）
 
 ## 需要的数学知识
 - **特征向量中心性**：attention 矩阵 $A$ 的主特征向量 $Ax = \lambda_1 x$，分量 $x_i$ 量化 token $i$ 的全局影响力（Perron-Frobenius 保证非负）
@@ -26,9 +26,9 @@
   indices = topk(v, ceil(ρ * L))              // 保留中心性最高的 token
 
 方法2 - Geršgorin 廉价剪枝（零迭代）：
-  A = softmax(K @ K^T / √d)
-  gersh_score = |diag(A)| + sum(|A|, dim=1)    // 圆盘上界，O(L²) elementwise
-  indices = topk(gersh_score, ceil(ρ * L))
+  S = K @ K^T / √d                         // L×L 原始相似度矩阵（非 softmax，行使行和有区分度）
+  gersh_score = sum(|S|, dim=1) - |diag(S)|  // Geršgorin 圆盘半径 R_i = Σ_{j≠i}|S_{ij}|，衡量连通度
+  indices = topk(gersh_score, ceil(ρ * L))    // O(L²) elementwise，无需幂迭代
 
 方法3 - 可微谱剪枝（端到端）：
   v = power_iteration(A, T=5)

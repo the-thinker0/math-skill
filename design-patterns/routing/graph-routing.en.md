@@ -10,9 +10,9 @@ Use when there exists a known or learnable topological structure among modules/e
 Core requirement: **leverage structural priors to constrain routing decisions and reduce the search space**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/geometric.md (graph Laplacian, spectral graph theory), lenses/probabilistic.md (message passing, information flow)
-- Knowledge: knowledge-base/matrix-analysis/projection.md (adjacency matrix, spectral decomposition),
-  knowledge-base/optimization/lagrangian-duality.md (variational on graphs, diffusion processes)
+- Lenses: ../../lenses/geometric.en.md (graph Laplacian, spectral graph theory), ../../lenses/probabilistic.en.md (message passing, information flow)
+- Knowledge: ../../knowledge-base/matrix-analysis/projection.en.md (adjacency matrix, spectral decomposition),
+  ../../knowledge-base/optimization/lagrangian-duality.en.md (variational on graphs, diffusion processes)
 
 ## Required Mathematical Background
 - **Graph Laplacian**: L = D - A (combinatorial) or L_sym = D^{-1/2} L D^{-1/2} (normalized)
@@ -60,14 +60,14 @@ Method 3 - Hierarchical Tree Routing (O(log K) complexity):
 - **Hierarchical tree implementation**: Represented as a complete binary tree array with level-wise vectorization
 
 ## GPU Feasibility
-- **Tensorization**: GCN layers perform sparse matrix times dense matrix (SpMM), supported by both PyTorch and cuSPARSE
-- **GEMM-mappable**: score_init @ P_t in Method 1 is standard GEMM (N x K) @ (K x K)
-- **Complexity**: Method 1 O(N * K^2) diffusion + O(N * K * d) gate; Method 3 O(N * d * log K) significantly better than O(N * d * K)
-- **Memory & KV-Cache**: A matrix stored sparsely at K x K; hierarchical tree parameters d x log K are negligible
-- **Low-precision stability**: Probability matrix P and softmax in fp16 require attention to normalization precision
-- **Parallelism & Communication**: GNN message passing can be batched in parallel; hierarchical tree nodes at the same level can be evaluated independently in parallel
-- **Sparse structure**: Graph adjacency matrices are naturally sparse (degree << K); SpMM reduces from O(K^2) to O(K * avg_deg)
-- **Operator fusion**: L_norm @ H @ W in GCN can be fused into a single sparse GEMM
+- **D1[v]**: GCN layers perform sparse matrix times dense matrix (SpMM), supported by both PyTorch and cuSPARSE
+- **D2[v]**: score_init @ P_t in Method 1 is standard GEMM (N x K) @ (K x K)
+- **D3[v]**: Method 1 O(N * K^2) diffusion + O(N * K * d) gate; Method 3 O(N * d * log K) significantly better than O(N * d * K)
+- **D4[v]**: A matrix stored sparsely at K x K; hierarchical tree parameters d x log K are negligible
+- **D5[v]**: Probability matrix P and softmax in fp16 require attention to normalization precision
+- **D6[v]**: GNN message passing can be batched in parallel; hierarchical tree nodes at the same level can be evaluated independently in parallel
+- **D7[v]**: Graph adjacency matrices are naturally sparse (degree << K); SpMM reduces from O(K^2) to O(K * avg_deg)
+- **D8[v]**: L_norm @ H @ W in GCN can be fused into a single sparse GEMM
 
 ## Paper-Worthy Formulation
 "Leveraging hierarchical tree/graph topology among experts, we compress routing decisions from a flat O(N * K) search to O(N * log K) tree traversal or O(N * K * avg_deg) graph diffusion. Fiedler spectral analysis reveals that the graph's algebraic connectivity lambda_2 directly governs the diversity-coherence trade-off in routing."

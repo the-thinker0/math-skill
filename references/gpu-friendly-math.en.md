@@ -1,9 +1,7 @@
 # GPU-Friendly Math Checklist
 
 > This file is the **single source of truth** for the "GPU-feasibility" acceptance gate.
-> The activator, the 15 thinking lenses, `books/*.md`, and `../agents/math-critic.md` all reference this file; no duplicate definitions elsewhere.
->
-> This file is the single source of truth for the "GPU-feasibility" acceptance gate. The activator, the 15 thinking lenses, the book references, and the math-critic all point here.
+> The activator, the 15 thinking lenses, `books/*.md`, and `../agents/math-critic.en.md` all reference this file; no duplicate definitions elsewhere.
 
 ## Eight-Dimension Abbreviations
 
@@ -17,6 +15,21 @@
 | D6 | Parallelism & communication |
 | D7 | Sparse structure |
 | D8 | Operator fusion |
+
+## Quantitative Checklist
+
+When evaluating each dimension, provide concrete numbers rather than just labels:
+
+| Dimension | Quantitative Questions to Answer |
+|-----------|--------------------------------|
+| D1 Tensorization | What are the tensor shapes of core operations? Where is the batch dimension? |
+| D2 GEMM-mappability | How many GEMM/matmul operations? What are the (M,N,K) dimensions of each? |
+| D3 Complexity | Total FLOPs? Ratio vs. baseline (standard attention/MLP)? |
+| D4 Memory | Peak memory (bytes)? Is an n×n matrix materialized? KV-Cache overhead? |
+| D5 Low-precision | Numerical error magnitude under bf16/fp8? Mixed-precision strategy needed? |
+| D6 Parallelism | Theoretical parallelism degree? Communication volume (bytes/step)? All-reduce required? |
+| D7 Sparsity | Sparsity ratio (%)? Sparse format (CSR/BSR/block-sparse)? Dedicated kernel available? |
+| D8 Operator Fusion | Number of fusible kernels? Reduction in kernel launches and memory transfers after fusion? |
 
 ## Core Proposition
 
@@ -66,13 +79,13 @@ Common techniques for transforming "beautiful but non-computable" into "both bea
 
 ## Worked Example: Tropical Sheaf Attention
 
-Drawn from the auto-research directions cited in `agentic-workflow.md`, demonstrating how a **candidate design enters the 8-dimension verification**:
+Drawn from the auto-research directions cited in `agentic-workflow.en.md`, demonstrating how a **candidate design enters the 8-dimension verification**:
 
 | Component | Mathematical Source | GPU Friendliness |
 |-----------|-------------------|-----------------|
-| Tropical Gating | Tropical semiring, piecewise-linear | Replaces Top-K: element-wise max-plus — dim 1 [v] Tensorization / dim 2 [x] Not a Tensor Core GEMM (runs on CUDA cores) / dim 3 [v] Per-token gating only, sub-quadratic (min-plus matmul is APSP-hard, not sub-quadratic); sub-differentiable, kinks require LogSumExp smoothing (smoothing recovers standard softmax) |
-| Cellular Sheaf Diffusion | Algebraic geometry / topology (sheaves, restriction maps) | Each edge is a low-rank linear transform = small GEMM (dim 2/4) |
-| Čech Cohomology Regularization | Algebraic topology (first cohomology $H^1$) | Local, inexpensive; serves as an algebraic criterion for hallucination (dim 3/8) |
-| Low-Rank Basis KV Compression (Plücker/Grassmannian perspective) | Projective geometry | Store the basis rather than Plücker coordinates (the latter expands when low-rank); block-summary candidate — compression ratio / error / throughput must be benchmarked (dim 4) |
+| Tropical Gating | Tropical semiring, piecewise-linear | Replaces Top-K: element-wise max-plus — D1[v] / D2[x] Not a Tensor Core GEMM (runs on CUDA cores) / D3[v] Per-token gating only, sub-quadratic (min-plus matmul is APSP-hard, not sub-quadratic); sub-differentiable, kinks require LogSumExp smoothing (smoothing recovers standard softmax) |
+| Cellular Sheaf Diffusion | Algebraic geometry / topology (sheaves, restriction maps) | Each edge is a low-rank linear transform = small GEMM (D2/D4) |
+| Čech Cohomology Regularization | Algebraic topology (first cohomology $H^1$) | Local, inexpensive; serves as an algebraic criterion for hallucination (D3/D8) |
+| Low-Rank Basis KV Compression (Plücker/Grassmannian perspective) | Projective geometry | Store the basis rather than Plücker coordinates (the latter expands when low-rank); block-summary candidate — compression ratio / error / throughput must be benchmarked (D4) |
 
 Do not treat the table above as validated conclusions. The correct approach is to enter each component into the test plan: prove or estimate complexity, measure peak memory and throughput, check bf16/fp8 stability, and confirm whether it can be mapped to GEMM / batched GEMM / fused kernels. Only after both empirical benchmarks and theoretical derivations pass should a component be labeled "math beautiful × GPU friendly."

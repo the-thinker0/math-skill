@@ -6,12 +6,12 @@ When the input possesses an **explicit symmetry group $G$ action** (rotation, tr
 
 ## Mathematical Inspiration
 - Lenses: [symmetry, categorical (unified framework for group actions)]
-- Knowledge: [`../../knowledge-base/probability/concentration-inequality.md` (sample efficiency gains under equivariant constraints -- data equivalence along orbits), `../../knowledge-base/probability/entropy.md` (equivariant constraints reduce output distribution entropy, yielding stronger inductive bias)]
+- Knowledge: [`../../knowledge-base/probability/concentration-inequality.en.md` (sample efficiency gains under equivariant constraints -- data equivalence along orbits), `../../knowledge-base/probability/entropy.en.md` (equivariant constraints reduce output distribution entropy, yielding stronger inductive bias)]
 
 ## Required Mathematical Knowledge
 - **Group Representation Theory Basics**: Linear representation of a group $G$, $\rho: G \to GL(V)$, and irreducible representation decomposition
 - **Equivariant Map Definition**: $f(g \cdot x) = \rho_{\text{out}}(g) \cdot f(x)$ for all $g \in G$
-- **Orbit-Stabilizer Theorem** (see `references/books/abstract-algebra.md` Ch.5): $|orbit| = |G|/|stab|$, giving the parameter sharing multiplier
+- **Orbit-Stabilizer Theorem** (see `references/books/abstract-algebra.en.md` Ch.5): $|orbit| = |G|/|stab|$, giving the parameter sharing multiplier
 - **Schur's Lemma**: An equivariant linear map between irreducible representations is either zero or a scalar multiple
 
 ## AI Module Form
@@ -63,6 +63,12 @@ output = mean(softmax((rho(g)@X@W_q) @ (rho(g)@X@W_k).T/sqrt(d)) @ (rho(g)@X@W_v
 - **D6**: $|G|$ group elements are naturally parallelizable (along the batch dimension)
 - **D7**: Permutation $\rho(g)$ is extremely sparse and can be encoded as gather indices
 - **D8**: Group action + linear duality can be fused into a single batched GEMM
+
+**Quantitative assessment example** (E(3) equivariant, |G|=24 rotation group, d=64, n=512):
+- D3: |G|x standard attention FLOPs = 24 · 2·512²·64 ≈ 805M (vs standard 33.6M)
+- D4: Requires storing |G|=24 copies of intermediate features, 24 · 512 · 64 · 2B ≈ 1.5MB extra memory
+- D6: 24 group elements parallelizable along the batch dimension, ideal speedup 24x
+- D8: ρ(g)·X·W_q three-step fusion into a single batched GEMM
 
 ## Paper Phrasing
 "We propose an equivariant attention mechanism that constrains attention weights to be group invariants and attention outputs to be group equivariants, directly encoding the inductive bias of symmetry group $G$ into the model architecture without additional data augmentation, achieving a $|G|/|stab|$-fold improvement in parameter efficiency."

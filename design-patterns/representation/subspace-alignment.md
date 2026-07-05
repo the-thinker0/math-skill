@@ -10,9 +10,9 @@
 核心诉求：**找到两个空间之间的最优线性/非线性映射，使对应语义对齐**。
 
 ## 数学思想来源
-- 透镜：lenses/geometric.md（Grassmann 流形、主角度）、lenses/variational.md（Procrustes 问题）
-- 知识：knowledge-base/matrix-analysis/projection.md（SVD、正交 Procrustes）、
-  knowledge-base/differential-geometry/manifold.md（Grassmann 距离、测地线）
+- 透镜：../../lenses/geometric.md（Grassmann 流形、主角度）、../../lenses/variational.md（Procrustes 问题）
+- 知识：../../knowledge-base/matrix-analysis/projection.md（SVD、正交 Procrustes）、
+  ../../knowledge-base/differential-geometry/manifold.md（Grassmann 距离、测地线）
 
 ## 需要的数学知识
 - **正交 Procrustes 问题**：min_{W∈O(d)} ‖AW - B‖_F²
@@ -71,14 +71,14 @@
 - **分块 SVD**：大规模时用 randomized SVD 近似，精度足够且更快
 
 ## GPU 可行性
-- **张量化**：A^T@B 为标准 GEMM (d×N)@(N×d)；SVD 有 cuSOLVER 实现
-- **GEMM 可映射**：Procrustes 核心 1 次 GEMM + 1 次 SVD；CCA 2 次 GEMM + 1 次 SVD
-- **复杂度**：GEMM O(N·d²)；SVD O(d³)（d 通常 <1024，可接受）；在线追踪 O(d²)
-- **显存与 KV-Cache**：存储协方差矩阵 d×d（~4MB for d=1024），不增加 KV-Cache
-- **低精度稳定**：SVD 强烈建议 fp32；白化的矩阵逆需 fp32 + ε 正则化
-- **并行与通信**：多专家对的子空间角度计算独立并行；CCA 的 GEMM 高度并行
-- **稀疏结构**：当源/目标表示稀疏时，协方差矩阵 Σ 稀疏，可用稀疏 SVD
-- **算子融合**：白化 (mean-sub → cov → inv_sqrt → transform) 可部分融合
+- **D1[v]**：A^T@B 为标准 GEMM (d×N)@(N×d)；SVD 有 cuSOLVER 实现
+- **D2[v]**：Procrustes 核心 1 次 GEMM + 1 次 SVD；CCA 2 次 GEMM + 1 次 SVD
+- **D3[v]**：GEMM O(N·d²)；SVD O(d³)（d 通常 <1024，可接受）；在线追踪 O(d²)
+- **D4[v]**：存储协方差矩阵 d×d（~4MB for d=1024），不增加 KV-Cache
+- **D5[~]**：SVD 强烈建议 fp32；白化的矩阵逆需 fp32 + ε 正则化
+- **D6[v]**：多专家对的子空间角度计算独立并行；CCA 的 GEMM 高度并行
+- **D7[~]**：当源/目标表示稀疏时，协方差矩阵 Σ 稀疏，可用稀疏 SVD
+- **D8[~]**：白化 (mean-sub → cov → inv_sqrt → transform) 可部分融合
 
 ## 论文表述方式
 "基于正交 Procrustes 理论求得源-目标表示间的最优等距映射 W*=UV^T（USV^T=SVD(A^TB)），

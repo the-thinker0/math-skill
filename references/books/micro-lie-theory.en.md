@@ -62,7 +62,7 @@ Two additional directly usable "components":
 
 ## GPU Friendliness Warning
 
-> The sole authority for the acceptance gate: [`../gpu-friendly-math.md`](../gpu-friendly-math.md) (eight dimensions: D1 Tensorization, D2 GEMM-mappability, D3 Complexity, D4 Memory/KV, D5 Low-precision stability, D6 Parallelism & communication, D7 Sparse structure, D8 Operator fusion). Dimension-by-dimension scoring follows.
+> The sole authority for the acceptance gate: [`../gpu-friendly-math.en.md`](../gpu-friendly-math.en.md) (eight dimensions: D1 Tensorization, D2 GEMM-mappability, D3 Complexity, D4 Memory/KV, D5 Low-precision stability, D6 Parallelism & communication, D7 Sparse structure, D8 Operator fusion). Dimension-by-dimension scoring follows.
 
 | # | Dimension | Rating | Notes |
 |---|---|---|---|

@@ -10,9 +10,9 @@
 核心诉求：**让网络结构编码对称性先验，减少学习负担，提升泛化**。
 
 ## 数学思想来源
-- 透镜：lenses/geometric.md（群作用、不变/等变映射）、lenses/probabilistic.md（对称性与信息冗余）
-- 知识：knowledge-base/matrix-analysis/projection.md（群表示论、不可约表示）、
-  knowledge-base/differential-geometry/manifold.md（李群、齐性空间）
+- 透镜：../../lenses/geometric.md（群作用、不变/等变映射）、../../lenses/probabilistic.md（对称性与信息冗余）
+- 知识：../../knowledge-base/matrix-analysis/projection.md（群表示论、不可约表示）、
+  ../../knowledge-base/differential-geometry/manifold.md（李群、齐性空间）
 
 ## 需要的数学知识
 - **群作用与等变性**：映射 f 对群 G 等变 ⟺ f(g·x) = g·f(x), ∀g∈G
@@ -79,7 +79,7 @@
 
 ## 论文表述方式
 "利用群表示论的 Schur 引理，将 d 维特征空间按对称群 G 的不可约表示分解为直和 ⊕mᵢVᵢ，
-每个分量使用受等变约束的线性层独立处理，参数效率提升 |G|/Σmᵢ² 倍，
+每个分量使用受等变约束的线性层独立处理，参数效率提升 d²/Σmᵢ² 倍（d = Σmᵢ·dim(Vᵢ) 为总特征维度，Σmᵢ² 为 Schur 约束后的自由参数数），
 同时保证网络对群作用的等变性，在对称数据上泛化误差降低 O(1/√|G|)。"
 
 ## 风险

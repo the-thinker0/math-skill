@@ -9,6 +9,7 @@ These are **manual evaluation scenarios** for testing the math-skill v3.0.0 rout
 | `should-trigger-design.md` | Mechanism design scenarios (Scenario B) | Full pipeline: Lenses → Knowledge → Design → Critic |
 | `should-trigger-knowledge.md` | Knowledge query scenarios (Scenario C) | Direct knowledge card loading |
 | `should-not-trigger.md` | Pure engineering tasks (Scenario E) | No math system activation at all |
+| `mixed-language-routing.md` | Code-switched input (CN/EN mixed) | Correct language routing per 5-rule decision system |
 
 ## How to Run
 

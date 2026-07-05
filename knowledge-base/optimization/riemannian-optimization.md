@@ -13,6 +13,7 @@
 - 极分解收缩：$R_Q(\xi) = (Q + \xi)(I + \xi^T\xi)^{-1/2}$（投影到最近正交矩阵）
 - Newton-Schulz 正交化：$X_{k+1} = \frac{1}{2}X_k(3I - X_k^T X_k)$，收敛到最近正交矩阵
 - 双曲空间（Poincaré ball）：$\text{grad}_{\mathcal{H}} f = \frac{(1-\|x\|^2)^2}{4} \nabla f(x)$
+- Stiefel 流形 $St(n,p) = \{W : W^TW = I_p\}$ 的黎曼梯度：$\text{grad} f(W) = G - W \cdot \text{sym}(W^TG)$，其中 $G = \nabla f(W)$ 为欧氏梯度，$\text{sym}(A) = \frac{A + A^T}{2}$ 为对称修正项。注意：不能简单用 $G - WW^TG$（正交投影），必须包含对称修正才能保证梯度在切空间中。
 
 ## 适用问题
 
@@ -47,7 +48,7 @@
 
 ## 深入参考
 
-- 蒸馏稿：references/books/matrix-analysis.md（§7.3 极分解、Newton-Schulz 迭代、§2.6 SVD 与正交因子）
+- 蒸馏稿：../../references/books/matrix-analysis.md（§7.3 极分解、Newton-Schulz 迭代、§2.6 SVD 与正交因子）
 - 原书：Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 7 §7.3 (Polar Decomposition) + Absil, Mahony, Sepulchre, *Optimization Algorithms on Matrix Manifolds*, Princeton University Press, 2008
 
 

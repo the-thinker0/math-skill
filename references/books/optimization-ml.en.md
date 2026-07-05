@@ -102,32 +102,32 @@ Actual chapter map:
 
 ## GPU Friendliness Warning
 
-> The following item-by-item evaluation uses the **eight-dimension scorecard** from `../gpu-friendly-math.md` (read that first).
+> The following item-by-item evaluation uses the **eight-dimension scorecard** from `../gpu-friendly-math.en.md` (read that first).
 > Conclusion: The book's first-order / stochastic / low-rank content is naturally GPU-friendly; second-order methods and search-based methods require heavy adaptation or elimination.
 
 - **Full Hessian in second-order methods (Ch 9, 11)**
-  - Violates **Dimension 4 (Memory)**: Dense Hessian is O(d^2), impossible to materialize for hundreds of millions of parameters.
-  - Violates **Dimension 2 (GEMM-mappability)**: Inversion / factorization is not batched-GEMM friendly.
-  - Violates **Dimension 5 (Low-precision stability)**: Ill-conditioned inversion causes catastrophic cancellation under bf16/fp16.
-  - Adaptation: Matrix-free HVP + CG, L-BFGS low-rank, K-FAC block-diagonal -> restores **Dimension 2/4** friendliness.
+  - Violates **D4**: Dense Hessian is O(d^2), impossible to materialize for hundreds of millions of parameters.
+  - Violates **D2**: Inversion / factorization is not batched-GEMM friendly.
+  - Violates **D5**: Ill-conditioned inversion causes catastrophic cancellation under bf16/fp16.
+  - Adaptation: Matrix-free HVP + CG, L-BFGS low-rank, K-FAC block-diagonal -> restores **D2/D4** friendliness.
 - **Line search (Ch 7 golden section / Armijo S24.4.4)**
-  - Violates **Dimension 1 (Tensorization)**: Essentially a scalar loop + data-dependent branching (step-by-step comparison of function values).
-  - Violates **Dimension 8 (Operator fusion)**: Frequent small kernels, control-flow divergence.
+  - Violates **D1**: Essentially a scalar loop + data-dependent branching (step-by-step comparison of function values).
+  - Violates **D8**: Frequent small kernels, control-flow divergence.
   - Adaptation: Large models almost universally use scheduled step sizes (warmup + cosine) instead of step-by-step line search.
 - **First-order / SGD (Ch 8, 27)**
-  - **Dimension 1/2 friendly**: Gradients = tensor algebra, expressible as GEMM.
-  - **Dimension 6 (Parallelism and communication)** is good: Data-parallel all-reduce can overlap with backprop -- the fundamental reason this is the default approach for large models.
+  - **D1/D2 friendly**: Gradients = tensor algebra, expressible as GEMM.
+  - **D6** is good: Data-parallel all-reduce can overlap with backprop -- the fundamental reason this is the default approach for large models.
 - **Global search (Ch 14: GA/SA/PSO)**
-  - Violates **Dimension 1**: Non-differentiable, discrete stochastic search, blocks end-to-end gradient training.
-  - **Dimension 6** is also poor: Inter-population dependencies, hard to parallelize. Only suitable for black-box hyperparameter search, not for the training inner loop.
+  - Violates **D1**: Non-differentiable, discrete stochastic search, blocks end-to-end gradient training.
+  - **D6** is also poor: Inter-population dependencies, hard to parallelize. Only suitable for black-box hyperparameter search, not for the training inner loop.
 - **LP simplex / interior-point methods (Ch 16, 18)**
-  - Simplex row operations are acceptable; interior-point methods require solving a linear system at each step, **Dimension 2/6** limited by factorization and communication.
+  - Simplex row operations are acceptable; interior-point methods require solving a linear system at each step, **D2/D6** limited by factorization and communication.
   - Suitable for medium-scale constrained subproblems, not for placement inside every training step.
 - **Projections (S24.2)**
-  - Norm-ball / box projections are cheap elementwise operations (**Dimension 1/8** friendly).
-  - General polyhedral projections require solving a QP (**Dimension 2** degrades).
+  - Norm-ball / box projections are cheap elementwise operations (**D1/D8** friendly).
+  - General polyhedral projections require solving a QP (**D2** degrades).
 - **Convergence depends on condition number kappa**
-  - Large kappa -> **Dimension 5** is further amplified at low precision (ill-conditioned gradients).
+  - Large kappa -> **D5** is further amplified at low precision (ill-conditioned gradients).
   - Must pair with normalization / preconditioning; otherwise bf16 training diverges.
 
 ## Which Thinking Lens to Invoke

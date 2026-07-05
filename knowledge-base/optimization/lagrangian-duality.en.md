@@ -26,7 +26,7 @@ Transforms a constrained optimization problem (primal) into a maximization probl
 
 - **Minimax framework for adversarial training**: $L(\theta, \phi) = \mathbb{E}[\log D_\phi(x)] + \mathbb{E}[\log(1 - D_\phi(G_\theta(z)))]$. $G$ and $D$ alternate between gradient ascent and descent; the core operations are forward + backward passes (matmul chains). Gradient penalty / spectral norm constrains the Lipschitz constant of $D$ to ensure the existence of a saddle point.
 - **SVM dual + kernel trick**: Primal $\min_w \frac{1}{2}\|w\|^2 + C\sum\xi_i$ converted to dual $\max_\alpha \sum\alpha_i - \frac{1}{2}\alpha^T(K \circ yy^T)\alpha$. The kernel Gram matrix $K_{ij} = k(x_i, x_j)$ is computed via matmul (linear kernel) or elementwise operations (RBF kernel). Dual variables $\alpha \in \mathbb{R}^n$ are solved using SMO or gradient projection.
-- **Augmented Lagrangian constrained training**: $\mathcal{L}_{\text{AL}} = f(x) + \sum \lambda_i g_i(x) + \frac{\rho}{2}\sum g_i(x)^2$. The inner loop optimizes $x$ via SGD; the outer loop updates $\lambda$ via gradient ascent: $\lambda \leftarrow [\lambda + \rho g(x)]_+$. The $\rho$ term ensures inner-loop convexity, enabling convergence even for non-convex original problems.
+- **Augmented Lagrangian constrained training**: $\mathcal{L}_{\text{AL}} = f(x) + \sum \lambda_i g_i(x) + \frac{\rho}{2}\sum g_i(x)^2$. The inner loop optimizes $x$ via SGD; the outer loop updates $\lambda$ via gradient ascent: $\lambda \leftarrow [\lambda + \rho g(x)]_+$. The $\rho$ term improves the concavity of the dual function (making the dual problem easier to solve), but does NOT guarantee global convergence for non-convex original problems. Convergence depends on: (a) constraint qualifications (e.g., LICQ/MFCQ), (b) second-order sufficient conditions, (c) $\rho$ being large enough to satisfy local convexity conditions.
 - **Dual decomposition**: $\min \sum_k f_k(x_k)$ s.t. $\sum x_k \leq b$ decomposes into independent subproblems $\min_{x_k} f_k(x_k) + \lambda^T x_k$, with the master problem $\max_\lambda g(\lambda)$ solved via subgradient ascent. Naturally parallelizable, suitable for distributed training.
 - **Dual perspective on the information bottleneck**: $\min I(Z;X) - \beta I(Z;Y)$ can be formulated as constrained optimization, where $\beta$ is the dual variable. The variational IB relaxes this via the ELBO, reducing to standard VAE training (reparameterization trick + SGD).
 
@@ -39,20 +39,20 @@ Transforms a constrained optimization problem (primal) into a maximization probl
 
 ## Risks and Failure Conditions
 
-- **Duality gap for non-convex problems**: Strong duality is only guaranteed for convex problems + Slater's condition. In non-convex neural network training, $d^* < p^*$ is common, and the dual solution does not yield a primal-feasible solution. Solution: augmented Lagrangian (eliminates the gap when $\rho$ is sufficiently large) or SQP.
+- **Duality gap for non-convex problems**: Strong duality is only guaranteed for convex problems + Slater's condition. In non-convex neural network training, $d^* < p^*$ is common, and the dual solution does not yield a primal-feasible solution. Solution: for convex problems, augmented Lagrangian (with the exact penalty property when $\rho$ is sufficiently large, which can eliminate the duality gap); for non-convex problems, the duality gap may persist regardless of $\rho$, and the augmented Lagrangian only guarantees local convergence to KKT points -- alternatively, use SQP.
 - **Dual variable oscillation**: Improper step sizes for gradient ascent on $\lambda$ can cause dual variable oscillation and primal infeasibility. Solution: use adaptive step sizes (Adam updates for $\lambda$) or an increasing $\rho$ schedule in the augmented Lagrangian.
 - **Numerical determination of complementary slackness**: $\lambda_i g_i(x) = 0$ can only be satisfied to $\sim 10^{-6}$ in floating point; strict complementary slackness is unattainable. This affects SVM support vector identification; a threshold must be set.
 - **Mode collapse in minimax training**: The non-convex-non-concave game in GAN $\min\max$ leads to mode collapse or training instability. Additional regularization such as gradient penalty (WGAN-GP) or spectral normalization is required.
 
 ## Further References
 
-- Distilled notes: references/books/optimization-ml.md (Ch 23 Lagrangian Duality, Section 23.5 Strong Duality, Section 23.6.3 Slater's Condition)
+- Distilled notes: ../../references/books/optimization-ml.en.md (Ch 23 Lagrangian Duality, Section 23.5 Strong Duality, Section 23.6.3 Slater's Condition)
 - Original text: Chong, Lu, Zak, *An Introduction to Optimization* 5th Ed., Chapter 23 (Lagrangian Duality Section 23.1-23.6) + Chapter 17 (LP Duality)
 
 
 ## Routing Extensions
-- If starting from the primal problem -> `constrained-optimization.md` (primal constrained optimization)
-- If strong duality conditions are needed -> `convex-optimization.md` (strong duality theorem for convex problems)
+- If starting from the primal problem -> `constrained-optimization.en.md` (primal constrained optimization)
+- If strong duality conditions are needed -> `convex-optimization.en.md` (strong duality theorem for convex problems)
 - If the dual form of IB objective is involved -> `information-bottleneck.md` (variational dual of information bottleneck)
 
 ## Extensible Directions

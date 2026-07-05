@@ -46,7 +46,7 @@ $$\mathcal{L}_{VIB} = \mathbb{E}_{p(x,y)}[-\log q_\phi(y|z)] + D_{KL}(p_\theta(z
 - Tishby, Pereira, Bialek. "The Information Bottleneck Method." *arXiv:physics/0004057*, 2000
 - Alemi, Poole, Fischer, Dillon, Suresh, Murphy. "Deep Variational Information Bottleneck." *ICLR*, 2017
 - Shwartz-Ziv, Tishby. "Opening the Black Box of Deep Neural Networks via Information." *arXiv:1703.00810*, 2017
-- 关联知识卡：`probability/entropy.md`、`probability/kl-divergence.md`
+- 关联知识卡：`entropy.md`、`kl-divergence.md`
 
 
 ## 路由扩展

@@ -132,11 +132,11 @@
 - 是否枚举了多个候选结构（而非只给一个）？
 - 若不确定该审视哪些维度，先调用 `/ask` 让激活器推荐最合适的 3–5 个审视维度。
 
-### 17. GPU 可行性审视 / GPU-Feasibility Review -> `references/gpu-friendly-math.md`
+### 17. GPU 可行性审视 / GPU-Feasibility Review -> `../../references/gpu-friendly-math.md`
 
 > 产出涉及算法/算子/训练/GPU 设计时为**强制项**。对应「双验收门」的第二道门。
 
-- 产出是否过 `references/gpu-friendly-math.md` 的**八维**？张量化 / GEMM 可映射 / 复杂度（亚二次）/ 显存与 KV-Cache / 低精度稳定 / 并行与通信 / 稀疏结构 / 算子融合——逐项给「友好/可改造/不友好」。
+- 产出是否过 `../../references/gpu-friendly-math.md` 的**八维**？张量化 / GEMM 可映射 / 复杂度（亚二次）/ 显存与 KV-Cache / 低精度稳定 / 并行与通信 / 稀疏结构 / 算子融合——逐项给「友好/可改造/不友好」。
 - 是否存在「数学美但不可算」的结构？（典型：二阶法 Hessian 求逆、全局精确同调、符号因果发现、精确熵估计）——是否给出了可微/采样/低秩/近似改造？
 - 逆变换/数值部分是否稳定（条件数、病态）？
 - 显存与通信是否被评估（KV-Cache、分布式 all-reduce、optimizer state 精度）？

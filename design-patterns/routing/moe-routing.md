@@ -9,9 +9,9 @@
 核心诉求：**稀疏激活、负载均衡、端到端可训练**。
 
 ## 数学思想来源
-- 透镜：lenses/variational.md（离散优化松弛、Gumbel-Softmax）、lenses/probabilistic.md（信息论路由）
-- 知识：knowledge-base/optimization/lagrangian-duality.md（对偶分解、拉格朗日松弛）、
-  knowledge-base/probability/entropy.md（熵正则化、信息瓶颈）
+- 透镜：../../lenses/variational.md（离散优化松弛、Gumbel-Softmax）、../../lenses/probabilistic.md（信息论路由）
+- 知识：../../knowledge-base/optimization/lagrangian-duality.md（对偶分解、拉格朗日松弛）、
+  ../../knowledge-base/probability/entropy.md（熵正则化、信息瓶颈）
 
 ## 需要的数学知识
 - **混合模型 EM**：p(y|x) = Σ_k π_k(x) · p(y|x,θ_k)
@@ -66,14 +66,14 @@
 - **Router Z-loss**：L_z = α·mean(logsumexp(logits)²) 稳定 logits 幅度
 
 ## GPU 可行性
-- **张量化**：gate logits = X@W_gate 为标准 GEMM (N×d)@(d×K)；专家计算为 batched GEMM
-- **GEMM 可映射**：gate 1 次 GEMM；每个专家内部为标准 FFN（2 次 GEMM + activation）
-- **复杂度**：gate O(N·d·K)；每专家 O(N·d·d_ff/k)；总 FLOPs ≈ 标准 FFN × k
-- **显存与 KV-Cache**：K 个专家参数全存储但仅 k 个激活，激活显存 ≈ 标准 FFN × k
-- **低精度稳定**：gate 的 softmax + top-k 在 fp16 安全；Router Z-loss 需 fp32 logsumexp
-- **并行与通信**：专家并行需 all-to-all 通信（每个 GPU 收发 N/K 个 token），带宽敏感
-- **稀疏结构**：top-k 路由天然稀疏（激活 k/K 的参数），稀疏度 = 1 - k/K
-- **算子融合**：gate → top-k → softmax → weighted-sum 可融合；专家内 FFN 可 fuse
+- **D1[v]**：gate logits = X@W_gate 为标准 GEMM (N×d)@(d×K)；专家计算为 batched GEMM
+- **D2[v]**：gate 1 次 GEMM；每个专家内部为标准 FFN（2 次 GEMM + activation）
+- **D3[v]**：gate O(N·d·K)；每专家 O(N·d·d_ff/k)；总 FLOPs ≈ 标准 FFN × k
+- **D4[v]**：K 个专家参数全存储但仅 k 个激活，激活显存 ≈ 标准 FFN × k
+- **D5[v]**：gate 的 softmax + top-k 在 fp16 安全；Router Z-loss 需 fp32 logsumexp
+- **D6[~]**：专家并行需 all-to-all 通信（每个 GPU 收发 N/K 个 token），带宽敏感
+- **D7[v]**：top-k 路由天然稀疏（激活 k/K 的参数），稀疏度 = 1 - k/K
+- **D8[v]**：gate → top-k → softmax → weighted-sum 可融合；专家内 FFN 可 fuse
 
 ## 论文表述方式
 "采用 noisy top-k 门控实现稀疏混合专家路由，激活 k/K 比例的参数以 O(k) 推理代价

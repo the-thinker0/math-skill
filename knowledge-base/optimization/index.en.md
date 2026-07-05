@@ -10,11 +10,11 @@ Activate this domain direction when the problem involves:
 - Splitting operators: objective decomposes into multiple components for combined optimization
 
 ## Core Anchors
-- `lagrangian-duality.md` — Lagrangian duality theory
-- `convex-optimization.md` — Convex optimization fundamentals
-- `constrained-optimization.md` — Constrained optimization methods
-- `riemannian-optimization.md` — Riemannian optimization
-- `proximal-method.md` — Proximal methods
+- `lagrangian-duality.en.md` — Lagrangian duality theory
+- `convex-optimization.en.md` — Convex optimization fundamentals
+- `constrained-optimization.en.md` — Constrained optimization methods
+- `riemannian-optimization.en.md` — Riemannian optimization
+- `proximal-method.en.md` — Proximal methods
 
 ## Extended Concepts
 When core anchors are insufficient, the following concepts may need temporary activation:
@@ -34,7 +34,7 @@ When core anchors are insufficient, the following concepts may need temporary ac
 - meta-learning optimization: optimization framework for meta-learning
 
 ## Reference Book Directions
-- `../../references/books/optimization-ml.md`: comprehensive coverage of ML optimization, including convex optimization, stochastic methods, and second-order methods
+- `../../references/books/optimization-ml.en.md`: comprehensive coverage of ML optimization, including convex optimization, stochastic methods, and second-order methods
 
 ## AI Translation Directions
 - lagrangian duality → primal-dual training / adversarial loss / constrained generation

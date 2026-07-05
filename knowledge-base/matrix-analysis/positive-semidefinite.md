@@ -2,12 +2,12 @@
 
 ## 最小定义
 
-Hermitian 矩阵 $A$ 若对所有非零向量 $x$ 满足 $x^HAx \geq 0$，则称半正定（PSD），记 $A \succeq 0$。等价条件：所有特征值 $\geq 0$；存在 $B$ 使 $A = B^HB$（Gram 表示）；所有顺序主子式 $\geq 0$。正定（PD）要求严格 $> 0$，记 $A \succ 0$。
+Hermitian 矩阵 $A$ 若对所有非零向量 $x$ 满足 $x^HAx \geq 0$，则称半正定（PSD），记 $A \succeq 0$。等价条件：所有特征值 $\geq 0$；存在 $B$ 使 $A = B^HB$（Gram 表示）；**所有主子式** $\geq 0$（注意：是全部主子式，不仅是顺序主子式）。正定（PD）要求严格 $> 0$，记 $A \succ 0$。
 
 ## 核心公式
 
-- PSD 等价条件：$A \succeq 0 \iff \lambda_i(A) \geq 0 \ \forall i \iff A = B^HB$
-- 正定等价：$A \succ 0 \iff \lambda_i(A) > 0 \ \forall i \iff$ 所有顺序主子式 $> 0$（Sylvester 准则）
+- PSD 等价条件：$A \succeq 0 \iff \lambda_i(A) \geq 0 \ \forall i \iff A = B^HB \iff$ 所有主子式 $\geq 0$（注意：是 **所有** 主子式，不仅是顺序主子式）
+- 正定等价（Sylvester 准则）：$A \succ 0 \iff \lambda_i(A) > 0 \ \forall i \iff$ 所有顺序主子式 $> 0$（仅需检验顺序主子式，这是 PD 的充分必要条件）
 - Cholesky 分解：$A \succ 0 \implies A = LL^H$，$L$ 下三角
 - Loewner 偏序：$A \succeq B \iff A - B \succeq 0$
 - Schur 积定理：$A \succeq 0, B \succeq 0 \implies A \circ B \succeq 0$（Hadamard 积保 PSD）
@@ -46,7 +46,7 @@ Hermitian 矩阵 $A$ 若对所有非零向量 $x$ 满足 $x^HAx \geq 0$，则称
 
 ## 深入参考
 
-- 蒸馏稿：references/books/matrix-analysis.md（Ch 7 Positive Definite and Semidefinite Matrices、§7.5 Schur 积定理、§7.7 Loewner 偏序）
+- 蒸馏稿：../../references/books/matrix-analysis.md（Ch 7 Positive Definite and Semidefinite Matrices、§7.5 Schur 积定理、§7.7 Loewner 偏序）
 - 原书：Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 7 (Positive Definite and Semidefinite Matrices §7.1-7.8)
 
 

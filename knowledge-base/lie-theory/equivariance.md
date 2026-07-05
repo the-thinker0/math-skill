@@ -48,9 +48,9 @@ GPU 友好度取决于群的离散化程度：
 
 ## 深入参考
 
-- 蒸馏稿：references/books/micro-lie-theory.md（§II-F 伴随 Ad_X，等变性的代数实现）
-- 蒸馏稿：references/books/differential-geometry.md（§6.8 Principal Bundles, §12.12 G-Connections, 规范等变）
-- 蒸馏稿：references/books/differential-geometry.md（Ch 5 Lie Groups, 连续对称作为先验）
+- 蒸馏稿：../../references/books/micro-lie-theory.md（§II-F 伴随 Ad_X，等变性的代数实现）
+- 蒸馏稿：../../references/books/differential-geometry.md（§6.8 Principal Bundles, §12.12 G-Connections, 规范等变）
+- 蒸馏稿：../../references/books/differential-geometry.md（Ch 5 Lie Groups, 连续对称作为先验）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, §6.8 + §12.12（规范等变的几何基础）
 
 

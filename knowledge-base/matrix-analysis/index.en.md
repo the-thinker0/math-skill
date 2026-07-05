@@ -10,11 +10,11 @@ Activate this domain direction when the problem involves:
 - Subspace separation: need to measure or control relationships between subspaces
 
 ## Core Anchors
-- `projection.md` — Projection operators and subspace projection
-- `spectral-decomposition.md` — Spectral decomposition and eigendecomposition
-- `low-rank-approximation.md` — Low-rank approximation and truncated SVD
-- `positive-semidefinite.md` — Positive semidefinite matrices and PSD cone
-- `matrix-perturbation.md` — Matrix perturbation theory and error bounds
+- `projection.en.md` — Projection operators and subspace projection
+- `spectral-decomposition.en.md` — Spectral decomposition and eigendecomposition
+- `low-rank-approximation.en.md` — Low-rank approximation and truncated SVD
+- `positive-semidefinite.en.md` — Positive semidefinite matrices and PSD cone
+- `matrix-perturbation.en.md` — Matrix perturbation theory and error bounds
 
 ## Extended Concepts
 When core anchors are insufficient, the following concepts may need temporary activation:
@@ -33,7 +33,7 @@ When core anchors are insufficient, the following concepts may need temporary ac
 - matrix concentration inequalities: concentration inequalities for random matrices
 
 ## Reference Book Directions
-- `../../references/books/matrix-analysis.md`: comprehensive coverage of matrix analysis, especially spectral decomposition, perturbation theory, and matrix function chapters
+- `../../references/books/matrix-analysis.en.md`: comprehensive coverage of matrix analysis, especially spectral decomposition, perturbation theory, and matrix function chapters
 
 ## AI Translation Directions
 - projection → subspace attention / conflict removal / shared-private split

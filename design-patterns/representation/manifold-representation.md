@@ -10,9 +10,9 @@
 核心诉求：**利用数据的低维流形结构，提高表示效率和泛化能力**。
 
 ## 数学思想来源
-- 透镜：lenses/geometric.md（黎曼几何、测地线、曲率）、lenses/probabilistic.md（内在维度）
-- 知识：knowledge-base/differential-geometry/manifold.md（流形、切空间、指数映射）、
-  knowledge-base/matrix-analysis/projection.md（SVD、低秩近似、PCA）
+- 透镜：../../lenses/geometric.md（黎曼几何、测地线、曲率）、../../lenses/probabilistic.md（内在维度）
+- 知识：../../knowledge-base/differential-geometry/manifold.md（流形、切空间、指数映射）、
+  ../../knowledge-base/matrix-analysis/projection.md（SVD、低秩近似、PCA）
 
 ## 需要的数学知识
 - **流形假设**：数据 x ∈ R^D 实际分布在 d << D 维的光滑流形 M 上
@@ -66,14 +66,14 @@
 - **自适应 d**：不同区域的局部维度不同，用 PCA 局部估计
 
 ## GPU 可行性
-- **张量化**：局部线性投影为 GEMM (d×D)@(D×N)；图拉普拉斯正则为 SpMM
-- **GEMM 可映射**：Chart MoE 的 K 个线性投影为 batched GEMM (K×d×D)@(D×N)
-- **复杂度**：k-NN 构建 O(N·D·log N) 需 FAISS；流形正则 O(N²) 需采样近似
-- **显存与 KV-Cache**：K 个 chart 参数 K·d·D 通常 <10MB；k-NN 图 N·k·4 bytes
-- **低精度稳定**：距离计算和 exp 在 fp16 下需注意数值范围；黎曼 retract 建议 fp32
-- **并行与通信**：K 个 chart 独立计算，完美并行；k-NN 搜索用 FAISS GPU 加速
-- **稀疏结构**：k-NN 图天然稀疏，流形正则 L 为稀疏矩阵，SpMM 加速
-- **算子融合**：chart 内的 matmul+bias+activation 可融合；门控 softmax+weighted-sum 可融合
+- **D1[v]**：局部线性投影为 GEMM (d×D)@(D×N)；图拉普拉斯正则为 SpMM
+- **D2[v]**：Chart MoE 的 K 个线性投影为 batched GEMM (K×d×D)@(D×N)
+- **D3[~]**：k-NN 构建 O(N·D·log N) 需 FAISS；流形正则 O(N²) 需采样近似
+- **D4[v]**：K 个 chart 参数 K·d·D 通常 <10MB；k-NN 图 N·k·4 bytes
+- **D5[~]**：距离计算和 exp 在 fp16 下需注意数值范围；黎曼 retract 建议 fp32
+- **D6[v]**：K 个 chart 独立计算，完美并行；k-NN 搜索用 FAISS GPU 加速
+- **D7[v]**：k-NN 图天然稀疏，流形正则 L 为稀疏矩阵，SpMM 加速
+- **D8[v]**：chart 内的 matmul+bias+activation 可融合；门控 softmax+weighted-sum 可融合
 
 ## 论文表述方式
 "基于流形假设将 D 维 token 表示约束到 d*（内在维度估计）维子流形上，

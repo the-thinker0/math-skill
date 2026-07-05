@@ -48,15 +48,15 @@ GPU friendliness depends on the degree of group discretization:
 
 ## Further References
 
-- Distillation notes: references/books/micro-lie-theory.md (Section II-F Adjoint $\text{Ad}_X$, algebraic realization of equivariance)
-- Distillation notes: references/books/differential-geometry.md (Section 6.8 Principal Bundles, Section 12.12 G-Connections, gauge equivariance)
-- Distillation notes: references/books/differential-geometry.md (Ch 5 Lie Groups, continuous symmetry as prior)
+- Distillation notes: ../../references/books/micro-lie-theory.en.md (Section II-F Adjoint $\text{Ad}_X$, algebraic realization of equivariance)
+- Distillation notes: ../../references/books/differential-geometry.en.md (Section 6.8 Principal Bundles, Section 12.12 G-Connections, gauge equivariance)
+- Distillation notes: ../../references/books/differential-geometry.en.md (Ch 5 Lie Groups, continuous symmetry as prior)
 - Original text: Jeffrey M. Lee, *Manifolds and Differential Geometry*, Section 6.8 + Section 12.12 (geometric foundations of gauge equivariance)
 
 
 ## Routing Extensions
-- If representation theory foundations are needed -> `representation.md` (equivariant maps are morphisms between representations)
-- If group action structure is needed -> `group-action.md` (equivariance definition depends on group action)
+- If representation theory foundations are needed -> `representation.en.md` (equivariant maps are morphisms between representations)
+- If group action structure is needed -> `group-action.en.md` (equivariance definition depends on group action)
 - If used for attention mechanism design -> `equivariant-attention` (design pattern layer for equivariant attention)
 
 ## Extensible Directions

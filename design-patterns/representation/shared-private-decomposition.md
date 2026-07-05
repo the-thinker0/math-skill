@@ -9,9 +9,9 @@
 核心诉求：**显式分离共性与个性，避免负迁移和灾难性遗忘**。
 
 ## 数学思想来源
-- 透镜：lenses/projection.md（子空间分解、直和分解）、lenses/probabilistic.md（信息分解）
-- 知识：knowledge-base/matrix-analysis/projection.md（直和分解 V = U ⊕ W、投影算子）、
-  knowledge-base/probability/kl-divergence.md（信息分解：shared/synergy/unique）
+- 透镜：../../lenses/projection.md（子空间分解、直和分解）、../../lenses/probabilistic.md（信息分解）
+- 知识：../../knowledge-base/matrix-analysis/projection.md（直和分解 V = U ⊕ W、投影算子）、
+  ../../knowledge-base/probability/kl-divergence.md（信息分解：shared/synergy/unique）
 
 ## 需要的数学知识
 - **直和分解**：R^d = S ⊕ P，其中 S ∩ P = {0}，每个 x = x_S + x_P 唯一

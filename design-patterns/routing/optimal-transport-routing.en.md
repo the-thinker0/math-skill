@@ -7,9 +7,9 @@ Typical scenarios: (1) Load-balanced MoE routing -- assigning N tokens to K expe
 Core requirement: **globally optimal assignment, rather than greedy per-point decisions**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/variational.md (convex variational, duality theory), lenses/geometric.md (Wasserstein distance)
-- Knowledge: knowledge-base/optimization/lagrangian-duality.md (duality theory, constrained optimization),
-  knowledge-base/probability/entropy.md (entropy regularization, marginal constraints)
+- Lenses: ../../lenses/variational.en.md (convex variational, duality theory), ../../lenses/geometric.en.md (Wasserstein distance)
+- Knowledge: ../../knowledge-base/optimization/lagrangian-duality.en.md (duality theory, constrained optimization),
+  ../../knowledge-base/probability/entropy.en.md (entropy regularization, marginal constraints)
 
 ## Required Mathematical Background
 - **Discrete Optimal Transport**: min_{P in Pi(mu,nu)} <C, P> = sum_{ij} C_{ij} P_{ij}
@@ -32,7 +32,7 @@ Sinkhorn routing (entropy-regularized):
   for t = 1..T:                       // T = 5 ~ 20 iterations
     u = a / (K_mat @ v)              // row scaling, a = 1/N
     v = b / (K_mat^T @ u)            // column scaling, b = cap / sum(cap)
-  P = diag(u) @ K_mat @ diag(v)     // optimal transport plan, doubly stochastic matrix
+  P = diag(u) @ K_mat @ diag(v)     // optimal transport plan (satisfies marginal constraints; doubly stochastic only when N = K with uniform marginals)
   assignment = argmax(P, dim=1)      // hard assignment (at inference)
   // At training: weighted_features = P @ E  (soft assignment, differentiable)
 
@@ -59,7 +59,7 @@ Capacity constraint (b vector):
 - **Operator fusion**: The exp -> matvec -> division pipeline in a single Sinkhorn step can be fused into a CUDA kernel
 
 ## Paper-Worthy Formulation
-"We formulate token-to-expert routing as an entropy-regularized optimal transport problem, obtaining an epsilon-approximate doubly stochastic assignment matrix via the Sinkhorn-Knopp algorithm within T = 10 iterations. The transport cost is guaranteed to converge to the global optimum within O(eps * log N), while marginal constraints b precisely control the load upper bound per expert."
+"We formulate token-to-expert routing as an entropy-regularized optimal transport problem, obtaining an approximate transport plan via the Sinkhorn-Knopp algorithm within T = 10 iterations. Finite Sinkhorn iterations yield an approximate solution to the entropy-regularized problem (not the exact global optimum); approximation quality depends on the iteration count T and regularization parameter eps. Marginal constraints b control the load upper bound per expert."
 
 ## Risks
 - Excessively small eps causes numerical instability in Sinkhorn (exp overflow); requires log-domain or increasing eps

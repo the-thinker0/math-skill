@@ -6,7 +6,7 @@ When **known geometric relationships** exist between tokens/keys (spatial distan
 
 ## Mathematical Inspiration
 - Lenses: [symmetry (metric invariance), duality (coordinate-system-independent representation)]
-- Knowledge: [`../../knowledge-base/information-geometry/fisher-metric.md` (geometric metrics on distribution spaces), `../../knowledge-base/probability/concentration-inequality.md` (concentration behavior under geometric constraints)]
+- Knowledge: [`../../knowledge-base/information-geometry/fisher-metric.en.md` (geometric metrics on distribution spaces), `../../knowledge-base/probability/concentration-inequality.en.md` (concentration behavior under geometric constraints)]
 
 ## Required Mathematical Knowledge
 - **Metric Spaces and Distance Functions**: Euclidean distance, geodesic distance, tree distance, Wasserstein distance
@@ -66,7 +66,7 @@ def manifold_attention(Q, K, V, manifold):
 - **D8**: Geometric bias can be fused into FlashAttention's online softmax loop (added after $QK^T$, before softmax)
 
 ## Paper Phrasing
-"We propose geometry-aware attention, which explicitly injects learnable geometric distance bias terms into attention scores, enabling the model to naturally respect the metric structure of the input space. This achieves exponential decay of attention to distant tokens without increasing parameter count, while maintaining compatibility with FlashAttention."
+"We propose geometry-aware attention, which explicitly injects geometric distance bias terms into attention scores, enabling the model to naturally respect the metric structure of the input space. This achieves exponential decay of attention to distant tokens with only a small number of additional geometric bias parameters (zero for fixed bias variants such as ALiBi), while maintaining compatibility with FlashAttention."
 
 ## Risks
 - **Geometric Prior Conflicting with Data**: If geometric distance is inconsistent with semantic relevance (e.g., distant but semantically related tokens in text), strong geometric bias will impair model expressiveness. The bias should be learnable and overridable by content-based attention.

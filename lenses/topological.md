@@ -23,7 +23,7 @@
 
 - `topology/persistent-homology`：基本群、同调群、Betti 数、上同调——拓扑不变量的计算工具
 - **tda**：持续同调、滤流、单纯复形——从数据中提取拓扑特征
-- `topology/fundamental-group`：层上同调、Cech 上同调——从局部到全局的一致性代数判据
+- `topology/fundamental-group`：基本群、环路同伦类、覆盖空间——检测不可收缩环路与路径连通性结构
 
 ## 可能产生哪些 AI 设计
 

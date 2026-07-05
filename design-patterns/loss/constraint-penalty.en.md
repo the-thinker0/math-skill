@@ -5,8 +5,8 @@
 When the design involves hard constraints (e.g., probability simplex, orthogonality, capacity limits, load balancing) but end-to-end training is required. Typical scenarios: (1) MoE routing probabilities must lie on the $K$-simplex with load balancing; (2) Expert activation count is constrained (top-k); (3) Subspace projection matrices must satisfy orthogonality $W^T W = I$; (4) Feature norms are bounded $\|z\| \leq R$. Core objective: **transform mathematical constraints into differentiable penalty terms integrated into gradient-based variational**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/variational.md (constrained variational, Lagrangian duality, KKT conditions), lenses/geometric.md (manifold projection)
-- Knowledge: knowledge-base/optimization/lagrangian-duality.md (augmented Lagrangian method, penalty function method), knowledge-base/matrix-analysis/projection.md (projection operators, constraint sets)
+- Lenses: ../../lenses/variational.en.md (constrained variational, Lagrangian duality, KKT conditions), ../../lenses/geometric.en.md (manifold projection)
+- Knowledge: ../../knowledge-base/optimization/lagrangian-duality.en.md (augmented Lagrangian method, penalty function method), ../../knowledge-base/matrix-analysis/projection.en.md (projection operators, constraint sets)
 
 ## Required Mathematical Knowledge
 - **Penalty Function Method**: $\min f(x)$ s.t. $g(x)=0 \to \min f(x) + \rho/2 \cdot \|g(x)\|^2$ -- $\rho$ is gradually increased (exterior point method), driving constraint violation $\|g(x)\| \to 0$

@@ -48,7 +48,7 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 - 蒸馏稿：`references/books/` 暂无专用信息论蒸馏稿
 - Cover & Thomas. *Elements of Information Theory*, Ch. 2-3. Wiley, 2006
 - Murphy. *Probabilistic Machine Learning: Advanced Topics*, Ch. 6. MIT Press, 2023
-- 关联知识卡：`probability/entropy.md`、`probability/information-bottleneck.md`、`probability/fisher-information.md`
+- 关联知识卡：`entropy.md`、`information-bottleneck.md`、`fisher-information.md`
 
 
 ## 路由扩展

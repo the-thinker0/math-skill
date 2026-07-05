@@ -45,8 +45,8 @@ GPU 友好度取决于群的类型：
 
 ## 深入参考
 
-- 蒸馏稿：references/books/micro-lie-theory.md（§II-B 群作用）
-- 蒸馏稿：references/books/smooth-manifolds.md（Ch 7 Lie Groups）
+- 蒸馏稿：../../references/books/micro-lie-theory.md（§II-B 群作用）
+- 蒸馏稿：../../references/books/smooth-manifolds.md（Ch 7 Lie Groups）
 - 原书：Joan Sola et al., *A micro Lie theory*, §II-B（群作用定义与机器人中的应用）
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, Ch 7（李群与群作用）
 

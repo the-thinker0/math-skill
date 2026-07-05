@@ -4,7 +4,12 @@ description: |
   Math Research OS entry: auto-diagnose user intent, route to thinking lenses, math knowledge base, or design translation layer.
 ---
 
-Read and follow `../skills/math-research-activator/SKILL.en.md`.
+## Language Routing (inline)
+
+Determine primary language: judge by sentence frame, verbs, mood particles. AI/math/engineering terms (attention, loss, routing, etc.) do not count as language signals. Code, paths, formulas do not count. When CN/EN ratio is close, follow the previous turn's language; default to Chinese if no context. Explicit "in English/in Chinese" takes priority.
+
+- Chinese primary → load `../skills/math-research-activator/SKILL.md`
+- English primary → load `../skills/math-research-activator/SKILL.en.md`
 
 Current question:
 $ARGUMENTS

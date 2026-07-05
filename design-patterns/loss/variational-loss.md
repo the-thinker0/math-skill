@@ -8,9 +8,9 @@
 核心诉求：**在潜空间中建模分布而非点估计，获得不确定性感知与多样性**。
 
 ## 数学思想来源
-- 透镜：lenses/probabilistic.md（变分推断与 ELBO）、lenses/probabilistic.md（后验与先验）
-- 知识：knowledge-base/probability/entropy.md（KL 散度、变分族）、
-  knowledge-base/probability/kl-divergence.md（ELBO 推导）
+- 透镜：../../lenses/probabilistic.md（变分推断与 ELBO）、../../lenses/probabilistic.md（后验与先验）
+- 知识：../../knowledge-base/probability/entropy.md（KL 散度、变分族）、
+  ../../knowledge-base/probability/kl-divergence.md（ELBO 推导）
 
 ## 需要的数学知识
 - **ELBO（证据下界）**：log p(x) ≥ E_{q(z|x)}[log p(x|z)] - KL(q(z|x) ‖ p(z))
@@ -39,8 +39,8 @@
   L_gumbel = CE(task_head(z_soft ⊙ features), y)  // 直通估计器反向传播
 
 方法3 - 信息瓶颈变分：
-  L_IB = -I(X; Z) + β · I(Z; Y)  // 最大化 Z 与 X 的互信息，最小化 Z 与 Y 的冗余
-  ≈ E[-log q(x|z)] + β · KL(q(z|x) ‖ p(z))  // 变分近似
+  L_IB = I(X; Z) - β · I(Z; Y)  // 最小化 Z 对 X 的信息冗余，最大化 Z 对 Y 的预测能力
+  ≈ E[-log q(y|z)] + β · KL(q(z|x) ‖ p(z))  // 变分近似（第一项为预测损失，第二项为压缩惩罚）
 ```
 
 ## 可实现结构

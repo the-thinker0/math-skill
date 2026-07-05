@@ -10,9 +10,9 @@
 核心诉求：**发现数据内在的簇结构，用于路由或专家初始化**。
 
 ## 数学思想来源
-- 透镜：lenses/geometric.md（谱图论、拉普拉斯特征映射）、lenses/variational.md（松弛与近似）
-- 知识：knowledge-base/matrix-analysis/projection.md（特征值分解、Rayleigh 商）、
-  knowledge-base/differential-geometry/manifold.md（流形学习、图割）
+- 透镜：../../lenses/geometric.md（谱图论、拉普拉斯特征映射）、../../lenses/variational.md（松弛与近似）
+- 知识：../../knowledge-base/matrix-analysis/projection.md（特征值分解、Rayleigh 商）、
+  ../../knowledge-base/differential-geometry/manifold.md（流形学习、图割）
 
 ## 需要的数学知识
 - **谱聚类 (Ng-Jordan-Weiss)**：
@@ -25,7 +25,7 @@
 - **谱松弛连续化**：离散聚类分配 → 连续特征向量 → 可微路由
   用 softmax(U_k · W_proj) 替代硬 k-means 分配
 - **幂迭代加速**：不需完整特征分解，只需前 k 个特征向量
-  用 Lanczos/Arnoldi 迭代 O(N²·k·iter) 或 randomized SVD O(N·k·log k)
+  用 Lanczos/Arnoldi 迭代 O(N²·k·iter) 或 randomized SVD O(N²·k)
 
 ## AI 模块形式
 ```
@@ -80,7 +80,7 @@
 
 ## 论文表述方式
 "利用谱聚类的连续松弛实现可微路由：构造 token 相似度图的归一化拉普拉斯，
-通过 Nyström 近似将 O(N²) 特征分解降为 O(Nm+K³)，配合幂迭代实现 GPU 友好的
+通过 Nyström 近似将 O(N³) 特征分解降为 O(N·m·d + m²·K + m³)，配合幂迭代实现 GPU 友好的
 在线谱聚类，聚类质量以 Normalized Cut 衡量保证 O(√(log N/K)) 的近似比。"
 
 ## 风险

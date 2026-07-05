@@ -5,8 +5,8 @@
 当需要从大规模矩阵中选取最有代表性的行/列/token，且需保证下游线性代数运算精度时使用：KV-Cache token 选择、数据 coreset 构建、Nyström landmark 采样、分布式梯度压缩。核心诉求：**基于子空间投影的统计杠杆分数做采样，以概率保证逼近全量计算精度**。
 
 ## 数学思想来源
-- 透镜：lenses/spectral.md（杠杆分数 = 行向量在主子空间上的投影能量）、lenses/probabilistic.md（概率采样与浓度不等式保证）、lenses/algorithmic.md（随机化算法的复杂度与精度权衡）
-- 知识：knowledge-base/matrix-analysis/low-rank-approximation.md（随机化 SVD、核范数）、knowledge-base/matrix-analysis/projection.md（投影矩阵对角元 = 杠杆分数）、knowledge-base/probability/concentration-inequality.md（Bernstein 矩阵浓度界）
+- 透镜：../../lenses/spectral.md（杠杆分数 = 行向量在主子空间上的投影能量）、../../lenses/probabilistic.md（概率采样与浓度不等式保证）、../../lenses/algorithmic.md（随机化算法的复杂度与精度权衡）
+- 知识：../../knowledge-base/matrix-analysis/low-rank-approximation.md（随机化 SVD、核范数）、../../knowledge-base/matrix-analysis/projection.md（投影矩阵对角元 = 杠杆分数）、../../knowledge-base/probability/concentration-inequality.md（Bernstein 矩阵浓度界）
 
 ## 需要的数学知识
 - **统计杠杆分数**：$\ell_i = \|(V_k V_k^T)_i\|^2 = (V_k V_k^T)_{ii}$，第 $i$ 行在 rank-$k$ 子空间的投影能量；$\sum_i \ell_i = k$
@@ -53,12 +53,12 @@
 - **DPP 贪心扩展**：杠杆分数 + 互斥惩罚，兼顾重要性与多样性
 
 ## GPU 可行性
-- 张量化/GEMM：$A\Omega$ 为 GEMM；QR 有 cuSOLVER；杠杆分数 = elementwise 逐行平方和
-- 复杂度：$O(Ndk)$ 远优于 $O(Nd^2)$ 完整 SVD；top-s 选择 $O(N \log s)$
-- 显存：$\Omega$ 仅 $d \times k$（KB 级）；$Q$ 与 $A$ 同尺寸但可分批计算
-- 低精度：QR 建议 fp32（小矩阵 $k+p$ 列，开销可忽略）；杠杆分数可回 bf16
-- 并行：$A\Omega$ 的 GEMM 高度并行；top-s 可用 radix sort 并行
-- 算子融合：$A\Omega$ + QR + row-norm² 可融合避免物化中间矩阵
+- **D1[v]/D2[v]**：$A\Omega$ 为 GEMM；QR 有 cuSOLVER；杠杆分数 = elementwise 逐行平方和
+- **D3[v]**：$O(Ndk)$ 远优于 $O(Nd^2)$ 完整 SVD；top-s 选择 $O(N \log s)$
+- **D4[v]**：$\Omega$ 仅 $d \times k$（KB 级）；$Q$ 与 $A$ 同尺寸但可分批计算
+- **D5[~]**：QR 建议 fp32（小矩阵 $k+p$ 列，开销可忽略）；杠杆分数可回 bf16
+- **D6[v]**：$A\Omega$ 的 GEMM 高度并行；top-s 可用 radix sort 并行
+- **D8[v]**：$A\Omega$ + QR + row-norm² 可融合避免物化中间矩阵
 
 ## 论文表述方式
 "采用统计杠杆分数作为 token 选择的重要性度量：通过随机投影在 $O(Ndk)$ 内近似 rank-$k$ 子空间杠杆分数，Drineas-Mahoney 理论保证 $O(k \log k / \epsilon^2)$ 次采样即可 $(1+\epsilon)$ 近似全量子空间。"

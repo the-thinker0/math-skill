@@ -19,7 +19,7 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 
 ## Applicable Problems
 - **Parameter estimation efficiency assessment**: The Cramér-Rao bound gives the theoretical limit on the precision of any unbiased estimator
-- **Natural gradient descent**: Use $\mathcal{I}(\theta)^{-1} \nabla_\theta \mathcal{L}$ instead of the naive gradient, updating along geodesic directions on the statistical manifold (see `information-geometry/natural-gradient.md`)
+- **Natural gradient descent**: Use $\mathcal{I}(\theta)^{-1} \nabla_\theta \mathcal{L}$ instead of the naive gradient, updating along geodesic directions on the statistical manifold (see `../information-geometry/natural-gradient.md`)
 - **Experimental design / active learning**: Select data points that maximize Fisher information, maximizing the information gain for parameter learning
 
 ## AI Design Translation
@@ -45,13 +45,13 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 - Amari. *Information Geometry and Its Applications*. Springer, 2016
 - Amari & Nagaoka. *Methods of Information Geometry*. AMS, 2000
 - Martens. "Optimizing Neural Networks with Kronecker-Factored Approximate Curvature." *ICML*, 2015
-- Related knowledge cards: `information-geometry/natural-gradient.md`, `information-geometry/fisher-metric.md`
+- Related knowledge cards: `../information-geometry/natural-gradient.en.md`, `../information-geometry/fisher-metric.en.md`
 
 
 ## Routing Extensions
-- If a geometric perspective is needed -> `fisher-metric.md` (Fisher information as Riemannian metric)
-- If Fisher-based optimization is needed -> `natural-gradient.md` (natural gradient driven by Fisher information)
-- If Cramer-Rao bounds are needed -> `concentration-inequality.md` (Fisher information and estimation accuracy bounds)
+- If a geometric perspective is needed -> `fisher-metric.en.md` (Fisher information as Riemannian metric)
+- If Fisher-based optimization is needed -> `natural-gradient.en.md` (natural gradient driven by Fisher information)
+- If Cramer-Rao bounds are needed -> `concentration-inequality.en.md` (Fisher information and estimation accuracy bounds)
 
 ## Extensible Directions
 - Observed vs expected Fisher: two types of Fisher information matrices

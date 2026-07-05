@@ -13,7 +13,7 @@
 
 ## 适用问题
 
-- 反向传播的几何理解：链式法则 = 沿复合映射做 pushforward
+- 反向传播的几何理解：链式法则 = 余切丛上的 pullback（拉回），即 VJP（vector-Jacobian product）= 余向量的拉回 $df_p^*(\omega) = J^T \omega$。注意：pushforward 对应的是 JVP（前向模式 AD），不是反向传播
 - 梯度方向的正确计算：autodiff 输出是余向量（1-form），需要度量才能变成下降方向
 - 约束优化中梯度投影：将欧氏梯度投影到约束子流形的切空间
 - 流形上的线性化近似：在切空间中用线性方法处理局部问题
@@ -42,8 +42,8 @@ GPU 友好度高。切空间的核心操作是线性代数：
 
 ## 深入参考
 
-- 蒸馏稿：references/books/smooth-manifolds.md（Ch 3 Tangent Vectors, Ch 11 The Cotangent Bundle）
-- 蒸馏稿：references/books/differential-geometry.md（Ch 1-2, Ch 7 Tensors）
+- 蒸馏稿：../../references/books/smooth-manifolds.md（Ch 3 Tangent Vectors, Ch 11 The Cotangent Bundle）
+- 蒸馏稿：../../references/books/differential-geometry.md（Ch 1-2, Ch 7 Tensors）
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, 2nd Edition, Ch 3（切空间、pushforward、切丛）
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, Ch 11（余切丛、1-form、pullback）
 

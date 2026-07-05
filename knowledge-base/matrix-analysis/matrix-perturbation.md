@@ -45,7 +45,7 @@
 
 ## 深入参考
 
-- 蒸馏稿：references/books/matrix-analysis.md（§4.3 特征值不等式 Weyl/交错、§6.1-6.3 Ger\v{s}gorin 圆盘与扰动定理、§5.8 条件数）
+- 蒸馏稿：../../references/books/matrix-analysis.md（§4.3 特征值不等式 Weyl/交错、§6.1-6.3 Ger\v{s}gorin 圆盘与扰动定理、§5.8 条件数）
 - 原书：Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 4 §4.3 (Eigenvalue Inequalities) + Chapter 6 (Location and Perturbation of Eigenvalues §6.1-6.3)
 
 

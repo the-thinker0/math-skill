@@ -63,18 +63,18 @@
 
 **焦点 A：半环 GEMM 能上 Tensor Core 吗？——默认不能。**
 
-- **维度 2 GEMM 可映射（[x]不友好）**：Tensor Core 硬件只做 (×,+) 的 MAC（fp16/bf16/fp8 累加到 fp32）。min-plus / max-plus 用的是 (+, min/max)，**非原生**，朴素 tropical GEMM 退化到 CUDA core 标量比较，吃不到 Tensor Core。
-- **维度 3 复杂度（[x]）**：min-plus 矩阵乘没有 Strassen 式亚立方加速（等价于 APSP 难题），朴素 O(n³)。
-- **维度 5 低精度（[v]）**：tropical 用 max/min，无 exp 上溢，反而数值稳健。
-- **维度 8 可微/融合（[~]可改造）**：min/max 不可微，需松弛。
-- **改造（→ 八维转友好）**：① log-sum-exp 软化 min/max 退回 (×,+) 稳定 softmax，重上 Tensor Core；② 把热带运算**只放在低维门控**，主干仍走标准 (×,+) GEMM（范例文件中 Tropical Gating = dim 1[v]张量化 / 2[x]非 Tensor Core GEMM / 3[v]逐 token 门控亚二次，dim 8 需 LogSumExp 软化）；③ 分块——块内标准 GEMM、块间 min-plus 归约。
+- **D2 GEMM 可映射（[x]不友好）**：Tensor Core 硬件只做 (×,+) 的 MAC（fp16/bf16/fp8 累加到 fp32）。min-plus / max-plus 用的是 (+, min/max)，**非原生**，朴素 tropical GEMM 退化到 CUDA core 标量比较，吃不到 Tensor Core。
+- **D3 复杂度（[x]）**：min-plus 矩阵乘没有 Strassen 式亚立方加速（等价于 APSP 难题），朴素 O(n³)。
+- **D5 低精度（[v]）**：tropical 用 max/min，无 exp 上溢，反而数值稳健。
+- **D8 可微/融合（[~]可改造）**：min/max 不可微，需松弛。
+- **改造（→ 八维转友好）**：① log-sum-exp 软化 min/max 退回 (×,+) 稳定 softmax，重上 Tensor Core；② 把热带运算**只放在低维门控**，主干仍走标准 (×,+) GEMM（范例文件中 Tropical Gating = D1[v] / D2[x] 非 Tensor Core GEMM / D3[v] 逐 token 门控亚二次，D8 需 LogSumExp 软化）；③ 分块——块内标准 GEMM、块间 min-plus 归约。
 
 **焦点 B：群操作能张量化吗？——小群能，大群和精确算术不能。**
 
-- **有限群作用（维度 1/2 [v]）**：置换矩阵 / 稠密表示矩阵 → batched GEMM，G-CNN 已工程化。正交的旋转/置换矩阵在 bf16 下数值稳定（维度 5 [v]）。
-- **大群枚举（维度 3/4 [x]）**：\|Sₙ\|=n! 爆炸，显式枚举群元素 → 显存与算力爆。**改造**：只用生成元（26 Generators and Relations）+ Cayley 图（30）做局部传播，不物化整群。
-- **置换 = gather/scatter（维度 7/1/8 [x]）**：实现为不规则 gather/scatter 会 warp divergence。**改造**：固定置换模式预编译为结构化稀疏或 dense 索引。
-- **有限域 / 模算术（维度 2 [x]、维度 1/6 [v]）**：mod p、GF(2ⁿ)、XOR、查表**不是浮点 MAC**，吃不到 Tensor Core，但在 int/bitwise kernel 上高并行。结论：**适合放编码/哈希的前后处理，绝不放进训练主干 GEMM**。Galois/精确域算术要求 int、不可微，违反维度 8。
+- **有限群作用（D1/D2 [v]）**：置换矩阵 / 稠密表示矩阵 → batched GEMM，G-CNN 已工程化。正交的旋转/置换矩阵在 bf16 下数值稳定（D5 [v]）。
+- **大群枚举（D3/D4 [x]）**：\|Sₙ\|=n! 爆炸，显式枚举群元素 → 显存与算力爆。**改造**：只用生成元（26 Generators and Relations）+ Cayley 图（30）做局部传播，不物化整群。
+- **置换 = gather/scatter（D7/D1/D8 [x]）**：实现为不规则 gather/scatter 会 warp divergence。**改造**：固定置换模式预编译为结构化稀疏或 dense 索引。
+- **有限域 / 模算术（D2 [x]、D1/D6 [v]）**：mod p、GF(2ⁿ)、XOR、查表**不是浮点 MAC**，吃不到 Tensor Core，但在 int/bitwise kernel 上高并行。结论：**适合放编码/哈希的前后处理，绝不放进训练主干 GEMM**。Galois/精确域算术要求 int、不可微，违反 D8。
 
 **判分结论**：群等变（小群、稠密表示）与频域结构 = 数学美 × GPU 友好，可进主干；半环、有限域、精确 Galois = 需先松弛/隔离，否则只能当辅助算子或离线工具。
 

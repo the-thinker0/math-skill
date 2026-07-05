@@ -67,7 +67,7 @@ When "activating" this book into algorithms, these are the most frequently used 
 
 ## Possible Algorithmic Inspirations
 
-> Each item is tagged with the **eight-dimension touchpoint** (corresponding to the dimension numbers in `../gpu-friendly-math.md`) for direct entry into the GPU acceptance gate.
+> Each item is tagged with the **eight-dimension touchpoint** (corresponding to the dimension numbers in `../gpu-friendly-math.en.md`) for direct entry into the GPU acceptance gate.
 
 1. **Randomized numerical linear algebra (randomized NLA)**: using random projections + QR (Sec. 2.1) for randomized SVD, reducing the O(n^3) full decomposition to sub-quadratic, producing low-rank sketches of very large weights/activations. *Touchpoint: D2/D3 -- all GEMM, manageable complexity.*
 2. **Low-rank attention / KV compression**: using Eckart-Young (Sec. 7.4) to guarantee truncated SVD is the optimal low-rank approximation; using the **nuclear norm (dual of spectral norm, Sec. 5.5)** as low-rank regularization, projecting the KV-Cache into a low-dimensional subspace. *Touchpoint: D2/D4 -- GEMM chains + memory compression.*
@@ -81,7 +81,7 @@ When "activating" this book into algorithms, these are the most frequently used 
 
 ## GPU Friendliness Warning
 
-> The scoring dimensions reference the **eight-dimension checklist** in `../gpu-friendly-math.md` (Tensorization / GEMM-mappability / Complexity / Memory / Low-precision / Parallelism / Sparsity / Operator fusion); definitions are not repeated here.
+> The scoring dimensions reference the **eight-dimension checklist** in `../gpu-friendly-math.en.md` (Tensorization / GEMM-mappability / Complexity / Memory / Low-precision / Parallelism / Sparsity / Operator fusion); definitions are not repeated here.
 
 **Natively friendly (math beautiful x GPU friendly):**
 - **Truncated SVD / low-rank**: expressed as GEMM chains (D2), compressing KV-Cache/weights (D4).
@@ -98,7 +98,7 @@ When "activating" this book into algorithms, these are the most frequently used 
 - **Serial dependencies in QR / Cholesky (Sec. 2.1, 3.5)** -- naive implementations are long serial recurrences (violates D6), requiring blocked / communication-avoiding variants.
 - **Serial iteration in power iteration** -- single-vector iteration has low parallelism; must be blocked (block / subspace iteration) to saturate SMs (D6).
 
-**Reform strategies (echoing the Make-It-Computable Toolkit in `../gpu-friendly-math.md`):**
+**Reform strategies (echoing the Make-It-Computable Toolkit in `../gpu-friendly-math.en.md`):**
 - Full EVD/SVD -> **randomized + truncated** to reduce complexity (D3);
 - Exact decompositions -> **blocked / GEMM-ified** to eliminate serial dependencies (D2/D6);
 - Ill-conditioned/non-normal -> **reparameterization + spectral normalization** to stabilize low precision (D5);

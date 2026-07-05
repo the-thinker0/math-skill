@@ -12,7 +12,7 @@ $$\theta_{t+1} = \theta_t - \eta \nabla_\theta \mathcal{L}(\theta)$$
 $$\tilde{\nabla} \mathcal{L}(\theta) = \mathcal{I}(\theta)^{-1} \nabla_\theta \mathcal{L}(\theta)$$
 $$\theta_{t+1} = \theta_t - \eta \, \mathcal{I}(\theta)^{-1} \nabla_\theta \mathcal{L}(\theta)$$
 
-其中 $\mathcal{I}(\theta)$ 为 Fisher 信息矩阵（详见 `probability/fisher-information.md`）。
+其中 $\mathcal{I}(\theta)$ 为 Fisher 信息矩阵（详见 `../../probability/fisher-information.md`）。
 
 **等价推导（约束优化视角）**：自然梯度是以下约束优化问题的解——
 $$\min_{\Delta\theta} \mathcal{L}(\theta + \Delta\theta) \quad \text{s.t.} \quad D_{KL}(p_\theta \| p_{\theta+\Delta\theta}) \leq \epsilon$$
@@ -51,7 +51,7 @@ $$\mathcal{I}_l \approx A_l \otimes B_l$$
 - Amari. *Natural Gradient Works Efficiently in Learning.* Neural Computation, 1998
 - Martens & Grosse. "Optimizing Neural Networks with Kronecker-Factored Approximate Curvature." *ICML*, 2015
 - Schulman et al. "Trust Region Policy Optimization." *ICML*, 2015
-- 关联知识卡：`probability/fisher-information.md`、`information-geometry/fisher-metric.md`
+- 关联知识卡：`../../probability/fisher-information.md`、`fisher-metric.md`
 
 
 ## 路由扩展

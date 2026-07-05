@@ -8,9 +8,9 @@
 (3) 专家嵌入空间中相似输入应路由到同一专家。核心诉求：**学习相对关系而非绝对值**。
 
 ## 数学思想来源
-- 透镜：lenses/geometric.md（度量空间与距离函数）、lenses/probabilistic.md（互信息最大化）
-- 知识：knowledge-base/probability/entropy.md（条件分布与似然）、
-  knowledge-base/differential-geometry/manifold.md（测地线与曲率）
+- 透镜：../../lenses/geometric.md（度量空间与距离函数）、../../lenses/probabilistic.md（互信息最大化）
+- 知识：../../knowledge-base/probability/entropy.md（条件分布与似然）、
+  ../../knowledge-base/differential-geometry/manifold.md（测地线与曲率）
 
 ## 需要的数学知识
 - **InfoNCE 损失**：L = -log[exp(sim(q,k⁺)/τ) / Σ_j exp(sim(q,k_j)/τ)]
@@ -21,6 +21,32 @@
   在单位球面 S^{d-1} 上的 softmax 对比，归一化消除尺度影响
 - **去偏对比学习 (Debiased Contrastive)**：
   修正负样本中的假阴性问题，使用先验 τ⁺ 估计真实负样本分布
+
+## 对齐-均匀性理论 (Alignment-Uniformity Framework)
+
+对比学习的表示质量可分解为两个独立目标（Wang & Isola, 2020）：
+
+- **对齐 (Alignment)**：正对的表示应接近
+  $L_{\text{align}} = \mathbb{E}_{(x, x^+)}[\|f(x) - f(x^+)\|^2]$
+- **均匀性 (Uniformity)**：表示应在单位超球面 $S^{d-1}$ 上均匀分布
+  $L_{\text{uniform}} = \log \mathbb{E}_{x, x'}[\exp(-2\|f(x) - f(x')\|^2)]$
+
+**InfoNCE 与对齐-均匀性的关系**：当 $N \to \infty$ 且温度 $\tau$ 适当时，InfoNCE 损失渐近分解为 alignment + uniformity 之和。有限 $N$ 下，InfoNCE 给出 $I(X;Z)$ 的下界，下界紧度随 $N$ 增大。
+
+**均匀性成立的条件**：
+- 负样本数 $N$ 充分大（理论要求 $N \to \infty$，实践中 $N \geq 1024$ 通常足够）
+- 温度 $\tau$ 不过大（$\tau \to \infty$ 时 loss 退化为常数，丧失均匀性驱动力）
+- 表示维度 $d$ 足够支撑数据的本征维度
+
+**均匀性不成立的条件**：
+- 负样本不足 → 均匀性驱动力弱，表示可能聚集在球面局部
+- 表示坍塌 (representation collapse)：所有输入映射到同一/少数点，trivially 最小化 alignment 但完全丧失 uniformity
+- 温度 $\tau$ 过大 → softmax 趋于均匀分布，梯度消失，无均匀性保证
+- batch 内正负对比例严重失衡且未通过队列补偿
+
+**最多能保证什么**：在理想条件下（$N$ 充分大、$\tau$ 合适、无坍塌），对比损失最小化等价于同时最大化正对对齐度和表示均匀性。
+
+**不能保证什么**：不能保证学到的表示对下游任务最优（均匀性 ≠ 任务相关性）；不能保证语义层级的对齐（仅保证几何层面的正对接近）。
 
 ## AI 模块形式
 ```
@@ -48,14 +74,14 @@ Hard Negative Mining:
 - **多粒度对比**：同时在 token-level、sequence-level、expert-level 施加对比
 
 ## GPU 可行性
-- **张量化**：sim 计算为 z_a @ z_n^T → 标准 GEMM (B×d) @ (d×N) = B×N
-- **GEMM 可映射**：核心就是 1-2 次矩阵乘法，完美映射 cuBLAS
-- **复杂度**：O(B·N·d) 计算 + O(B·N) 存储 logits 矩阵，B=256,N=65536 时约 64MB
-- **显存与 KV-Cache**：负样本队列占 N·d·4 bytes ≈ 65536·256·4 = 64MB，固定开销
-- **低精度稳定**：cosine 相似度 + softmax 在 fp16 下需注意 exp 溢出，用 log-sum-exp trick
-- **并行与通信**：多 GPU 时用 all-gather 收集其他 GPU 的负样本扩大 N（MoCo v3 策略）
-- **稀疏结构**：hard negative mining 后只保留 k<<N 个负样本，有效稀疏化 logits
-- **算子融合**：L2-norm → matmul → scale → log-softmax → nll_loss 可融合
+- **D1[v]**：sim 计算为 z_a @ z_n^T → 标准 GEMM (B×d) @ (d×N) = B×N
+- **D2[v]**：核心就是 1-2 次矩阵乘法，完美映射 cuBLAS
+- **D3[v]**：O(B·N·d) 计算 + O(B·N) 存储 logits 矩阵，B=256,N=65536 时约 64MB
+- **D4[v]**：负样本队列占 N·d·4 bytes ≈ 65536·256·4 = 64MB，固定开销
+- **D5[v]**：cosine 相似度 + softmax 在 fp16 下需注意 exp 溢出，用 log-sum-exp trick
+- **D6[v]**：多 GPU 时用 all-gather 收集其他 GPU 的负样本扩大 N（MoCo v3 策略）
+- **D7[v]**：hard negative mining 后只保留 k<<N 个负样本，有效稀疏化 logits
+- **D8[v]**：L2-norm → matmul → scale → log-softmax → nll_loss 可融合
 
 ## 论文表述方式
 "采用温度缩放的 InfoNCE 对比损失，通过动量编码器维护 N=65536 的负样本队列，

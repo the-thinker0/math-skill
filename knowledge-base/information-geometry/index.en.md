@@ -9,8 +9,8 @@ Activate this domain direction when the problem involves:
 - Natural gradient: gradient direction must account for the geometric structure of parameter space
 
 ## Core Anchors
-- `natural-gradient.md` — Natural gradient
-- `fisher-metric.md` — Fisher metric
+- `natural-gradient.en.md` — Natural gradient
+- `fisher-metric.en.md` — Fisher metric
 
 ## Extended Concepts
 When core anchors are insufficient, the following concepts may need temporary activation:
@@ -29,7 +29,7 @@ When core anchors are insufficient, the following concepts may need temporary ac
 - Wasserstein gradient flow: Wasserstein gradient flow
 
 ## Reference Book Directions
-- `../../references/books/smooth-manifolds.md`: Chapter 13 on Riemannian metrics, providing differential geometry foundations for information geometry
+- `../../references/books/smooth-manifolds.en.md`: Chapter 13 on Riemannian metrics, providing differential geometry foundations for information geometry
 
 ## AI Translation Directions
 - natural gradient → parameter-space-aware optimizer / K-FAC / natural policy gradient

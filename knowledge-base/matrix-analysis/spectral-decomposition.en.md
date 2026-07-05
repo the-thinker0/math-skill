@@ -44,12 +44,12 @@ Decomposes a matrix into a linear combination of eigenvalue-eigenvector pairs. F
 
 ## Further References
 
-- Distilled notes: references/books/matrix-analysis.md (Ch 1 Eigenvalues and Similarity, Section 2.4-2.5 Schur Triangularization and Normal Matrices, Section 4.2 Courant-Fischer)
+- Distilled notes: ../../references/books/matrix-analysis.en.md (Ch 1 Eigenvalues and Similarity, Section 2.4-2.5 Schur Triangularization and Normal Matrices, Section 4.2 Courant-Fischer)
 - Original text: Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 1 (Eigenvalues, Eigenvectors, Similarity) + Chapter 2 (Unitary Similarity Section 2.4-2.5)
 
 
 ## Routing Extensions
-- If truncation approximation is needed -> `low-rank-approximation.md` (SVD-based low-rank approximation)
+- If truncation approximation is needed -> `low-rank-approximation.en.md` (SVD-based low-rank approximation)
 - If used for attention mechanism design -> `spectral-attention` (design pattern layer)
 - If spectral concentration bounds are needed -> `concentration-inequality.md` (concentration inequalities for random matrix spectra)
 

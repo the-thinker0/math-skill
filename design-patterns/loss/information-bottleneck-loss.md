@@ -8,9 +8,9 @@
 核心诉求：**信息最优压缩——不多不少，只保留有用的**。
 
 ## 数学思想来源
-- 透镜：lenses/probabilistic.md（信息瓶颈原理、互信息优化）、lenses/variational.md（拉格朗日对偶）
-- 知识：knowledge-base/probability/kl-divergence.md（IB 理论、率失真函数）、
-  knowledge-base/probability/entropy.md（互信息与条件熵）
+- 透镜：../../lenses/probabilistic.md（信息瓶颈原理、互信息优化）、../../lenses/variational.md（拉格朗日对偶）
+- 知识：../../knowledge-base/probability/kl-divergence.md（IB 理论、率失真函数）、
+  ../../knowledge-base/probability/entropy.md（互信息与条件熵）
 
 ## 需要的数学知识
 - **信息瓶颈目标**：min I(X;Z) - β·I(Z;Y)，压缩 X→Z 同时保留 Z 对 Y 的预测力
@@ -19,7 +19,7 @@
   I(Z;Y) ≥ E_{p(z,y)}[log q(y|z)] + H(Y)  (用下界估计预测项)
 - **CPC (Contrastive Predictive Coding)**：I(Z_t; Z_{t+k}) 的 InfoNCE 下界
 - **MINE (Mutual Information Neural Estimation)**：
-  I(X;Z) = sup_θ { E[log T_θ(x,z)] - log E[T_θ(x,z')] }
+  I(X;Z) = sup_φ { E_{p(x,z)}[T_φ(x,z)] - log E_{p(x)p(z)}[exp(T_φ(x,z))] }  （Donsker-Varadhan 表示，T_φ 为神经网络 critic）
 
 ## AI 模块形式
 ```
@@ -36,7 +36,7 @@
 
 方法2 - 对比式互信息估计（无需分布假设）：
   // 用 NWJ 估计器替代 KL
-  I_nwj(x;z) = E[f(x,z)] - exp(E[f(x,z')] - 1)  // f 为判别网络
+  I_nwj(x;z) = E_{p(x,z)}[f(x,z)] - e^{-1} · E_{p(x)p(z)}[exp(f(x,z))]  // f 为判别网络，期望分别取 joint 和 product of marginals
   L_IB_contrast = I_nwj(x;z) - β · InfoNCE(z, y)  // 两项均可微
 
 方法3 - Shared/Private IB 分解：
@@ -65,7 +65,7 @@
 
 ## 论文表述方式
 "基于信息瓶颈理论，将 Shared/Private 分解形式化为 min I(X;Z_s)+I(X;Z_p)-β₁I(Z_s;Y_c)-β₂I(Z_p;Y_s)，
-通过变分上下界替代互信息项实现端到端优化，理论上保证压缩-预测 Pareto 前沿的 β-最优性。"
+通过变分上下界替代互信息项实现端到端优化。IB 理论给出泛化误差的上界，但实际泛化还依赖于优化动态、数据分布、模型容量等因素。"
 
 ## 风险
 - 互信息估计（MINE/NWJ）方差大，训练不稳定，需要大 batch 或 moving average

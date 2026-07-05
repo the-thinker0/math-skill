@@ -5,8 +5,8 @@
 当压缩表示时需要同构保持数据的本质拓扑结构（连通性、环、空腔）时使用：隐空间压缩（环形流形不能压成线段）、知识蒸馏（学生-教师同调等价）、3D 网格简化（genus 不变）、KV-Cache 语义保持（聚类结构不坍缩）。核心诉求：**压缩维度或数量，保证持续同调的 persistence diagram 变化可控**。
 
 ## 数学思想来源
-- 透镜：lenses/topological.md（拓扑不变量——连通性、洞数在连续变形下不变）、lenses/spectral.md（Gauss-Bonnet 连接曲率与欧拉示性数）、lenses/variational.md（压缩率 vs. 拓扑保真度的约束优化）
-- 知识：knowledge-base/topology/persistent-homology.md（持续同调、Vietoris-Rips 滤流、Bottleneck 距离）、knowledge-base/topology/euler-characteristic.md（欧拉示性数快速拓扑诊断）、knowledge-base/matrix-analysis/matrix-perturbation.md（Davis-Kahan 子空间扰动界）
+- 透镜：../../lenses/topological.md（拓扑不变量——连通性、洞数在连续变形下不变）、../../lenses/spectral.md（Gauss-Bonnet 连接曲率与欧拉示性数）、../../lenses/variational.md（压缩率 vs. 拓扑保真度的约束优化）
+- 知识：../../knowledge-base/topology/persistent-homology.md（持续同调、Vietoris-Rips 滤流、Bottleneck 距离）、../../knowledge-base/topology/euler-characteristic.md（欧拉示性数快速拓扑诊断）、../../knowledge-base/matrix-analysis/matrix-perturbation.md（Davis-Kahan 子空间扰动界）
 
 ## 需要的数学知识
 - **持续同调稳定性定理**：$d_B(D(X), D(Y)) \leq d_{GH}(X, Y)$，Hausdorff 距离界定 persistence diagram 变化
@@ -46,12 +46,12 @@
 - **拓扑诊断仪表板**：训练中实时绘制 $\beta_0(\epsilon), \beta_1(\epsilon)$ 曲线
 
 ## GPU 可行性
-- 张量化/GEMM：距离矩阵 `cdist` 核心为 GEMM；$\chi(\epsilon)$ 为阈值计数 + 累积和
-- 复杂度：完整持续同调 $O(N^3)$ 不可行；Euler curve $O(N^2 |\epsilon|)$ 可行；Landmark $O(m^3)$
-- 显存：$N \times N$ 距离矩阵在 $N > 8K$ 时需分块或 Landmark 降维
-- 低精度：距离计算在 bf16 下稳定（正数加法）；$\chi$ 为整数运算无精度问题
-- 并行：$\epsilon$ 扫描的每个阈值独立并行；Landmark 选择可批并行
-- 算子融合：cdist + threshold + count 可融合避免物化大距离矩阵
+- **D1[v]/D2[v]**：距离矩阵 `cdist` 核心为 GEMM；$\chi(\epsilon)$ 为阈值计数 + 累积和
+- **D3[~]**：完整持续同调 $O(N^3)$ 不可行；Euler curve $O(N^2 |\epsilon|)$ 可行；Landmark $O(m^3)$
+- **D4[~]**：$N \times N$ 距离矩阵在 $N > 8K$ 时需分块或 Landmark 降维
+- **D5[v]**：距离计算在 bf16 下稳定（正数加法）；$\chi$ 为整数运算无精度问题
+- **D6[v]**：$\epsilon$ 扫描的每个阈值独立并行；Landmark 选择可批并行
+- **D8[v]**：cdist + threshold + count 可融合避免物化大距离矩阵
 
 ## 论文表述方式
 "以持续同调的 Bottleneck 稳定性定理为理论基础，通过 Euler characteristic curve 匹配实现 $O(N^2)$ 复杂度的拓扑保真正则化，保证压缩后 Betti 数在持续区间上的偏差受 Hausdorff 距离控制。"

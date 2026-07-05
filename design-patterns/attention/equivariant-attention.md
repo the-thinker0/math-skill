@@ -11,7 +11,7 @@
 ## 需要的数学知识
 - **群表示论基础**：群 $G$ 的线性表示 $\rho: G \to GL(V)$，不可约表示分解
 - **等变映射定义**：$f(g \cdot x) = \rho_{\text{out}}(g) \cdot f(x)$，对所有 $g \in G$
-- **轨道-稳定子定理**（参见 `references/books/abstract-algebra.md` Ch.5）：$|orbit| = |G|/|stab|$，参数共享倍率
+- **轨道-稳定子定理**（参见 `../../references/books/abstract-algebra.md` Ch.5）：$|orbit| = |G|/|stab|$，参数共享倍率
 - **Schur 引理**：不可约表示间的等变线性映射要么为零要么为标量乘
 
 ## AI 模块形式
@@ -63,6 +63,12 @@ output = mean(softmax((rho(g)@X@W_q) @ (rho(g)@X@W_k).T/sqrt(d)) @ (rho(g)@X@W_v
 - **D6[v]**：$|G|$ 个群元素天然并行（batch 维）
 - **D7[~]**：置换 $\rho(g)$ 极度稀疏，可编码为 gather 索引
 - **D8[v]**：群作用 + 线性变换可融合为单次 batched GEMM
+
+**量化评估示例**（E(3) 等变, |G|=24 旋转群, d=64, n=512）：
+- D3: |G|× 标准 attention FLOPs = 24 · 2·512²·64 ≈ 805M（vs 标准 33.6M）
+- D4: 需存储 |G|=24 份中间特征，24 · 512 · 64 · 2B ≈ 1.5MB 额外显存
+- D6: 24 个群元素沿 batch 维并行，理想加速比 24x
+- D8: ρ(g)·X·W_q 三步融合为单次 batched GEMM
 
 ## 论文表述方式
 "我们提出等变注意力机制，通过将注意力权重约束为群不变量、注意力输出约束为群等变量，在不增加数据增强的情况下将对称群 $G$ 的归纳偏置直接编码进模型结构，参数效率提升 $|G|/|stab|$ 倍。"

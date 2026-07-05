@@ -57,11 +57,11 @@
 
 逐维对照：
 
-- **维度 1–2 张量化 / GEMM**：切空间运算（pushforward/pullback、Jacobian-向量积、把梯度投影到切空间）**天然是 batched GEMM** [v]——反向传播本就是 pushforward，这部分对 GPU 极友好。**但** retraction/exp 多半要 QR、特征分解、矩阵指数或小矩阵求逆：QR/eig **不是干净的 GEMM**，是带串行依赖的分解（cuSOLVER 批量小矩阵尚可，大矩阵 O(n³) 且并行差）→ **可改造** 而非天然友好。
-- **维度 3 复杂度**：测地线距离、平行移动、一般 `log|det J|` 都是 O(n³) 起。**改造**：限定有闭式测地线的流形（球面/双曲/SO(3)）；归一化流用三角/耦合层让 log-det 退化成对角和（O(n)）。
-- **维度 5 低精度**：[~] **最大坑**。矩阵 `exp / log / sqrt`、特征分解、SPD 的仿射不变度量在 bf16/fp16 下 **灾难性不稳定**，常静默地需要 fp32/fp64。流形原语经常"表面能跑、数值早已发散"。
-- **维度 6 并行与通信**：scaling-and-squaring 的平方链、ODE 积分步、Householder/QR 都有 **串行递推**，难跨 SM/设备 overlap。反例向好：显式辛积分器（leapfrog）高并行 [v]。
-- **维度 4/7/8 显存 / 稀疏 / 融合**：李代数/旋转参数化若限制在 **小矩阵或块对角**（如逐头旋转、SO(3) 的 Rodrigues 闭式），可融进 kernel、走 Tensor Core；大稠密流形算子则要物化大中间张量。
+- **D1–D2** 切空间运算（pushforward/pullback、Jacobian-向量积、把梯度投影到切空间）**天然是 batched GEMM** [v]——反向传播本就是 pushforward，这部分对 GPU 极友好。**但** retraction/exp 多半要 QR、特征分解、矩阵指数或小矩阵求逆：QR/eig **不是干净的 GEMM**，是带串行依赖的分解（cuSOLVER 批量小矩阵尚可，大矩阵 O(n³) 且并行差）→ **可改造** 而非天然友好。
+- **D3 复杂度**：测地线距离、平行移动、一般 `log|det J|` 都是 O(n³) 起。**改造**：限定有闭式测地线的流形（球面/双曲/SO(3)）；归一化流用三角/耦合层让 log-det 退化成对角和（O(n)）。
+- **D5 低精度**：[~] **最大坑**。矩阵 `exp / log / sqrt`、特征分解、SPD 的仿射不变度量在 bf16/fp16 下 **灾难性不稳定**，常静默地需要 fp32/fp64。流形原语经常"表面能跑、数值早已发散"。
+- **D6 并行与通信**：scaling-and-squaring 的平方链、ODE 积分步、Householder/QR 都有 **串行递推**，难跨 SM/设备 overlap。反例向好：显式辛积分器（leapfrog）高并行 [v]。
+- **D4/D7/D8 显存 / 稀疏 / 融合**：李代数/旋转参数化若限制在 **小矩阵或块对角**（如逐头旋转、SO(3) 的 Rodrigues 闭式），可融进 kernel、走 Tensor Core；大稠密流形算子则要物化大中间张量。
 
 **结论与改造手法（呼应 gpu-friendly-math.md 工具箱）**：
 

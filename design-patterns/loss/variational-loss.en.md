@@ -5,8 +5,8 @@
 When sampling from latent variable distributions is required to generate diverse outputs. Typical scenarios: (1) Expert selection introduces discrete latent variables $z$ that need end-to-end variational; (2) Representation spaces need to model uncertainty; (3) Generative routing requires sampling from posterior distributions $p(z|x)$; (4) Bayesian mixture of experts. Core objective: **model distributions rather than point estimates in latent space, enabling uncertainty awareness and diversity**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/probabilistic.md (variational inference and ELBO), lenses/probabilistic.md (posterior and prior)
-- Knowledge: knowledge-base/probability/entropy.md (KL divergence, variational families), knowledge-base/probability/kl-divergence.md (ELBO derivation)
+- Lenses: ../../lenses/probabilistic.en.md (variational inference and ELBO), ../../lenses/probabilistic.en.md (posterior and prior)
+- Knowledge: ../../knowledge-base/probability/entropy.en.md (KL divergence, variational families), ../../knowledge-base/probability/kl-divergence.en.md (ELBO derivation)
 
 ## Required Mathematical Knowledge
 - **ELBO (Evidence Lower Bound)**: $\log p(x) \geq \mathbb{E}_{q(z|x)}[\log p(x|z)] - \text{KL}(q(z|x) \| p(z))$ -- the first term is reconstruction likelihood, the second regularizes the posterior toward the prior
@@ -31,8 +31,8 @@ Method 2 - Gumbel-Softmax (discrete expert selection):
   L_gumbel = CE(task_head(z_soft * features), y)  // straight-through estimator backprop
 
 Method 3 - Variational Information Bottleneck:
-  L_IB = -I(X; Z) + beta * I(Z; Y)  // maximize MI between Z and X, minimize redundancy between Z and Y
-  ~ E[-log q(x|z)] + beta * KL(q(z|x) || p(z))  // variational approximation
+  L_IB = I(X; Z) - beta * I(Z; Y)  // minimize information redundancy of Z about X, maximize predictive power of Z about Y
+  ~ E[-log q(y|z)] + beta * KL(q(z|x) || p(z))  // variational approximation (first term is prediction loss, second is compression penalty)
 ```
 
 ## Implementable Architectures

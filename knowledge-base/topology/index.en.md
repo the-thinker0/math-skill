@@ -9,9 +9,9 @@ Activate this domain direction when the problem involves:
 - Whether compression destroys structure: whether dimensionality reduction or compression alters the topological features of data
 
 ## Core Anchors
-- `persistent-homology.md` — Persistent homology
-- `euler-characteristic.md` — Euler characteristic
-- `fundamental-group.md` — Fundamental group
+- `persistent-homology.en.md` — Persistent homology
+- `euler-characteristic.en.md` — Euler characteristic
+- `fundamental-group.en.md` — Fundamental group
 
 ## Extended Concepts
 When core anchors are insufficient, the following concepts may need temporary activation:
@@ -30,8 +30,8 @@ When core anchors are insufficient, the following concepts may need temporary ac
 - cobordism: cobordism theory
 
 ## Reference Book Directions
-- `../../references/books/smooth-manifolds.md`: Chapters 17-18, covering homology theory basics
-- `../../references/books/algebraic-geometry-rising-sea.md`: Cech cohomology sections
+- `../../references/books/smooth-manifolds.en.md`: Chapters 17-18, covering homology theory basics
+- `../../references/books/algebraic-geometry-rising-sea.en.md`: Cech cohomology sections
 
 ## AI Translation Directions
 - persistent homology → representation topology monitor / topological regularization loss

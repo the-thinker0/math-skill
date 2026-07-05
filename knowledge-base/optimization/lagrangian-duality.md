@@ -26,7 +26,7 @@
 
 - **对抗训练的 minimax 框架**：$L(\theta, \phi) = \mathbb{E}[\log D_\phi(x)] + \mathbb{E}[\log(1 - D_\phi(G_\theta(z)))]$。$G$ 和 $D$ 交替梯度上升/下降，核心操作是前向 + 反向传播（matmul 链）。梯度惩罚 / spectral norm 约束 $D$ 的 Lipschitz 保证 minimax 有鞍点。
 - **SVM 对偶 + 核技巧**：原始 $\min_w \frac{1}{2}\|w\|^2 + C\sum\xi_i$ 转对偶 $\max_\alpha \sum\alpha_i - \frac{1}{2}\alpha^T(K \circ yy^T)\alpha$。核 Gram $K_{ij} = k(x_i, x_j)$ 是 matmul（线性核）或 elementwise（RBF 核）。对偶变量 $\alpha \in \mathbb{R}^n$，用 SMO 或梯度投影求解。
-- **增广 Lagrangian 约束训练**：$\mathcal{L}_{\text{AL}} = f(x) + \sum \lambda_i g_i(x) + \frac{\rho}{2}\sum g_i(x)^2$。内层对 $x$ 用 SGD 优化，外层对 $\lambda$ 梯度上升更新：$\lambda \leftarrow [\lambda + \rho g(x)]_+$。$\rho$ 项保证内层凸性，即使原问题非凸也收敛。
+- **增广 Lagrangian 约束训练**：$\mathcal{L}_{\text{AL}} = f(x) + \sum \lambda_i g_i(x) + \frac{\rho}{2}\sum g_i(x)^2$。内层对 $x$ 用 SGD 优化，外层对 $\lambda$ 梯度上升更新：$\lambda \leftarrow [\lambda + \rho g(x)]_+$。$\rho$ 项改善对偶函数的凹性（使对偶问题更容易求解），但对非凸原问题不保证全局收敛。收敛性依赖于：(a) 约束规格（如 LICQ/MFCQ），(b) 二阶充分条件，(c) $\rho$ 足够大以满足局部凸性条件。
 - **对偶分解 (Dual Decomposition)**：$\min \sum_k f_k(x_k)$ s.t. $\sum x_k \leq b$ 分解为各子问题 $\min_{x_k} f_k(x_k) + \lambda^T x_k$ 独立求解，主问题 $\max_\lambda g(\lambda)$ 用次梯度上升。天然可并行，适合分布式训练。
 - **信息瓶颈的对偶视角**：$\min I(Z;X) - \beta I(Z;Y)$ 可写为带约束优化，$\beta$ 是对偶变量。Variational IB 用 ELBO 松弛后变成标准 VAE 训练（reparameterization trick + SGD）。
 
@@ -39,14 +39,14 @@
 
 ## 风险与失效条件
 
-- **非凸问题的对偶间隙**：强对偶仅对凸问题 + Slater 条件保证。非凸神经网络训练中 $d^* < p^*$ 常见，对偶解不给出原始可行解。解决：增广 Lagrangian（$\rho$ 足够大时消除间隙）或 SQP。
+- **非凸问题的对偶间隙**：强对偶仅对凸问题 + Slater 条件保证。非凸神经网络训练中 $d^* < p^*$ 常见，对偶解不给出原始可行解。解决：对凸问题，增广 Lagrangian（$\rho$ 足够大时具有 exact penalty 性质，可消除对偶间隙）；对非凸问题，对偶间隙可能持续存在，增广 Lagrangian 只能保证局部收敛到 KKT 点，或改用 SQP。
 - **对偶变量振荡**：$\lambda$ 的梯度上升步长不当会导致对偶变量振荡、原始不可行。解决：使用自适应步长（Adam 更新 $\lambda$）或增广 Lagrangian 的 $\rho$ 递增策略。
 - **互补松弛的数值判定**：$\lambda_i g_i(x) = 0$ 在浮点下只能达到 $\sim 10^{-6}$，严格互补松弛不可得。影响 SVM 支持向量识别等，需设阈值。
 - **Minimax 训练的 mode collapse**：GAN 中 $\min\max$ 的非凸-非凹博弈导致模式坍缩或训练不稳定。需梯度惩罚（WGAN-GP）、谱归一化等额外正则化。
 
 ## 深入参考
 
-- 蒸馏稿：references/books/optimization-ml.md（Ch 23 Lagrangian Duality、§23.5 强对偶、§23.6.3 Slater 条件）
+- 蒸馏稿：../../references/books/optimization-ml.md（Ch 23 Lagrangian Duality、§23.5 强对偶、§23.6.3 Slater 条件）
 - 原书：Chong, Lu, Zak, *An Introduction to Optimization* 5th Ed., Chapter 23 (Lagrangian Duality §23.1-23.6) + Chapter 17 (LP Duality)
 
 

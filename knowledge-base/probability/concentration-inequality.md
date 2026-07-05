@@ -42,7 +42,7 @@ $$P(|f(X_1,\ldots,X_n) - \mathbb{E}[f]| \geq t) \leq 2\exp\left(-\frac{2t^2}{\su
 - 蒸馏稿：`references/books/` 暂无专用概率蒸馏稿，本卡基于标准概率论教材
 - Boucheron, Lugosi, Massart. *Concentration Inequalities: A Nonasymptotic Theory of Independence*. Oxford, 2013
 - Vershynin. *High-Dimensional Probability*. Cambridge, 2018（第 2-3 章）
-- 关联知识卡：`probability/entropy.md`、`probability/fisher-information.md`
+- 关联知识卡：`entropy.md`、`fisher-information.md`
 
 
 ## 路由扩展

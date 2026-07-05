@@ -10,9 +10,9 @@ Use when input data resides in a high-dimensional space but is actually distribu
 Core requirement: **leverage the low-dimensional manifold structure of data to improve representation efficiency and generalization**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/geometric.md (Riemannian geometry, geodesics, curvature), lenses/probabilistic.md (intrinsic dimensionality)
-- Knowledge: knowledge-base/differential-geometry/manifold.md (manifolds, tangent spaces, exponential maps),
-  knowledge-base/matrix-analysis/projection.md (SVD, low-rank approximation, PCA)
+- Lenses: ../../lenses/geometric.en.md (Riemannian geometry, geodesics, curvature), ../../lenses/probabilistic.en.md (intrinsic dimensionality)
+- Knowledge: ../../knowledge-base/differential-geometry/manifold.en.md (manifolds, tangent spaces, exponential maps),
+  ../../knowledge-base/matrix-analysis/projection.en.md (SVD, low-rank approximation, PCA)
 
 ## Required Mathematical Background
 - **Manifold Hypothesis**: Data x in R^D actually lies on a smooth d-dimensional manifold M with d << D
@@ -66,14 +66,14 @@ Method 3 - Riemannian Optimization (optimize directly on the manifold):
 - **Adaptive d**: Local dimensionality varies across regions; estimate locally via PCA
 
 ## GPU Feasibility
-- **Tensorization**: Local linear projections are GEMM (d x D) @ (D x N); graph Laplacian regularization is SpMM
-- **GEMM-mappable**: K linear projections in Chart MoE form a batched GEMM (K x d x D) @ (D x N)
-- **Complexity**: k-NN construction O(N * D * log N) requires FAISS; manifold regularization O(N^2) requires sampling approximation
-- **Memory & KV-Cache**: K chart parameters K * d * D typically < 10 MB; k-NN graph N * k * 4 bytes
-- **Low-precision stability**: Distance computations and exp in fp16 require attention to numerical range; Riemannian retract recommended in fp32
-- **Parallelism & Communication**: K charts computed independently, perfectly parallel; k-NN search accelerated with FAISS GPU
-- **Sparse structure**: k-NN graph is naturally sparse; manifold regularization L is a sparse matrix, enabling SpMM acceleration
-- **Operator fusion**: Matmul + bias + activation within a chart can be fused; gating softmax + weighted-sum can be fused
+- **D1[v]**: Local linear projections are GEMM (d x D) @ (D x N); graph Laplacian regularization is SpMM
+- **D2[v]**: K linear projections in Chart MoE form a batched GEMM (K x d x D) @ (D x N)
+- **D3[~]**: k-NN construction O(N * D * log N) requires FAISS; manifold regularization O(N^2) requires sampling approximation
+- **D4[v]**: K chart parameters K * d * D typically < 10 MB; k-NN graph N * k * 4 bytes
+- **D5[~]**: Distance computations and exp in fp16 require attention to numerical range; Riemannian retract recommended in fp32
+- **D6[v]**: K charts computed independently, perfectly parallel; k-NN search accelerated with FAISS GPU
+- **D7[v]**: k-NN graph is naturally sparse; manifold regularization L is a sparse matrix, enabling SpMM acceleration
+- **D8[v]**: Matmul + bias + activation within a chart can be fused; gating softmax + weighted-sum can be fused
 
 ## Paper-Worthy Formulation
 "Based on the manifold hypothesis, we constrain D-dimensional token representations to a d*-dimensional (intrinsic dimension estimate) submanifold, achieving piecewise-linear approximation via K local coordinate charts (Chart MoE) and preserving global geodesic structure through graph Laplacian manifold regularization, with theoretical guarantees that embedding error converges at rate O(N^{-2/d*})."

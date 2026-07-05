@@ -46,7 +46,7 @@
 
 ## 深入参考
 
-- 蒸馏稿：references/books/optimization-ml.md（Ch 22 Convex Optimization、§22.2 凸函数、§22.3 凸问题、§22.4 SDP/LMI）
+- 蒸馏稿：../../references/books/optimization-ml.md（Ch 22 Convex Optimization、§22.2 凸函数、§22.3 凸问题、§22.4 SDP/LMI）
 - 原书：Chong, Lu, Zak, *An Introduction to Optimization* 5th Ed., Chapter 22 (Convex Optimization Problems §22.1-22.4)
 
 

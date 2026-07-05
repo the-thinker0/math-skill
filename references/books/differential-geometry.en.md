@@ -74,27 +74,27 @@ Each entry follows **geometric concept -> mathematical core -> AI transfer**, ma
 
 ## GPU Friendliness Warning
 
-> Evaluate item by item using the **eight-dimension scorecard** from `../gpu-friendly-math.md`. The biggest pitfall in differential geometry is "inversion and materialization of metric / curvature matrices."
+> Evaluate item by item using the **eight-dimension scorecard** from `../gpu-friendly-math.en.md`. The biggest pitfall in differential geometry is "inversion and materialization of metric / curvature matrices."
 
-- **Dimension 2 GEMM-mappability / Dimension 3 Complexity -- Inversion is the make-or-break line.** Naive natural gradient requires inverting the N x N Fisher, where N is the parameter count (~10^9); O(N^3) inversion + O(N^2) memory means **immediate disqualification**.
+- **D2/D3**: Inversion is the make-or-break line. Naive natural gradient requires inverting the N x N Fisher, where N is the parameter count (~10^9); O(N^3) inversion + O(N^2) memory means **immediate disqualification**.
   - **Adaptable [v]**: **K-FAC** blocks F into a Kronecker product A (x) B, exploiting (A (x) B)^{-1} = A^{-1} (x) B^{-1}; only two small factors need inversion, and applying the preconditioner to the gradient **is a GEMM**. This is the affirmative answer to "can Kronecker factorization reduce to GEMM" -- yes, and this is the only form that can scale to a cluster.
-- **Dimension 4 Memory -- Do not materialize the full Hessian / full curvature tensor.** The Riemann curvature tensor is order 4; full materialization blows up memory. Use **Hessian-vector products (HVP)** to extract curvature information in O(N) via a single backward pass, avoiding N x N.
-- **Dimension 5 Low-precision -- Fisher / metric matrices are often ill-conditioned.** Inversion under bf16/fp16 catastrophically amplifies errors; **must add damping (Tikhonov, F + lambda I)** and keep inversion in fp32; otherwise it violates "low-precision stability."
-- **Dimension 6 Parallelism -- Parallel transport / geodesics are serial ODEs.** Integrating the connection equation along a curve is a long serial recurrence with poor parallelism; in practice, one uses **single-step retractions / closed-form parallel transport** (analytic formulas exist for specific manifolds) instead of step-by-step integration.
-- **Dimension 1 Tensorization / Dimension 2 GEMM-mappability -- Group convolution can be friendly, but continuous groups require caution.** Discrete groups (e.g., C_n, octahedral group) admit group convolutions that expand into GEMM [v]; continuous Lie groups require discretization by sampling, and improper sampling can break equivariance + produce irregular gather/scatter (Dimension 7 Sparsity unfriendly).
+- **D4**: Do not materialize the full Hessian / full curvature tensor. The Riemann curvature tensor is order 4; full materialization blows up memory. Use **Hessian-vector products (HVP)** to extract curvature information in O(N) via a single backward pass, avoiding N x N.
+- **D5**: Fisher / metric matrices are often ill-conditioned. Inversion under bf16/fp16 catastrophically amplifies errors; **must add damping (Tikhonov, F + lambda I)** and keep inversion in fp32; otherwise it violates "low-precision stability."
+- **D6**: Parallel transport / geodesics are serial ODEs. Integrating the connection equation along a curve is a long serial recurrence with poor parallelism; in practice, one uses **single-step retractions / closed-form parallel transport** (analytic formulas exist for specific manifolds) instead of step-by-step integration.
+- **D1/D2**: Group convolution can be friendly, but continuous groups require caution. Discrete groups (e.g., C_n, octahedral group) admit group convolutions that expand into GEMM [v]; continuous Lie groups require discretization by sampling, and improper sampling can break equivariance + produce irregular gather/scatter (D7 Sparsity unfriendly).
 
 **Natural gradient / K-FAC eight-dimension scorecard (worked example):**
 
-| Dimension | Naive Natural Gradient (full Fisher inversion) | K-FAC (Kronecker factorization) |
+| D | Naive Natural Gradient (full Fisher inversion) | K-FAC (Kronecker factorization) |
 |-----------|------------------------------------------------|--------------------------------|
-| Dimension 1 Tensorization | [x] explicit large-matrix inverse | [v] batched small-matrix algebra |
-| Dimension 2 GEMM-mappability | [x] N x N inversion, not GEMM-able | [v] A^{-1} (x) B^{-1} application = GEMM chain |
-| Dimension 3 Complexity | [x] O(N^3) | [v] two small factors, sub-cubic |
-| Dimension 4 Memory | [x] materialize N x N | [v] store only two small factors |
-| Dimension 5 Low-precision | [x] ill-conditioned, needs fp64 | [~] add damping + fp32 inversion, adaptable |
-| Dimension 6 Parallelism | [~] single large inversion hard to parallelize | [v] per-layer factors independent, parallelizable |
-| Dimension 7 Sparsity | -- | [v] block-diagonal structure |
-| Dimension 8 Operator fusion | [x] | [v] preconditioner can be fused into optimizer kernel |
+| D1 | [x] explicit large-matrix inverse | [v] batched small-matrix algebra |
+| D2 | [x] N x N inversion, not GEMM-able | [v] A^{-1} (x) B^{-1} application = GEMM chain |
+| D3 | [x] O(N^3) | [v] two small factors, sub-cubic |
+| D4 | [x] materialize N x N | [v] store only two small factors |
+| D5 | [x] ill-conditioned, needs fp64 | [~] add damping + fp32 inversion, adaptable |
+| D6 | [~] single large inversion hard to parallelize | [v] per-layer factors independent, parallelizable |
+| D7 | -- | [v] block-diagonal structure |
+| D8 | [x] | [v] preconditioner can be fused into optimizer kernel |
 
 **Conclusion**: Riemannian / information-geometric methods **become GPU-feasible only when the metric is structurally factored (Kronecker / block-diagonal / low-rank)**; exact inversion and exact parallel transport are "beautiful but incomputable" and must be adapted or eliminated.
 
@@ -106,7 +106,7 @@ Each entry follows **geometric concept -> mathematical core -> AI transfer**, ma
 - **geometric**: Explicitly model parameter / data spaces as manifolds, then translate back to algorithms.
 - **topological**: Auxiliary -- de Rham cohomology / global invariants for conservation laws and integrability diagnostics.
 
-Recommended combination: First `symmetry` to establish the symmetry structure -> `variational` to arrive at natural gradient / Riemannian optimization -> `duality` to handle retractions -> pass through the `../gpu-friendly-math.md` acceptance gate.
+Recommended combination: First `symmetry` to establish the symmetry structure -> `variational` to arrive at natural gradient / Riemannian optimization -> `duality` to handle retractions -> pass through the `../gpu-friendly-math.en.md` acceptance gate.
 
 ## Anti-patterns
 

@@ -46,12 +46,12 @@ where $q_\phi(y|z)$ is the classifier/decoder, $r(z)$ is the prior distribution 
 - Tishby, Pereira, Bialek. "The Information Bottleneck Method." *arXiv:physics/0004057*, 2000
 - Alemi, Poole, Fischer, Dillon, Suresh, Murphy. "Deep Variational Information Bottleneck." *ICLR*, 2017
 - Shwartz-Ziv, Tishby. "Opening the Black Box of Deep Neural Networks via Information." *arXiv:1703.00810*, 2017
-- Related knowledge cards: `probability/entropy.md`, `probability/kl-divergence.md`
+- Related knowledge cards: `entropy.md`, `kl-divergence.md`
 
 
 ## Routing Extensions
-- If the KL component in IB objective is needed -> `kl-divergence.md` (KL component of IB objective)
-- If rate-distortion theory is involved -> `entropy.md` (relationship between IB and rate-distortion theory)
+- If the KL component in IB objective is needed -> `kl-divergence.en.md` (KL component of IB objective)
+- If rate-distortion theory is involved -> `entropy.en.md` (relationship between IB and rate-distortion theory)
 - If used for VIB loss design -> `variational-loss` (design pattern layer for variational information bottleneck loss)
 
 ## Extensible Directions

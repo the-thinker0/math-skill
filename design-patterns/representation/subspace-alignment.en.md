@@ -10,9 +10,9 @@ Use when two or more representation spaces need to be aligned to a common subspa
 Core requirement: **find the optimal linear/nonlinear mapping between two spaces such that corresponding semantics are aligned**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/geometric.md (Grassmann manifold, principal angles), lenses/variational.md (Procrustes problem)
-- Knowledge: knowledge-base/matrix-analysis/projection.md (SVD, orthogonal Procrustes),
-  knowledge-base/differential-geometry/manifold.md (Grassmann distance, geodesics)
+- Lenses: ../../lenses/geometric.en.md (Grassmann manifold, principal angles), ../../lenses/variational.en.md (Procrustes problem)
+- Knowledge: ../../knowledge-base/matrix-analysis/projection.en.md (SVD, orthogonal Procrustes),
+  ../../knowledge-base/differential-geometry/manifold.en.md (Grassmann distance, geodesics)
 
 ## Required Mathematical Background
 - **Orthogonal Procrustes Problem**: min_{W in O(d)} ||AW - B||_F^2
@@ -71,14 +71,14 @@ Online Subspace Tracking (adaptation at inference):
 - **Chunked SVD**: Use randomized SVD approximation at large scale; sufficient precision and faster
 
 ## GPU Feasibility
-- **Tensorization**: A^T @ B is standard GEMM (d x N) @ (N x d); SVD has cuSOLVER implementations
-- **GEMM-mappable**: Procrustes core requires 1 GEMM + 1 SVD; CCA requires 2 GEMMs + 1 SVD
-- **Complexity**: GEMM O(N * d^2); SVD O(d^3) (d typically < 1024, acceptable); online tracking O(d^2)
-- **Memory & KV-Cache**: Storing covariance matrix d x d (~4 MB for d = 1024); no KV-Cache overhead
-- **Low-precision stability**: SVD strongly recommended in fp32; whitening matrix inversion requires fp32 + epsilon regularization
-- **Parallelism & Communication**: Subspace angle computations for multiple expert pairs are independent and parallel; CCA GEMMs are highly parallel
-- **Sparse structure**: When source/target representations are sparse, covariance matrix Sigma is sparse, enabling sparse SVD
-- **Operator fusion**: Whitening (mean-sub -> cov -> inv_sqrt -> transform) can be partially fused
+- **D1[v]**: A^T @ B is standard GEMM (d x N) @ (N x d); SVD has cuSOLVER implementations
+- **D2[v]**: Procrustes core requires 1 GEMM + 1 SVD; CCA requires 2 GEMMs + 1 SVD
+- **D3[v]**: GEMM O(N * d^2); SVD O(d^3) (d typically < 1024, acceptable); online tracking O(d^2)
+- **D4[v]**: Storing covariance matrix d x d (~4 MB for d = 1024); no KV-Cache overhead
+- **D5[~]**: SVD strongly recommended in fp32; whitening matrix inversion requires fp32 + epsilon regularization
+- **D6[v]**: Subspace angle computations for multiple expert pairs are independent and parallel; CCA GEMMs are highly parallel
+- **D7[~]**: When source/target representations are sparse, covariance matrix Sigma is sparse, enabling sparse SVD
+- **D8[~]**: Whitening (mean-sub -> cov -> inv_sqrt -> transform) can be partially fused
 
 ## Paper-Worthy Formulation
 "Based on orthogonal Procrustes theory, we obtain the optimal isometric mapping W* = UV^T (where USV^T = SVD(A^T B)) between source and target representations. Extending this to Deep CCA for nonlinear subspace alignment, principal angle analysis on the Grassmann manifold shows that post-alignment subspace distance converges at rate O(r/sqrt(N)), while the Barlow Twins redundancy reduction objective ensures feature dimension decorrelation."

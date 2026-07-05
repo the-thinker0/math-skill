@@ -6,7 +6,7 @@ When the token/key space dimensionality is too high, the standard attention $Q K
 
 ## Mathematical Inspiration
 - Lenses: [projection, spectral, probabilistic]
-- Knowledge: [`../../knowledge-base/probability/concentration-inequality.md` (high-dimensional concentration inequalities provide theoretical explanation for attention collapse), `../../knowledge-base/probability/entropy.md` (entropy of attention distributions as a quality metric)]
+- Knowledge: [`../../knowledge-base/probability/concentration-inequality.en.md` (high-dimensional concentration inequalities provide theoretical explanation for attention collapse), `../../knowledge-base/probability/entropy.en.md` (entropy of attention distributions as a quality metric)]
 
 ## Required Mathematical Knowledge
 - **Johnson-Lindenstrauss Lemma**: High-dimensional point sets can be projected onto an $O(\log n / \epsilon^2)$-dimensional subspace while approximately preserving distances

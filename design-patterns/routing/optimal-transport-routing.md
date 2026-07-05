@@ -9,9 +9,9 @@
 核心诉求：**全局最优分配，而非贪心逐点决策**。
 
 ## 数学思想来源
-- 透镜：lenses/variational.md（凸优化、对偶理论）、lenses/geometric.md（Wasserstein 距离）
-- 知识：knowledge-base/optimization/lagrangian-duality.md（对偶理论、约束优化）、
-  knowledge-base/probability/entropy.md（熵正则化、边际约束）
+- 透镜：../../lenses/variational.md（凸优化、对偶理论）、../../lenses/geometric.md（Wasserstein 距离）
+- 知识：../../knowledge-base/optimization/lagrangian-duality.md（对偶理论、约束优化）、
+  ../../knowledge-base/probability/entropy.md（熵正则化、边际约束）
 
 ## 需要的数学知识
 - **离散最优传输**：min_{P∈Π(μ,ν)} ⟨C, P⟩ = Σ_{ij} C_{ij} P_{ij}
@@ -34,7 +34,7 @@ Sinkhorn 路由（熵正则化）：
   for t = 1..T:                     // T=5~20 次迭代
     u = a / (K_mat @ v)            // 行缩放，a = 1/N
     v = b / (K_mat^T @ u)          // 列缩放，b = cap/sum(cap)
-  P = diag(u) @ K_mat @ diag(v)   // 最优传输计划，双随机矩阵
+  P = diag(u) @ K_mat @ diag(v)   // 最优传输计划（满足边际约束；仅当 N=K 且边际均匀时才是双随机矩阵）
   assignment = argmax(P, dim=1)    // 硬分配（推理时）
   // 训练时：weighted_features = P @ E  (软分配，可微)
 
@@ -62,8 +62,8 @@ Sinkhorn 路由（熵正则化）：
 
 ## 论文表述方式
 "将 token-to-expert 路由建模为熵正则化最优传输问题，通过 Sinkhorn-Knopp 算法在 T=10 次
-迭代内求得 ε-近似最优的双随机分配矩阵，理论保证传输代价在 O(ε·log N) 内收敛到全局最优，
-同时通过边际约束 b 精确控制各专家的负载上限。"
+迭代内求得近似最优的传输计划矩阵。有限次迭代给出熵正则化问题的近似解（非精确全局最优），
+近似质量取决于迭代次数 T 和正则化参数 ε；同时通过边际约束 b 控制各专家的负载上限。"
 
 ## 风险
 - ε 过小导致 Sinkhorn 数值不稳定（exp 溢出），需用 log-domain 或增大 ε

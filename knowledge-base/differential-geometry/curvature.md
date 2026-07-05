@@ -45,7 +45,7 @@ GPU 友好度：曲率的核心难点是"不能物化全张量"。
 
 ## 深入参考
 
-- 蒸馏稿：references/books/differential-geometry.md（Ch 12 §12.5/§12.10 Curvature, Ch 13 §13.2 Riemann Curvature, §13.7 Jacobi Fields, §13.11 Rauch Comparison）
+- 蒸馏稿：../../references/books/differential-geometry.md（Ch 12 §12.5/§12.10 Curvature, Ch 13 §13.2 Riemann Curvature, §13.7 Jacobi Fields, §13.11 Rauch Comparison）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, §13.2 Riemann Curvature Tensor, §13.7 Jacobi Fields
 
 

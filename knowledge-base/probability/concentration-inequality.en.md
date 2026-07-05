@@ -42,12 +42,12 @@ $$P(|f(X_1,\ldots,X_n) - \mathbb{E}[f]| \geq t) \leq 2\exp\left(-\frac{2t^2}{\su
 - Distillation draft: `references/books/` — no dedicated probability distillation draft at present; this card is based on standard probability theory textbooks
 - Boucheron, Lugosi, Massart. *Concentration Inequalities: A Nonasymptotic Theory of Independence*. Oxford, 2013
 - Vershynin. *High-Dimensional Probability*. Cambridge, 2018 (Chapters 2-3)
-- Related knowledge cards: `probability/entropy.md`, `probability/fisher-information.md`
+- Related knowledge cards: `entropy.md`, `fisher-information.md`
 
 
 ## Routing Extensions
-- If information-theoretic bounds are needed -> `entropy.md` (entropy-based concentration inequalities)
-- If Donsker-Varadhan representation is needed -> `kl-divergence.md` (variational representation of KL divergence)
+- If information-theoretic bounds are needed -> `entropy.en.md` (entropy-based concentration inequalities)
+- If Donsker-Varadhan representation is needed -> `kl-divergence.en.md` (variational representation of KL divergence)
 - If random matrix bounds are involved -> `matrix-perturbation.md` (concentration behavior of random matrices)
 
 ## Extensible Directions

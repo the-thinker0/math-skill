@@ -43,7 +43,7 @@
 
 ## 深入参考
 
-- 蒸馏稿：references/books/matrix-analysis.md（§2.1 QR 分解、§4.2 Courant-Fischer 变分刻画、§2.6 SVD）
+- 蒸馏稿：../../references/books/matrix-analysis.md（§2.1 QR 分解、§4.2 Courant-Fischer 变分刻画、§2.6 SVD）
 - 原书：Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 2 (Unitary Similarity) + Chapter 4 (Hermitian Matrices §4.2 Variational Characterizations)
 
 

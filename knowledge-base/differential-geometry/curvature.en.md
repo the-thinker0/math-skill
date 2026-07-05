@@ -45,12 +45,12 @@ GPU friendliness: the core difficulty of curvature is that "the full tensor cann
 
 ## Further References
 
-- Distillation notes: references/books/differential-geometry.md (Ch 12 Section 12.5/Section 12.10 Curvature, Ch 13 Section 13.2 Riemann Curvature, Section 13.7 Jacobi Fields, Section 13.11 Rauch Comparison)
+- Distillation notes: ../../references/books/differential-geometry.en.md (Ch 12 Section 12.5/Section 12.10 Curvature, Ch 13 Section 13.2 Riemann Curvature, Section 13.7 Jacobi Fields, Section 13.11 Rauch Comparison)
 - Original text: Jeffrey M. Lee, *Manifolds and Differential Geometry*, Section 13.2 Riemann Curvature Tensor, Section 13.7 Jacobi Fields
 
 
 ## Routing Extensions
-- If local geometric analysis is needed -> `metric-tensor.md` (metric determines local curvature)
+- If local geometric analysis is needed -> `metric-tensor.en.md` (metric determines local curvature)
 - If global topological analysis is needed -> `persistent-homology.md` (persistent homology captures global topology)
 - If curvature's effect on stability is involved -> `matrix-perturbation.md` (curvature-induced perturbation amplification)
 

@@ -45,7 +45,7 @@
 
 ## 深入参考
 
-- 蒸馏稿：references/books/matrix-analysis.md（§2.6 SVD、§7.4 极分解与 SVD、核范数-谱范数对偶 §5.5）
+- 蒸馏稿：../../references/books/matrix-analysis.md（§2.6 SVD、§7.4 极分解与 SVD、核范数-谱范数对偶 §5.5）
 - 原书：Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 2 §2.6 (SVD) + Chapter 7 §7.3-7.4 (Polar Decomposition & SVD)
 
 

@@ -48,8 +48,8 @@ GPU 友好度高。欧拉示性数的计算极其廉价：
 
 ## 深入参考
 
-- 蒸馏稿：references/books/smooth-manifolds.md（Ch 17-18 De Rham Cohomology，Betti 数与上同调）
-- 蒸馏稿：references/books/differential-geometry.md（Ch 4 Curves and Hypersurfaces, Gauss curvature 直觉来源）
+- 蒸馏稿：../../references/books/smooth-manifolds.md（Ch 17-18 De Rham Cohomology，Betti 数与上同调）
+- 蒸馏稿：../../references/books/differential-geometry.md（Ch 4 Curves and Hypersurfaces, Gauss curvature 直觉来源）
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, Ch 17-18（de Rham 上同调与拓扑不变量）
 - 延伸：Hatcher, *Algebraic Topology*, Ch 2（单纯同调与欧拉示性数的标准处理）
 

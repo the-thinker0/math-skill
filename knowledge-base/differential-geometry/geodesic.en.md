@@ -45,16 +45,16 @@ GPU friendliness depends on whether a closed-form retraction exists:
 
 ## Further References
 
-- Distillation notes: references/books/differential-geometry.md (Ch 13 Section 13.4 Geodesics, Section 13.11 Rauch Comparison)
-- Distillation notes: references/books/smooth-manifolds.md (Ch 20 The Exponential Map)
+- Distillation notes: ../../references/books/differential-geometry.en.md (Ch 13 Section 13.4 Geodesics, Section 13.11 Rauch Comparison)
+- Distillation notes: ../../references/books/smooth-manifolds.en.md (Ch 20 The Exponential Map)
 - Original text: Jeffrey M. Lee, *Manifolds and Differential Geometry*, Section 13.4 Geodesics
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, Ch 20 (exponential map, retraction prototype)
 
 
 ## Routing Extensions
-- If the distance definition is needed -> `metric-tensor.md` (metric tensor determines geodesics)
+- If the distance definition is needed -> `metric-tensor.en.md` (metric tensor determines geodesics)
 - If used as a retraction -> `riemannian-optimization.md` (exponential map as retraction)
-- If deviation from flat space is needed -> `curvature.md` (curvature controls geodesic deviation)
+- If deviation from flat space is needed -> `curvature.en.md` (curvature controls geodesic deviation)
 
 ## Extensible Directions
 - Conjugate points: zeros of Jacobi fields along geodesics

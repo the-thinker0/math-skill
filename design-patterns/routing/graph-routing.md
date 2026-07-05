@@ -10,9 +10,9 @@
 核心诉求：**利用结构化先验约束路由决策，减少搜索空间**。
 
 ## 数学思想来源
-- 透镜：lenses/geometric.md（图拉普拉斯、谱图论）、lenses/probabilistic.md（消息传递、信息流）
-- 知识：knowledge-base/matrix-analysis/projection.md（邻接矩阵、谱分解）、
-  knowledge-base/optimization/lagrangian-duality.md（图上优化、扩散过程）
+- 透镜：../../lenses/geometric.md（图拉普拉斯、谱图论）、../../lenses/probabilistic.md（消息传递、信息流）
+- 知识：../../knowledge-base/matrix-analysis/projection.md（邻接矩阵、谱分解）、
+  ../../knowledge-base/optimization/lagrangian-duality.md（图上优化、扩散过程）
 
 ## 需要的数学知识
 - **图拉普拉斯**：L = D - A（组合）或 L_sym = D^{-1/2} L D^{-1/2}（归一化）
@@ -60,14 +60,14 @@
 - **层次树实现**：用完全二叉树的数组表示，level-wise 向量化
 
 ## GPU 可行性
-- **张量化**：GCN 层为稀疏矩阵×稠密矩阵 (SpMM)，PyTorch 和 cuSPARSE 均支持
-- **GEMM 可映射**：方法1 的 score_init@P_t 为标准 GEMM (N×K)@(K×K)
-- **复杂度**：方法1 O(N·K²) 扩散 + O(N·K·d) gate；方法3 O(N·d·log K) 显著优于 O(N·d·K)
-- **显存与 KV-Cache**：A 矩阵 K×K 稀疏存储；层次树参数 d×log K 极小
-- **低精度稳定**：概率矩阵 P 和 softmax 在 fp16 下需注意归一化精度
-- **并行与通信**：GNN 消息传递可批量并行；层次树同层节点独立可并行判断
-- **稀疏结构**：图邻接矩阵天然稀疏（度 << K），SpMM 加速比 O(K²) 到 O(K·avg_deg)
-- **算子融合**：GCN 的 L_norm@H@W 可融合为单次稀疏 GEMM
+- **D1[v]**：GCN 层为稀疏矩阵×稠密矩阵 (SpMM)，PyTorch 和 cuSPARSE 均支持
+- **D2[v]**：方法1 的 score_init@P_t 为标准 GEMM (N×K)@(K×K)
+- **D3[v]**：方法1 O(N·K²) 扩散 + O(N·K·d) gate；方法3 O(N·d·log K) 显著优于 O(N·d·K)
+- **D4[v]**：A 矩阵 K×K 稀疏存储；层次树参数 d×log K 极小
+- **D5[v]**：概率矩阵 P 和 softmax 在 fp16 下需注意归一化精度
+- **D6[v]**：GNN 消息传递可批量并行；层次树同层节点独立可并行判断
+- **D7[v]**：图邻接矩阵天然稀疏（度 << K），SpMM 加速比 O(K²) 到 O(K·avg_deg)
+- **D8[v]**：GCN 的 L_norm@H@W 可融合为单次稀疏 GEMM
 
 ## 论文表述方式
 "利用专家间的层次树/图拓扑结构，将路由决策从 O(N·K) 的平铺搜索压缩为 O(N·log K) 的

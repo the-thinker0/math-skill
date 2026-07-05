@@ -69,39 +69,39 @@
 
 > 每条标注**八维落点**（对应 `../gpu-friendly-math.md` 维度编号），方便直接进 GPU 验收门。
 
-1. **随机化数值线代（randomized NLA）**：用随机投影 + QR（§2.1）做随机 SVD，把 O(n³) 完整分解降到亚二次，对超大权重/激活做低秩草图（sketching）。*落点：维度 2/3——全 GEMM、复杂度可控。*
-2. **低秩注意力 / KV 压缩**：以 Eckart–Young（§7.4）保证截断 SVD 是最优低秩逼近；用**核范数（谱范数对偶，§5.5）**作低秩正则，把 KV-Cache 投影到低维子空间。*落点：维度 2/4——GEMM 链 + 显存压缩。*
-3. **谱归一化（spectral normalization）**：power iteration 估最大奇异值（算子范数 §5.6），约束每层 Lipschitz——GAN/扩散/稳定训练。*落点：维度 1/6——matvec，但迭代串行需块化。*
-4. **Newton–Schulz 正交化（Muon 式）**：极分解（§7.3）把梯度矩阵投到最近正交矩阵，迭代只含矩阵乘——当前最 GPU 友好的"二阶味"更新。*落点：维度 2/6/8——纯 GEMM、可融合、bf16 稳。*
-5. **预条件 / Shampoo / K-FAC**：条件数（§5.8）诊断病态，用 PSD Kronecker 因子（Ch 7）近似 Hessian 做预条件，把病态损失面拉圆。*落点：维度 2/5——小矩阵 GEMM，注意逆运算的精度。*
-6. **Geršgorin 廉价谱半径门（§6.1）**：训练循环里用圆盘界 O(n²) 快速估谱半径，做低成本稳定性 gate，不必跑完整 EVD。*落点：维度 1/3——逐行求和，极廉价。*
-7. **PSD 核工程（Schur 积定理 §7.5）**：用 Hadamard 积组合多个 PSD 核，保证可学习相似度矩阵始终半正定。*落点：维度 1——逐元素张量积，天然友好。*
-8. **Perron–Frobenius 诊断（§8.2–8.5）**：把行随机 attention 当 Markov 算子，用谱 gap 量化 over-smoothing / rank collapse，指导残差与温度设计。*落点：维度 1/3——谱估计廉价，避免深层坍缩。*
-9. **块化 / communication-avoiding 分解**：把 QR、Cholesky（§3.5）写成分块版本，用 GEMM 替代逐列消元，跨设备减少通信轮次。*落点：维度 2/6——串行递推改造成并行 + overlap。*
+1. **随机化数值线代（randomized NLA）**：用随机投影 + QR（§2.1）做随机 SVD，把 O(n³) 完整分解降到亚二次，对超大权重/激活做低秩草图（sketching）。*落点：D2/D3——全 GEMM、复杂度可控。*
+2. **低秩注意力 / KV 压缩**：以 Eckart–Young（§7.4）保证截断 SVD 是最优低秩逼近；用**核范数（谱范数对偶，§5.5）**作低秩正则，把 KV-Cache 投影到低维子空间。*落点：D2/D4——GEMM 链 + 显存压缩。*
+3. **谱归一化（spectral normalization）**：power iteration 估最大奇异值（算子范数 §5.6），约束每层 Lipschitz——GAN/扩散/稳定训练。*落点：D1/D6——matvec，但迭代串行需块化。*
+4. **Newton–Schulz 正交化（Muon 式）**：极分解（§7.3）把梯度矩阵投到最近正交矩阵，迭代只含矩阵乘——当前最 GPU 友好的"二阶味"更新。*落点：D2/D6/D8——纯 GEMM、可融合、bf16 稳。*
+5. **预条件 / Shampoo / K-FAC**：条件数（§5.8）诊断病态，用 PSD Kronecker 因子（Ch 7）近似 Hessian 做预条件，把病态损失面拉圆。*落点：D2/D5——小矩阵 GEMM，注意逆运算的精度。*
+6. **Geršgorin 廉价谱半径门（§6.1）**：训练循环里用圆盘界 O(n²) 快速估谱半径，做低成本稳定性 gate，不必跑完整 EVD。*落点：D1/D3——逐行求和，极廉价。*
+7. **PSD 核工程（Schur 积定理 §7.5）**：用 Hadamard 积组合多个 PSD 核，保证可学习相似度矩阵始终半正定。*落点：D1——逐元素张量积，天然友好。*
+8. **Perron–Frobenius 诊断（§8.2–8.5）**：把行随机 attention 当 Markov 算子，用谱 gap 量化 over-smoothing / rank collapse，指导残差与温度设计。*落点：D1/D3——谱估计廉价，避免深层坍缩。*
+9. **块化 / communication-avoiding 分解**：把 QR、Cholesky（§3.5）写成分块版本，用 GEMM 替代逐列消元，跨设备减少通信轮次。*落点：D2/D6——串行递推改造成并行 + overlap。*
 
 ## GPU 友好性警告
 
 > 评分维度引用 `../gpu-friendly-math.md` 的**八维检查**（张量化 / GEMM 可映射 / 复杂度 / 显存 / 低精度 / 并行 / 稀疏 / 算子融合），此处不重复定义。
 
 **天然友好（math beautiful × GPU friendly）：**
-- **SVD 截断 / 低秩**：写成 GEMM 链（维度 2），压缩 KV-Cache/权重（维度 4）。
-- **Frobenius / 谱范数、Gram 矩阵、Hadamard 积**：批量张量代数（维度 1、2）。
-- **极分解 Newton–Schulz**：纯矩阵乘迭代（维度 2、6、8 可融合），bf16 下稳健。
-- **Geršgorin 圆盘**：O(n²) 逐行求和（维度 1），廉价稳定性估计。
-- **良态 PSD 的 blocked Cholesky / Gram 构造**：分块后是 GEMM 链（维度 2），核方法与协方差预条件常用。
+- **SVD 截断 / 低秩**：写成 GEMM 链（D2），压缩 KV-Cache/权重（D4）。
+- **Frobenius / 谱范数、Gram 矩阵、Hadamard 积**：批量张量代数（D1/D2）。
+- **极分解 Newton–Schulz**：纯矩阵乘迭代（D2/D6/D8 可融合），bf16 下稳健。
+- **Geršgorin 圆盘**：O(n²) 逐行求和（D1），廉价稳定性估计。
+- **良态 PSD 的 blocked Cholesky / Gram 构造**：分块后是 GEMM 链（D2），核方法与协方差预条件常用。
 
 **美但不可算（beautiful, not computable）：**
-- **Jordan 标准型（§3.1）**——经典反例：特征值重数对扰动极度敏感，浮点下根本无法可靠计算，**永远不要当数值工具**（违反维度 5 低精度稳定）。Weyr 型同理。
-- **完整 EVD / SVD 的 O(n³)**——大矩阵直接爆（违反维度 3），必须换随机化/迭代法。
-- **非正规矩阵（non-normal，§2.5 之外）**——特征值不能反映真实行为，需 pseudospectra；低精度下谱失真（维度 5）。
-- **病态 / 高条件数（§5.8）**——会出现灾难性抵消，要 fp64 才对，与 bf16/fp8 训练冲突（维度 5）。
-- **QR / Cholesky 的串行依赖（§2.1, §3.5）**——朴素实现是长串行递推（违反维度 6），需 blocked / communication-avoiding 变体。
-- **power iteration 的串行迭代**——单向量迭代并行度低；需块化（block / subspace iteration）才吃满 SM（维度 6）。
+- **Jordan 标准型（§3.1）**——经典反例：特征值重数对扰动极度敏感，浮点下根本无法可靠计算，**永远不要当数值工具**（违反 D5）。Weyr 型同理。
+- **完整 EVD / SVD 的 O(n³)**——大矩阵直接爆（违反 D3），必须换随机化/迭代法。
+- **非正规矩阵（non-normal，§2.5 之外）**——特征值不能反映真实行为，需 pseudospectra；低精度下谱失真（D5）。
+- **病态 / 高条件数（§5.8）**——会出现灾难性抵消，要 fp64 才对，与 bf16/fp8 训练冲突（D5）。
+- **QR / Cholesky 的串行依赖（§2.1, §3.5）**——朴素实现是长串行递推（违反 D6），需 blocked / communication-avoiding 变体。
+- **power iteration 的串行迭代**——单向量迭代并行度低；需块化（block / subspace iteration）才吃满 SM（D6）。
 
 **改造手法（呼应 `../gpu-friendly-math.md` 的 Make-It-Computable Toolkit）：**
-- 完整 EVD/SVD → **随机化 + 截断**降复杂度（维度 3）；
-- 精确分解 → **块化 / GEMM 化**消除串行（维度 2/6）；
-- 病态/非正规 → **重参数化 + 谱归一化**稳低精度（维度 5）；
+- 完整 EVD/SVD → **随机化 + 截断**降复杂度（D3）；
+- 精确分解 → **块化 / GEMM 化**消除串行（D2/D6）；
+- 病态/非正规 → **重参数化 + 谱归一化**稳低精度（D5）；
 - Jordan 等不可算标准型 → 只留作**理论证明**，数值上换 Schur/SVD。
 
 ## 该调用哪个思想透镜
@@ -125,7 +125,7 @@
 - **数值上假设精确正定**：浮点下 Gram/协方差可能丢正定性，要加 jitter（对角抖动）或用 Cholesky 带 pivot。
 - **用 Frobenius 范数当低秩正则**：Frobenius / 权重衰减压的是"能量"不是"秩"；要低秩得用核范数或显式低秩参数化（如 LoRA）。
 - **对非对称矩阵谈"特征值大小"**：度量能量/范数/稳定裕度该看**奇异值**；非正规矩阵的特征值模长会严重误导（瞬态增长远超谱半径预测）。
-- **把 O(n²) Gram 矩阵全量物化**：attention/核矩阵不分块就直接撑爆显存；应走 FlashAttention 式融合 + 分块（呼应 GPU 八维维度 4/8）。
+- **把 O(n²) Gram 矩阵全量物化**：attention/核矩阵不分块就直接撑爆显存；应走 FlashAttention 式融合 + 分块（呼应 GPU 八维 D4/D8）。
 - **堆定理而不诊断瓶颈**：先问"算法瓶颈是谱、低秩还是稳定性"，再选结构，别一上来灌矩阵理论。
 
 ## 深挖入口

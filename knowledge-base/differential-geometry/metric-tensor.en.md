@@ -44,8 +44,8 @@ GPU friendliness depends on the structure of the metric:
 
 ## Further References
 
-- Distillation notes: references/books/differential-geometry.md (Ch 7 Section 7.6 Metric Tensors, Ch 13 Section 13.1 Levi-Civita)
-- Distillation notes: references/books/smooth-manifolds.md (Ch 13 Riemannian Metrics)
+- Distillation notes: ../../references/books/differential-geometry.en.md (Ch 7 Section 7.6 Metric Tensors, Ch 13 Section 13.1 Levi-Civita)
+- Distillation notes: ../../references/books/smooth-manifolds.en.md (Ch 13 Riemannian Metrics)
 - Original text: Jeffrey M. Lee, *Manifolds and Differential Geometry*, Section 7.6 Metric Tensors
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, Ch 13 (Riemannian metrics, musical isomorphisms sharp/flat)
 
@@ -53,7 +53,7 @@ GPU friendliness depends on the structure of the metric:
 ## Routing Extensions
 - If the metric comes from Fisher information -> `natural-gradient.md` (natural gradient under Fisher metric)
 - If Riemannian gradient computation is needed -> `riemannian-optimization.md` (metric determines gradient direction)
-- If curvature analysis is needed -> `curvature.md` (metric determines curvature tensor)
+- If curvature analysis is needed -> `curvature.en.md` (metric determines curvature tensor)
 
 ## Extensible Directions
 - Finsler metric: generalized non-quadratic metrics

@@ -44,7 +44,7 @@ $$I(X; Y) = H(X) - H(X|Y) = H(Y) - H(Y|X) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}
 - 蒸馏稿：`references/books/` 暂无专用信息论蒸馏稿
 - Cover & Thomas. *Elements of Information Theory*, 2nd Edition. Wiley, 2006
 - MacKay. *Information Theory, Inference, and Learning Algorithms*. Cambridge, 2003
-- 关联知识卡：`probability/kl-divergence.md`、`probability/information-bottleneck.md`
+- 关联知识卡：`kl-divergence.md`、`information-bottleneck.md`
 
 
 ## 路由扩展

@@ -10,11 +10,11 @@ Activate this domain direction when the problem involves:
 - Orbit structure: need to analyze orbits and stabilizers of group actions
 
 ## Core Anchors
-- `group-action.md` — Group actions
-- `lie-group.md` — Lie groups
-- `lie-algebra.md` — Lie algebras
-- `representation.md` — Group representations
-- `equivariance.md` — Equivariance
+- `group-action.en.md` — Group actions
+- `lie-group.en.md` — Lie groups
+- `lie-algebra.en.md` — Lie algebras
+- `representation.en.md` — Group representations
+- `equivariance.en.md` — Equivariance
 
 ## Extended Concepts
 When core anchors are insufficient, the following concepts may need temporary activation:
@@ -35,8 +35,8 @@ When core anchors are insufficient, the following concepts may need temporary ac
 - automorphic forms: automorphic forms
 
 ## Reference Book Directions
-- `../../references/books/micro-lie-theory.md`: core content of Lie groups and Lie algebras
-- `../../references/books/abstract-algebra.md`: abstract algebra foundations, group theory sections
+- `../../references/books/micro-lie-theory.en.md`: core content of Lie groups and Lie algebras
+- `../../references/books/abstract-algebra.en.md`: abstract algebra foundations, group theory sections
 
 ## AI Translation Directions
 - group action → data augmentation design / equivariant feature extraction

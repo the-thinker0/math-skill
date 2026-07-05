@@ -52,7 +52,7 @@ check_not_contains() {
 }
 
 echo "========================================"
-echo "  Math Skill Validation (v3.0.0)"
+echo "  Math Skill Validation (v3.1.0)"
 echo "========================================"
 
 # --- Infrastructure ---

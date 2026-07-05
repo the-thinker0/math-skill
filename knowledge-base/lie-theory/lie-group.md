@@ -45,9 +45,9 @@ GPU 友好度：关键看 exp/log 是否有闭式。
 
 ## 深入参考
 
-- 蒸馏稿：references/books/micro-lie-theory.md（§II-A 李群定义, §II-D 指数映射, §II-E 加减算子）
-- 蒸馏稿：references/books/differential-geometry.md（Ch 5 Lie Groups）
-- 蒸馏稿：references/books/smooth-manifolds.md（Ch 7 Lie Groups）
+- 蒸馏稿：../../references/books/micro-lie-theory.md（§II-A 李群定义, §II-D 指数映射, §II-E 加减算子）
+- 蒸馏稿：../../references/books/differential-geometry.md（Ch 5 Lie Groups）
+- 蒸馏稿：../../references/books/smooth-manifolds.md（Ch 7 Lie Groups）
 - 原书：Joan Sola et al., *A micro Lie theory*, §II-A ~ §II-F（完整李群工具链）
 
 

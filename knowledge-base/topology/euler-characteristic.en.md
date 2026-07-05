@@ -48,14 +48,14 @@ High GPU friendliness. Computing the Euler characteristic is extremely cheap:
 
 ## Further References
 
-- Distillation notes: references/books/smooth-manifolds.md (Ch 17--18 De Rham Cohomology, Betti numbers and cohomology)
-- Distillation notes: references/books/differential-geometry.md (Ch 4 Curves and Hypersurfaces, intuition source for Gauss curvature)
+- Distillation notes: ../../references/books/smooth-manifolds.en.md (Ch 17--18 De Rham Cohomology, Betti numbers and cohomology)
+- Distillation notes: ../../references/books/differential-geometry.en.md (Ch 4 Curves and Hypersurfaces, intuition source for Gauss curvature)
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, Ch 17--18 (de Rham cohomology and topological invariants)
 - Extended reading: Hatcher, *Algebraic Topology*, Ch 2 (standard treatment of simplicial homology and the Euler characteristic)
 
 
 ## Routing Extensions
-- If multi-scale topology analysis is needed -> `persistent-homology.md` (persistent homology provides scale-dependent topology)
+- If multi-scale topology analysis is needed -> `persistent-homology.en.md` (persistent homology provides scale-dependent topology)
 - If curvature-topology connection is involved -> `curvature.md` (Gauss-Bonnet theorem connects curvature and Euler characteristic)
 
 ## Extensible Directions

@@ -45,15 +45,15 @@ GPU friendliness: the key factor is whether exp/log has a closed form.
 
 ## Further References
 
-- Distillation notes: references/books/micro-lie-theory.md (Section II-A Lie Group Definition, Section II-D Exponential Map, Section II-E Plus/Minus Operators)
-- Distillation notes: references/books/differential-geometry.md (Ch 5 Lie Groups)
-- Distillation notes: references/books/smooth-manifolds.md (Ch 7 Lie Groups)
+- Distillation notes: ../../references/books/micro-lie-theory.en.md (Section II-A Lie Group Definition, Section II-D Exponential Map, Section II-E Plus/Minus Operators)
+- Distillation notes: ../../references/books/differential-geometry.en.md (Ch 5 Lie Groups)
+- Distillation notes: ../../references/books/smooth-manifolds.en.md (Ch 7 Lie Groups)
 - Original text: Joan Sola et al., *A micro Lie theory*, Section II-A through Section II-F (complete Lie group toolkit)
 
 
 ## Routing Extensions
-- If infinitesimal structure is needed -> `lie-algebra.md` (Lie algebra is the tangent space of a Lie group)
-- If linear representations are needed -> `representation.md` (finite-dimensional representations of Lie groups)
+- If infinitesimal structure is needed -> `lie-algebra.en.md` (Lie algebra is the tangent space of a Lie group)
+- If linear representations are needed -> `representation.en.md` (finite-dimensional representations of Lie groups)
 - If optimization on Lie groups is needed -> `riemannian-optimization.md` (Riemannian optimization on Lie groups)
 
 ## Extensible Directions

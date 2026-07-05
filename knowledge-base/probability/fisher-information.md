@@ -19,7 +19,7 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 
 ## 适用问题
 - **参数估计效率评估**：Cramér-Rao 界给出任何无偏估计器精度的理论极限
-- **自然梯度下降**：用 $\mathcal{I}(\theta)^{-1} \nabla_\theta \mathcal{L}$ 替代朴素梯度，沿统计流形的测地线方向更新（详见 `information-geometry/natural-gradient.md`）
+- **自然梯度下降**：用 $\mathcal{I}(\theta)^{-1} \nabla_\theta \mathcal{L}$ 替代朴素梯度，沿统计流形的测地线方向更新（详见 `../../information-geometry/natural-gradient.md`）
 - **实验设计 / 主动学习**：选择使 Fisher 信息最大的数据点采集，最大化参数学习的信息增益
 
 ## AI 设计翻译
@@ -45,7 +45,7 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 - Amari. *Information Geometry and Its Applications*. Springer, 2016
 - Amari & Nagaoka. *Methods of Information Geometry*. AMS, 2000
 - Martens. "Optimizing Neural Networks with Kronecker-Factored Approximate Curvature." *ICML*, 2015
-- 关联知识卡：`information-geometry/natural-gradient.md`、`information-geometry/fisher-metric.md`
+- 关联知识卡：`../../information-geometry/natural-gradient.md`、`../information-geometry/fisher-metric.md`
 
 
 ## 路由扩展

@@ -20,6 +20,21 @@
 | D7 | 稀疏结构 |
 | D8 | 算子融合 |
 
+## 量化检查清单
+
+评估每个维度时，应填写具体数值而非仅给标签：
+
+| 维度 | 需回答的量化问题 |
+|------|----------------|
+| D1 张量化 | 核心操作的 tensor shape 是什么？batch 维在哪？ |
+| D2 GEMM 可映射 | 操作可分解为几次 GEMM/matmul？每次的 (M,N,K) 是多少？ |
+| D3 复杂度 | FLOPs 总量？与 baseline (标准 attention/MLP) 的比值？ |
+| D4 显存 | 峰值显存 (bytes)？是否物化 n×n 矩阵？KV-Cache 额外开销？ |
+| D5 低精度 | bf16/fp8 下的数值误差量级？是否需要混合精度策略？ |
+| D6 并行 | 理论并行度？通信量 (bytes/step)？是否需要 all-reduce？ |
+| D7 稀疏 | 稀疏度 (%)？稀疏格式 (CSR/BSR/block-sparse)？是否有专用 kernel？ |
+| D8 算子融合 | 可融合的 kernel 数？融合后减少的 kernel launch 次数和显存搬运量？ |
+
 ## 核心命题 / Core Proposition
 
 **数学美 ≠ 可算。** 一个结构要真正进入现代 GPU 集群的训练与推理，必须同时满足两件事：
@@ -72,9 +87,9 @@
 
 | 组件 | 数学来源 | GPU 友好性 |
 |------|---------|-----------|
-| 热带门控 Tropical Gating | 热带半环分段线性 | 替代 Top-K：逐元素 max-plus——dim 1 [v] 张量化 / dim 2 [x] 非 Tensor Core GEMM（落 CUDA core）/ dim 3 [v] 仅逐 token 门控亚二次（min-plus matmul 则 APSP-hard 非亚二次）；次可微，折点需 LogSumExp 软化（软化退回标准 softmax）|
-| 胞腔层扩散 Cellular Sheaf Diffusion | 代数几何/拓扑（层、限制映射）| 每边低秩线性变换 = 小 GEMM（维度 2/4）|
-| Čech 上同调正则 | 代数拓扑（一阶上同调 H¹）| 局部、廉价；作幻觉的代数判据（维度 3/8）|
-| 低秩基底 KV 压缩（Plücker/Grassmannian 视角） | 射影几何 | 存基底而非 Plücker 坐标（后者低秩时反扩张）；块摘要候选，压缩率/误差/吞吐需实测（维度 4）|
+| 热带门控 Tropical Gating | 热带半环分段线性 | 替代 Top-K：逐元素 max-plus——D1[v] / D2[x] 非 Tensor Core GEMM（落 CUDA core）/ D3[v] 仅逐 token 门控亚二次（min-plus matmul 则 APSP-hard 非亚二次）；次可微，折点需 LogSumExp 软化（软化退回标准 softmax）|
+| 胞腔层扩散 Cellular Sheaf Diffusion | 代数几何/拓扑（层、限制映射）| 每边低秩线性变换 = 小 GEMM（D2/D4）|
+| Čech 上同调正则 | 代数拓扑（一阶上同调 H¹）| 局部、廉价；作幻觉的代数判据（D3/D8）|
+| 低秩基底 KV 压缩（Plücker/Grassmannian 视角） | 射影几何 | 存基底而非 Plücker 坐标（后者低秩时反扩张）；块摘要候选，压缩率/误差/吞吐需实测（D4）|
 
 使用时不要把上表当作已验证结论。正确做法是把每个组件写进 testplan：证明或估计复杂度，测峰值显存和吞吐，检查 bf16/fp8 稳定性，确认能否落到 GEMM / batched GEMM / fused kernel。只有实测和推导都通过后，才标为 "math beautiful × GPU friendly"。

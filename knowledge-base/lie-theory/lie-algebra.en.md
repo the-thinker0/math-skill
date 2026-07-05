@@ -45,15 +45,15 @@ High GPU friendliness. The core advantage of the Lie algebra is that it is a "li
 
 ## Further References
 
-- Distillation notes: references/books/micro-lie-theory.md (Section II-C Tangent Space and Lie Algebra, hat/vee operators)
-- Distillation notes: references/books/differential-geometry.md (Ch 5 Lie Groups, Lie algebra section)
+- Distillation notes: ../../references/books/micro-lie-theory.en.md (Section II-C Tangent Space and Lie Algebra, hat/vee operators)
+- Distillation notes: ../../references/books/differential-geometry.en.md (Ch 5 Lie Groups, Lie algebra section)
 - Original text: Joan Sola et al., *A micro Lie theory*, Section II-C (Lie algebra definition and hat/vee), Section II-D (exp/log bridge)
 - Original text: Jeffrey M. Lee, *Manifolds and Differential Geometry*, Ch 5 (Lie groups and Lie algebras)
 
 
 ## Routing Extensions
-- If the corresponding global group is needed -> `lie-group.md` (integrating Lie algebra yields Lie group)
-- If algebra representations are needed -> `representation.md` (representation theory of Lie algebras)
+- If the corresponding global group is needed -> `lie-group.en.md` (integrating Lie algebra yields Lie group)
+- If algebra representations are needed -> `representation.en.md` (representation theory of Lie algebras)
 - If acting as the tangent space of a group -> `tangent-space.md` (Lie algebra structure on tangent space)
 
 ## Extensible Directions

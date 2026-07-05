@@ -46,8 +46,8 @@ GPU 友好度低。基本群的计算本质上是组合/代数的，而非数值
 
 ## 深入参考
 
-- 蒸馏稿：references/books/smooth-manifolds.md（Ch 17-18 De Rham Cohomology，上同调与拓扑不变量）
-- 蒸馏稿：references/books/algebraic-geometry-rising-sea.md（§18 Cech Cohomology，局部黏合与全局障碍）
+- 蒸馏稿：../../references/books/smooth-manifolds.md（Ch 17-18 De Rham Cohomology，上同调与拓扑不变量）
+- 蒸馏稿：../../references/books/algebraic-geometry-rising-sea.md（§18 Cech Cohomology，局部黏合与全局障碍）
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, Ch 17（de Rham 上同调，环路积分的视角）
 - 延伸：Hatcher, *Algebraic Topology*, Ch 1（基本群的标准教材处理，含 Seifert-van Kampen 定理）
 

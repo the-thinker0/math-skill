@@ -10,12 +10,12 @@ Activate this domain direction when the problem involves:
 - Index raising/lowering: need to convert between tangent and cotangent spaces
 
 ## Core Anchors
-- `manifold.md` — Fundamental concepts of manifolds
-- `tangent-space.md` — Tangent space and tangent map
-- `metric-tensor.md` — Metric tensor and Riemannian metric
-- `geodesic.md` — Geodesics
-- `curvature.md` — Curvature
-- `connection.md` — Connection and covariant derivative
+- `manifold.en.md` — Fundamental concepts of manifolds
+- `tangent-space.en.md` — Tangent space and tangent map
+- `metric-tensor.en.md` — Metric tensor and Riemannian metric
+- `geodesic.en.md` — Geodesics
+- `curvature.en.md` — Curvature
+- `connection.en.md` — Connection and covariant derivative
 
 ## Extended Concepts
 When core anchors are insufficient, the following concepts may need temporary activation:
@@ -34,8 +34,8 @@ When core anchors are insufficient, the following concepts may need temporary ac
 - Ricci flow: Ricci flow
 
 ## Reference Book Directions
-- `../../references/books/differential-geometry.md`: core content of Riemannian geometry
-- `../../references/books/smooth-manifolds.md`: smooth manifolds, vector bundles, and differential forms
+- `../../references/books/differential-geometry.en.md`: core content of Riemannian geometry
+- `../../references/books/smooth-manifolds.en.md`: smooth manifolds, vector bundles, and differential forms
 
 ## AI Translation Directions
 - manifold → latent space geometry / manifold-valued predictions / hyperbolic embeddings

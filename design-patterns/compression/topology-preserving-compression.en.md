@@ -5,8 +5,8 @@
 Use when compressing representations while homologically preserving the intrinsic topological structure of the data (connected components, loops, cavities): latent-space compression (a toroidal manifold must not collapse into a line segment), knowledge distillation (student--teacher homological equivalence), 3D mesh simplification (genus invariance), KV-Cache semantic preservation (cluster structure must not collapse). Core objective: **compress dimensions or counts while ensuring that changes in the persistence diagram of persistent homology remain controlled**.
 
 ## Mathematical Foundations
-- Lenses: lenses/topological.md (topological invariants -- connected components and hole counts are invariant under continuous deformation), lenses/spectral.md (Gauss--Bonnet linking curvature and Euler characteristic), lenses/variational.md (constrained variational of compression ratio vs. topological fidelity)
-- Knowledge: knowledge-base/topology/persistent-homology.md (persistent homology, Vietoris--Rips filtration, bottleneck distance), knowledge-base/topology/euler-characteristic.md (Euler characteristic for rapid topological diagnostics), knowledge-base/matrix-analysis/matrix-perturbation.md (Davis--Kahan subspace perturbation bound)
+- Lenses: ../../lenses/topological.en.md (topological invariants -- connected components and hole counts are invariant under continuous deformation), ../../lenses/spectral.en.md (Gauss--Bonnet linking curvature and Euler characteristic), ../../lenses/variational.en.md (constrained variational of compression ratio vs. topological fidelity)
+- Knowledge: ../../knowledge-base/topology/persistent-homology.en.md (persistent homology, Vietoris--Rips filtration, bottleneck distance), ../../knowledge-base/topology/euler-characteristic.en.md (Euler characteristic for rapid topological diagnostics), ../../knowledge-base/matrix-analysis/matrix-perturbation.en.md (Davis--Kahan subspace perturbation bound)
 
 ## Required Mathematical Background
 - **Stability Theorem of Persistent Homology**: $d_B(D(X), D(Y)) \leq d_{GH}(X, Y)$; the Hausdorff distance bounds the change in persistence diagrams
@@ -46,12 +46,12 @@ Method 3 - Topology monitoring + adaptive compression ratio (at inference time):
 - **Topological diagnostics dashboard**: real-time plotting of $\beta_0(\epsilon), \beta_1(\epsilon)$ curves during training
 
 ## GPU Feasibility
-- Tensorization / GEMM: the distance matrix `cdist` is GEMM-dominated; $\chi(\epsilon)$ involves threshold counting + cumulative sum
-- Complexity: full persistent homology $O(N^3)$ is infeasible; Euler curve $O(N^2 |\epsilon|)$ is feasible; Landmark $O(m^3)$
-- Memory: the $N \times N$ distance matrix requires chunking or landmark reduction for $N > 8K$
-- Low precision: distance computation is stable in bf16 (positive-number addition); $\chi$ involves integer arithmetic with no precision concerns
-- Parallelism: each threshold in the $\epsilon$ sweep is independently parallel; landmark selection can be batch-parallelized
-- Operator fusion: cdist + threshold + count can be fused to avoid materializing the large distance matrix
+- **D1[v]/D2[v]**: the distance matrix `cdist` is GEMM-dominated; $\chi(\epsilon)$ involves threshold counting + cumulative sum
+- **D3[~]**: full persistent homology $O(N^3)$ is infeasible; Euler curve $O(N^2 |\epsilon|)$ is feasible; Landmark $O(m^3)$
+- **D4[~]**: the $N \times N$ distance matrix requires chunking or landmark reduction for $N > 8K$
+- **D5[v]**: distance computation is stable in bf16 (positive-number addition); $\chi$ involves integer arithmetic with no precision concerns
+- **D6[v]**: each threshold in the $\epsilon$ sweep is independently parallel; landmark selection can be batch-parallelized
+- **D8[v]**: cdist + threshold + count can be fused to avoid materializing the large distance matrix
 
 ## Paper-Worthy Formulation
 "Grounded in the Bottleneck stability theorem of persistent homology, we achieve $O(N^2)$-complexity topology-preserving regularization via Euler characteristic curve matching, ensuring that post-compression deviations in Betti numbers over persistence intervals are controlled by the Hausdorff distance."

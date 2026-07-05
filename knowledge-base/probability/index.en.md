@@ -10,11 +10,11 @@ Activate this domain direction when the problem involves:
 - Tail control: need to control the probability of extreme deviations of random variables
 
 ## Core Anchors
-- `concentration-inequality.md` — Concentration inequalities
-- `entropy.md` — Entropy
-- `kl-divergence.md` — KL divergence
-- `information-bottleneck.md` — Information bottleneck
-- `fisher-information.md` — Fisher information
+- `concentration-inequality.en.md` — Concentration inequalities
+- `entropy.en.md` — Entropy
+- `kl-divergence.en.md` — KL divergence
+- `information-bottleneck.en.md` — Information bottleneck
+- `fisher-information.en.md` — Fisher information
 
 ## Extended Concepts
 When core anchors are insufficient, the following concepts may need temporary activation:
@@ -35,7 +35,7 @@ When core anchors are insufficient, the following concepts may need temporary ac
 - diffusion process theory: diffusion process theory
 
 ## Reference Book Directions
-- `../../references/books/optimization-ml.md`: variational methods and probabilistic inference chapters
+- `../../references/books/optimization-ml.en.md`: variational methods and probabilistic inference chapters
 
 ## AI Translation Directions
 - concentration inequality → generalization bounds / confidence-aware predictions / tail-risk loss

@@ -48,8 +48,8 @@ GPU 友好度有限，是持续同调落地的主要瓶颈：
 
 ## 深入参考
 
-- 蒸馏稿：references/books/smooth-manifolds.md（Ch 17-18 De Rham Cohomology，拓扑不变量概念来源）
-- 蒸馏稿：references/books/algebraic-geometry-rising-sea.md（§18 Cech Cohomology, §23 Derived Functors，上同调计算）
+- 蒸馏稿：../../references/books/smooth-manifolds.md（Ch 17-18 De Rham Cohomology，拓扑不变量概念来源）
+- 蒸馏稿：../../references/books/algebraic-geometry-rising-sea.md（§18 Cech Cohomology, §23 Derived Functors，上同调计算）
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, Ch 17-18（de Rham 上同调）
 - 延伸：Edelsbrunner & Harer, *Computational Topology: An Introduction*（持续同调标准教材）
 

@@ -45,8 +45,8 @@ GPU 友好度取决于是否有闭式 retraction：
 
 ## 深入参考
 
-- 蒸馏稿：references/books/differential-geometry.md（Ch 13 §13.4 Geodesics, §13.11 Rauch Comparison）
-- 蒸馏稿：references/books/smooth-manifolds.md（Ch 20 The Exponential Map）
+- 蒸馏稿：../../references/books/differential-geometry.md（Ch 13 §13.4 Geodesics, §13.11 Rauch Comparison）
+- 蒸馏稿：../../references/books/smooth-manifolds.md（Ch 20 The Exponential Map）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, §13.4 Geodesics
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, Ch 20（指数映射、retraction 原型）
 

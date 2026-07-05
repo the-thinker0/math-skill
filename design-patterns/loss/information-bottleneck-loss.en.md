@@ -5,8 +5,8 @@
 When a representation $Z$ must achieve an optimal balance between "retaining task-relevant information" and "compressing input redundancy." Typical scenarios: (1) Shared representations should retain only cross-task common information, discarding task-specific noise; (2) Private representations should retain only single-task unique information; (3) Routing features should maximize expert-task matching information. Core objective: **optimal information compression -- nothing more, nothing less, retaining only what is useful**.
 
 ## Mathematical Inspiration
-- Lenses: lenses/probabilistic.md (information bottleneck principle, mutual information variational), lenses/variational.md (Lagrangian duality)
-- Knowledge: knowledge-base/probability/kl-divergence.md (IB theory, rate-distortion function), knowledge-base/probability/entropy.md (mutual information and conditional entropy)
+- Lenses: ../../lenses/probabilistic.en.md (information bottleneck principle, mutual information variational), ../../lenses/variational.en.md (Lagrangian duality)
+- Knowledge: ../../knowledge-base/probability/kl-divergence.en.md (IB theory, rate-distortion function), ../../knowledge-base/probability/entropy.en.md (mutual information and conditional entropy)
 
 ## Required Mathematical Knowledge
 - **Information Bottleneck Objective**: $\min I(X;Z) - \beta \cdot I(Z;Y)$, compressing $X \to Z$ while preserving the predictive power of $Z$ for $Y$
@@ -15,7 +15,7 @@ When a representation $Z$ must achieve an optimal balance between "retaining tas
   $I(Z;Y) \geq \mathbb{E}_{p(z,y)}[\log q(y|z)] + H(Y)$ (lower bound for prediction term)
 - **CPC (Contrastive Predictive Coding)**: InfoNCE lower bound on $I(Z_t; Z_{t+k})$
 - **MINE (Mutual Information Neural Estimation)**:
-  $I(X;Z) = \sup_\theta \{ \mathbb{E}[\log T_\theta(x,z)] - \log \mathbb{E}[T_\theta(x,z')] \}$
+  $I(X;Z) = \sup_\phi \{ \mathbb{E}_{p(x,z)}[T_\phi(x,z)] - \log \mathbb{E}_{p(x)p(z)}[\exp(T_\phi(x,z))] \}$ (Donsker-Varadhan representation, $T_\phi$ is a neural network critic)
 
 ## AI Module Form
 ```
@@ -32,7 +32,7 @@ Method 1 - VIB (Variational Information Bottleneck):
 
 Method 2 - Contrastive Mutual Information Estimation (no distributional assumptions):
   // NWJ estimator instead of KL
-  I_nwj(x;z) = E[f(x,z)] - exp(E[f(x,z')] - 1)  // f is a discriminator network
+  I_nwj(x;z) = E_{p(x,z)}[f(x,z)] - e^{-1} * E_{p(x)p(z)}[exp(f(x,z))]  // f is a discriminator network, expectations over joint and product of marginals respectively
   L_IB_contrast = I_nwj(x;z) - beta * InfoNCE(z, y)  // both terms differentiable
 
 Method 3 - Shared/Private IB Decomposition:
@@ -60,7 +60,7 @@ Method 3 - Shared/Private IB Decomposition:
 - **Operator Fusion**: Encoder forward + KL computation + discriminator forward can be partially fused
 
 ## Paper Phrasing
-"Based on information bottleneck theory, we formalize Shared/Private decomposition as $\min I(X;Z_s) + I(X;Z_p) - \beta_1 I(Z_s;Y_c) - \beta_2 I(Z_p;Y_s)$, replacing mutual information terms with variational upper and lower bounds for end-to-end variational, theoretically guaranteeing beta-optimality on the compression-prediction Pareto frontier."
+"Based on information bottleneck theory, we formalize Shared/Private decomposition as $\min I(X;Z_s) + I(X;Z_p) - \beta_1 I(Z_s;Y_c) - \beta_2 I(Z_p;Y_s)$, replacing mutual information terms with variational upper and lower bounds for end-to-end optimization. IB theory provides upper bounds on generalization error, but actual generalization also depends on optimization dynamics, data distribution, and model capacity."
 
 ## Risks
 - Mutual information estimators (MINE/NWJ) have high variance, causing training instability; large batches or moving averages are needed
