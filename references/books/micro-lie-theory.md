@@ -1,4 +1,4 @@
-# 🌀 李理论速成 / A micro Lie theory
+# 李理论速成 / A micro Lie theory
 
 > **A micro Lie theory for state estimation in robotics** — Joan Solà, Jeremie Deray, Dinesh Atchuthan.
 > arXiv:1812.01537v9 [cs.RO]，2021-12-08，正文约 17 页 + 附录公式手册。配套开源 C++ 头文件库 **manif**（<https://github.com/artivis/manif>，实现 SO(2)/SO(3)/SE(2)/SE(3) 及解析雅可比）。
@@ -66,14 +66,14 @@
 
 | # | 维度 | 评级 | 说明 |
 |---|---|---|---|
-| ① | 张量化 | ✅ | SO(3)/SE(3) 的 exp/log 有**闭式**（Rodrigues），3×3/4×4 小矩阵，批量化为 `[B,3,3]` / `[B,4,4]` 张量逐样本独立 |
-| ② | GEMM 可映射 | ⚠️ | 3×3/4×4 太小，**吃不满 Tensor Core**，bmm/批量小 GEMM 利用率低、易受访存带宽限制；改造：把 batch 维堆大、用专用小核或 einsum 融合 |
-| ③ | 复杂度 | ✅ | 每元素 O(1)，随 batch 线性 |
-| ④ | 显存 | ✅ | 元素极小；但高自由度复合状态的雅可比/协方差矩阵会变大（块结构，仍可控） |
-| ⑤ | 低精度稳定 | ❌ **重点** | exp/log 含 `sinθ/θ`、`(1−cosθ)/θ²` 等项，在 **θ→0**（除零）与 **θ→π**（log 奇异）处灾难性抵消；fp16/bf16 极易 NaN。**必须**对小角做 Taylor 展开切换——而分支会带来 warp divergence（伤①⑧） |
-| ⑥ | 并行与通信 | ⚠️ | 逐样本 exp/log 是 embarrassingly parallel ✅；但**流形上的离散积分/运动链**（§II-I，连乘 Exp）是**串行递推**，长序列需写成并行扫描（parallel scan）才能并行 |
-| ⑦ | 稀疏结构 | ✅ | 复合流形的雅可比是**块结构化稀疏**（式 89），对 GPU 友好 |
-| ⑧ | 算子融合 | ✅ | 闭式 exp/log/雅可比可融进**单 kernel**，避免物化中间小矩阵 |
+| ① | 张量化 | [v] | SO(3)/SE(3) 的 exp/log 有**闭式**（Rodrigues），3×3/4×4 小矩阵，批量化为 `[B,3,3]` / `[B,4,4]` 张量逐样本独立 |
+| ② | GEMM 可映射 | [~] | 3×3/4×4 太小，**吃不满 Tensor Core**，bmm/批量小 GEMM 利用率低、易受访存带宽限制；改造：把 batch 维堆大、用专用小核或 einsum 融合 |
+| ③ | 复杂度 | [v] | 每元素 O(1)，随 batch 线性 |
+| ④ | 显存 | [v] | 元素极小；但高自由度复合状态的雅可比/协方差矩阵会变大（块结构，仍可控） |
+| ⑤ | 低精度稳定 | [x] **重点** | exp/log 含 `sinθ/θ`、`(1−cosθ)/θ²` 等项，在 **θ→0**（除零）与 **θ→π**（log 奇异）处灾难性抵消；fp16/bf16 极易 NaN。**必须**对小角做 Taylor 展开切换——而分支会带来 warp divergence（伤①⑧） |
+| ⑥ | 并行与通信 | [~] | 逐样本 exp/log 是 embarrassingly parallel [v]；但**流形上的离散积分/运动链**（§II-I，连乘 Exp）是**串行递推**，长序列需写成并行扫描（parallel scan）才能并行 |
+| ⑦ | 稀疏结构 | [v] | 复合流形的雅可比是**块结构化稀疏**（式 89），对 GPU 友好 |
+| ⑧ | 算子融合 | [v] | 闭式 exp/log/雅可比可融进**单 kernel**，避免物化中间小矩阵 |
 
 **展开说明（闭式 vs 级数 / 批量化 / 小矩阵指数能否张量化）**：
 
@@ -86,11 +86,11 @@
 
 ## 该调用哪个思想透镜
 
-- **⚛️ symmetry（首选）**：李群本就是**连续对称变换群**，本文是"对称/不变性→等变网络"最直接的数学弹药。
-- **🔄 duality（首选）**：exp/log 把"曲的非线性流形"等价变换到"平的线性切空间"——把难问题变换成易问题的范式样板（屠龙刀"切菜"）。
-- **⚖️ optimization**：流形上的优化、retraction、误差状态滤波（§V-A）。
-- **🌉 modeling**：现实（机器人/相机状态+噪声）→数学（流形+协方差）→解释的建模闭环。
-- **🧩 abstraction**：从具体矩阵/四元数抽象出"群"的统一接口（论文正文泛型 + 例子接地的写法本身就是抽象示范）。
+- **symmetry（首选）**：李群本就是**连续对称变换群**，本文是"对称/不变性→等变网络"最直接的数学弹药。
+- **duality（首选）**：exp/log 把"曲的非线性流形"等价变换到"平的线性切空间"——把难问题变换成易问题的范式样板（屠龙刀"切菜"）。
+- **variational**：流形上的优化、retraction、误差状态滤波（§V-A）。
+- **geometric**：现实（机器人/相机状态+噪声）→数学（流形+协方差）→解释的建模闭环。
+- **categorical**：从具体矩阵/四元数抽象出"群"的统一接口（论文正文泛型 + 例子接地的写法本身就是抽象示范）。
 
 ## 反模式
 
@@ -103,13 +103,13 @@
 
 ## 深挖入口
 
-> **📖 书目信息**：Joan Solà, Jérémie Deray, Dinesh Atchuthan, *A micro Lie theory for state estimation in robotics*, arXiv:1812.01537v9, 2021. 配套开源 C++ 库 [manif](https://github.com/artivis/manif)。
+> **书目信息**：Joan Solà, Jérémie Deray, Dinesh Atchuthan, *A micro Lie theory for state estimation in robotics*, arXiv:1812.01537v9, 2021. 配套开源 C++ 库 [manif](https://github.com/artivis/manif)。
 >
 > **启用方式**：将 `A micro Lie theory.pdf` 放入项目根目录的 `math_book/` 文件夹，Agent 即可自动搜索原文。PDF 不随 npm/git 分发（版权原因），需自行获取。
 
 > 全保真回查 = 让 Agent 自动检索本地 PDF：`math_book/A micro Lie theory.pdf`（用 `pdftotext` 或 Read PDF pages）。下列为该 PDF 内的真实章节/公式块定位：
 
-1. **§II-D 指数映射 + Fig. 1**：exp/log 与大写 Exp/Log 算子（式 23–24）——流形↔切空间桥梁与闭式来源；配 Ex. 3（SO(3) 的李代数 `[ω]×`）、Ex. 4（SO(3) 的 exp = Rodrigues）。
+1. **§II-D 指数映射 + Fig. 1**：exp/log 与大写 Exp/Log 算子（式 23–24）——流形-> 切空间桥梁与闭式来源；配 Ex. 3（SO(3) 的李代数 `[ω]×`）、Ex. 4（SO(3) 的 exp = Rodrigues）。
 2. **§II-E 加减算子（式 25–28）+ §II-F 伴随 Ad_X（式 30–35）**：流形上的"加/减"与左右扰动互转；Ex. 6（SE(3) 的伴随矩阵）。
 3. **§II-G 李群上的导数 + §III-A 链式法则**：右雅可比（式 41a–c）、左雅可比（式 44），二者由伴随相联——反传/梯度的几何正确形式。
 4. **§II-H 流形上的不确定性与协方差传播（式 52）**：Σ 定义在切空间；§V-A 流形误差状态 EKF（式 92–96）是落地范例。

@@ -5,6 +5,19 @@
 >
 > This file is the single source of truth for the "GPU-feasibility" acceptance gate. The activator, the 15 thinking lenses, the book references, and the math-critic all point here.
 
+## Eight-Dimension Abbreviations
+
+| Abbrev. | Full Name |
+|---------|-----------|
+| D1 | Tensorization |
+| D2 | GEMM-mappability |
+| D3 | Complexity |
+| D4 | Memory & KV-Cache |
+| D5 | Low-precision stability |
+| D6 | Parallelism & communication |
+| D7 | Sparse structure |
+| D8 | Operator fusion |
+
 ## Core Proposition
 
 **Mathematical beauty ≠ computability.** For a structure to truly enter training and inference on modern GPU clusters, it must simultaneously satisfy two requirements:
@@ -18,7 +31,7 @@ Many "beautiful on paper" modern mathematical structures cannot run at high perf
 
 For any candidate structure (operator, attention variant, routing mechanism, regularization term, compression scheme…) rate each dimension as `Friendly / Retrofittable / Unfriendly` and provide adaptation recommendations.
 
-| # | Dimension | Key Question | Friendly ✅ | Unfriendly ❌ |
+| # | Dimension | Key Question | Friendly [v] | Unfriendly [x] |
 |---|-----------|-------------|------------|--------------|
 | 1 | **Tensorization** | Can it be expressed as dense tensor operations, avoiding element-wise irregular control flow? | Batched tensor algebra | Scalar loops, data-dependent branches |
 | 2 | **GEMM-mappability** | Can it be reduced to matrix multiplication / batched GEMM / convolution to fully utilize Tensor Cores? | Expressible as a GEMM chain | Irregular computations that cannot be expressed as matrix operations |
@@ -57,7 +70,7 @@ Drawn from the auto-research directions cited in `agentic-workflow.md`, demonstr
 
 | Component | Mathematical Source | GPU Friendliness |
 |-----------|-------------------|-----------------|
-| Tropical Gating | Tropical semiring, piecewise-linear | Replaces Top-K: element-wise max-plus — dim 1 ✅ Tensorization / dim 2 ❌ Not a Tensor Core GEMM (runs on CUDA cores) / dim 3 ✅ Per-token gating only, sub-quadratic (min-plus matmul is APSP-hard, not sub-quadratic); sub-differentiable, kinks require LogSumExp smoothing (smoothing recovers standard softmax) |
+| Tropical Gating | Tropical semiring, piecewise-linear | Replaces Top-K: element-wise max-plus — dim 1 [v] Tensorization / dim 2 [x] Not a Tensor Core GEMM (runs on CUDA cores) / dim 3 [v] Per-token gating only, sub-quadratic (min-plus matmul is APSP-hard, not sub-quadratic); sub-differentiable, kinks require LogSumExp smoothing (smoothing recovers standard softmax) |
 | Cellular Sheaf Diffusion | Algebraic geometry / topology (sheaves, restriction maps) | Each edge is a low-rank linear transform = small GEMM (dim 2/4) |
 | Čech Cohomology Regularization | Algebraic topology (first cohomology $H^1$) | Local, inexpensive; serves as an algebraic criterion for hallucination (dim 3/8) |
 | Low-Rank Basis KV Compression (Plücker/Grassmannian perspective) | Projective geometry | Store the basis rather than Plücker coordinates (the latter expands when low-rank); block-summary candidate — compression ratio / error / throughput must be benchmarked (dim 4) |

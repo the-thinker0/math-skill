@@ -1,5 +1,5 @@
 # Geometry-Aware Attention
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
 
 ## Applicable Problems
 When **known geometric relationships** exist between tokens/keys (spatial distance, manifold geodesic distance, hierarchical structure, temporal interval), the position-agnostic inner product of standard attention cannot exploit this structural information. Geometry-aware attention **directly injects geometric priors into attention weight computation**, enabling the model to naturally respect the metric structure of the underlying space. Typical scenarios include: 3D scene understanding, molecular conformation, temporal forecasting, hierarchical text structure (paragraph-sentence-word), and knowledge graphs.
@@ -56,14 +56,14 @@ def manifold_attention(Q, K, V, manifold):
 - **Molecular Conformation Attention**: 3D atomic coordinates -> distance matrix -> geometric bias, used in molecular GNNs and protein structure prediction
 
 ## GPU Feasibility
-- **Dimension 1 Tensorization**: Distance matrices and bias matrices are dense tensors with element-wise operations
-- **Dimension 2 GEMM-mappability**: The main body $Q K^T$ is standard GEMM; geometric bias is additive and does not interrupt GEMM
-- **Dimension 3 Complexity**: Pairwise distance matrix construction and storage are $O(n^2)$; however, block-wise computation + online softmax can avoid materializing the full matrix
-- **Dimension 4 Memory**: The $n \times n$ distance matrix occupies GPU memory; mitigated by block/streaming computation (compatible with FlashAttention)
-- **Dimension 5 Low Precision**: Distance computation and bias addition are stable under bf16; the exp in RBF requires overflow caution (clamp distances)
-- **Dimension 6 Parallelism**: Distance computation and attention can be pipelined; pairwise distances can be computed in parallel blocks
-- **Dimension 7 Sparsity**: Distant biases tend toward $-\infty$ (approaching zero after softmax), naturally inducing structured sparsity (local attention windows)
-- **Dimension 8 Operator Fusion**: Geometric bias can be fused into FlashAttention's online softmax loop (added after $QK^T$, before softmax)
+- **D1**: Distance matrices and bias matrices are dense tensors with element-wise operations
+- **D2**: The main body $Q K^T$ is standard GEMM; geometric bias is additive and does not interrupt GEMM
+- **D3**: Pairwise distance matrix construction and storage are $O(n^2)$; however, block-wise computation + online softmax can avoid materializing the full matrix
+- **D4**: The $n \times n$ distance matrix occupies GPU memory; mitigated by block/streaming computation (compatible with FlashAttention)
+- **D5**: Distance computation and bias addition are stable under bf16; the exp in RBF requires overflow caution (clamp distances)
+- **D6**: Distance computation and attention can be pipelined; pairwise distances can be computed in parallel blocks
+- **D7**: Distant biases tend toward $-\infty$ (approaching zero after softmax), naturally inducing structured sparsity (local attention windows)
+- **D8**: Geometric bias can be fused into FlashAttention's online softmax loop (added after $QK^T$, before softmax)
 
 ## Paper Phrasing
 "We propose geometry-aware attention, which explicitly injects learnable geometric distance bias terms into attention scores, enabling the model to naturally respect the metric structure of the input space. This achieves exponential decay of attention to distant tokens without increasing parameter count, while maintaining compatibility with FlashAttention."

@@ -1,4 +1,4 @@
-# 🔗 Causal Lens
+# Causal Lens
 
 > Correlation does not imply causation — but causation can be clarified. The crucial distinction: "how Y behaves when X is observed" is not the same as "what would happen if X were done."
 

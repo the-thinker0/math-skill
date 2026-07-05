@@ -1,4 +1,4 @@
-# 🧠 Perturbation Lens
+# Perturbation Lens
 
 > Propagation of small perturbations, stability, and robustness — a system's sensitivity to tiny changes determines its reliability
 

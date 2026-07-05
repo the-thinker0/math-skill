@@ -1,5 +1,5 @@
 # Information Bottleneck Loss
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
 
 ## Applicable Problems
 When a representation $Z$ must achieve an optimal balance between "retaining task-relevant information" and "compressing input redundancy." Typical scenarios: (1) Shared representations should retain only cross-task common information, discarding task-specific noise; (2) Private representations should retain only single-task unique information; (3) Routing features should maximize expert-task matching information. Core objective: **optimal information compression -- nothing more, nothing less, retaining only what is useful**.

@@ -1,4 +1,4 @@
-# 🎲 Probabilistic Lens
+# Probabilistic Lens
 
 > Uncertainty is quantifiable — probability is quantified belief, data is quantified evidence
 

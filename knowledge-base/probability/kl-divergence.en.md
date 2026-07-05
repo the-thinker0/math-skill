@@ -33,12 +33,12 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 - **PPO / RLHF**: $D_{KL}(\pi_\theta \| \pi_{\text{ref}})$ serves as a penalty term for the policy deviating from the reference policy
 
 ## Engineering Feasibility
-- **Dimension 1 Tensorization ✅**: Element-wise $p \log(p/q)$ is fully vectorizable
-- **Dimension 2 GEMM-mappability ⚠️**: KL itself is not a GEMM, but its inputs (logits) come from GEMM layers
-- **Dimension 3 Complexity ✅**: $O(|\mathcal{X}|)$ linear
-- **Dimension 4 Memory ⚠️**: For large vocabularies, both $p$ and $q$ probability vectors must be held simultaneously; chunked computation is possible
-- **Dimension 5 Low Precision ✅**: Log-softmax differences are stable in bf16; note that $\log q$ diverges as $q \to 0$, requiring clamping
-- **Dimension 8 Operator Fusion ✅**: Can be fused with softmax into FusedKLDivLoss
+- **D1[v]**: Element-wise $p \log(p/q)$ is fully vectorizable
+- **D2[~]**: KL itself is not a GEMM, but its inputs (logits) come from GEMM layers
+- **D3[v]**: $O(|\mathcal{X}|)$ linear
+- **D4[~]**: For large vocabularies, both $p$ and $q$ probability vectors must be held simultaneously; chunked computation is possible
+- **D5[v]**: Log-softmax differences are stable in bf16; note that $\log q$ diverges as $q \to 0$, requiring clamping
+- **D8[v]**: Can be fused with softmax into FusedKLDivLoss
 
 ## Risks and Failure Conditions
 - **KL diverges to infinity when $q(x)=0$ but $p(x)>0$**: In practice, label smoothing or temperature scaling must be applied to $q$ to avoid zero probabilities. The mode-seeking behavior of reverse KL can exacerbate this issue — the student model "drops" low-probability regions of the teacher distribution.

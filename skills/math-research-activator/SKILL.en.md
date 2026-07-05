@@ -6,7 +6,33 @@ description: |
 
 
 > **File routing**: When this document references any file (lenses, knowledge-base, design-patterns, references, agents), always load the `.en.md` variant if it exists. For example, `../../lenses/symmetry.md` → load `lenses/symmetry.en.md`.
-# 🧭 Math Research OS
+>
+> ## Language Routing & Mixed-Input Rules
+>
+> Language routing only determines "which language version to read" and "what language to respond in." It does NOT affect whether the math system triggers or the A/B/C/D/E scenario classification.
+>
+> ### Decision Rules
+>
+> 1. **Judge the natural-language frame first**
+>    - If the user's sentence structure, verbs, and mood particles are primarily Chinese, treat as Chinese even if English technical terms are interspersed.
+>    - E.g., "帮我 design 一个 attention" / "这个 loss 有没有理论问题" → Chinese.
+>
+> 2. **English technical terms do not count as English primary language**
+>    - attention, loss, routing, embedding, manifold, operator, kernel, KV-cache, transformer, MoE, etc. are domain terms and do not trigger a switch to English.
+>
+> 3. **Code, paths, and formulas are excluded from language detection**
+>    - File paths, function names, variable names, LaTeX formulas, and CLI arguments do not count toward language ratio.
+>
+> 4. **When primary language is unclear, follow the user's last clear language**
+>    - If the CN/EN ratio is close and indeterminate, use the user's most recent unambiguous natural language.
+>    - If there is no prior context, default to Chinese.
+>
+> 5. **Output language matches primary language**
+>    - Chinese primary → read `SKILL.md`, respond in Chinese, retaining necessary English terms.
+>    - English primary → read `SKILL.en.md`, respond in English.
+>    - If the user explicitly requests "in English" / "in Chinese," follow the explicit request.
+
+# Math Research OS
 
 > "The thinking system does not hand out theorems, the knowledge system does not indulge in loose inspiration, and the design layer does not fake profundity."
 

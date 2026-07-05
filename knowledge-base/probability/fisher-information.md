@@ -28,13 +28,13 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 - **预训练-微调的敏感度分析**：Fisher 信息大的参数方向 = 对数据敏感的参数，微调时应更谨慎
 
 ## 工程可行性
-- **维度 1 张量化 ⚠️**：完整 FIM 是 $d \times d$ 矩阵（$d$ = 参数量），直接物化不可行（LLM 参数量 $10^{10}+$）。必须用近似。
-- **维度 2 GEMM 可映射 ✅**：K-FAC 用 Kronecker 因子 $A \otimes B$，$A$ 和 $B$ 各自可用 GEMM 计算和求逆
-- **维度 3 复杂度 ⚠️**：精确 FIM 计算 $O(nd^2)$，K-FAC 降至 $O(d)$ 量级但需逐层维护
-- **维度 4 显存 ⚠️**：K-FAC 的 Kronecker 因子需额外显存，但相比完整 FIM 已大幅压缩
-- **维度 5 低精度 ✅**：FIM 估计用 fp32 即可，不需 fp64
-- **维度 6 并行 ✅**：K-FAC 的 Kronecker 因子天然按层分解，可并行计算
-- **维度 8 算子融合 ✅**：EWC 惩罚项为逐元素运算，可融入参数更新 kernel
+- **D1[~]**：完整 FIM 是 $d \times d$ 矩阵（$d$ = 参数量），直接物化不可行（LLM 参数量 $10^{10}+$）。必须用近似。
+- **D2[v]**：K-FAC 用 Kronecker 因子 $A \otimes B$，$A$ 和 $B$ 各自可用 GEMM 计算和求逆
+- **D3[~]**：精确 FIM 计算 $O(nd^2)$，K-FAC 降至 $O(d)$ 量级但需逐层维护
+- **D4[~]**：K-FAC 的 Kronecker 因子需额外显存，但相比完整 FIM 已大幅压缩
+- **D5[v]**：FIM 估计用 fp32 即可，不需 fp64
+- **D6[v]**：K-FAC 的 Kronecker 因子天然按层分解，可并行计算
+- **D8[v]**：EWC 惩罚项为逐元素运算，可融入参数更新 kernel
 
 ## 风险与失效条件
 - **完整 FIM 不可计算**：对于 LLM 级别的参数规模（$d > 10^9$），即使 K-FAC 的 Kronecker 近似也可能代价过高。实践中常用对角 Fisher（$O(d)$）或低秩近似。

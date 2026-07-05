@@ -1,4 +1,4 @@
-# 🔢 抽象代数 / Abstract Algebra
+# 抽象代数 / Abstract Algebra
 
 > **Contemporary Abstract Algebra**, Eighth Edition · Joseph A. Gallian · Brooks/Cole, Cengage Learning.
 > 本文件是「激活」参考：把书里的群/环/域结构映射到 ML/算法/Infra，不复述原文。全保真回查见文末「深挖入口」。
@@ -63,18 +63,18 @@
 
 **焦点 A：半环 GEMM 能上 Tensor Core 吗？——默认不能。**
 
-- **维度 2 GEMM 可映射（❌不友好）**：Tensor Core 硬件只做 (×,+) 的 MAC（fp16/bf16/fp8 累加到 fp32）。min-plus / max-plus 用的是 (+, min/max)，**非原生**，朴素 tropical GEMM 退化到 CUDA core 标量比较，吃不到 Tensor Core。
-- **维度 3 复杂度（❌）**：min-plus 矩阵乘没有 Strassen 式亚立方加速（等价于 APSP 难题），朴素 O(n³)。
-- **维度 5 低精度（✅）**：tropical 用 max/min，无 exp 上溢，反而数值稳健。
-- **维度 8 可微/融合（⚠️可改造）**：min/max 不可微，需松弛。
-- **改造（→ 八维转友好）**：① log-sum-exp 软化 min/max 退回 (×,+) 稳定 softmax，重上 Tensor Core；② 把热带运算**只放在低维门控**，主干仍走标准 (×,+) GEMM（范例文件中 Tropical Gating = dim 1✅张量化 / 2❌非 Tensor Core GEMM / 3✅逐 token 门控亚二次，dim 8 需 LogSumExp 软化）；③ 分块——块内标准 GEMM、块间 min-plus 归约。
+- **维度 2 GEMM 可映射（[x]不友好）**：Tensor Core 硬件只做 (×,+) 的 MAC（fp16/bf16/fp8 累加到 fp32）。min-plus / max-plus 用的是 (+, min/max)，**非原生**，朴素 tropical GEMM 退化到 CUDA core 标量比较，吃不到 Tensor Core。
+- **维度 3 复杂度（[x]）**：min-plus 矩阵乘没有 Strassen 式亚立方加速（等价于 APSP 难题），朴素 O(n³)。
+- **维度 5 低精度（[v]）**：tropical 用 max/min，无 exp 上溢，反而数值稳健。
+- **维度 8 可微/融合（[~]可改造）**：min/max 不可微，需松弛。
+- **改造（→ 八维转友好）**：① log-sum-exp 软化 min/max 退回 (×,+) 稳定 softmax，重上 Tensor Core；② 把热带运算**只放在低维门控**，主干仍走标准 (×,+) GEMM（范例文件中 Tropical Gating = dim 1[v]张量化 / 2[x]非 Tensor Core GEMM / 3[v]逐 token 门控亚二次，dim 8 需 LogSumExp 软化）；③ 分块——块内标准 GEMM、块间 min-plus 归约。
 
 **焦点 B：群操作能张量化吗？——小群能，大群和精确算术不能。**
 
-- **有限群作用（维度 1/2 ✅）**：置换矩阵 / 稠密表示矩阵 → batched GEMM，G-CNN 已工程化。正交的旋转/置换矩阵在 bf16 下数值稳定（维度 5 ✅）。
-- **大群枚举（维度 3/4 ❌）**：\|Sₙ\|=n! 爆炸，显式枚举群元素 → 显存与算力爆。**改造**：只用生成元（26 Generators and Relations）+ Cayley 图（30）做局部传播，不物化整群。
-- **置换 = gather/scatter（维度 7/1/8 ❌）**：实现为不规则 gather/scatter 会 warp divergence。**改造**：固定置换模式预编译为结构化稀疏或 dense 索引。
-- **有限域 / 模算术（维度 2 ❌、维度 1/6 ✅）**：mod p、GF(2ⁿ)、XOR、查表**不是浮点 MAC**，吃不到 Tensor Core，但在 int/bitwise kernel 上高并行。结论：**适合放编码/哈希的前后处理，绝不放进训练主干 GEMM**。Galois/精确域算术要求 int、不可微，违反维度 8。
+- **有限群作用（维度 1/2 [v]）**：置换矩阵 / 稠密表示矩阵 → batched GEMM，G-CNN 已工程化。正交的旋转/置换矩阵在 bf16 下数值稳定（维度 5 [v]）。
+- **大群枚举（维度 3/4 [x]）**：\|Sₙ\|=n! 爆炸，显式枚举群元素 → 显存与算力爆。**改造**：只用生成元（26 Generators and Relations）+ Cayley 图（30）做局部传播，不物化整群。
+- **置换 = gather/scatter（维度 7/1/8 [x]）**：实现为不规则 gather/scatter 会 warp divergence。**改造**：固定置换模式预编译为结构化稀疏或 dense 索引。
+- **有限域 / 模算术（维度 2 [x]、维度 1/6 [v]）**：mod p、GF(2ⁿ)、XOR、查表**不是浮点 MAC**，吃不到 Tensor Core，但在 int/bitwise kernel 上高并行。结论：**适合放编码/哈希的前后处理，绝不放进训练主干 GEMM**。Galois/精确域算术要求 int、不可微，违反维度 8。
 
 **判分结论**：群等变（小群、稠密表示）与频域结构 = 数学美 × GPU 友好，可进主干；半环、有限域、精确 Galois = 需先松弛/隔离，否则只能当辅助算子或离线工具。
 
@@ -82,11 +82,11 @@
 
 | 候选设计 | 代数来源（章） | 关键维度裁决 | 进主干？ |
 |---|---|---|---|
-| 群等变层（小群 Dₙ/Sₙ，置换+旋转矩阵）| 5, 6, 10 | 1✅ 2✅ 5✅，群大时 3/4❌ | ✅（限小群/生成元）|
-| 热带门控（低维 min-plus 取代硬 Top-K）| 12–14 松弛 | 1✅ 2✅ 8 需松弛，主干仍 (×,+) | ✅（仅门控）|
-| 纯 min-plus 主干注意力 | 12–14 松弛 | 2❌ Tensor Core 不支持、3❌ O(n³) | ❌（先 log-sum-exp 软化）|
-| 有限域编码压缩 KV/梯度 | 22, 31 | 2❌ 非浮点 MAC，1/6✅ int 并行 | ❌主干 / ✅前后处理 |
-| 循环群表示（FFT/RoPE token mixing）| 4, 11 | 1✅ 2✅ 3✅（n log n）| ✅ |
+| 群等变层（小群 Dₙ/Sₙ，置换+旋转矩阵）| 5, 6, 10 | 1[v] 2[v] 5[v]，群大时 3/4[x] | [v]（限小群/生成元）|
+| 热带门控（低维 min-plus 取代硬 Top-K）| 12–14 松弛 | 1[v] 2[v] 8 需松弛，主干仍 (×,+) | [v]（仅门控）|
+| 纯 min-plus 主干注意力 | 12–14 松弛 | 2[x] Tensor Core 不支持、3[x] O(n³) | [x]（先 log-sum-exp 软化）|
+| 有限域编码压缩 KV/梯度 | 22, 31 | 2[x] 非浮点 MAC，1/6[v] int 并行 | [x]主干 / [v]前后处理 |
+| 循环群表示（FFT/RoPE token mixing）| 4, 11 | 1[v] 2[v] 3[v]（n log n）| [v] |
 
 ## 该调用哪个思想透镜
 
@@ -94,7 +94,7 @@
 - **副：`categorical`**——提取群/环/域的公共结构，看穿"不同模块其实是同一代数对象"。
 - **副：`axiomatization`**——放松环公理得半环、逐条核对所设代数性质是否真成立（防伪对称）。
 - **副：`duality`**——同态/同构作等价转换、FFT/频域变换简化问题。
-- **副：`discrete-combinatorial`**——有限群计数（Burnside, 29）、编码（31）、有限域枚举（22）。
+- **副：`algorithmic`**——有限群计数（Burnside, 29）、编码（31）、有限域枚举（22）。
 
 典型组合链：先 `symmetry` 识别问题里的群与不变量 → `categorical` 抽出公共代数结构 → `axiomatization` 核对公理是否真成立（防伪对称、防误用减法）→ `duality` 落成可学习线性映射 → 最后过 `../gpu-friendly-math.md` 八维门。
 
@@ -110,7 +110,7 @@
 
 ## 深挖入口
 
-> **📖 书目信息**：Joseph A. Gallian, *Contemporary Abstract Algebra*, 8th Edition, Brooks/Cole, Cengage Learning, 2013. ISBN 978-1-133-59971-5.
+> **书目信息**：Joseph A. Gallian, *Contemporary Abstract Algebra*, 8th Edition, Brooks/Cole, Cengage Learning, 2013. ISBN 978-1-133-59971-5.
 >
 > **启用方式**：将 `Contemporary Abstract Algebra.pdf` 放入项目根目录的 `math_book/` 文件夹，Agent 即可自动搜索原文。PDF 不随 npm/git 分发（版权原因），需自行获取。
 

@@ -1,4 +1,4 @@
-# 🔄 Duality Lens
+# Duality Lens
 
 > A hard problem is equivalent to an easy problem — the key is finding the right transform and its inverse
 

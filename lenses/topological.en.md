@@ -1,4 +1,4 @@
-# 🌀 Topological Lens
+# Topological Lens
 
 > Stretching and bending are allowed, but tearing is not — the truly important properties are those invariant under continuous deformation
 

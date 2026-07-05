@@ -1,4 +1,4 @@
-# ⚛️ Symmetry Lens
+# Symmetry Lens
 
 > Seek the invariant amid change — every symmetry corresponds to a conserved quantity, and every invariant is a key to simplifying the problem
 

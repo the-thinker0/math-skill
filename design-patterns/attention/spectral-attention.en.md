@@ -1,5 +1,5 @@
 # Spectral Attention
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
 
 ## Applicable Problems
 When the input signal exhibits **frequency-domain/spectral structure** (periodicity, cyclic symmetry, graph structure), computing attention in the spectral domain rather than the spatial domain can dramatically reduce complexity while exploiting the signal's intrinsic structure. Typical scenarios include: time series forecasting (periodic signals), graph neural networks (graph Laplacian spectral decomposition), positional encoding (frequency-domain interpretation of RoPE/ALiBi), and $O(n \log n)$ acceleration of long-sequence attention.
@@ -54,14 +54,14 @@ attn = ifft(scores_freq)
 - **Frequency-Aware Positional Encoding**: The essence of RoPE is the unitary representation of the cyclic group $\mathbb{Z}$ (see Abstract Algebra Ch.4), generalizable to other groups
 
 ## GPU Feasibility
-- **Dimension 1 Tensorization**: FFT and matrix multiplication are both standard tensor operations
-- **Dimension 2 GEMM-mappability**: Spectral projection $U^T Q$ is a standard GEMM; although FFT is not GEMM, highly optimized cuFFT implementations are available
-- **Dimension 3 Complexity**: FFT attention $O(n \log n \cdot d)$, far superior to $O(n^2 d)$
-- **Dimension 4 Memory**: Frequency-domain representation introduces no extra dimensions; spectral projection can reduce to $k \ll n$ dimensions
-- **Dimension 5 Low Precision**: Complex-valued FFT suffers precision loss under fp16; fp32 or real-valued FFT (RFFT) is required
-- **Dimension 6 Parallelism**: FFT can be parallelized across batch/head; cuFFT supports multi-stream execution
-- **Dimension 7 Sparsity**: High-frequency components can be truncated in the spectral domain (structured sparsity), retaining only top-k frequencies
-- **Dimension 8 Operator Fusion**: Fusing FFT with attention requires custom kernels; no ready-made fusion exists in standard libraries
+- **D1**: FFT and matrix multiplication are both standard tensor operations
+- **D2**: Spectral projection $U^T Q$ is a standard GEMM; although FFT is not GEMM, highly optimized cuFFT implementations are available
+- **D3**: FFT attention $O(n \log n \cdot d)$, far superior to $O(n^2 d)$
+- **D4**: Frequency-domain representation introduces no extra dimensions; spectral projection can reduce to $k \ll n$ dimensions
+- **D5**: Complex-valued FFT suffers precision loss under fp16; fp32 or real-valued FFT (RFFT) is required
+- **D6**: FFT can be parallelized across batch/head; cuFFT supports multi-stream execution
+- **D7**: High-frequency components can be truncated in the spectral domain (structured sparsity), retaining only top-k frequencies
+- **D8**: Fusing FFT with attention requires custom kernels; no ready-made fusion exists in standard libraries
 
 ## Paper Phrasing
 "We propose a spectral-domain attention mechanism that transforms attention computation into the Fourier/Laplacian spectral domain, leveraging the cyclic convolution theorem to reduce sequence attention complexity from $O(n^2)$ to $O(n \log n)$ while preserving the ability to model dependencies at multiple scales through frequency-adaptive weights."

@@ -1,6 +1,6 @@
 {
   "name": "math-skill",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "面向 AI 架构创新的数学研究操作系统 v3：三层正交架构（思想透镜 / 数学知识库 / 设计翻译层），自动诊断用户意图并路由。Math Research OS for AI architecture design: thinking lenses + math knowledge base + design translation layer with auto intent diagnosis.",
   "keywords": [
     "math",

@@ -1,4 +1,4 @@
-# 📈 Local-to-Global Lens
+# Local-to-Global Lens
 
 > Patching local properties into global, sheaf cohomology obstructions — can local solutions be seamlessly assembled into a global solution? Where do the obstructions lie?
 

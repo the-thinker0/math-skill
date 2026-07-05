@@ -1,4 +1,4 @@
-# 🌉 Geometric Lens
+# Geometric Lens
 
 > Metric, curvature, and spatial structure on manifolds — seeing problems through the eyes of differential geometry, where distance, bending, and optimal paths reveal the intrinsic shape of data
 

@@ -1,5 +1,5 @@
 # Projection Attention
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
 
 ## Applicable Problems
 When the token/key space dimensionality is too high, the standard attention $Q K^T$ inner product tends to become uniform in high-dimensional spaces ("attention collapse"). In such cases, key/query vectors must first be projected onto a **subspace with superior geometric structure** before computing attention. Typical scenarios include: KV-Cache compression for long-context LLMs, attention sparsification in high-dimensional embedding spaces, and attention alignment of heterogeneous features in multimodal fusion.
@@ -51,14 +51,14 @@ scores = (Q @ eigenvecs) @ (K @ eigenvecs).T / sqrt(r)
 - **Hierarchical Projection**: Shallow layers use small $r$ (coarse filtering), while deep layers use large $r$ (fine ranking)
 
 ## GPU Feasibility
-- **Dimension 1 Tensorization**: Projection = matrix multiplication, attention = matrix multiplication chain; entirely tensor operations
-- **Dimension 2 GEMM-mappability**: $Q P_Q$ and $K P_K$ are both standard GEMM operations, fully utilizing Tensor Cores
-- **Dimension 3 Complexity**: Projection cost $O(ndr)$ is far below attention cost $O(n^2 d)$, and after projection $r \ll d$ reduces attention to $O(n^2 r)$
-- **Dimension 4 Memory**: Key-cache compressed by $d/r$; V-cache must be handled separately
-- **Dimension 5 Low Precision**: Projection matrices are orthogonal or near-orthogonal, yielding numerical stability; bf16 is acceptable
-- **Dimension 6 Parallelism**: Projection can be pipelined with attention; Multi-Head is naturally parallel across heads
-- **Dimension 7 Sparsity**: Projection matrices are inherently dense; sparse projections (CountSketch) may introduce gather/scatter operations
-- **Dimension 8 Operator Fusion ⚠️ Retrofittable, needs kernel-level validation**: Projection may be integrated into a FlashAttention-style kernel, but requires kernel-level verification
+- **D1**: Projection = matrix multiplication, attention = matrix multiplication chain; entirely tensor operations
+- **D2**: $Q P_Q$ and $K P_K$ are both standard GEMM operations, fully utilizing Tensor Cores
+- **D3**: Projection cost $O(ndr)$ is far below attention cost $O(n^2 d)$, and after projection $r \ll d$ reduces attention to $O(n^2 r)$
+- **D4**: Key-cache compressed by $d/r$; V-cache must be handled separately
+- **D5**: Projection matrices are orthogonal or near-orthogonal, yielding numerical stability; bf16 is acceptable
+- **D6**: Projection can be pipelined with attention; Multi-Head is naturally parallel across heads
+- **D7**: Projection matrices are inherently dense; sparse projections (CountSketch) may introduce gather/scatter operations
+- **D8[~] Retrofittable, needs kernel-level validation**: Projection may be integrated into a FlashAttention-style kernel, but requires kernel-level verification
 
 ## Paper Phrasing
 "We decompose attention computation into two steps -- low-dimensional subspace projection and projected-space attention -- achieving a $d/r$-fold Key-cache compression (full KV-Cache compression requires separate V compression/reconstruction) while preserving attention quality and guaranteeing Johnson-Lindenstrauss distance preservation."

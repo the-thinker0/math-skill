@@ -1,5 +1,5 @@
 # Information Bottleneck Attention
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
 
 ## Applicable Problems
 When the attention mechanism needs to **selectively transmit useful information while suppressing redundant/noisy information**, information bottleneck theory can guide the learning of attention weights -- maximizing the mutual information $I(Z;Y)$ of the attention distribution with respect to the target $Y$, while minimizing the mutual information $I(X;Z)$ with respect to the input $X$. Typical scenarios include: long-document summarization (filtering large numbers of irrelevant tokens), multimodal alignment (cross-modal noise suppression), and interpretability (attention weights as visualization of information flow).
@@ -55,14 +55,14 @@ loss = -info_nce + beta * kl_bottleneck
 - **Multi-Head Information Allocation**: Different heads learn different information bottlenecks (different $\beta$); some heads transmit global information, others only local information
 
 ## GPU Feasibility
-- **Dimension 1 Tensorization**: KL regularization involves element-wise operations; VIB reparameterization sampling is element-wise
-- **Dimension 2 GEMM-mappability**: The main body $QK^T$ and $attn \cdot V$ are standard GEMM; regularization introduces no new GEMM operations
-- **Dimension 3 Complexity**: KL regularization is $O(n)$ per token, adding no asymptotic complexity
-- **Dimension 4 Memory**: VIB requires additional $\mu_z$ and $\log\sigma_z$, approximately doubling attention weight memory
-- **Dimension 5 Low Precision**: log/exp in KL computations are stable under bf16 (standard log-softmax tricks)
-- **Dimension 6 Parallelism**: Regularization can be computed in parallel with forward propagation, introducing no serial dependencies
-- **Dimension 7 Sparsity**: KL regularization implicitly induces attention sparsity, amenable to block-sparse acceleration
-- **Dimension 8 Operator Fusion**: KL can be fused into the softmax kernel (FusedSoftmaxKL)
+- **D1**: KL regularization involves element-wise operations; VIB reparameterization sampling is element-wise
+- **D2**: The main body $QK^T$ and $attn \cdot V$ are standard GEMM; regularization introduces no new GEMM operations
+- **D3**: KL regularization is $O(n)$ per token, adding no asymptotic complexity
+- **D4**: VIB requires additional $\mu_z$ and $\log\sigma_z$, approximately doubling attention weight memory
+- **D5**: log/exp in KL computations are stable under bf16 (standard log-softmax tricks)
+- **D6**: Regularization can be computed in parallel with forward propagation, introducing no serial dependencies
+- **D7**: KL regularization implicitly induces attention sparsity, amenable to block-sparse acceleration
+- **D8**: KL can be fused into the softmax kernel (FusedSoftmaxKL)
 
 ## Paper Phrasing
 "We propose information bottleneck attention, which models attention as an information bottleneck variational problem. By maximizing the mutual information between output and target while minimizing redundant information transmission from the input, it achieves theoretically optimal information selection and demonstrates enhanced sparsity and interpretability in experiments."

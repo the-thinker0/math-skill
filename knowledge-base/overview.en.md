@@ -30,10 +30,10 @@ The knowledge base is organized by mathematical domain, with 7 domains and 31 kn
 
 ## Relationship to Thinking Lenses
 
-Thinking lenses (`../../lenses/`) handle "what perspective to use"; the knowledge base provides "concrete mathematical tools." Typical chain:
+Thinking lenses (`../lenses/`) handle "what perspective to use"; the knowledge base provides "concrete mathematical tools." Typical chain:
 
 ```
 Lens diagnosis → Knowledge card provides tools → Design pattern translates to AI module
 ```
 
-For deeper study, `../../references/books/*.md` provides 7 book distillations.
+For deeper study, `../references/books/*.md` provides 7 book distillations.

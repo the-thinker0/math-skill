@@ -1,4 +1,4 @@
-# 📐 流形与微分几何 / Manifolds & Differential Geometry
+# 流形与微分几何 / Manifolds & Differential Geometry
 
 > **Manifolds and Differential Geometry** — Jeffrey M. Lee
 > American Mathematical Society, *Graduate Studies in Mathematics*, Volume 107 (2009), ISBN 978-0-8218-4815-9.
@@ -77,36 +77,36 @@
 > 用 `../gpu-friendly-math.md` 的**八维记分卡**逐项评判。微分几何最大的坑是"度量 / 曲率矩阵的求逆与物化"。
 
 - **维度 2/3（GEMM 可映射 / 复杂度）—— 求逆是生死线。** 朴素自然梯度要算 N×N Fisher 的逆，N 是参数量（~10⁹），O(N³) 求逆 + O(N²) 显存，**直接出局**。
-  - **可改造 ✅**：**K-FAC** 把 F 分块为 Kronecker 积 A⊗B，利用 (A⊗B)⁻¹ = A⁻¹⊗B⁻¹，只需对两个小因子求逆，且预条件作用到梯度上**就是 GEMM**。这就是"能否 Kronecker 因子化为 GEMM"的肯定答案——能，且这是它唯一可上集群的形态。
+  - **可改造 [v]**：**K-FAC** 把 F 分块为 Kronecker 积 A⊗B，利用 (A⊗B)⁻¹ = A⁻¹⊗B⁻¹，只需对两个小因子求逆，且预条件作用到梯度上**就是 GEMM**。这就是"能否 Kronecker 因子化为 GEMM"的肯定答案——能，且这是它唯一可上集群的形态。
 - **维度 4（显存）—— 不要物化全 Hessian / 全曲率张量。** Riemann 曲率张量是 4 阶，全物化爆显存。用 **Hessian-vector product（HVP）** 经一次反向以 O(N) 拿到曲率信息，避免 N×N。
 - **维度 5（低精度）—— Fisher / 度量矩阵常病态。** bf16/fp16 下求逆灾难性放大误差，**必须加阻尼（damping / Tikhonov，F+λI）** 并把求逆留在 fp32；否则违反"低精度稳定"。
 - **维度 6（并行）—— 平行移动 / 测地线是串行 ODE。** 沿曲线积分联络方程是长串行递推，并行性差；工程上用**一步 retraction / 闭式平行移动**（特定流形有解析公式）替代逐步积分。
-- **维度 1/2（张量化 / GEMM）—— 群卷积可友好，但连续群要当心。** 离散群（如 C_n、八面体群）的群卷积可展开成 GEMM ✅；连续李群需采样离散化，采样不当会导致等变性破缺 + 不规则 gather/scatter（维度 7 稀疏不友好）。
+- **维度 1/2（张量化 / GEMM）—— 群卷积可友好，但连续群要当心。** 离散群（如 C_n、八面体群）的群卷积可展开成 GEMM [v]；连续李群需采样离散化，采样不当会导致等变性破缺 + 不规则 gather/scatter（维度 7 稀疏不友好）。
 
 **自然梯度 / K-FAC 八维记分卡（worked example）：**
 
 | 维度 | 朴素自然梯度（全 Fisher 求逆）| K-FAC（Kronecker 因子化）|
 |------|------------------------------|--------------------------|
-| 1 张量化 | ❌ 大矩阵显式逆 | ✅ 批量小矩阵代数 |
-| 2 GEMM | ❌ N×N 求逆无法 GEMM | ✅ A⁻¹⊗B⁻¹ 作用 = GEMM 链 |
-| 3 复杂度 | ❌ O(N³) | ✅ 两个小因子，亚立方 |
-| 4 显存 | ❌ 物化 N×N | ✅ 只存两个小因子 |
-| 5 低精度 | ❌ 病态、需 fp64 | ⚠️ 加阻尼 + fp32 求逆可改造 |
-| 6 并行 | ⚠️ 单次大求逆难并行 | ✅ 各层因子独立、可并行 |
-| 7 稀疏 | — | ✅ 块对角结构化 |
-| 8 融合 | ❌ | ✅ 预条件可融进优化器 kernel |
+| 1 张量化 | [x] 大矩阵显式逆 | [v] 批量小矩阵代数 |
+| 2 GEMM | [x] N×N 求逆无法 GEMM | [v] A⁻¹⊗B⁻¹ 作用 = GEMM 链 |
+| 3 复杂度 | [x] O(N³) | [v] 两个小因子，亚立方 |
+| 4 显存 | [x] 物化 N×N | [v] 只存两个小因子 |
+| 5 低精度 | [x] 病态、需 fp64 | [~] 加阻尼 + fp32 求逆可改造 |
+| 6 并行 | [~] 单次大求逆难并行 | [v] 各层因子独立、可并行 |
+| 7 稀疏 | — | [v] 块对角结构化 |
+| 8 融合 | [x] | [v] 预条件可融进优化器 kernel |
 
 **结论**：黎曼 / 信息几何方法**只有在度量被结构化因子化（Kronecker / 块对角 / 低秩）后才 GPU 可行**；精确求逆与精确平行移动都属于"美但不可算"，须改造或淘汰。
 
 ## 该调用哪个思想透镜
 
-- **symmetry（⚛️ 对称与不变性）—— 首选。** 规范等变、李群对称、纤维丛 = 把"frame / 坐标选择无关"编码成对称性，是本书与 DL 最强的接口。
-- **optimization（⚖️ 优化）—— 并列首选。** 自然梯度、Riemannian SGD、曲率正则都是"在弯曲约束空间里找最优"。
-- **transformation（🔄 变换）**：指数 / 对数映射、retraction、坐标变换简化问题。
-- **modeling（🌉 建模）**：把参数 / 数据空间显式建模为流形，再翻译回算法。
-- **topological-thinking（🌀 拓扑）**：辅助——de Rham 上同调 / 整体不变量用于守恒量与可积性诊断。
+- **symmetry（对称与不变性）—— 首选。** 规范等变、李群对称、纤维丛 = 把"frame / 坐标选择无关"编码成对称性，是本书与 DL 最强的接口。
+- **variational（变分）—— 并列首选。** 自然梯度、Riemannian SGD、曲率正则都是"在弯曲约束空间里找最优"。
+- **duality（对偶）**：指数 / 对数映射、retraction、坐标变换简化问题。
+- **geometric（几何）**：把参数 / 数据空间显式建模为流形，再翻译回算法。
+- **topological（拓扑）**：辅助——de Rham 上同调 / 整体不变量用于守恒量与可积性诊断。
 
-组合建议：先 `symmetry` 定对称结构 → `optimization` 落到自然梯度 / Riemannian 优化 → `duality` 处理 retraction → 过 `../gpu-friendly-math.md` 验收门。
+组合建议：先 `symmetry` 定对称结构 → `variational` 落到自然梯度 / Riemannian 优化 → `duality` 处理 retraction → 过 `../gpu-friendly-math.md` 验收门。
 
 ## 反模式
 
@@ -127,7 +127,7 @@
 
 ## 深挖入口
 
-> **📖 书目信息**：Jeffrey M. Lee, *Manifolds and Differential Geometry*, Graduate Studies in Mathematics Vol. 107, American Mathematical Society, 2009. ISBN 978-0-8218-4815-9.
+> **书目信息**：Jeffrey M. Lee, *Manifolds and Differential Geometry*, Graduate Studies in Mathematics Vol. 107, American Mathematical Society, 2009. ISBN 978-0-8218-4815-9.
 >
 > **启用方式**：将 `Manifolds and Differential Geometry.pdf` 放入项目根目录的 `math_book/` 文件夹，Agent 即可自动搜索原文。PDF 不随 npm/git 分发（版权原因），需自行获取。
 

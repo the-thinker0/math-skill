@@ -47,4 +47,4 @@ GPU 友好度取决于度量的结构化程度：
 - 蒸馏稿：references/books/differential-geometry.md（Ch 7 §7.6 Metric Tensors, Ch 13 §13.1 Levi-Civita）
 - 蒸馏稿：references/books/smooth-manifolds.md（Ch 13 Riemannian Metrics）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, §7.6 Metric Tensors
-- 原书：John M. Lee, *Introduction to Smooth Manifolds*, Ch 13（黎曼度量、升降指标 ♯/♭）
+- 原书：John M. Lee, *Introduction to Smooth Manifolds*, Ch 13（黎曼度量、升降指标 (sharp)/(flat)）

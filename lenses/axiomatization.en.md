@@ -1,4 +1,4 @@
-# 📐 Axiomatization Lens
+# Axiomatization Lens
 
 > Build from minimal assumptions using rigorous logic — scrutinizing premises matters more than checking conclusions
 

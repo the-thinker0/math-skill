@@ -2,7 +2,7 @@
   <a href="README.md">中文</a> | <a href="README.en-US.md">English</a>
 </p>
 
-# ⚔️ Math Skill — A Mathematical Research Operating System for AI Architecture Design
+# 📐 Math Skill — A Mathematical Research Operating System for AI Architecture Design
 
 > **The thinking system does not hand out theorems. The knowledge system does not improvise inspiration. The design layer does not fake profundity.**
 
@@ -224,6 +224,14 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 ---
 
 ## Changelog
+
+### v3.0.1 — Token Optimization & Bilingual Completion
+
+- **Emoji cleanup**: removed all emoji characters from skill files; GPU rating markers ✅⚠️❌ replaced with text `[v]`/`[~]`/`[x]`, saving ~1,400 tokens
+- **English distillation files**: added EN translations for all 7 book distillation notes (`references/books/*.en.md`) and `commands/ask.en.md`
+- **Mixed-language routing**: added 5-rule decision system for code-switched input (technical terms excluded from language detection; sentence frame determines primary language)
+- **GPU dimension abbreviations**: verbose labels `**Dimension N full-name**` compressed to `**DN**` (D1-D8), defined in `gpu-friendly-math.md`, saving ~800-1,000 tokens
+- Terminology unification, cross-reference fixes, and other minor improvements
 
 ### v3.0.0 — Mathematical Research Operating System
 

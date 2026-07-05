@@ -1,4 +1,4 @@
-# ⚖️ Variational Lens
+# Variational Lens
 
 > Pursue the best among the feasible under constraints — convexity determines difficulty, duality reveals structure
 

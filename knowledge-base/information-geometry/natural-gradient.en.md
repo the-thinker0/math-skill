@@ -34,13 +34,13 @@ where $A_l = \mathbb{E}[a_l a_l^T]$ (activation covariance) and $B_l = \mathbb{E
 - **Natural Gradient in Variational Inference**: For exponential family parameters, the natural gradient equals the difference in expected sufficient statistics, avoiding Fisher matrix inversion
 
 ## Engineering Feasibility
-- **Dimension 1 Tensorization ⚠️**: The Kronecker factors of the FIM are dense matrices and can be tensorized; the full FIM cannot
-- **Dimension 2 GEMM-mappability ✅**: K-FAC's $A_l^{-1} (\nabla W_l) B_l^{-1}$ is two matrix multiplications, naturally GEMM
-- **Dimension 3 Complexity ⚠️**: K-FAC adds $O(d_A^2 + d_B^2)$ per-layer covariance estimation + $O(d_A^3 + d_B^3)$ matrix inversion; diagonal approximation is $O(d)$
-- **Dimension 4 Memory ⚠️**: Requires additional storage of $A_l$ and $B_l$ per layer ($O(d_A^2 + d_B^2)$); acceptable for LLMs but non-trivial
-- **Dimension 5 Low Precision ⚠️**: Matrix inversion may be unstable in fp16; fp32 or Tikhonov regularization $(A + \epsilon I)^{-1}$ is needed
-- **Dimension 6 Parallelism ✅**: Kronecker factors for each layer are computed independently; fully parallel across layers
-- **Dimension 8 Operator Fusion ✅**: Natural gradient updates can be fused into the parameter update kernel
+- **D1[~]**: The Kronecker factors of the FIM are dense matrices and can be tensorized; the full FIM cannot
+- **D2[v]**: K-FAC's $A_l^{-1} (\nabla W_l) B_l^{-1}$ is two matrix multiplications, naturally GEMM
+- **D3[~]**: K-FAC adds $O(d_A^2 + d_B^2)$ per-layer covariance estimation + $O(d_A^3 + d_B^3)$ matrix inversion; diagonal approximation is $O(d)$
+- **D4[~]**: Requires additional storage of $A_l$ and $B_l$ per layer ($O(d_A^2 + d_B^2)$); acceptable for LLMs but non-trivial
+- **D5[~]**: Matrix inversion may be unstable in fp16; fp32 or Tikhonov regularization $(A + \epsilon I)^{-1}$ is needed
+- **D6[v]**: Kronecker factors for each layer are computed independently; fully parallel across layers
+- **D8[v]**: Natural gradient updates can be fused into the parameter update kernel
 
 ## Risks and Failure Conditions
 - **K-FAC's inter-layer independence assumption is overly strong**: It assumes the Fisher information is block-diagonal across layers, ignoring inter-layer correlations. In deep networks, this may underestimate the effective curvature, leading to excessively large steps. Line search or trust-region safeguards are needed.

@@ -1,4 +1,4 @@
-# 📡 Spectral Decomposition Lens
+# Spectral Decomposition Lens
 
 > Any linear operator can be decomposed into a superposition of eigencomponents — eigenvalues reveal dominant structure, eigenvectors reveal dominant directions.
 

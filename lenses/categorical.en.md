@@ -1,4 +1,4 @@
-# 🧩 Categorification Lens
+# Categorification Lens
 
 > Strip away incidental details to reveal essential structure — problems across different domains often share the same abstract skeleton
 

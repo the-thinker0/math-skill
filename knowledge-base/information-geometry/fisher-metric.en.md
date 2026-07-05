@@ -33,14 +33,14 @@ $$\Gamma_{ijk}^{(\alpha)} = \mathbb{E}\left[\left(\partial_i \partial_j \ell + \
 - **Geometric analysis of MoE expert distributions**: The degree of separation between the output distributions of different experts under the Fisher metric can quantify expert diversity
 
 ## Engineering Feasibility
-- **Dimension 1 Tensorization ❌**: The full metric tensor $g_{ij}$ is $d \times d$; infeasible to materialize when $d \sim 10^{10}$
-- **Dimension 2 GEMM-mappability ⚠️**: Kronecker/diagonal approximations can be mapped; the exact metric cannot
-- **Dimension 3 Complexity ❌**: Geodesic computation requires solving a second-order ODE; exact computation is intractable
-- **Dimension 4 Memory ❌**: Full metric tensor storage is $O(d^2)$; completely impossible at LLM scale
-- **Dimension 5 Low Precision ⚠️**: The condition number of the metric tensor may be very large, leading to instability under low precision
-- **Dimension 6 Parallelism ⚠️**: Approximate versions (K-FAC, diagonal) can be parallelized; exact versions cannot
-- **Dimension 7 Sparsity ⚠️**: The Fisher information matrix is typically dense; block-diagonal approximations (inter-layer independence) introduce structured sparsity
-- **Dimension 8 Operator Fusion ✅**: Approximate versions can be fused into optimizer updates
+- **D1[x]**: The full metric tensor $g_{ij}$ is $d \times d$; infeasible to materialize when $d \sim 10^{10}$
+- **D2[~]**: Kronecker/diagonal approximations can be mapped; the exact metric cannot
+- **D3[x]**: Geodesic computation requires solving a second-order ODE; exact computation is intractable
+- **D4[x]**: Full metric tensor storage is $O(d^2)$; completely impossible at LLM scale
+- **D5[~]**: The condition number of the metric tensor may be very large, leading to instability under low precision
+- **D6[~]**: Approximate versions (K-FAC, diagonal) can be parallelized; exact versions cannot
+- **D7[~]**: The Fisher information matrix is typically dense; block-diagonal approximations (inter-layer independence) introduce structured sparsity
+- **D8[v]**: Approximate versions can be fused into optimizer updates
 
 **Conclusion**: The exact Fisher metric is infeasible at LLM scale, but **approximate versions** (K-FAC, diagonal Fisher, low-rank) are engineering-viable. The theoretical value of information geometry lies primarily in **guiding design** rather than direct computation.
 

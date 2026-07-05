@@ -28,13 +28,13 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 - **Sensitivity analysis for pretraining-finetuning**: Parameter directions with high Fisher information = parameters sensitive to data; these should be handled more carefully during fine-tuning
 
 ## Engineering Feasibility
-- **Dimension 1 Tensorization ⚠️**: The full FIM is a $d \times d$ matrix ($d$ = number of parameters); direct materialization is infeasible (LLM parameter counts $10^{10}+$). Approximations are required.
-- **Dimension 2 GEMM-mappability ✅**: K-FAC uses Kronecker factors $A \otimes B$; $A$ and $B$ can each be computed and inverted using GEMM
-- **Dimension 3 Complexity ⚠️**: Exact FIM computation is $O(nd^2)$; K-FAC reduces this to $O(d)$ scale but requires per-layer maintenance
-- **Dimension 4 Memory ⚠️**: K-FAC's Kronecker factors require additional memory, though significantly compressed compared to the full FIM
-- **Dimension 5 Low Precision ✅**: FIM estimation can use fp32; fp64 is not required
-- **Dimension 6 Parallelism ✅**: K-FAC's Kronecker factors naturally decompose by layer, enabling parallel computation
-- **Dimension 8 Operator Fusion ✅**: The EWC penalty term is element-wise and can be fused into the parameter update kernel
+- **D1[~]**: The full FIM is a $d \times d$ matrix ($d$ = number of parameters); direct materialization is infeasible (LLM parameter counts $10^{10}+$). Approximations are required.
+- **D2[v]**: K-FAC uses Kronecker factors $A \otimes B$; $A$ and $B$ can each be computed and inverted using GEMM
+- **D3[~]**: Exact FIM computation is $O(nd^2)$; K-FAC reduces this to $O(d)$ scale but requires per-layer maintenance
+- **D4[~]**: K-FAC's Kronecker factors require additional memory, though significantly compressed compared to the full FIM
+- **D5[v]**: FIM estimation can use fp32; fp64 is not required
+- **D6[v]**: K-FAC's Kronecker factors naturally decompose by layer, enabling parallel computation
+- **D8[v]**: The EWC penalty term is element-wise and can be fused into the parameter update kernel
 
 ## Risks and Failure Conditions
 - **Full FIM is intractable**: For LLM-scale parameter counts ($d > 10^9$), even K-FAC's Kronecker approximation may be too costly. In practice, diagonal Fisher ($O(d)$) or low-rank approximations are commonly used.

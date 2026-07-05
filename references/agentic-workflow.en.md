@@ -38,7 +38,7 @@ Record research tasks in a table that the Agent can continuously update:
 ```markdown
 | Candidate Structure | Math Correctness | GPU 8-Dim | Complexity | Status | Notes / Next Steps |
 |--------------------|-----------------|-----------|------------|--------|-------------------|
-| Tropical gating replacing TopK | ✅ Differentiable relaxation | 1✅2❌3✅… | Sub-quadratic (per-token) | Verifying | Compare with SWA baseline |
+| Tropical gating replacing TopK | [v] Differentiable relaxation | 1[v]2[x]3[v]… | Sub-quadratic (per-token) | Verifying | Compare with SWA baseline |
 | …                  |                 |           |            | Todo   |                   |
 ```
 

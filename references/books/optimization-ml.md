@@ -1,4 +1,4 @@
-# ⚙️ 最优化（含 ML 应用）/ Optimization with ML
+# 最优化（含 ML 应用）/ Optimization with ML
 
 > **An Introduction to Optimization, With Applications to Machine Learning** (5th Edition, 2024)
 > Edwin K. P. Chong, Wu-Sheng Lu, Stanisław H. Żak — John Wiley & Sons（Hardback ISBN 9781119877639）
@@ -132,11 +132,10 @@
 
 ## 该调用哪个思想透镜
 
-- **optimization**（主）：目标-约束-最优性-收敛的完整框架，本书是其核心出处。
-- **algorithmic-thinking**：迭代算法的收敛性、复杂度、步长 / 停机判据。
-- **transformation**：对偶、核技巧、变量替换、SVD/PCA——"等价转换简化问题"。
-- **modeling**：把现实任务（分类 / 回归 / 约束）翻译成可解的优化问题。
-- **probability-statistics**：SGD 随机梯度、SVRG 方差缩减、交叉验证 / 正则化。
+- **variational**（主）：目标-约束-最优性-收敛的完整框架，本书是其核心出处；把现实任务（分类 / 回归 / 约束）翻译成可解的优化问题。
+- **algorithmic**：迭代算法的收敛性、复杂度、步长 / 停机判据。
+- **duality**：对偶、核技巧、变量替换、SVD/PCA——"等价转换简化问题"。
+- **probabilistic**：SGD 随机梯度、SVRG 方差缩减、交叉验证 / 正则化。
 
 ## 反模式
 
@@ -150,7 +149,7 @@
 
 ## 深挖入口
 
-> **📖 书目信息**：Edwin K. P. Chong, Wu-Sheng Lu, Stanisław H. Żak, *An Introduction to Optimization, With Applications to Machine Learning*, 5th Edition, John Wiley & Sons, 2024. ISBN 978-1-119-87763-9.
+> **书目信息**：Edwin K. P. Chong, Wu-Sheng Lu, Stanisław H. Żak, *An Introduction to Optimization, With Applications to Machine Learning*, 5th Edition, John Wiley & Sons, 2024. ISBN 978-1-119-87763-9.
 >
 > **启用方式**：将 `An Introduction to Optimization With Applications to Machine Learning.pdf` 放入项目根目录的 `math_book/` 文件夹，Agent 即可自动搜索原文。PDF 不随 npm/git 分发（版权原因），需自行获取。
 

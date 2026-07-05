@@ -1,4 +1,4 @@
-# 🖥️ Algorithmic Lens
+# Algorithmic Lens
 
 > Algorithms are the automation of thought — converting insights into precise, repeatable steps.
 

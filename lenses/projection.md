@@ -1,4 +1,4 @@
-# 🧮 投影与分解透镜 / Projection & Decomposition Lens
+# 投影与分解透镜 / Projection & Decomposition Lens
 
 > 复杂整体可以正交分解为独立分量——冲突在子空间中暴露，信号与噪声在投影下分离。
 

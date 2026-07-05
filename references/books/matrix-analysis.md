@@ -1,4 +1,4 @@
-# 🧮 矩阵分析 / Matrix Analysis
+# 矩阵分析 / Matrix Analysis
 
 > Roger A. Horn & Charles R. Johnson, *Matrix Analysis*, 2nd Edition, Cambridge University Press, 2013（ISBN 978-0-521-83940-2）。以**标准型（canonical forms）作为统一主题**的研究生级矩阵理论经典。
 
@@ -106,14 +106,14 @@
 
 ## 该调用哪个思想透镜
 
-配合 `skills/` 下的现有武器使用：
+配合 `../../lenses/` 下的思想透镜使用：
 
-- **`duality`（变换）**：相似 / 酉等价 / 合同、SVD、对角化——本书的灵魂就是"换坐标让结构显形"。
-- **`algorithmic-thinking`（算法与计算）**：power iteration、Newton–Schulz、QR algorithm、随机化 NLA——把定理变成可跑的 kernel。
-- **`optimization`（优化）**：变分刻画（§4.2）、条件数与预条件、二阶法、Loewner 偏序下的矩阵不等式。
+- **`duality`（对偶）**：相似 / 酉等价 / 合同、SVD、对角化——本书的灵魂就是"换坐标让结构显形"。
+- **`algorithmic`（算法）**：power iteration、Newton–Schulz、QR algorithm、随机化 NLA——把定理变成可跑的 kernel。
+- **`variational`（变分）**：变分刻画（§4.2）、条件数与预条件、二阶法、Loewner 偏序下的矩阵不等式。
 - **`symmetry`（对称与不变性）**：酉不变性、相似不变量（特征值/迹/行列式）、正规矩阵的良态谱。
-- **`categorical`（抽象化）**：标准型即"等价类的代表元"——用最简形态抓住本质、忽略坐标细节。
-- **`probability-statistics`（概率与统计）**：随机化 NLA、随机矩阵谱、Perron–Frobenius/Markov 链平稳分布。
+- **`categorical`（范畴化）**：标准型即"等价类的代表元"——用最简形态抓住本质、忽略坐标细节。
+- **`probabilistic`（概率统计）**：随机化 NLA、随机矩阵谱、Perron–Frobenius/Markov 链平稳分布。
 
 ## 反模式
 
@@ -130,7 +130,7 @@
 
 ## 深挖入口
 
-> **📖 书目信息**：Roger A. Horn & Charles R. Johnson, *Matrix Analysis*, 2nd Edition, Cambridge University Press, 2013. ISBN 978-0-521-83940-2.
+> **书目信息**：Roger A. Horn & Charles R. Johnson, *Matrix Analysis*, 2nd Edition, Cambridge University Press, 2013. ISBN 978-0-521-83940-2.
 >
 > **启用方式**：将 `Matrix Analysis.pdf` 放入项目根目录的 `math_book/` 文件夹，Agent 即可自动搜索原文。PDF 不随 npm/git 分发（版权原因），需自行获取。
 

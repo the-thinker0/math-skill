@@ -7,6 +7,19 @@
 >
 > This file is the single source of truth for the "GPU-feasibility" acceptance gate. The activator, the 15 thinking lenses, the book references, and the math-critic all point here.
 
+## 八维缩写速查
+
+| 缩写 | 全称 |
+|------|------|
+| D1 | 张量化 |
+| D2 | GEMM 可映射 |
+| D3 | 复杂度 |
+| D4 | 显存与 KV-Cache |
+| D5 | 低精度稳定 |
+| D6 | 并行与通信 |
+| D7 | 稀疏结构 |
+| D8 | 算子融合 |
+
 ## 核心命题 / Core Proposition
 
 **数学美 ≠ 可算。** 一个结构要真正进入现代 GPU 集群的训练与推理，必须同时满足两件事：
@@ -20,7 +33,7 @@
 
 对任何候选结构（算子、注意力变体、路由、正则项、压缩方案……）逐项评 `友好 / 可改造 / 不友好`，并给出改造建议。
 
-| # | 维度 | 关键问题 | 友好 ✅ | 不友好 ❌ |
+| # | 维度 | 关键问题 | 友好 [v] | 不友好 [x] |
 |---|------|---------|--------|----------|
 | 1 | **张量化 / Tensorization** | 能否表达为稠密张量运算，避免逐元素不规则控制流？ | 批量张量代数 | 标量循环、数据相关分支 |
 | 2 | **GEMM 可映射 / GEMM mappability** | 能否落到 矩阵乘 / batched GEMM / 卷积，吃满 Tensor Core？ | 可写成 GEMM 链 | 无法矩阵化的不规则运算 |
@@ -59,7 +72,7 @@
 
 | 组件 | 数学来源 | GPU 友好性 |
 |------|---------|-----------|
-| 热带门控 Tropical Gating | 热带半环分段线性 | 替代 Top-K：逐元素 max-plus——dim 1 ✅ 张量化 / dim 2 ❌ 非 Tensor Core GEMM（落 CUDA core）/ dim 3 ✅ 仅逐 token 门控亚二次（min-plus matmul 则 APSP-hard 非亚二次）；次可微，折点需 LogSumExp 软化（软化退回标准 softmax）|
+| 热带门控 Tropical Gating | 热带半环分段线性 | 替代 Top-K：逐元素 max-plus——dim 1 [v] 张量化 / dim 2 [x] 非 Tensor Core GEMM（落 CUDA core）/ dim 3 [v] 仅逐 token 门控亚二次（min-plus matmul 则 APSP-hard 非亚二次）；次可微，折点需 LogSumExp 软化（软化退回标准 softmax）|
 | 胞腔层扩散 Cellular Sheaf Diffusion | 代数几何/拓扑（层、限制映射）| 每边低秩线性变换 = 小 GEMM（维度 2/4）|
 | Čech 上同调正则 | 代数拓扑（一阶上同调 H¹）| 局部、廉价；作幻觉的代数判据（维度 3/8）|
 | 低秩基底 KV 压缩（Plücker/Grassmannian 视角） | 射影几何 | 存基底而非 Plücker 坐标（后者低秩时反扩张）；块摘要候选，压缩率/误差/吞吐需实测（维度 4）|

@@ -1,4 +1,4 @@
-# 🖥️ 算法透镜 / Algorithmic Lens
+# 算法透镜 / Algorithmic Lens
 
 > 算法是思想的自动化——将洞察转化为可重复执行的精确步骤。
 

@@ -5,7 +5,7 @@ description: |
   English: Math Research OS entry: auto-diagnose user intent, route to thinking lenses, math knowledge base, or design translation layer.
 ---
 
-若用户消息为英文，读取并遵循 `../skills/math-research-activator/SKILL.en.md`；否则读取并遵循 `../skills/math-research-activator/SKILL.md`。
+按 `../skills/math-research-activator/SKILL.md` 中的语言路由与混合输入规则判定主语言。英文主语言 → 读取 `../skills/math-research-activator/SKILL.en.md`；中文主语言 → 读取 `../skills/math-research-activator/SKILL.md`。
 
 当前问题：
 $ARGUMENTS

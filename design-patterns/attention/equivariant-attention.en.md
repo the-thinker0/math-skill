@@ -1,5 +1,5 @@
 # Equivariant Attention
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
 
 ## Applicable Problems
 When the input possesses an **explicit symmetry group $G$ action** (rotation, translation, permutation, reflection, etc.), and the desired model output should be **equivariant** (covariant) rather than invariant under the same transformations, equivariant constraints must be directly encoded into the attention mechanism. Typical scenarios include: 3D point clouds / molecules ($E(3)$ rigid-body group), image classification ($D_n$ rotation/reflection group), set data ($S_n$ permutation group), and multi-view / multi-sensor fusion.
@@ -55,14 +55,14 @@ output = mean(softmax((rho(g)@X@W_q) @ (rho(g)@X@W_k).T/sqrt(d)) @ (rho(g)@X@W_v
 - **G-CNN Attention**: $D_n$ rotation/reflection equivariance for remote sensing imagery and medical imaging
 
 ## GPU Feasibility
-- **Dimension 1 Tensorization**: Group actions implemented as $\rho(g)$ matrix multiplications; equivariant features stored as batched tensors
-- **Dimension 2 GEMM-mappability**: $\rho(g) X$ and $Q K^T$ are both GEMM operations; $|G|$ group elements map to batched GEMM
-- **Dimension 3 Complexity**: $|G|$-fold computation overhead; acceptable for small groups ($|D_4|=8$), infeasible for large groups ($|S_n|=n!$). Remedy: use generators + Cayley graph propagation instead of full group enumeration
-- **Dimension 4 Memory**: Requires storing $|G|$ copies of intermediate features; mitigated by chunking + gradient checkpointing
-- **Dimension 5 Low Precision**: Orthogonal representation matrices are numerically stable under bf16
-- **Dimension 6 Parallelism**: $|G|$ group elements are naturally parallelizable (along the batch dimension)
-- **Dimension 7 Sparsity**: Permutation $\rho(g)$ is extremely sparse and can be encoded as gather indices
-- **Dimension 8 Operator Fusion**: Group action + linear duality can be fused into a single batched GEMM
+- **D1**: Group actions implemented as $\rho(g)$ matrix multiplications; equivariant features stored as batched tensors
+- **D2**: $\rho(g) X$ and $Q K^T$ are both GEMM operations; $|G|$ group elements map to batched GEMM
+- **D3**: $|G|$-fold computation overhead; acceptable for small groups ($|D_4|=8$), infeasible for large groups ($|S_n|=n!$). Remedy: use generators + Cayley graph propagation instead of full group enumeration
+- **D4**: Requires storing $|G|$ copies of intermediate features; mitigated by chunking + gradient checkpointing
+- **D5**: Orthogonal representation matrices are numerically stable under bf16
+- **D6**: $|G|$ group elements are naturally parallelizable (along the batch dimension)
+- **D7**: Permutation $\rho(g)$ is extremely sparse and can be encoded as gather indices
+- **D8**: Group action + linear duality can be fused into a single batched GEMM
 
 ## Paper Phrasing
 "We propose an equivariant attention mechanism that constrains attention weights to be group invariants and attention outputs to be group equivariants, directly encoding the inductive bias of symmetry group $G$ into the model architecture without additional data augmentation, achieving a $|G|/|stab|$-fold improvement in parameter efficiency."

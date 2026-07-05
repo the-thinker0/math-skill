@@ -1,4 +1,4 @@
-# 🌐 光滑流形 / Smooth Manifolds
+# 光滑流形 / Smooth Manifolds
 
 > **书目**：John M. Lee, *Introduction to Smooth Manifolds*, 2nd Edition. Graduate Texts in Mathematics 218, Springer, 2013. ISBN 978-1-4419-9981-8 / DOI 10.1007/978-1-4419-9982-5. MSC 53-01 / 58-01 / 57-01.
 > **定位**：把"局部像欧氏空间、整体可弯曲"的对象（manifold）配上微积分（切空间、向量场、微分形式、流、李导数），是 **流形优化、隐空间几何、可微结构** 的数学母体。
@@ -16,7 +16,7 @@
 - **Ch 7 Lie Groups**：既是群又是流形（SO(n), U(n), GL(n), Stiefel…），李代数 = 单位元处切空间。→ 正交/酉权重约束、等变。
 - **Ch 8–9 Vector Fields / Integral Curves and Flows**：向量场、积分曲线、流（flow，单参数微分同胚群）、李导数与李括号 [X,Y]。→ **Neural ODE / 扩散 / 连续归一化流** 的母结构。
 - **Ch 10–12 Vector Bundles / Cotangent Bundle / Tensors**：丛、余向量场（1-form）、拉回（pullback）、张量。→ 梯度的真身是余向量。
-- **Ch 13 Riemannian Metrics**：每点内积、长度/距离/体积、切-余切同构（musical ♯/♭，升降指标）。→ **自然梯度 / 黎曼优化的度量来源**。
+- **Ch 13 Riemannian Metrics**：每点内积、长度/距离/体积、切-余切同构（musical (sharp)/(flat)，升降指标）。→ **自然梯度 / 黎曼优化的度量来源**。
 - **Ch 14–16 Differential Forms / Orientations / Integration**：k-形式、楔积、外微分 d（d²=0）、定向、体积形式、流形上积分与变量替换。→ 归一化流的 log-det-Jacobian = 体积形式拉回。
 - **Ch 17–18 De Rham Cohomology / de Rham Theorem**：闭形式模去恰当形式 = 从微分数据读出的拓扑不变量。→ 全局障碍 / 上同调正则。
 - **Ch 19–22 Distributions & Foliations / Exponential Map / Quotient Manifolds / Symplectic Manifolds**：可积分布（Frobenius）、指数映射（retraction 原型）、商流形（Grassmann 等）、辛形式与 Hamilton 流。→ retraction、商空间约束、辛积分器 / HMC。
@@ -26,7 +26,7 @@
 ## 可迁移到 AI/Infra 的核心结构
 
 - **切空间 = 参数/隐空间的局部线性化（local linearization）**。`df_p: T_pM → T_{f(p)}N` 就是 Jacobian / pushforward；反向传播 = 沿复合映射做 pushforward（链式法则的几何版）。一切一阶方法都活在切空间里。
-- **梯度是余向量（covector），不是向量**。autodiff 给出的是 1-form（余切空间元素）；要变成可下降的方向（切向量）必须用 **度量升指标**（♯）。欧氏度量 → 普通梯度；Fisher 度量 → 自然梯度（natural gradient）。**这是自然梯度 / 镜像下降的流形根因**。
+- **梯度是余向量（covector），不是向量**。autodiff 给出的是 1-form（余切空间元素）；要变成可下降的方向（切向量）必须用 **度量升指标**（(sharp)）。欧氏度量 → 普通梯度；Fisher 度量 → 自然梯度（natural gradient）。**这是自然梯度 / 镜像下降的流形根因**。
 - **约束集 = 子流形（submanifold）**。正则水平集定理：当 g 是 submersion 时 `g(x)=c` 的解集是光滑子流形；约束优化 = 在子流形上做无约束优化。
 - **李群 = 可微的对称群**。SO(n)/U(n)/Stiefel/Grassmann 都是流形；其李代数（如反对称矩阵 so(n)）是线性空间，用 `exp` 映射回群 → **把"约束权重"重参数化为"无约束李代数 + exp"**。
 - **流（flow）= 时间参数化的微分同胚族**。学一个向量场 + 沿它积分 = Neural ODE / 连续归一化流 / 扩散采样。流的可逆性、保体积性直接对应模型性质。
@@ -57,10 +57,10 @@
 
 逐维对照：
 
-- **维度 1–2 张量化 / GEMM**：切空间运算（pushforward/pullback、Jacobian-向量积、把梯度投影到切空间）**天然是 batched GEMM** ✅——反向传播本就是 pushforward，这部分对 GPU 极友好。**但** retraction/exp 多半要 QR、特征分解、矩阵指数或小矩阵求逆：QR/eig **不是干净的 GEMM**，是带串行依赖的分解（cuSOLVER 批量小矩阵尚可，大矩阵 O(n³) 且并行差）→ **可改造** 而非天然友好。
+- **维度 1–2 张量化 / GEMM**：切空间运算（pushforward/pullback、Jacobian-向量积、把梯度投影到切空间）**天然是 batched GEMM** [v]——反向传播本就是 pushforward，这部分对 GPU 极友好。**但** retraction/exp 多半要 QR、特征分解、矩阵指数或小矩阵求逆：QR/eig **不是干净的 GEMM**，是带串行依赖的分解（cuSOLVER 批量小矩阵尚可，大矩阵 O(n³) 且并行差）→ **可改造** 而非天然友好。
 - **维度 3 复杂度**：测地线距离、平行移动、一般 `log|det J|` 都是 O(n³) 起。**改造**：限定有闭式测地线的流形（球面/双曲/SO(3)）；归一化流用三角/耦合层让 log-det 退化成对角和（O(n)）。
-- **维度 5 低精度**：⚠️ **最大坑**。矩阵 `exp / log / sqrt`、特征分解、SPD 的仿射不变度量在 bf16/fp16 下 **灾难性不稳定**，常静默地需要 fp32/fp64。流形原语经常"表面能跑、数值早已发散"。
-- **维度 6 并行与通信**：scaling-and-squaring 的平方链、ODE 积分步、Householder/QR 都有 **串行递推**，难跨 SM/设备 overlap。反例向好：显式辛积分器（leapfrog）高并行 ✅。
+- **维度 5 低精度**：[~] **最大坑**。矩阵 `exp / log / sqrt`、特征分解、SPD 的仿射不变度量在 bf16/fp16 下 **灾难性不稳定**，常静默地需要 fp32/fp64。流形原语经常"表面能跑、数值早已发散"。
+- **维度 6 并行与通信**：scaling-and-squaring 的平方链、ODE 积分步、Householder/QR 都有 **串行递推**，难跨 SM/设备 overlap。反例向好：显式辛积分器（leapfrog）高并行 [v]。
 - **维度 4/7/8 显存 / 稀疏 / 融合**：李代数/旋转参数化若限制在 **小矩阵或块对角**（如逐头旋转、SO(3) 的 Rodrigues 闭式），可融进 kernel、走 Tensor Core；大稠密流形算子则要物化大中间张量。
 
 **结论与改造手法（呼应 gpu-friendly-math.md 工具箱）**：
@@ -73,11 +73,11 @@
 
 ## 该调用哪个思想透镜
 
-- **optimization（⚖️ 优化思想）**：主武器——约束下寻最优、黎曼/流形优化、retraction 选型。
-- **symmetry（⚛️ 对称与不变性）**：李群、等变、商流形、群作用下的不变量。
+- **variational（变分透镜）**：主透镜——约束下寻最优、黎曼/流形优化、retraction 选型。
+- **symmetry（对称与不变性）**：李群、等变、商流形、群作用下的不变量。
 - **duality（对偶透镜）**：坐标卡变换、pushforward/pullback、归一化流的变量替换、微分同胚。
-- **topological-thinking（🌀 拓扑思想）**：de Rham 上同调、全局障碍、隐空间的"洞"与连通性。
-- **abstraction（🧩 抽象化思想）**：从高维杂乱的环境数据中抽出"局部线性 + 光滑拼接"的流形骨架（流形假设）。
+- **topological（拓扑透镜）**：de Rham 上同调、全局障碍、隐空间的"洞"与连通性。
+- **categorical（范畴化透镜）**：从高维杂乱的环境数据中抽出"局部线性 + 光滑拼接"的流形骨架（流形假设）。
 
 ## 反模式
 
@@ -90,7 +90,7 @@
 
 ## 深挖入口
 
-> **📖 书目信息**：John M. Lee, *Introduction to Smooth Manifolds*, 2nd Edition, Graduate Texts in Mathematics 218, Springer, 2013. ISBN 978-1-4419-9981-8.
+> **书目信息**：John M. Lee, *Introduction to Smooth Manifolds*, 2nd Edition, Graduate Texts in Mathematics 218, Springer, 2013. ISBN 978-1-4419-9981-8.
 >
 > **启用方式**：将 `Introduction to Smooth Manifolds.pdf` 放入项目根目录的 `math_book/` 文件夹，Agent 即可自动搜索原文。PDF 不随 npm/git 分发（版权原因），需自行获取。
 
@@ -98,7 +98,7 @@
 
 - **Ch 3 Tangent Vectors** — 切空间、微分/pushforward、切丛：局部线性化与反传的几何原型。
 - **Ch 11 The Cotangent Bundle** — 余向量场（1-form）、`df` 作为余向量、pullback：梯度真身 = 余向量。
-- **Ch 13 Riemannian Metrics** — 度量、切-余切同构（♯/♭）、距离：自然梯度 / 黎曼优化的根。
+- **Ch 13 Riemannian Metrics** — 度量、切-余切同构（(sharp)/(flat)）、距离：自然梯度 / 黎曼优化的根。
 - **Ch 9 Integral Curves and Flows** — 流、积分曲线、李导数/李括号：Neural ODE / 扩散 / 保结构动力学。
 - **Ch 20 The Exponential Map** — 指数映射：retraction 原型，也是 GPU 可行性的主瓶颈。
 

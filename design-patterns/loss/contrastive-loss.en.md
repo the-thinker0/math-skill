@@ -1,5 +1,5 @@
 # Contrastive Loss
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as ✅ verified / ⚠️ retrofittable (needs validation) / ❌ infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
 
 ## Applicable Problems
 When the model needs to learn "what is similar to what and what is different from what." Typical scenarios: (1) Different augmented views of the same input should be pulled closer (positive pairs), while different inputs should be pushed apart (negative pairs); (2) Shared representations should capture cross-task commonalities, while Private representations should distinguish task-specific features; (3) In the expert embedding space, similar inputs should be routed to the same expert. Core objective: **learn relative relationships rather than absolute values**.

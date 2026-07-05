@@ -1,4 +1,4 @@
-# 🧮 Projection & Decomposition Lens
+# Projection & Decomposition Lens
 
 > Complex wholes can be orthogonally decomposed into independent components — conflicts are exposed in subspaces, signal and noise are separated under projection.
 

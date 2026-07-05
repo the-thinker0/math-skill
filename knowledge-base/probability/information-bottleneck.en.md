@@ -30,12 +30,12 @@ where $q_\phi(y|z)$ is the classifier/decoder, $r(z)$ is the prior distribution 
 - **Information-theoretic interpretation of attention sparsification / routing**: Sparse Attention and MoE routing can be understood as implicit information bottlenecks — selectively allowing "useful" tokens to pass while discarding noise
 
 ## Engineering Feasibility
-- **Dimension 1 Tensorization ✅**: The VIB encoder/decoder are standard networks; $D_{KL}$ is computed element-wise
-- **Dimension 2 GEMM-mappability ✅**: The main computation is a standard feedforward network + GEMM
-- **Dimension 3 Complexity ✅**: Only adds $O(d)$ computation for the KL term compared to the original network
-- **Dimension 4 Memory ⚠️**: Requires additional parameters for the prior distribution $r(z)$ and intermediate quantities for KL computation
-- **Dimension 5 Low Precision ✅**: Reparameterization trick + analytical KL solution are stable in bf16
-- **Dimension 8 Operator Fusion ✅**: No conflict with the standard training pipeline; normal fusion applies
+- **D1[v]**: The VIB encoder/decoder are standard networks; $D_{KL}$ is computed element-wise
+- **D2[v]**: The main computation is a standard feedforward network + GEMM
+- **D3[v]**: Only adds $O(d)$ computation for the KL term compared to the original network
+- **D4[~]**: Requires additional parameters for the prior distribution $r(z)$ and intermediate quantities for KL computation
+- **D5[v]**: Reparameterization trick + analytical KL solution are stable in bf16
+- **D8[v]**: No conflict with the standard training pipeline; normal fusion applies
 
 ## Risks and Failure Conditions
 - **Accurate estimation of $I(X;Z)$ is difficult**: Mutual information estimation between high-dimensional continuous variables is itself an open problem (estimators such as MINE and NWJ have high variance). In practice, the VIB variational lower bound is used as a workaround, but the bound may be loose.

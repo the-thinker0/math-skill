@@ -30,11 +30,11 @@ $$I(X; Y) = H(X) - H(X|Y) = H(Y) - H(Y|X) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}
 - **变分自编码器 VAE**：ELBO = 重构似然 $-$ KL 正则项，本质是在信息压缩（低 $H(Z)$）与重构保真之间取平衡
 
 ## 工程可行性
-- **维度 1 张量化 ✅**：$-\sum p \log p$ 是逐元素运算，完美向量化
-- **维度 2 GEMM 可映射 ⚠️**：熵本身不是 GEMM，但交叉熵损失的梯度计算涉及 softmax → matmul 链
-- **维度 3 复杂度 ✅**：$O(|\mathcal{X}|)$ 线性，vocab 级计算可接受
-- **维度 5 低精度 ✅**：$\log$ 和 exp 在 bf16 下稳定，softmax 有 log-sum-exp 技巧
-- **维度 8 算子融合 ✅**：softmax + cross-entropy 是经典融合算子（FusedSoftmaxCrossEntropy）
+- **D1[v]**：$-\sum p \log p$ 是逐元素运算，完美向量化
+- **D2[~]**：熵本身不是 GEMM，但交叉熵损失的梯度计算涉及 softmax → matmul 链
+- **D3[v]**：$O(|\mathcal{X}|)$ 线性，vocab 级计算可接受
+- **D5[v]**：$\log$ 和 exp 在 bf16 下稳定，softmax 有 log-sum-exp 技巧
+- **D8[v]**：softmax + cross-entropy 是经典融合算子（FusedSoftmaxCrossEntropy）
 
 ## 风险与失效条件
 - **连续熵可为负**：微分熵 $h(X)$ 不受 $H(X) \geq 0$ 约束，直接比较不同量纲的微分熵可产生误导。应改用互信息或 KL 散度（非负）。

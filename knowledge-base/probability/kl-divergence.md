@@ -33,12 +33,12 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 - **PPO / RLHF**：$D_{KL}(\pi_\theta \| \pi_{\text{ref}})$ 作为策略偏离参考策略的惩罚项
 
 ## 工程可行性
-- **维度 1 张量化 ✅**：逐元素 $p \log(p/q)$ 完全向量化
-- **维度 2 GEMM 可映射 ⚠️**：KL 本身不是 GEMM，但输入（logits）来自 GEMM 层
-- **维度 3 复杂度 ✅**：$O(|\mathcal{X}|)$ 线性
-- **维度 4 显存 ⚠️**：大 vocab 下需同时保留 $p$ 和 $q$ 的完整概率向量，可 chunk 计算
-- **维度 5 低精度 ✅**：log-softmax 差值在 bf16 下稳定；注意 $q \to 0$ 时 $\log q$ 发散，需 clamp
-- **维度 8 算子融合 ✅**：可与 softmax 融合为 FusedKLDivLoss
+- **D1[v]**：逐元素 $p \log(p/q)$ 完全向量化
+- **D2[~]**：KL 本身不是 GEMM，但输入（logits）来自 GEMM 层
+- **D3[v]**：$O(|\mathcal{X}|)$ 线性
+- **D4[~]**：大 vocab 下需同时保留 $p$ 和 $q$ 的完整概率向量，可 chunk 计算
+- **D5[v]**：log-softmax 差值在 bf16 下稳定；注意 $q \to 0$ 时 $\log q$ 发散，需 clamp
+- **D8[v]**：可与 softmax 融合为 FusedKLDivLoss
 
 ## 风险与失效条件
 - **$q(x)=0$ 但 $p(x)>0$ 时 KL 发散为无穷**：实践中必须对 $q$ 做 label smoothing 或温度缩放，避免零概率。反向 KL 的 mode-seeking 行为可加剧此问题——学生模型"丢弃"教师分布的低概率区域。

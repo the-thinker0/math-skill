@@ -1,5 +1,5 @@
 # 投影注意力 / Projection Attention
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「✅ 已验证 / ⚠️ 可改造需验证 / ❌ 不可行」。未标注的视为理论可行，需工程验证。
+> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
 
 ## 适用问题
 当输入的 token/key 空间维度过高，标准注意力的 $Q K^T$ 内积在高维空间中趋于均匀（"注意力坍缩"）时，需要先将 key/query 投影到一个**几何结构更优的子空间**再做注意力计算。典型场景：长上下文 LLM 的 KV-Cache 压缩、高维嵌入空间的注意力稀疏化、多模态融合中异构特征的注意力对齐。
@@ -51,14 +51,14 @@ scores = (Q @ eigenvecs) @ (K @ eigenvecs).T / sqrt(r)
 - **分层投影**：浅层用小 $r$（粗筛），深层用大 $r$（精排）
 
 ## GPU 可行性
-- **维度 1 张量化 ✅**：投影 = 矩阵乘，注意力 = 矩阵乘链，全程张量运算
-- **维度 2 GEMM 可映射 ✅**：$Q P_Q$ 和 $K P_K$ 均为标准 GEMM，吃满 Tensor Core
-- **维度 3 复杂度 ✅**：投影 $O(ndr)$ 远低于注意力 $O(n^2 d)$，且投影后 $r \ll d$ 使注意力 $O(n^2 r)$
-- **维度 4 显存 ✅**：Key-cache 压缩 $d/r$ 倍（V-cache 需独立处理），直接降低显存峰值
-- **维度 5 低精度 ✅**：投影矩阵正交/近正交时数值稳定，bf16 可接受
-- **维度 6 并行 ✅**：投影可与注意力流水线并行，Multi-Head 天然跨头并行
-- **维度 7 稀疏 ⚠️**：投影矩阵本身稠密；若用稀疏投影（CountSketch），可能引入 gather/scatter
-- **维度 8 算子融合 ⚠️可改造需验证**：投影可融入 FlashAttention 的 online softmax 循环中
+- **D1[v]**：投影 = 矩阵乘，注意力 = 矩阵乘链，全程张量运算
+- **D2[v]**：$Q P_Q$ 和 $K P_K$ 均为标准 GEMM，吃满 Tensor Core
+- **D3[v]**：投影 $O(ndr)$ 远低于注意力 $O(n^2 d)$，且投影后 $r \ll d$ 使注意力 $O(n^2 r)$
+- **D4[v]**：Key-cache 压缩 $d/r$ 倍（V-cache 需独立处理），直接降低显存峰值
+- **D5[v]**：投影矩阵正交/近正交时数值稳定，bf16 可接受
+- **D6[v]**：投影可与注意力流水线并行，Multi-Head 天然跨头并行
+- **D7[~]**：投影矩阵本身稠密；若用稀疏投影（CountSketch），可能引入 gather/scatter
+- **D8[~]可改造需验证**：投影可融入 FlashAttention 的 online softmax 循环中
 
 ## 论文表述方式
 "我们将注意力计算分解为低维子空间投影与投影空间注意力两步，在保持注意力质量的同时将 Key-cache 压缩 $d/r$ 倍（V-cache 需独立处理），并保证 Johnson-Lindenstrauss 距离保持性。"

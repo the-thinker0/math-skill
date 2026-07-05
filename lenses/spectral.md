@@ -1,4 +1,4 @@
-# 📡 谱分解透镜 / Spectral Decomposition Lens
+# 谱分解透镜 / Spectral Decomposition Lens
 
 > 任何线性算子都可以分解为特征分量的叠加——特征值揭示主导结构，特征向量揭示主导方向。
 

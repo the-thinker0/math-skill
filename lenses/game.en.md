@@ -1,4 +1,4 @@
-# 🎯 Game Lens
+# Game Lens
 
 > Your optimal choice depends on others' choices — thinking must be not only deep but interactive.
 
@@ -15,7 +15,7 @@ This is a "player's" perspective — in environments where multiple decision-mak
 
 ## What Problems It Is Not Suited For
 
-- Single-agent decision problems with no interaction with others — optimization thinking is more appropriate
+- Single-agent decision problems with no interaction with others — the variational lens is more appropriate
 - Purely cooperative problems where all participants share identical objectives — strategic analysis is unnecessary
 - Deterministic problems where outcomes are uniquely determined by one's own actions — no others' responses are involved
 - Outcomes determined purely by luck, with no strategic choices available to any party

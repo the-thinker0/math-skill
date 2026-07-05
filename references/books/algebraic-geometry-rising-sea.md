@@ -1,4 +1,4 @@
-# 🌊 代数几何（The Rising Sea）/ Algebraic Geometry
+# 代数几何（The Rising Sea）/ Algebraic Geometry
 
 > 《The Rising Sea: Foundations of Algebraic Geometry》，Ravi Vakil 著，Princeton University Press，2025 年版（ISBN 978-0-691-26866-8）。
 > 书名取自 Grothendieck 的"涨潮（la mer monte）"比喻：不正面强攻坚果般的难题，而是让抽象之水（范畴、层、上同调）缓缓上涨，悄无声息地淹没并瓦解问题。
@@ -116,7 +116,7 @@
 > 八维记分卡：①张量化 ②GEMM 可映射 ③复杂度 ④显存/KV ⑤低精度稳定 ⑥并行与通信 ⑦稀疏结构 ⑧算子融合。
 > **数学美 ≠ 可算**；任一维"不友好且不可改造"即淘汰。
 
-**可落 GEMM / 亚二次（友好 ✅）：**
+**可落 GEMM / 亚二次（友好 [v]）：**
 
 | 构造 | 命中维度 | 说明 |
 |---|---|---|
@@ -125,7 +125,7 @@
 | Čech H¹ 正则（固定覆盖） | ③⑧ | 局部廉价，可与注意力 kernel 融合（FlashAttention 式）|
 | 低秩基底块摘要（Plücker 视角） | ④ | 低秩分解压缩 KV，推理显存大降（压缩率需实测） |
 
-**美但不可算（不友好 ❌，禁止塞进训练 forward）：**
+**美但不可算（不友好 [x]，禁止塞进训练 forward）：**
 
 - **一般层上同调的导出函子计算（derived functor cohomology，§23）**
   - 需内射分解（injective resolution）+ 谱序列（spectral sequence），属**符号代数**。
@@ -137,11 +137,11 @@
 
 ## 该调用哪个思想透镜
 
-- **topological-thinking（🌀 拓扑思想）** — 主力：上同调、H¹ 障碍、连续变形下的不变量，正是层/上同调激活的母题。
+- **topological（拓扑透镜）** — 主力：上同调、H¹ 障碍、连续变形下的不变量，正是层/上同调激活的母题。
 - **categorical（范畴化透镜）**：用"层 = 局部数据 + 黏合"提取消息传递的本质，把工程算子抽象为限制映射。
 - **duality（对偶透镜）**：tropicalization、Plücker 嵌入、pullback/pushforward —— 用等价转换把难算问题搬到可算坐标系。
-- **symmetry（⚛️ 对称与不变性）**：射影不变、规范（gauge）对称、层的协变性，约束模型的等变结构。
-- **axiomatization（📐 公理化）**：把层公理（局部性 + 黏合）、上同调长正合列当作正确性约束，审查"该有的一致性是否被违反"。
+- **symmetry（对称与不变性）**：射影不变、规范（gauge）对称、层的协变性，约束模型的等变结构。
+- **axiomatization（公理化）**：把层公理（局部性 + 黏合）、上同调长正合列当作正确性约束，审查"该有的一致性是否被违反"。
 
 ## 反模式
 
@@ -154,7 +154,7 @@
 
 ## 深挖入口
 
-> **📖 书目信息**：Ravi Vakil, *The Rising Sea: Foundations of Algebraic Geometry*, Princeton University Press, 2025. ISBN 978-0-691-26866-8.
+> **书目信息**：Ravi Vakil, *The Rising Sea: Foundations of Algebraic Geometry*, Princeton University Press, 2025. ISBN 978-0-691-26866-8.
 >
 > **启用方式**：将 `The Rising Sea Foundations of Algebraic Geometry.pdf` 放入项目根目录的 `math_book/` 文件夹，Agent 即可自动搜索原文。PDF 不随 npm/git 分发（版权原因），需自行获取。
 

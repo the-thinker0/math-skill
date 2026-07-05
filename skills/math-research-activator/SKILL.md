@@ -5,9 +5,32 @@ description: |
   English: Mathematical research OS — auto-diagnoses user intent, routes to thinking lenses, math knowledge base, or design translation layer. Triggers on architecture/operator design, theoretical analysis, math-to-AI transfer. Does NOT trigger for pure engineering tasks.
 ---
 
-> **语言路由**：若用户消息为英文，请读取并遵循同目录下的 `SKILL.en.md`；中文消息则继续使用本文件。
+> ## 语言路由与混合输入规则
+>
+> 语言路由只决定"读取哪个语言版本的说明"和"最终用什么语言回答"，不参与数学系统是否触发、也不参与 A/B/C/D/E 场景判断。
+>
+> ### 判定规则
+>
+> 1. **先判断自然语言主框架**
+>    - 如果用户的请求句式、动词、语气词主要是中文，即使夹杂英文技术词，也按中文处理。
+>    - 例如："帮我 design 一个 attention""这个 loss 有没有理论问题""能不能用 manifold 做 routing"均按中文处理。
+>
+> 2. **英文技术词不计入英文主语言**
+>    - attention、loss、routing、embedding、manifold、operator、kernel、KV-cache、transformer、MoE 等 AI/数学/工程术语视为领域术语，不作为切换到英文的依据。
+>
+> 3. **代码、路径、公式不参与语言判定**
+>    - 文件路径、函数名、变量名、LaTeX 公式、命令行参数不计入语言比例。
+>
+> 4. **主语言不明显时，沿用用户上一轮主要语言**
+>    - 若中英文比例接近且无法判断，以用户最近一次明确使用的自然语言为准。
+>    - 若没有上下文，默认中文。
+>
+> 5. **输出语言与主语言一致**
+>    - 中文主语言 → 读取中文 `SKILL.md`，用中文回答，保留必要英文术语。
+>    - 英文主语言 → 读取 `SKILL.en.md`，用英文回答。
+>    - 用户明确要求"用英文/用中文"时，以用户显式要求为准。
 
-# 🧭 数学研究操作系统 / Math Research OS
+# 数学研究操作系统 / Math Research OS
 
 > "思想系统不负责给定理，知识系统不负责乱启发，设计层不负责装深刻。"
 
