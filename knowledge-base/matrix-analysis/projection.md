@@ -45,3 +45,16 @@
 
 - 蒸馏稿：references/books/matrix-analysis.md（§2.1 QR 分解、§4.2 Courant-Fischer 变分刻画、§2.6 SVD）
 - 原书：Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 2 (Unitary Similarity) + Chapter 4 (Hermitian Matrices §4.2 Variational Characterizations)
+
+
+## 路由扩展
+- 若目标是压缩/降维 → `low-rank-approximation.md`（截断 SVD 实现）
+- 若需要在流形上做投影约束 → `riemannian-optimization.md`（黎曼流形上的约束优化）
+- 若涉及共享与私有子空间分离 → `shared-private-decomposition`（设计模式层）
+
+## 可扩展方向
+- 斜投影（oblique projection）：非正交投影算子
+- 交替投影（alternating projection）：Von Neumann 交替投影收敛定理
+- 凸集投影（POCS）：投影到多个凸集交集的方法
+- 随机投影（randomized projection）：Johnson-Lindenstrauss 引理与随机投影
+- 子空间跟踪（subspace tracking）：在线更新的子空间估计方法

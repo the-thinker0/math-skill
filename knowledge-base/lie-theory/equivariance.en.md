@@ -52,3 +52,18 @@ GPU friendliness depends on the degree of group discretization:
 - Distillation notes: references/books/differential-geometry.md (Section 6.8 Principal Bundles, Section 12.12 G-Connections, gauge equivariance)
 - Distillation notes: references/books/differential-geometry.md (Ch 5 Lie Groups, continuous symmetry as prior)
 - Original text: Jeffrey M. Lee, *Manifolds and Differential Geometry*, Section 6.8 + Section 12.12 (geometric foundations of gauge equivariance)
+
+
+## Routing Extensions
+- If representation theory foundations are needed -> `representation.md` (equivariant maps are morphisms between representations)
+- If group action structure is needed -> `group-action.md` (equivariance definition depends on group action)
+- If used for attention mechanism design -> `equivariant-attention` (design pattern layer for equivariant attention)
+
+## Extensible Directions
+- Steerable features: steerable feature representations under SO(3)
+- Spherical harmonics: basis functions for SO(3) irreducible representations
+- Wigner D-matrices: matrix elements of SO(3) representations
+- Equivariant map algebra: complete characterization of equivariant linear maps
+- Universal equivariant architectures: universal approximation of equivariant functions
+- Symmetry breaking: approximate equivariance or controlled symmetry breaking
+- Approximate equivariance: approximate equivariance under noise or discretization

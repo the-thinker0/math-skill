@@ -49,3 +49,17 @@ GPU friendliness: the key factor is whether exp/log has a closed form.
 - Distillation notes: references/books/differential-geometry.md (Ch 5 Lie Groups)
 - Distillation notes: references/books/smooth-manifolds.md (Ch 7 Lie Groups)
 - Original text: Joan Sola et al., *A micro Lie theory*, Section II-A through Section II-F (complete Lie group toolkit)
+
+
+## Routing Extensions
+- If infinitesimal structure is needed -> `lie-algebra.md` (Lie algebra is the tangent space of a Lie group)
+- If linear representations are needed -> `representation.md` (finite-dimensional representations of Lie groups)
+- If optimization on Lie groups is needed -> `riemannian-optimization.md` (Riemannian optimization on Lie groups)
+
+## Extensible Directions
+- Simply connected Lie group: universal covering group
+- Covering group: covering maps between Lie groups
+- Maximal torus: maximal abelian subgroup in compact Lie groups
+- Compact / semisimple / solvable: structural classification of Lie groups
+- Nilpotent: nilpotent Lie groups and nilpotent Lie algebras
+- Exponential map properties: properties of the map from Lie algebra to Lie group

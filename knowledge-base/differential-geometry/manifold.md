@@ -45,3 +45,16 @@ GPU 友好度中等。坐标卡变换本身是逐元素的映射（可并行）�
 - 蒸馏稿：references/books/differential-geometry.md（Ch 1-2 Differentiable Manifolds / The Tangent Structure）
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, 2nd Edition, Ch 1-2（拓扑流形、光滑结构、单位分解）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, Ch 1-2
+
+
+## 路由扩展
+- 若需要局部结构分析 → `tangent-space.md`（切空间提供局部线性近似）
+- 若需要距离定义 → `metric-tensor.md`（度量张量定义流形上的距离）
+- 若需要在流形上做优化 → `riemannian-optimization.md`（黎曼优化方法）
+
+## 可扩展方向
+- 子流形（submanifold）：嵌入子流形与浸没子流形
+- 积流形（product manifold）：多个流形的直积构造
+- 商流形（quotient manifold）：等价关系下的商空间
+- Stiefel / Grassmann 流形：正交矩阵与子空间流形
+- 流形学习（Isomap / LLE / diffusion maps）：从高维数据发现低维流形

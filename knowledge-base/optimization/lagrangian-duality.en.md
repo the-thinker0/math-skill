@@ -48,3 +48,17 @@ Transforms a constrained optimization problem (primal) into a maximization probl
 
 - Distilled notes: references/books/optimization-ml.md (Ch 23 Lagrangian Duality, Section 23.5 Strong Duality, Section 23.6.3 Slater's Condition)
 - Original text: Chong, Lu, Zak, *An Introduction to Optimization* 5th Ed., Chapter 23 (Lagrangian Duality Section 23.1-23.6) + Chapter 17 (LP Duality)
+
+
+## Routing Extensions
+- If starting from the primal problem -> `constrained-optimization.md` (primal constrained optimization)
+- If strong duality conditions are needed -> `convex-optimization.md` (strong duality theorem for convex problems)
+- If the dual form of IB objective is involved -> `information-bottleneck.md` (variational dual of information bottleneck)
+
+## Extensible Directions
+- Augmented Lagrangian: penalty-enhanced Lagrangian methods
+- Saddle point theory: existence and computation of Lagrangian saddle points
+- KKT condition regularity: constraint qualifications and KKT necessary conditions
+- Conic duality: duality theory for conic programming
+- Fenchel duality: convex conjugates and Fenchel-Rockafellar duality
+- Minimax duality: min-max theorems and duality gaps

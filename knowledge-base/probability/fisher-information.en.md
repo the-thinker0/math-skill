@@ -46,3 +46,17 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 - Amari & Nagaoka. *Methods of Information Geometry*. AMS, 2000
 - Martens. "Optimizing Neural Networks with Kronecker-Factored Approximate Curvature." *ICML*, 2015
 - Related knowledge cards: `information-geometry/natural-gradient.md`, `information-geometry/fisher-metric.md`
+
+
+## Routing Extensions
+- If a geometric perspective is needed -> `fisher-metric.md` (Fisher information as Riemannian metric)
+- If Fisher-based optimization is needed -> `natural-gradient.md` (natural gradient driven by Fisher information)
+- If Cramer-Rao bounds are needed -> `concentration-inequality.md` (Fisher information and estimation accuracy bounds)
+
+## Extensible Directions
+- Observed vs expected Fisher: two types of Fisher information matrices
+- Fisher information matrix properties: positive definiteness, chain rule, sufficient statistics
+- Jeffreys prior: non-informative prior defined by Fisher information
+- Fisher information distance: Fisher metric distance between distributions
+- Mutual information and Fisher: relationship between Fisher information and mutual information
+- Fisher in deep learning: approximation methods such as K-FAC, Shampoo

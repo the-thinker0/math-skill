@@ -48,3 +48,17 @@ Hermitian 矩阵 $A$ 若对所有非零向量 $x$ 满足 $x^HAx \geq 0$，则称
 
 - 蒸馏稿：references/books/matrix-analysis.md（Ch 7 Positive Definite and Semidefinite Matrices、§7.5 Schur 积定理、§7.7 Loewner 偏序）
 - 原书：Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 7 (Positive Definite and Semidefinite Matrices §7.1-7.8)
+
+
+## 路由扩展
+- 若需要求解 SDP 问题 → `convex-optimization.md`（半正定规划作为凸优化）
+- 若涉及 PSD 矩阵的条件与扰动 → `matrix-perturbation.md`（特征值扰动界）
+- 若用于 Fisher 信息矩阵 → `fisher-information.md`（Fisher 信息的 PSD 性质）
+
+## 可扩展方向
+- 半正定规划（semidefinite programming）：SDP 的求解方法与应用
+- PSD 补全（PSD completion）：部分已知 PSD 矩阵的补全
+- 矩阵平方根（matrix square root）：PSD 矩阵的唯一平方根
+- Lowner 序（Lowner order）：PSD 锥上的偏序关系
+- 算子单调函数（operator monotone functions）：Loewner-Heinz 定理
+- 完全正矩阵（completely positive matrices）：CP 分解与锥结构

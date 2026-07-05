@@ -49,3 +49,16 @@
 
 - 蒸馏稿：references/books/matrix-analysis.md（§7.3 极分解、Newton-Schulz 迭代、§2.6 SVD 与正交因子）
 - 原书：Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 7 §7.3 (Polar Decomposition) + Absil, Mahony, Sepulchre, *Optimization Algorithms on Matrix Manifolds*, Princeton University Press, 2008
+
+
+## 路由扩展
+- 若需要局部线性化 → `tangent-space.md`（切空间上的梯度计算）
+- 若需要收缩映射的具体选择 → `metric-tensor.md`（度量决定收缩映射）
+- 若度量来自 Fisher 信息 → `natural-gradient.md`（Fisher 度量下的自然梯度）
+
+## 可扩展方向
+- 收缩映射类型（retraction types）：指数映射、投影收缩、Cayley 变换
+- 向量传输（vector transport）：流形上向量在不同切空间间的传输
+- 黎曼共轭梯度（Riemannian conjugate gradient）：流形上的共轭梯度法
+- 黎曼信赖域（Riemannian trust region）：流形上的信赖域方法
+- 随机黎曼优化（stochastic Riemannian optimization）：流形上的 SGD 变体

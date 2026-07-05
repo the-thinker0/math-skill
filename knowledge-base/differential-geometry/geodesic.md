@@ -49,3 +49,17 @@ GPU 友好度取决于是否有闭式 retraction：
 - 蒸馏稿：references/books/smooth-manifolds.md（Ch 20 The Exponential Map）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, §13.4 Geodesics
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, Ch 20（指数映射、retraction 原型）
+
+
+## 路由扩展
+- 若需要距离的具体定义 → `metric-tensor.md`（度量张量决定测地线）
+- 若用作收缩映射 → `riemannian-optimization.md`（指数映射作为收缩映射）
+- 若需要偏离平坦空间的程度 → `curvature.md`（曲率控制测地线偏差）
+
+## 可扩展方向
+- 共轭点（conjugate points）：测地线上 Jacobi 场的零点
+- 割迹（cut locus）：测地线失去最优性的临界点
+- Hopf-Rinow 定理：完备性与测地线存在性
+- 测地凸性（geodesic convexity）：流形上的凸集与凸函数
+- Jacobi 场（Jacobi field）：测地线变分的线性化
+- 测地回归（geodesic regression）：流形上的回归分析

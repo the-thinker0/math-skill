@@ -46,3 +46,16 @@ Decomposes a matrix into a linear combination of eigenvalue-eigenvector pairs. F
 
 - Distilled notes: references/books/matrix-analysis.md (Ch 1 Eigenvalues and Similarity, Section 2.4-2.5 Schur Triangularization and Normal Matrices, Section 4.2 Courant-Fischer)
 - Original text: Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 1 (Eigenvalues, Eigenvectors, Similarity) + Chapter 2 (Unitary Similarity Section 2.4-2.5)
+
+
+## Routing Extensions
+- If truncation approximation is needed -> `low-rank-approximation.md` (SVD-based low-rank approximation)
+- If used for attention mechanism design -> `spectral-attention` (design pattern layer)
+- If spectral concentration bounds are needed -> `concentration-inequality.md` (concentration inequalities for random matrix spectra)
+
+## Extensible Directions
+- SVD variants (truncated / randomized SVD): fast decomposition for large-scale matrices
+- CUR decomposition: interpretable matrix approximation via column/row sampling
+- Nystrom method: low-rank approximation of kernel matrices
+- Spectral graph theory (Laplacian eigenvalues): graph Laplacian eigenvalues and graph structure analysis
+- Random matrix theory: spectral distributions of large random matrices

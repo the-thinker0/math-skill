@@ -46,3 +46,17 @@ GPU 友好度高。切空间的核心操作是线性代数：
 - 蒸馏稿：references/books/differential-geometry.md（Ch 1-2, Ch 7 Tensors）
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, 2nd Edition, Ch 3（切空间、pushforward、切丛）
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, Ch 11（余切丛、1-form、pullback）
+
+
+## 路由扩展
+- 若需要在流形上计算梯度 → `riemannian-optimization.md`（流形上的梯度下降）
+- 若涉及群结构的切空间 → `lie-algebra.md`（李群的切空间即李代数）
+- 若需要协变导数 → `connection.md`（联络定义协变微分）
+
+## 可扩展方向
+- 余切空间（cotangent space）：对偶空间与微分形式
+- 微分/前推算子（differential / pushforward）：光滑映射的切映射
+- 向量场（vector field）：流形上的光滑向量场
+- Lie 括号（Lie bracket）：向量场的对易关系
+- 积分曲线（integral curve）：向量场的积分曲线与流
+- 指数映射（exponential map）：从切空间到流形的映射

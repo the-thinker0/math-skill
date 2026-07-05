@@ -45,3 +45,19 @@ $$I(X; Y) = H(X) - H(X|Y) = H(Y) - H(Y|X) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}
 - Cover & Thomas. *Elements of Information Theory*, 2nd Edition. Wiley, 2006
 - MacKay. *Information Theory, Inference, and Learning Algorithms*. Cambridge, 2003
 - Related knowledge cards: `probability/kl-divergence.md`, `probability/information-bottleneck.md`
+
+
+## Routing Extensions
+- If relative entropy is needed -> `kl-divergence.md` (KL divergence is relative entropy)
+- If information compression is involved -> `information-bottleneck.md` (information bottleneck uses entropy and mutual information)
+- If entropy-power inequality is involved -> `fisher-information.md` (relationship between Fisher information and entropy)
+
+## Extensible Directions
+- Renyi entropy: parameterized family of generalized entropies
+- Tsallis entropy: entropy for non-extensive statistical mechanics
+- Conditional / mutual information: multi-variable information measures
+- Entropy rate: asymptotic entropy of stochastic processes
+- Maximum entropy principle: distribution selection under minimal assumptions
+- Entropy estimation: methods for estimating entropy from samples
+- Differential entropy: entropy for continuous distributions
+- Entropy power inequality: lower bound on entropy of independent sums

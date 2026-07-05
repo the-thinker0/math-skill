@@ -1,6 +1,6 @@
-# 数学知识库导航 / Knowledge Base Navigation
+# 数学激活锚点索引 / Mathematical Activation Anchor Index
 
-> 本文件是 v3 知识库的索引，帮助你从问题类型找到具体的知识卡片。
+> knowledge-base/ 不是封闭百科，而是高频数学结构的激活入口。每张卡片是一个激活锚点，回答：激活什么数学概念、连接哪些更深知识、可翻译成哪些 AI 设计动作、不足时应该往哪里扩展。
 
 ## 知识库结构
 
@@ -28,12 +28,24 @@
 | 需要信息压缩 | information-bottleneck, entropy, kl-divergence |
 | 需要拓扑正则 | persistent-homology, euler-characteristic |
 
-## 与思想透镜的关系
+## 当锚点不够时
 
-思想透镜（`../lenses/`）负责"用什么视角看问题"，知识库负责"提供具体数学工具"。典型链路：
+现有 31 个锚点覆盖 AI 研究中最常用的数学结构。当问题需要的数学工具不在其中时：
 
-```
-透镜诊断 → 知识卡片提供工具 → 设计模式翻译成 AI 模块
-```
+1. 查看对应领域的 `index.md`（如 `topology/index.md`），获取扩展概念和参考书方向
+2. 进入 SKILL.md 中定义的**知识缺口协议**，生成临时知识卡
+3. 不得回答"知识库未覆盖"或强行套用最相近卡片
 
-深入查阅时，`../references/books/*.md` 提供 7 本书的蒸馏稿。
+## 领域扩展索引
+
+每个领域有一个 `index.md`，列出：领域触发信号、核心锚点、扩展概念、参考书方向、临时激活规则。
+
+| 领域 | 扩展索引 |
+|------|---------|
+| 矩阵分析 | `matrix-analysis/index.md` |
+| 最优化 | `optimization/index.md` |
+| 微分几何 | `differential-geometry/index.md` |
+| 李理论 | `lie-theory/index.md` |
+| 拓扑 | `topology/index.md` |
+| 概率与信息 | `probability/index.md` |
+| 信息几何 | `information-geometry/index.md` |

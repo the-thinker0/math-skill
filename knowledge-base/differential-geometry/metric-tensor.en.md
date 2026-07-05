@@ -48,3 +48,17 @@ GPU friendliness depends on the structure of the metric:
 - Distillation notes: references/books/smooth-manifolds.md (Ch 13 Riemannian Metrics)
 - Original text: Jeffrey M. Lee, *Manifolds and Differential Geometry*, Section 7.6 Metric Tensors
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, Ch 13 (Riemannian metrics, musical isomorphisms sharp/flat)
+
+
+## Routing Extensions
+- If the metric comes from Fisher information -> `natural-gradient.md` (natural gradient under Fisher metric)
+- If Riemannian gradient computation is needed -> `riemannian-optimization.md` (metric determines gradient direction)
+- If curvature analysis is needed -> `curvature.md` (metric determines curvature tensor)
+
+## Extensible Directions
+- Finsler metric: generalized non-quadratic metrics
+- Sub-Riemannian metric: metrics under distribution constraints
+- Information metric: Fisher-Rao metric on statistical manifolds
+- Pullback metric: metric induced by a mapping
+- Metric learning: learning optimal metrics from data
+- Distance metric learning: supervised distance learning

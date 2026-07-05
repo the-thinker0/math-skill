@@ -52,3 +52,18 @@ GPU 友好度有限，是持续同调落地的主要瓶颈：
 - 蒸馏稿：references/books/algebraic-geometry-rising-sea.md（§18 Cech Cohomology, §23 Derived Functors，上同调计算）
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, Ch 17-18（de Rham 上同调）
 - 延伸：Edelsbrunner & Harer, *Computational Topology: An Introduction*（持续同调标准教材）
+
+
+## 路由扩展
+- 若需要拓扑不变量的计算 → `euler-characteristic.md`（Euler 示性数作为 Betti 数的交替和）
+- 若需要 1 维拓扑分析 → `fundamental-group.md`（基本群捕捉环路结构）
+- 若用于信息保持压缩 → `information-bottleneck.md`（拓扑保持的信息压缩）
+
+## 可扩展方向
+- 单纯复形类型（Cech, Vietoris-Rips, alpha）：不同复形构造的优缺点
+- 层论（sheaf theory）：局部到全局的一致数据结构
+- Mapper 算法：基于持续同调的可视化与聚类
+- 拓扑数据分析（topological data analysis）：TDA 的完整方法论
+- 持续图像/景观（persistence image / landscape）：持续图的向量化表示
+- 多参数持续（multiparameter persistence）：多尺度过滤的同调
+- zigzag 持续（zigzag persistence）：允许双向过滤的持续同调

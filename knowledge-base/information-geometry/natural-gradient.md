@@ -52,3 +52,17 @@ $$\mathcal{I}_l \approx A_l \otimes B_l$$
 - Martens & Grosse. "Optimizing Neural Networks with Kronecker-Factored Approximate Curvature." *ICML*, 2015
 - Schulman et al. "Trust Region Policy Optimization." *ICML*, 2015
 - 关联知识卡：`probability/fisher-information.md`、`information-geometry/fisher-metric.md`
+
+
+## 路由扩展
+- 若需要度量的定义 → `fisher-metric.md`（Fisher 度量是自然梯度的基础）
+- 若需要一般黎曼优化框架 → `riemannian-optimization.md`（自然梯度是黎曼梯度的特例）
+- 若需要信息论视角 → `fisher-information.md`（Fisher 信息的统计解释）
+
+## 可扩展方向
+- 镜像下降即自然梯度（mirror descent as natural gradient）：对偶空间上的等价性
+- Amari 的 alpha-几何（Amari's alpha-geometry）：alpha-联络族
+- 自然策略梯度（natural policy gradient / RL）：强化学习中的自然梯度
+- 自然进化策略（natural evolution strategies）：NES 优化器
+- 实用自然梯度（practical natural gradient）：K-FAC, 对角近似等高效实现
+- 自适应自然梯度（adaptive natural gradient）：动态估计 Fisher 信息的方法

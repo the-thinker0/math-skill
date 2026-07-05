@@ -52,3 +52,18 @@ Limited GPU friendliness, which is the main bottleneck for deploying persistent 
 - Distillation notes: references/books/algebraic-geometry-rising-sea.md (Section 18 Cech Cohomology, Section 23 Derived Functors, cohomology computations)
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, Ch 17--18 (de Rham cohomology)
 - Extended reading: Edelsbrunner & Harer, *Computational Topology: An Introduction* (standard textbook on persistent homology)
+
+
+## Routing Extensions
+- If topological invariant computation is needed -> `euler-characteristic.md` (Euler characteristic as alternating sum of Betti numbers)
+- If 1-dimensional topology analysis is needed -> `fundamental-group.md` (fundamental group captures loop structure)
+- If used for information-preserving compression -> `information-bottleneck.md` (topology-preserving information compression)
+
+## Extensible Directions
+- Simplicial complex types (Cech, Vietoris-Rips, alpha): advantages and disadvantages of different constructions
+- Sheaf theory: local-to-global consistent data structures
+- Mapper algorithm: visualization and clustering based on persistent homology
+- Topological data analysis (TDA): complete TDA methodology
+- Persistence image / landscape: vectorized representations of persistence diagrams
+- Multiparameter persistence: homology with multi-scale filtrations
+- Zigzag persistence: persistent homology allowing bidirectional filtrations

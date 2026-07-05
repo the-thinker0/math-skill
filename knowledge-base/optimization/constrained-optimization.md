@@ -51,3 +51,17 @@
 
 - 蒸馏稿：references/books/optimization-ml.md（Ch 20-21 等式/不等式约束与 KKT、Ch 24 约束算法 §24.3 投影梯度 §24.5 增广 Lagrange §24.6 惩罚法）
 - 原书：Chong, Lu, Zak, *An Introduction to Optimization* 5th Ed., Chapter 20-21 (Equality & Inequality Constraints) + Chapter 24 (Algorithms for Constrained Optimization §24.2-24.6)
+
+
+## 路由扩展
+- 若需要从对偶视角分析 → `lagrangian-duality.md`（Lagrange 对偶理论）
+- 若约束在流形上 → `riemannian-optimization.md`（流形约束的黎曼优化）
+- 若需要惩罚项设计 → `constraint-penalty`（设计模式层的约束惩罚）
+
+## 可扩展方向
+- 罚函数/障碍函数（penalty / barrier methods）：将约束转化为惩罚项
+- 序列二次规划（SQP）：约束优化的二阶方法
+- 有效集方法（active set methods）：识别活跃约束集
+- 约束规范（constraint qualification）：LICQ, MFCQ 等正则条件
+- 精确罚函数（exact penalty）：有限罚参数下的精确解
+- 增广 Lagrangian 方法（augmented Lagrangian methods）：结合对偶与罚函数

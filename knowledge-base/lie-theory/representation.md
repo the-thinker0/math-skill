@@ -50,3 +50,18 @@ GPU 友好度取决于群的规模和表示维数：
 - 蒸馏稿：references/books/differential-geometry.md（Ch 5 Lie Groups, 伴随表示部分）
 - 原书：Joan Sola et al., *A micro Lie theory*, §II-F（伴随表示，式 30-35）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, Ch 5（李群的表示）
+
+
+## 路由扩展
+- 若需要等变网络设计 → `equivariance.md`（表示理论驱动等变网络构造）
+- 若需要群作用的具体形式 → `group-action.md`（表示是线性群作用）
+- 若需要不可约分解 → `spectral-decomposition.md`（类比为矩阵的谱分解）
+
+## 可扩展方向
+- 不可约表示（irreducible representation）：表示的基本构建块
+- 特征标（character）：表示的迹函数与分类
+- Schur 引理：不可约表示间的态射
+- Peter-Weyl 定理：紧群的正则表示分解
+- 诱导表示（induced representation）：从子群构造大群表示
+- 表示的张量积（tensor product of representations）：多粒子系统的组合
+- Clebsch-Gordan 系数：张量积分解为不可约的变换系数

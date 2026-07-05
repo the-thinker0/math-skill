@@ -43,3 +43,17 @@ $$P(|f(X_1,\ldots,X_n) - \mathbb{E}[f]| \geq t) \leq 2\exp\left(-\frac{2t^2}{\su
 - Boucheron, Lugosi, Massart. *Concentration Inequalities: A Nonasymptotic Theory of Independence*. Oxford, 2013
 - Vershynin. *High-Dimensional Probability*. Cambridge, 2018（第 2-3 章）
 - 关联知识卡：`probability/entropy.md`、`probability/fisher-information.md`
+
+
+## 路由扩展
+- 若需要信息论界 → `entropy.md`（基于熵的集中不等式）
+- 若需要 Donsker-Varadhan 表示 → `kl-divergence.md`（KL 散度的变分表示）
+- 若涉及随机矩阵界 → `matrix-perturbation.md`（随机矩阵的集中行为）
+
+## 可扩展方向
+- 鞅集中（Azuma / Freedman）：鞅差的集中不等式
+- 对数 Sobolev 不等式（log-Sobolev inequalities）：蕴含超收缩和集中
+- 传输不等式（transportation inequalities）：Wasserstein 距离与相对熵的关系
+- Talagrand 不等式：乘积空间上的维度无关集中
+- 乘积空间集中（concentration on product spaces）：独立变量函数的集中
+- 维度无关界（dimension-free bounds）：不随维度退化的集中界

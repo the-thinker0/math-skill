@@ -54,3 +54,18 @@ $$\Gamma_{ijk}^{(\alpha)} = \mathbb{E}\left[\left(\partial_i \partial_j \ell + \
 - Amari. *Information Geometry and Its Applications*. Springer, 2016
 - Ay, Jost, Le, Schwachhofer. *Information Geometry*. Springer, 2017
 - 关联知识卡：`probability/fisher-information.md`、`information-geometry/natural-gradient.md`
+
+
+## 路由扩展
+- 若需要优化应用 → `natural-gradient.md`（Fisher 度量下的自然梯度下降）
+- 若需要一般黎曼度量 → `metric-tensor.md`（Fisher 度量是黎曼度量的特例）
+- 若需要局部 KL 分析 → `kl-divergence.md`（局部 KL 散度等于 Fisher 度量）
+
+## 可扩展方向
+- Rao 距离（Rao's distance）：Fisher-Rao 度量下的测地距离
+- Fisher-Rao 测地线（Fisher-Rao geodesic）：分布空间中的最短路径
+- alpha-联络族（alpha-connection family）：Amari 的 alpha-联络
+- 对偶平坦性（dual flatness）：e-平坦与 m-平坦结构
+- Chentsov 唯一性定理（Chentsov's uniqueness theorem）：Fisher 度量的唯一性
+- 无穷维 Fisher 度量（infinite-dimensional Fisher metric）：函数空间上的 Fisher 度量
+- 函数空间 Fisher 度量（Fisher metric in function space）：神经网络的 Fisher 度量

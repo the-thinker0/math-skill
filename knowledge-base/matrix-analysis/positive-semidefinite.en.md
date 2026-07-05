@@ -48,3 +48,17 @@ A Hermitian matrix $A$ is positive semidefinite (PSD) if $x^HAx \geq 0$ for all 
 
 - Distilled notes: references/books/matrix-analysis.md (Ch 7 Positive Definite and Semidefinite Matrices, Section 7.5 Schur Product Theorem, Section 7.7 Loewner Partial Order)
 - Original text: Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 7 (Positive Definite and Semidefinite Matrices Section 7.1-7.8)
+
+
+## Routing Extensions
+- If solving SDP problems -> `convex-optimization.md` (semidefinite programming as convex optimization)
+- If PSD matrix conditioning and perturbation are involved -> `matrix-perturbation.md` (eigenvalue perturbation bounds)
+- If used for Fisher information matrix -> `fisher-information.md` (PSD property of Fisher information)
+
+## Extensible Directions
+- Semidefinite programming (SDP): solution methods and applications
+- PSD completion: completing partially known PSD matrices
+- Matrix square root: unique square root of PSD matrices
+- Lowner order: partial order on the PSD cone
+- Operator monotone functions: Loewner-Heinz theorem
+- Completely positive matrices: CP decomposition and cone structure

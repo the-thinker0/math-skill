@@ -49,3 +49,18 @@ GPU 友好度：联络的核心挑战是"串行 ODE 积分"。
 - 蒸馏稿：references/books/differential-geometry.md（§6.8 Principal Bundles, §9.8 Electromagnetism）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, Ch 12（§12.1-§12.12 完整联络理论）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, §13.1 Levi-Civita Connection
+
+
+## 路由扩展
+- 若需要曲率的定义 → `curvature.md`（曲率张量由联络导出）
+- 若需要平行移动与测地线 → `geodesic.md`（测地线是平行移动的自平行曲线）
+- 若需要协变导数的具体计算 → `tangent-space.md`（切空间上的协变微分）
+
+## 可扩展方向
+- Levi-Civita 联络：黎曼流形的唯一无挠度量联络
+- Christoffel 符号：联络在坐标基下的分量
+- 和乐（holonomy）：平行移动绕闭曲线的效果
+- 挠率（torsion）：联络的非对称部分
+- 仿射联络（affine connection）：一般的仿射联络理论
+- Ehresmann 联络：纤维丛上的水平分布
+- 规范联络（gauge connection）：物理中的规范场作为联络

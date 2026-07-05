@@ -47,3 +47,15 @@ Studies how the eigenvalues, singular values, and eigenspaces of a matrix $A$ ch
 
 - Distilled notes: references/books/matrix-analysis.md (Section 4.3 Eigenvalue Inequalities Weyl/Interlacing, Section 6.1-6.3 Geršgorin Discs and Perturbation Theorems, Section 5.8 Condition Numbers)
 - Original text: Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 4 Section 4.3 (Eigenvalue Inequalities) + Chapter 6 (Location and Perturbation of Eigenvalues Section 6.1-6.3)
+
+
+## Routing Extensions
+- If focusing on eigenvalue sensitivity -> `spectral-decomposition.md` (perturbation analysis of spectral decomposition)
+- If random perturbation bounds are involved -> `concentration-inequality.md` (random matrix concentration inequalities)
+
+## Extensible Directions
+- Pseudospectra: spectral sensitivity analysis for non-normal matrices
+- Structured perturbation: perturbation analysis preserving matrix structure
+- Davis-Kahan theorem variants: multiple bounds for subspace perturbation
+- Eigenvalue interlacing: relationship between submatrix and eigenvalues
+- Wilkinson polynomial: condition numbers and sensitivity of polynomial roots

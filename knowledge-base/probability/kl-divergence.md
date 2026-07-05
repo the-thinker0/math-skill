@@ -49,3 +49,16 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 - Cover & Thomas. *Elements of Information Theory*, Ch. 2-3. Wiley, 2006
 - Murphy. *Probabilistic Machine Learning: Advanced Topics*, Ch. 6. MIT Press, 2023
 - 关联知识卡：`probability/entropy.md`、`probability/information-bottleneck.md`、`probability/fisher-information.md`
+
+
+## 路由扩展
+- 若用于 IB 目标函数 → `information-bottleneck.md`（IB 使用 KL 定义目标）
+- 若需要绝对版本 → `entropy.md`（KL 散度退化为熵）
+- 若需要局部 KL 几何 → `fisher-information.md`（Fisher 信息是 KL 的局部曲率）
+
+## 可扩展方向
+- f-散度族（chi-squared, Hellinger, Jensen-Shannon, total variation）：统一的散度框架
+- 逆 KL（reverse KL / mode-seeking）：变分推断中的模式搜索行为
+- Bregman 散度（Bregman divergence）：凸函数生成的散度族
+- 变分表示（Donsker-Varadhan, Barber-Agakov）：KL 散度的变分上/下界
+- 指数族中的 KL（KL in exponential families）：充分统计量的几何

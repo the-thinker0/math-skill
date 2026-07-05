@@ -46,3 +46,16 @@
 
 - 蒸馏稿：references/books/matrix-analysis.md（Ch 1 特征值与相似、§2.4-2.5 Schur 三角化与正规矩阵、§4.2 Courant-Fischer）
 - 原书：Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 1 (Eigenvalues, Eigenvectors, Similarity) + Chapter 2 (Unitary Similarity §2.4-2.5)
+
+
+## 路由扩展
+- 若需要截断近似 → `low-rank-approximation.md`（基于 SVD 的低秩近似）
+- 若用于注意力机制设计 → `spectral-attention`（设计模式层）
+- 若需要谱的集中界 → `concentration-inequality.md`（随机矩阵谱的集中不等式）
+
+## 可扩展方向
+- SVD 变体（truncated / randomized SVD）：大规模矩阵的快速分解
+- CUR 分解：基于列/行采样的可解释矩阵近似
+- Nystrom 方法：核矩阵的低秩近似
+- 谱图理论（Laplacian eigenvalues）：图拉普拉斯特征值与图结构分析
+- 随机矩阵理论：大维随机矩阵的谱分布

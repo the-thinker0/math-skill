@@ -49,3 +49,17 @@ GPU friendliness depends on the type of group:
 - Distillation notes: references/books/smooth-manifolds.md (Ch 7 Lie Groups)
 - Original text: Joan Sola et al., *A micro Lie theory*, Section II-B (group action definition and applications in robotics)
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, Ch 7 (Lie groups and group actions)
+
+
+## Routing Extensions
+- If equivariant map design is needed -> `equivariance.md` (equivariance under group actions)
+- If linearization of group action is needed -> `representation.md` (representations are linear group actions)
+- If invariant analysis is needed -> `symmetry` (design pattern layer for symmetry analysis)
+
+## Extensible Directions
+- Orbit-stabilizer theorem: relationship between orbits and stabilizers of group actions
+- Transitive / free actions: special types of group actions
+- Homogeneous space G/H: orbit space of group actions
+- Quotient manifold: quotient structure under smooth group actions
+- Slice theorem: local structure of compact group actions
+- Momentum map: conserved quantities of Hamiltonian group actions

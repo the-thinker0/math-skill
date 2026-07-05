@@ -163,6 +163,20 @@ Write-Host "`n--- v3.0.1 Additions ---"
 Check-Contains "skills\math-research-activator\SKILL.md" "混合输入"
 Check-Contains "skills\math-research-activator\SKILL.en.md" "Mixed-Input"
 
+# --- v3.1.0 Additions ---
+Write-Host "`n--- v3.1.0 Additions ---"
+Check-Contains "skills\math-research-activator\SKILL.md" "知识缺口协议"
+Check-Contains "skills\math-research-activator\SKILL.en.md" "Knowledge Gap Protocol"
+Check-Contains "knowledge-base\overview.md" "激活锚点"
+Check-Contains "knowledge-base\overview.en.md" "Activation Anchor"
+Check-File "design-patterns\overview.md"
+Check-File "design-patterns\overview.en.md"
+$kbDomains = @("matrix-analysis","optimization","differential-geometry","lie-theory","topology","probability","information-geometry")
+foreach ($domain in $kbDomains) {
+    Check-File "knowledge-base\$domain\index.md"
+    Check-File "knowledge-base\$domain\index.en.md"
+}
+
 # --- npm Pack ---
 Write-Host "`n--- npm Pack Check ---"
 $packOutput = npm pack --dry-run 2>&1 | Out-String
@@ -232,10 +246,10 @@ if ($xrefFail -eq 0) {
 Write-Host "`n--- Count Verification ---"
 $cnLenses = (Get-ChildItem -Path "lenses" -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" }).Count
 $enLenses = (Get-ChildItem -Path "lenses" -Filter "*.en.md").Count
-$cnKB = (Get-ChildItem -Path "knowledge-base" -Recurse -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" -and $_.Name -notlike "overview*" }).Count
-$enKB = (Get-ChildItem -Path "knowledge-base" -Recurse -Filter "*.en.md" | Where-Object { $_.Name -notlike "overview.en.md" }).Count
-$cnDP = (Get-ChildItem -Path "design-patterns" -Recurse -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" }).Count
-$enDP = (Get-ChildItem -Path "design-patterns" -Recurse -Filter "*.en.md").Count
+$cnKB = (Get-ChildItem -Path "knowledge-base" -Recurse -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" -and $_.Name -notlike "overview*" -and $_.Name -notlike "index*" }).Count
+$enKB = (Get-ChildItem -Path "knowledge-base" -Recurse -Filter "*.en.md" | Where-Object { $_.Name -notlike "overview.en.md" -and $_.Name -notlike "index.en.md" }).Count
+$cnDP = (Get-ChildItem -Path "design-patterns" -Recurse -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" -and $_.Name -notlike "overview*" }).Count
+$enDP = (Get-ChildItem -Path "design-patterns" -Recurse -Filter "*.en.md" | Where-Object { $_.Name -notlike "overview.en.md" }).Count
 
 if ($cnLenses -eq $enLenses) {
     Write-Host "[PASS] Lenses: $cnLenses CN = $enLenses EN" -ForegroundColor Green; $script:pass++

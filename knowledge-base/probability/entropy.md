@@ -45,3 +45,19 @@ $$I(X; Y) = H(X) - H(X|Y) = H(Y) - H(Y|X) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}
 - Cover & Thomas. *Elements of Information Theory*, 2nd Edition. Wiley, 2006
 - MacKay. *Information Theory, Inference, and Learning Algorithms*. Cambridge, 2003
 - 关联知识卡：`probability/kl-divergence.md`、`probability/information-bottleneck.md`
+
+
+## 路由扩展
+- 若需要相对熵 → `kl-divergence.md`（KL 散度即相对熵）
+- 若涉及信息压缩 → `information-bottleneck.md`（信息瓶颈使用熵和互信息）
+- 若涉及熵-功率不等式 → `fisher-information.md`（Fisher 信息与熵的关系）
+
+## 可扩展方向
+- Renyi 熵（Renyi entropy）：广义熵的参数族
+- Tsallis 熵（Tsallis entropy）：非广延统计力学的熵
+- 条件/互信息（conditional / mutual information）：多变量信息度量
+- 熵率（entropy rate）：随机过程的渐近熵
+- 最大熵原理（maximum entropy principle）：最少假设下的分布选择
+- 熵估计（entropy estimation）：从样本估计熵的方法
+- 微分熵（differential entropy）：连续分布的熵
+- 熵功率不等式（entropy power inequality）：独立和的熵下界

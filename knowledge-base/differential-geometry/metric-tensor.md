@@ -48,3 +48,17 @@ GPU 友好度取决于度量的结构化程度：
 - 蒸馏稿：references/books/smooth-manifolds.md（Ch 13 Riemannian Metrics）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, §7.6 Metric Tensors
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, Ch 13（黎曼度量、升降指标 (sharp)/(flat)）
+
+
+## 路由扩展
+- 若度量来自 Fisher 信息 → `natural-gradient.md`（Fisher 度量下的自然梯度）
+- 若需要黎曼梯度计算 → `riemannian-optimization.md`（度量决定的梯度方向）
+- 若需要曲率分析 → `curvature.md`（度量决定的曲率张量）
+
+## 可扩展方向
+- Finsler 度量（Finsler metric）：非二次型的广义度量
+- 亚黎曼度量（sub-Riemannian metric）：分布约束下的度量
+- 信息度量（information metric）：统计流形上的 Fisher-Rao 度量
+- 拉回度量（pullback metric）：映射诱导的度量
+- 度量学习（metric learning）：从数据学习最优度量
+- 距离度量学习（distance metric learning）：监督距离学习

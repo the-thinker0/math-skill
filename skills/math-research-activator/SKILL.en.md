@@ -38,6 +38,14 @@ description: |
 
 This system is a mathematical staff office for AI architecture innovation — not an arsenal, but one that tells you: **what kind of battle this is, which arms to deploy, how to deploy them, and where things could go wrong.**
 
+## Core Principle
+
+> Math Skill does not store mathematics. It activates, routes, and translates mathematics for AI research.
+
+- **knowledge-base/** is not a closed encyclopedia but a set of mathematical activation anchors
+- When existing cards cannot cover a problem, the agent must NOT stop or force-fit; instead, generate a "temporary knowledge card" based on lenses, reference layers, and the agent's own mathematical knowledge, then continue with design translation
+- **design-patterns/** is a collection of math→AI translation prototypes, not a complete model repository; when no matching pattern exists, generate a temporary design candidate from the mathematical structure and label it as a temporary design pattern
+
 ## Three-Layer Orthogonal Architecture
 
 | Layer | Responsibility | Directory | Core Question |
@@ -182,6 +190,28 @@ Formal terminology (single authoritative source: `../../references/gpu-friendly-
 - **Light**: Read knowledge cards (`../../knowledge-base/*/*.md`); self-contained and immediately usable
 - **Medium**: Read distilled book notes (`../../references/books/*.md`) for more complete context
 - **Deep**: When `math_book/<PDF>` is available locally, the agent automatically runs `pdftotext` + grep to locate the original page
+
+## Knowledge Gap Protocol
+
+When the mathematical tools required by the user's problem are not in the existing `knowledge-base/`, do NOT force-fit existing cards. Execute the following procedure:
+
+1. **Gap Identification**: Explicitly state that no fully corresponding knowledge card exists. Classify the gap as: new domain, new theorem family, new structure, new application scenario, or combinatorial extension of existing cards.
+
+2. **Lens Fallback**: Select 1–3 most relevant thinking lenses to determine the problem's mathematical structure. E.g., local-to-global, categorical, spectral, projection, causal, perturbation.
+
+3. **Candidate Knowledge Localization**: Provide mathematical keywords, theorem families, concept clusters, and reference book directions to look up. Existing card coverage is not required, but explain why these concepts are relevant.
+
+4. **Temporary Knowledge Card**: Generate a temporary knowledge summary in the same format as formal cards:
+   - Minimal definition
+   - Core structure
+   - Applicable problems
+   - AI design translation
+   - GPU feasibility
+   - Risks and failure conditions
+
+5. **Design Translation**: If the user's goal is mechanism design, translate the temporary knowledge into candidate AI modules, losses, routing, attention, representation, or compression schemes.
+
+6. **Upgrade Recommendation**: If this gap recurs frequently, recommend adding a formal knowledge card or design pattern.
 
 ## Workflow Example
 

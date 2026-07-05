@@ -47,3 +47,16 @@ Given a matrix $A \in \mathbb{R}^{m \times n}$, find a matrix $B$ with rank at m
 
 - Distilled notes: references/books/matrix-analysis.md (Section 2.6 SVD, Section 7.4 Polar Decomposition and SVD, nuclear norm-spectral norm duality Section 5.5)
 - Original text: Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 2 Section 2.6 (SVD) + Chapter 7 Section 7.3-7.4 (Polar Decomposition & SVD)
+
+
+## Routing Extensions
+- If subspace projection implementation is needed -> `projection.md` (projection operators)
+- If detailed decomposition tools are needed -> `spectral-decomposition.md` (SVD/EVD)
+- If the goal is information-preserving compression -> `information-bottleneck.md` (information bottleneck theory)
+
+## Extensible Directions
+- Tensor decomposition (CP / Tucker / TT): low-rank decomposition of higher-order tensors
+- Structured low-rank (Toeplitz / Hankel): structure-preserving low-rank approximation
+- Online / streaming low-rank: incrementally updated low-rank estimation
+- Matrix completion: recovering low-rank matrices from partial observations
+- Robust PCA: low-rank + sparse decomposition

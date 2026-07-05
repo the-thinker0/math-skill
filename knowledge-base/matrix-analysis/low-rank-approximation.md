@@ -47,3 +47,16 @@
 
 - 蒸馏稿：references/books/matrix-analysis.md（§2.6 SVD、§7.4 极分解与 SVD、核范数-谱范数对偶 §5.5）
 - 原书：Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 2 §2.6 (SVD) + Chapter 7 §7.3-7.4 (Polar Decomposition & SVD)
+
+
+## 路由扩展
+- 若需要子空间投影的具体实现 → `projection.md`（投影算子）
+- 若需要分解工具的详细分析 → `spectral-decomposition.md`（SVD/EVD）
+- 若目标是信息保持压缩 → `information-bottleneck.md`（信息瓶颈理论）
+
+## 可扩展方向
+- 张量分解（CP / Tucker / TT）：高阶张量的低秩分解
+- 结构化低秩（Toeplitz / Hankel）：保持结构的低秩近似
+- 在线/流式低秩（online / streaming low-rank）：增量更新的低秩估计
+- 矩阵补全（matrix completion）：从部分观测恢复低秩矩阵
+- 鲁棒 PCA（robust PCA）：低秩+稀疏分解

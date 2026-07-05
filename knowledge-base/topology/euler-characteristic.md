@@ -52,3 +52,16 @@ GPU 友好度高。欧拉示性数的计算极其廉价：
 - 蒸馏稿：references/books/differential-geometry.md（Ch 4 Curves and Hypersurfaces, Gauss curvature 直觉来源）
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, Ch 17-18（de Rham 上同调与拓扑不变量）
 - 延伸：Hatcher, *Algebraic Topology*, Ch 2（单纯同调与欧拉示性数的标准处理）
+
+
+## 路由扩展
+- 若需要多尺度拓扑分析 → `persistent-homology.md`（持续同调提供尺度依赖的拓扑）
+- 若涉及曲率-拓扑联系 → `curvature.md`（Gauss-Bonnet 定理连接曲率与 Euler 示性数）
+
+## 可扩展方向
+- Betti 数（Betti numbers）：各维度的独立环路计数
+- Poincare 多项式（Poincare polynomial）：Betti 数的生成函数
+- Lefschetz 不动点定理：Euler 示性数与映射不动点
+- Morse 不等式（Morse inequalities）：临界点与 Betti 数的关系
+- 离散 Morse 理论（discrete Morse theory）：复形上的 Morse 函数
+- Euler 示性数曲线（Euler characteristic curve）：多阈值的 Euler 示性数变化

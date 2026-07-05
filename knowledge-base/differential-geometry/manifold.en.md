@@ -45,3 +45,16 @@ Moderate GPU friendliness. Coordinate chart transformations are element-wise map
 - Distillation notes: references/books/differential-geometry.md (Ch 1-2 Differentiable Manifolds / The Tangent Structure)
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, 2nd Edition, Ch 1-2 (topological manifolds, smooth structures, partition of unity)
 - Original text: Jeffrey M. Lee, *Manifolds and Differential Geometry*, Ch 1-2
+
+
+## Routing Extensions
+- If local structure analysis is needed -> `tangent-space.md` (tangent space provides local linear approximation)
+- If distance definition is needed -> `metric-tensor.md` (metric tensor defines distance on manifolds)
+- If optimization on manifolds is needed -> `riemannian-optimization.md` (Riemannian optimization methods)
+
+## Extensible Directions
+- Submanifold: embedded and immersed submanifolds
+- Product manifold: direct product construction of multiple manifolds
+- Quotient manifold: quotient space under equivalence relations
+- Stiefel / Grassmann manifolds: orthogonal matrix and subspace manifolds
+- Manifold learning (Isomap / LLE / diffusion maps): discovering low-dimensional manifolds from high-dimensional data

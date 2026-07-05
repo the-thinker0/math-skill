@@ -49,3 +49,17 @@ GPU friendliness depends on whether a closed-form retraction exists:
 - Distillation notes: references/books/smooth-manifolds.md (Ch 20 The Exponential Map)
 - Original text: Jeffrey M. Lee, *Manifolds and Differential Geometry*, Section 13.4 Geodesics
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, Ch 20 (exponential map, retraction prototype)
+
+
+## Routing Extensions
+- If the distance definition is needed -> `metric-tensor.md` (metric tensor determines geodesics)
+- If used as a retraction -> `riemannian-optimization.md` (exponential map as retraction)
+- If deviation from flat space is needed -> `curvature.md` (curvature controls geodesic deviation)
+
+## Extensible Directions
+- Conjugate points: zeros of Jacobi fields along geodesics
+- Cut locus: critical points where geodesics lose optimality
+- Hopf-Rinow theorem: completeness and geodesic existence
+- Geodesic convexity: convex sets and convex functions on manifolds
+- Jacobi field: linearization of geodesic variation
+- Geodesic regression: regression analysis on manifolds

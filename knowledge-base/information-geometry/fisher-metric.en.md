@@ -54,3 +54,18 @@ $$\Gamma_{ijk}^{(\alpha)} = \mathbb{E}\left[\left(\partial_i \partial_j \ell + \
 - Amari. *Information Geometry and Its Applications*. Springer, 2016
 - Ay, Jost, Le, Schwachhofer. *Information Geometry*. Springer, 2017
 - Related knowledge cards: `probability/fisher-information.md`, `information-geometry/natural-gradient.md`
+
+
+## Routing Extensions
+- If optimization application is needed -> `natural-gradient.md` (natural gradient descent under Fisher metric)
+- If a general Riemannian metric is needed -> `metric-tensor.md` (Fisher metric is a special case of Riemannian metric)
+- If local KL analysis is needed -> `kl-divergence.md` (local KL divergence equals Fisher metric)
+
+## Extensible Directions
+- Rao's distance: geodesic distance under Fisher-Rao metric
+- Fisher-Rao geodesic: shortest paths in distribution space
+- Alpha-connection family: Amari's alpha-connections
+- Dual flatness: e-flat and m-flat structures
+- Chentsov's uniqueness theorem: uniqueness of Fisher metric
+- Infinite-dimensional Fisher metric: Fisher metric on function spaces
+- Fisher metric in function space: Fisher metric for neural networks

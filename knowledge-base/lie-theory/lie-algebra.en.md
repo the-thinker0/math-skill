@@ -49,3 +49,18 @@ High GPU friendliness. The core advantage of the Lie algebra is that it is a "li
 - Distillation notes: references/books/differential-geometry.md (Ch 5 Lie Groups, Lie algebra section)
 - Original text: Joan Sola et al., *A micro Lie theory*, Section II-C (Lie algebra definition and hat/vee), Section II-D (exp/log bridge)
 - Original text: Jeffrey M. Lee, *Manifolds and Differential Geometry*, Ch 5 (Lie groups and Lie algebras)
+
+
+## Routing Extensions
+- If the corresponding global group is needed -> `lie-group.md` (integrating Lie algebra yields Lie group)
+- If algebra representations are needed -> `representation.md` (representation theory of Lie algebras)
+- If acting as the tangent space of a group -> `tangent-space.md` (Lie algebra structure on tangent space)
+
+## Extensible Directions
+- Structure constants: components of Lie bracket in a basis
+- Jacobi identity: fundamental axiom of Lie algebras
+- Ideal / subalgebra: substructures of Lie algebras
+- Nilpotent / solvable / semisimple classification: structure theorems for Lie algebras
+- Killing form: invariant bilinear form of Lie algebras
+- Cartan subalgebra: maximal toral subalgebra of semisimple Lie algebras
+- Root system: root system classification of semisimple Lie algebras

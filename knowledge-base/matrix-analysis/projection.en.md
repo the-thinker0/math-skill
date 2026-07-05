@@ -45,3 +45,16 @@ Maps a vector $v$ onto a subspace $\mathcal{S}$ such that the residual $v - Pv$ 
 
 - Distilled notes: references/books/matrix-analysis.md (Section 2.1 QR Decomposition, Section 4.2 Courant-Fischer Variational Characterization, Section 2.6 SVD)
 - Original text: Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 2 (Unitary Similarity) + Chapter 4 (Hermitian Matrices Section 4.2 Variational Characterizations)
+
+
+## Routing Extensions
+- If the goal is compression / dimensionality reduction -> `low-rank-approximation.md` (truncated SVD implementation)
+- If projection constraints are needed on a manifold -> `riemannian-optimization.md` (constrained optimization on Riemannian manifolds)
+- If shared vs. private subspace separation is involved -> `shared-private-decomposition` (design pattern layer)
+
+## Extensible Directions
+- Oblique projection: non-orthogonal projection operators
+- Alternating projection: Von Neumann alternating projection convergence theorem
+- Projection onto convex sets (POCS): projecting onto intersections of convex sets
+- Randomized projection: Johnson-Lindenstrauss lemma and random projections
+- Subspace tracking: online subspace estimation methods

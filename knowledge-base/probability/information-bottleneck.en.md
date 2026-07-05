@@ -47,3 +47,19 @@ where $q_\phi(y|z)$ is the classifier/decoder, $r(z)$ is the prior distribution 
 - Alemi, Poole, Fischer, Dillon, Suresh, Murphy. "Deep Variational Information Bottleneck." *ICLR*, 2017
 - Shwartz-Ziv, Tishby. "Opening the Black Box of Deep Neural Networks via Information." *arXiv:1703.00810*, 2017
 - Related knowledge cards: `probability/entropy.md`, `probability/kl-divergence.md`
+
+
+## Routing Extensions
+- If the KL component in IB objective is needed -> `kl-divergence.md` (KL component of IB objective)
+- If rate-distortion theory is involved -> `entropy.md` (relationship between IB and rate-distortion theory)
+- If used for VIB loss design -> `variational-loss` (design pattern layer for variational information bottleneck loss)
+
+## Extensible Directions
+- Rate-distortion theory: optimal compression bounds from information theory
+- Deterministic IB: IB variant with deterministic encoding
+- Geometric IB: information bottleneck under geometric structure
+- IB for representation learning: feature learning under IB framework
+- IB for clustering: IB-driven clustering algorithms
+- Deep IB: information bottleneck in deep networks
+- IB with multiple bottlenecks: multi-layer information constraints
+- IB generalization bounds: theoretical connection between IB and generalization

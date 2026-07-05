@@ -283,15 +283,29 @@ check_contains "skills/math-research-activator/SKILL.md" '混合输入'
 check_contains "skills/math-research-activator/SKILL.en.md" 'Mixed-Input'
 check_file "tests/eval/mixed-language-routing.md"
 
+# --- v3.1.0 Additions ---
+echo ""
+echo "--- v3.1.0 Additions ---"
+check_contains "skills/math-research-activator/SKILL.md" '知识缺口协议'
+check_contains "skills/math-research-activator/SKILL.en.md" 'Knowledge Gap Protocol'
+check_contains "knowledge-base/overview.md" '激活锚点'
+check_contains "knowledge-base/overview.en.md" 'Activation Anchor'
+check_file "design-patterns/overview.md"
+check_file "design-patterns/overview.en.md"
+for domain in matrix-analysis optimization differential-geometry lie-theory topology probability information-geometry; do
+    check_file "knowledge-base/${domain}/index.md"
+    check_file "knowledge-base/${domain}/index.en.md"
+done
+
 # --- Count Verification ---
 echo ""
 echo "--- Count Verification ---"
 LENS_CN=$(ls lenses/*.md 2>/dev/null | grep -v '.en.md' | wc -l)
 LENS_EN=$(ls lenses/*.en.md 2>/dev/null | wc -l)
-KB_CN=$(find knowledge-base -name '*.md' ! -name '*.en.md' ! -name 'overview*' 2>/dev/null | wc -l)
-KB_EN=$(find knowledge-base -name '*.en.md' ! -name 'overview.en.md' 2>/dev/null | wc -l)
-DP_CN=$(find design-patterns -name '*.md' ! -name '*.en.md' 2>/dev/null | wc -l)
-DP_EN=$(find design-patterns -name '*.en.md' 2>/dev/null | wc -l)
+KB_CN=$(find knowledge-base -name '*.md' ! -name '*.en.md' ! -name 'overview*' ! -name 'index*' 2>/dev/null | wc -l)
+KB_EN=$(find knowledge-base -name '*.en.md' ! -name 'overview.en.md' ! -name 'index.en.md' 2>/dev/null | wc -l)
+DP_CN=$(find design-patterns -name '*.md' ! -name '*.en.md' ! -name 'overview*' 2>/dev/null | wc -l)
+DP_EN=$(find design-patterns -name '*.en.md' ! -name 'overview.en.md' 2>/dev/null | wc -l)
 
 if [ "$LENS_CN" -eq "$LENS_EN" ]; then
     echo -e "${GREEN}[PASS]${NC} Lenses: $LENS_CN CN = $LENS_EN EN"

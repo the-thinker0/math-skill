@@ -43,3 +43,17 @@ $$P(|f(X_1,\ldots,X_n) - \mathbb{E}[f]| \geq t) \leq 2\exp\left(-\frac{2t^2}{\su
 - Boucheron, Lugosi, Massart. *Concentration Inequalities: A Nonasymptotic Theory of Independence*. Oxford, 2013
 - Vershynin. *High-Dimensional Probability*. Cambridge, 2018 (Chapters 2-3)
 - Related knowledge cards: `probability/entropy.md`, `probability/fisher-information.md`
+
+
+## Routing Extensions
+- If information-theoretic bounds are needed -> `entropy.md` (entropy-based concentration inequalities)
+- If Donsker-Varadhan representation is needed -> `kl-divergence.md` (variational representation of KL divergence)
+- If random matrix bounds are involved -> `matrix-perturbation.md` (concentration behavior of random matrices)
+
+## Extensible Directions
+- Martingale concentration (Azuma / Freedman): concentration inequalities for martingale differences
+- Log-Sobolev inequalities: implying hypercontractivity and concentration
+- Transportation inequalities: relationship between Wasserstein distance and relative entropy
+- Talagrand's inequality: dimension-free concentration on product spaces
+- Concentration on product spaces: concentration of functions of independent variables
+- Dimension-free bounds: concentration bounds that do not degrade with dimension

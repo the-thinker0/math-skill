@@ -46,3 +46,17 @@ High GPU friendliness. The core operations of the tangent space are linear algeb
 - Distillation notes: references/books/differential-geometry.md (Ch 1-2, Ch 7 Tensors)
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, 2nd Edition, Ch 3 (tangent spaces, pushforward, tangent bundle)
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, Ch 11 (cotangent bundle, 1-forms, pullback)
+
+
+## Routing Extensions
+- If gradient computation on manifolds is needed -> `riemannian-optimization.md` (gradient descent on manifolds)
+- If the tangent space of a group structure is involved -> `lie-algebra.md` (tangent space of a Lie group is its Lie algebra)
+- If covariant derivative is needed -> `connection.md` (connection defines covariant differentiation)
+
+## Extensible Directions
+- Cotangent space: dual space and differential forms
+- Differential / pushforward: tangent map of smooth maps
+- Vector field: smooth vector fields on manifolds
+- Lie bracket: commutation relations of vector fields
+- Integral curve: integral curves and flows of vector fields
+- Exponential map: mapping from tangent space to manifold

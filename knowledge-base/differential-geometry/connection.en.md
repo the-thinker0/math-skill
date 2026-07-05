@@ -49,3 +49,18 @@ GPU friendliness: the core challenge of connections is "serial ODE integration."
 - Distillation notes: references/books/differential-geometry.md (Section 6.8 Principal Bundles, Section 9.8 Electromagnetism)
 - Original text: Jeffrey M. Lee, *Manifolds and Differential Geometry*, Ch 12 (Section 12.1--Section 12.12, complete connection theory)
 - Original text: Jeffrey M. Lee, *Manifolds and Differential Geometry*, Section 13.1 Levi-Civita Connection
+
+
+## Routing Extensions
+- If curvature definition is needed -> `curvature.md` (curvature tensor derived from connection)
+- If parallel transport and geodesics are needed -> `geodesic.md` (geodesics are auto-parallel curves of parallel transport)
+- If covariant derivative computation is needed -> `tangent-space.md` (covariant differentiation on tangent space)
+
+## Extensible Directions
+- Levi-Civita connection: unique torsion-free metric connection on Riemannian manifolds
+- Christoffel symbols: connection components in coordinate basis
+- Holonomy: effect of parallel transport around closed curves
+- Torsion: antisymmetric part of a connection
+- Affine connection: general affine connection theory
+- Ehresmann connection: horizontal distributions on fiber bundles
+- Gauge connection: gauge fields as connections in physics

@@ -52,3 +52,18 @@ GPU 友好度取决于群的离散化程度：
 - 蒸馏稿：references/books/differential-geometry.md（§6.8 Principal Bundles, §12.12 G-Connections, 规范等变）
 - 蒸馏稿：references/books/differential-geometry.md（Ch 5 Lie Groups, 连续对称作为先验）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, §6.8 + §12.12（规范等变的几何基础）
+
+
+## 路由扩展
+- 若需要表示理论基础 → `representation.md`（等变映射是表示间态射）
+- 若需要群作用结构 → `group-action.md`（等变性定义依赖群作用）
+- 若用于注意力机制设计 → `equivariant-attention`（设计模式层的等变注意力）
+
+## 可扩展方向
+- 可操纵特征（steerable features）：SO(3) 下的可操纵特征表示
+- 球谐函数（spherical harmonics）：SO(3) 不可约表示的基函数
+- Wigner D-矩阵：SO(3) 表示的矩阵元
+- 等变映射代数（equivariant map algebra）：等变线性映射的完全刻画
+- 通用等变架构（universal equivariant architectures）：等变函数的通用逼近
+- 对称破缺（symmetry breaking）：近似等变或可控对称破缺
+- 近似等变（approximate equivariance）：噪声或离散化下的近似等变性

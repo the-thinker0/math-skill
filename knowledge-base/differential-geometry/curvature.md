@@ -47,3 +47,16 @@ GPU 友好度：曲率的核心难点是"不能物化全张量"。
 
 - 蒸馏稿：references/books/differential-geometry.md（Ch 12 §12.5/§12.10 Curvature, Ch 13 §13.2 Riemann Curvature, §13.7 Jacobi Fields, §13.11 Rauch Comparison）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, §13.2 Riemann Curvature Tensor, §13.7 Jacobi Fields
+
+
+## 路由扩展
+- 若需要局部几何分析 → `metric-tensor.md`（度量决定局部曲率）
+- 若需要全局拓扑分析 → `persistent-homology.md`（持续同调捕捉全局拓扑）
+- 若涉及曲率对稳定性的影响 → `matrix-perturbation.md`（曲率导致的扰动放大）
+
+## 可扩展方向
+- 截面/Ricci/标量曲率（sectional / Ricci / scalar curvature）：不同维度的曲率概念
+- Gauss-Bonnet 定理：曲率与拓扑不变量的关系
+- 比较定理（Toponogov, Bishop-Gromov）：曲率约束下的几何比较
+- 曲率流（curvature flow）：平均曲率流与 Ricci 流
+- Cartan-Hadamard 定理：非正曲率流形的全局结构

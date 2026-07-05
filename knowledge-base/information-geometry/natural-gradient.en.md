@@ -52,3 +52,17 @@ where $A_l = \mathbb{E}[a_l a_l^T]$ (activation covariance) and $B_l = \mathbb{E
 - Martens & Grosse. "Optimizing Neural Networks with Kronecker-Factored Approximate Curvature." *ICML*, 2015
 - Schulman et al. "Trust Region Policy Optimization." *ICML*, 2015
 - Related knowledge cards: `probability/fisher-information.md`, `information-geometry/fisher-metric.md`
+
+
+## Routing Extensions
+- If metric definition is needed -> `fisher-metric.md` (Fisher metric is the foundation of natural gradient)
+- If a general Riemannian optimization framework is needed -> `riemannian-optimization.md` (natural gradient is a special case of Riemannian gradient)
+- If an information-theoretic perspective is needed -> `fisher-information.md` (statistical interpretation of Fisher information)
+
+## Extensible Directions
+- Mirror descent as natural gradient: equivalence on dual spaces
+- Amari's alpha-geometry: alpha-connection family
+- Natural policy gradient (RL): natural gradient in reinforcement learning
+- Natural evolution strategies (NES): NES optimizer
+- Practical natural gradient: efficient implementations such as K-FAC, diagonal approximations
+- Adaptive natural gradient: methods for dynamically estimating Fisher information

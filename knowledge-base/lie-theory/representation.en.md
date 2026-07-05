@@ -50,3 +50,18 @@ GPU friendliness depends on the group size and representation dimension:
 - Distillation notes: references/books/differential-geometry.md (Ch 5 Lie Groups, adjoint representation section)
 - Original text: Joan Sola et al., *A micro Lie theory*, Section II-F (adjoint representation, equations 30--35)
 - Original text: Jeffrey M. Lee, *Manifolds and Differential Geometry*, Ch 5 (representations of Lie groups)
+
+
+## Routing Extensions
+- If equivariant network design is needed -> `equivariance.md` (representation theory drives equivariant network construction)
+- If the specific form of group action is needed -> `group-action.md` (representations are linear group actions)
+- If irreducible decomposition is needed -> `spectral-decomposition.md` (analogous to spectral decomposition of matrices)
+
+## Extensible Directions
+- Irreducible representation: basic building blocks of representations
+- Character: trace function and classification of representations
+- Schur's lemma: morphisms between irreducible representations
+- Peter-Weyl theorem: decomposition of regular representation for compact groups
+- Induced representation: constructing representations of large groups from subgroups
+- Tensor product of representations: combining multi-particle systems
+- Clebsch-Gordan coefficients: transformation coefficients for tensor product decomposition into irreducibles

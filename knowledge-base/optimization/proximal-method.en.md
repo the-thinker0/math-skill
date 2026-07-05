@@ -50,3 +50,17 @@ For non-smooth or non-differentiable objective functions $f(x) = g(x) + h(x)$ ($
 
 - Distilled notes: references/books/optimization-ml.md (Ch 8 Gradient Methods Section 8.3 Convergence Analysis, Ch 11 Quasi-Newton Section 11.5 BFGS, Ch 24 Constrained Algorithms Section 24.5 Augmented Lagrangian)
 - Original text: Chong, Lu, Zak, *An Introduction to Optimization* 5th Ed., Chapter 24 (Constrained Algorithms Section 24.5 Augmented Lagrangian) + Parikh & Boyd, *Proximal Algorithms*, Foundations and Trends in Optimization, 2014
+
+
+## Routing Extensions
+- If the smooth part dominates -> `convex-optimization.md` (convex optimization for smooth parts)
+- If the proximal operator corresponds to a constraint -> `constrained-optimization.md` (equivalence of indicator functions and constraints)
+- If used for variational loss regularization -> `variational-loss` (design pattern layer for proximal regularization)
+
+## Extensible Directions
+- Proximal gradient (ISTA / FISTA): fast proximal methods for L1 regularization
+- Douglas-Rachford splitting: optimizing sums of two non-smooth functions
+- Primal-dual hybrid gradient (PDHG): first-order methods for saddle point problems
+- Alternating minimization: block-wise optimization for block-separable objectives
+- Block coordinate descent: block update strategies for high-dimensional problems
+- Proximal neural networks: embedding proximal operators into network architecture

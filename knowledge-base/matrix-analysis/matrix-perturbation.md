@@ -47,3 +47,15 @@
 
 - 蒸馏稿：references/books/matrix-analysis.md（§4.3 特征值不等式 Weyl/交错、§6.1-6.3 Ger\v{s}gorin 圆盘与扰动定理、§5.8 条件数）
 - 原书：Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 4 §4.3 (Eigenvalue Inequalities) + Chapter 6 (Location and Perturbation of Eigenvalues §6.1-6.3)
+
+
+## 路由扩展
+- 若关注特征值灵敏度 → `spectral-decomposition.md`（谱分解的扰动分析）
+- 若涉及随机扰动界 → `concentration-inequality.md`（随机矩阵集中不等式）
+
+## 可扩展方向
+- 伪谱（pseudospectra）：非正规矩阵的谱灵敏度分析
+- 结构化扰动（structured perturbation）：保持矩阵结构的扰动分析
+- Davis-Kahan 定理变体：子空间扰动的多种界
+- 特征值交错（eigenvalue interlacing）：主子矩阵与特征值关系
+- Wilkinson 多项式：多项式根的条件数与扰动灵敏度

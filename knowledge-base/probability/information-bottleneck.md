@@ -47,3 +47,19 @@ $$\mathcal{L}_{VIB} = \mathbb{E}_{p(x,y)}[-\log q_\phi(y|z)] + D_{KL}(p_\theta(z
 - Alemi, Poole, Fischer, Dillon, Suresh, Murphy. "Deep Variational Information Bottleneck." *ICLR*, 2017
 - Shwartz-Ziv, Tishby. "Opening the Black Box of Deep Neural Networks via Information." *arXiv:1703.00810*, 2017
 - 关联知识卡：`probability/entropy.md`、`probability/kl-divergence.md`
+
+
+## 路由扩展
+- 若需要 IB 目标中的 KL → `kl-divergence.md`（IB 目标的 KL 分量）
+- 若涉及速率-失真理论 → `entropy.md`（IB 与率失真理论的关系）
+- 若用于 VIB 损失设计 → `variational-loss`（设计模式层的变分信息瓶颈损失）
+
+## 可扩展方向
+- 速率-失真理论（rate-distortion theory）：信息论的最优压缩界
+- 确定性 IB（deterministic IB）：确定性编码的 IB 变体
+- 几何 IB（geometric IB）：几何结构下的信息瓶颈
+- IB 用于表示学习（IB for representation learning）：IB 框架下的特征学习
+- IB 用于聚类（IB for clustering）：IB 驱动的聚类算法
+- 深度 IB（deep IB）：深度网络中的信息瓶颈
+- 多瓶颈 IB（IB with multiple bottlenecks）：多层信息约束
+- IB 泛化界（IB generalization bounds）：IB 与泛化能力的理论联系

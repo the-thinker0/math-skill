@@ -48,3 +48,16 @@ Optimization problems that minimize a convex function over a convex set. Convexi
 
 - Distilled notes: references/books/optimization-ml.md (Ch 22 Convex Optimization, Section 22.2 Convex Functions, Section 22.3 Convex Problems, Section 22.4 SDP/LMI)
 - Original text: Chong, Lu, Zak, *An Introduction to Optimization* 5th Ed., Chapter 22 (Convex Optimization Problems Section 22.1-22.4)
+
+
+## Routing Extensions
+- If the problem has constraints -> `constrained-optimization.md` (constrained convex optimization methods)
+- If the objective is non-smooth -> `proximal-method.md` (proximal methods for non-smooth parts)
+
+## Extensible Directions
+- Self-concordant functions: convergence guarantees for Newton's method
+- Interior point methods: polynomial-time methods for large-scale convex optimization
+- First-order method convergence rates: optimal convergence rates for gradient descent
+- Accelerated methods (Nesterov acceleration): Nesterov momentum and optimal first-order methods
+- Online convex optimization: regret analysis for sequential decision-making
+- Bandit convex optimization: convex optimization with zeroth-order information

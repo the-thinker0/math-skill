@@ -51,3 +51,17 @@ Minimizes an objective $f(x)$ over a constraint set $\mathcal{C} = \{x : g_i(x) 
 
 - Distilled notes: references/books/optimization-ml.md (Ch 20-21 Equality/Inequality Constraints and KKT, Ch 24 Constrained Algorithms Section 24.3 Projected Gradient, Section 24.5 Augmented Lagrangian, Section 24.6 Penalty Methods)
 - Original text: Chong, Lu, Zak, *An Introduction to Optimization* 5th Ed., Chapter 20-21 (Equality & Inequality Constraints) + Chapter 24 (Algorithms for Constrained Optimization Section 24.2-24.6)
+
+
+## Routing Extensions
+- If a dual perspective is needed -> `lagrangian-duality.md` (Lagrangian duality theory)
+- If constraints are on a manifold -> `riemannian-optimization.md` (Riemannian optimization for manifold constraints)
+- If penalty term design is needed -> `constraint-penalty` (design pattern layer for constraint penalties)
+
+## Extensible Directions
+- Penalty / barrier methods: converting constraints to penalty terms
+- Sequential quadratic programming (SQP): second-order methods for constrained optimization
+- Active set methods: identifying the active constraint set
+- Constraint qualification: LICQ, MFCQ and other regularity conditions
+- Exact penalty: exact solutions with finite penalty parameters
+- Augmented Lagrangian methods: combining duality and penalty functions

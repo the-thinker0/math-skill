@@ -49,3 +49,16 @@ Optimization on smooth manifolds $\mathcal{M}$ (e.g., the orthogonal group $O(n)
 
 - Distilled notes: references/books/matrix-analysis.md (Section 7.3 Polar Decomposition, Newton-Schulz Iteration, Section 2.6 SVD and Orthogonal Factors)
 - Original text: Horn & Johnson, *Matrix Analysis* 2nd Ed., Chapter 7 Section 7.3 (Polar Decomposition) + Absil, Mahony, Sepulchre, *Optimization Algorithms on Matrix Manifolds*, Princeton University Press, 2008
+
+
+## Routing Extensions
+- If local linearization is needed -> `tangent-space.md` (gradient computation in tangent space)
+- If retraction choice is needed -> `metric-tensor.md` (metric determines retraction map)
+- If the metric comes from Fisher information -> `natural-gradient.md` (natural gradient under Fisher metric)
+
+## Extensible Directions
+- Retraction types: exponential map, projection retraction, Cayley transform
+- Vector transport: transporting vectors between different tangent spaces on a manifold
+- Riemannian conjugate gradient: conjugate gradient method on manifolds
+- Riemannian trust region: trust region methods on manifolds
+- Stochastic Riemannian optimization: SGD variants on manifolds

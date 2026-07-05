@@ -50,3 +50,17 @@
 
 - 蒸馏稿：references/books/optimization-ml.md（Ch 8 梯度法 §8.3 收敛分析、Ch 11 拟牛顿 §11.5 BFGS、Ch 24 约束算法 §24.5 增广 Lagrange）
 - 原书：Chong, Lu, Zak, *An Introduction to Optimization* 5th Ed., Chapter 24 (Constrained Algorithms §24.5 Augmented Lagrangian) + Parikh & Boyd, *Proximal Algorithms*, Foundations and Trends in Optimization, 2014
+
+
+## 路由扩展
+- 若可微部分主导 → `convex-optimization.md`（光滑部分的凸优化方法）
+- 若近端算子对应约束 → `constrained-optimization.md`（指示函数与约束的等价）
+- 若用于变分损失的正则化 → `variational-loss`（设计模式层的近端正则化）
+
+## 可扩展方向
+- 近端梯度（ISTA / FISTA）：L1 正则化的快速近端方法
+- Douglas-Rachford 分裂：两个非光滑函数之和的优化
+- 原始-对偶混合梯度（PDHG）：鞍点问题的一阶方法
+- 交替最小化（alternating minimization）：块可分目标的分块优化
+- 块坐标下降（block coordinate descent）：高维问题的分块更新策略
+- 近端神经网络（proximal neural networks）：将近端算子嵌入网络结构

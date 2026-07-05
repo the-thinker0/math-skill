@@ -49,3 +49,18 @@ GPU 友好度高。李代数的核心优势是"线性空间"：
 - 蒸馏稿：references/books/differential-geometry.md（Ch 5 Lie Groups, 李代数部分）
 - 原书：Joan Sola et al., *A micro Lie theory*, §II-C（李代数定义与 hat/vee）、§II-D（exp/log 桥梁）
 - 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, Ch 5（李群与李代数）
+
+
+## 路由扩展
+- 若需要对应的全局群 → `lie-group.md`（李代数积分得到李群）
+- 若需要代数表示 → `representation.md`（李代数的表示理论）
+- 若作为群的切空间 → `tangent-space.md`（切空间的李代数结构）
+
+## 可扩展方向
+- 结构常数（structure constants）：李括号在基下的分量
+- Jacobi 恒等式：李代数的基本公理
+- 理想/子代数（ideal / subalgebra）：李代数的子结构
+- 幂零/可解/半单分类（nilpotent / solvable / semisimple）：李代数的结构定理
+- Killing 型（Killing form）：李代数的不变双线性型
+- Cartan 子代数（Cartan subalgebra）：半单李代数的极大环面子代数
+- 根系（root system）：半单李代数的根系分类

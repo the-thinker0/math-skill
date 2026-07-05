@@ -49,3 +49,17 @@ GPU 友好度：关键看 exp/log 是否有闭式。
 - 蒸馏稿：references/books/differential-geometry.md（Ch 5 Lie Groups）
 - 蒸馏稿：references/books/smooth-manifolds.md（Ch 7 Lie Groups）
 - 原书：Joan Sola et al., *A micro Lie theory*, §II-A ~ §II-F（完整李群工具链）
+
+
+## 路由扩展
+- 若需要无穷小结构 → `lie-algebra.md`（李代数是李群的切空间）
+- 若需要线性表示 → `representation.md`（李群的有限维表示）
+- 若需要在李群上优化 → `riemannian-optimization.md`（李群上的黎曼优化）
+
+## 可扩展方向
+- 单连通李群（simply connected Lie group）：万有覆叠群
+- 覆叠群（covering group）：李群之间的覆叠映射
+- 极大环面（maximal torus）：紧李群中的极大交换子群
+- 紧/半单/可解（compact / semisimple / solvable）：李群的结构分类
+- 幂零（nilpotent）：幂零李群与幂零李代数
+- 指数映射性质（exponential map properties）：李代数到李群的映射特性

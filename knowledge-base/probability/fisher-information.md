@@ -46,3 +46,17 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 - Amari & Nagaoka. *Methods of Information Geometry*. AMS, 2000
 - Martens. "Optimizing Neural Networks with Kronecker-Factored Approximate Curvature." *ICML*, 2015
 - 关联知识卡：`information-geometry/natural-gradient.md`、`information-geometry/fisher-metric.md`
+
+
+## 路由扩展
+- 若需要几何视角 → `fisher-metric.md`（Fisher 信息作为黎曼度量）
+- 若需要基于 Fisher 的优化 → `natural-gradient.md`（Fisher 信息驱动的自然梯度）
+- 若需要 Cramer-Rao 界 → `concentration-inequality.md`（Fisher 信息与估计精度界）
+
+## 可扩展方向
+- 观测 vs 期望 Fisher（observed vs expected Fisher）：两种 Fisher 信息矩阵
+- Fisher 信息矩阵性质：正定性、链式法则、充分统计量
+- Jeffreys 先验（Jeffreys prior）：Fisher 信息定义的无信息先验
+- Fisher 信息距离（Fisher information distance）：分布间的 Fisher 度量距离
+- 互信息与 Fisher（mutual information and Fisher）：Fisher 信息与互信息的关系
+- 深度学习中的 Fisher（Fisher in deep learning）：K-FAC, Shampoo 等近似方法

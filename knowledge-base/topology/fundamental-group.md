@@ -50,3 +50,17 @@ GPU 友好度低。基本群的计算本质上是组合/代数的，而非数值
 - 蒸馏稿：references/books/algebraic-geometry-rising-sea.md（§18 Cech Cohomology，局部黏合与全局障碍）
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, Ch 17（de Rham 上同调，环路积分的视角）
 - 延伸：Hatcher, *Algebraic Topology*, Ch 1（基本群的标准教材处理，含 Seifert-van Kampen 定理）
+
+
+## 路由扩展
+- 若需要更高维同调 → `persistent-homology.md`（高阶同调群）
+- 若涉及几何结构 → `curvature.md`（几何与拓扑的关系）
+
+## 可扩展方向
+- 覆叠空间理论（covering space theory）：基本群与覆叠的 Galois 对应
+- Van Kampen 定理：基本群的计算工具
+- 高阶同伦群（higher homotopy groups）：pi_n 的计算与障碍
+- Hurewicz 定理：同伦群与同调群的关系
+- 环路空间（loop space）：基于某点的环路全体
+- 辫群（braid group）：辫子的代数结构
+- 纽群（knot group）：纽结的不变量

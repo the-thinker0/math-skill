@@ -49,3 +49,17 @@ GPU 友好度取决于群的类型：
 - 蒸馏稿：references/books/smooth-manifolds.md（Ch 7 Lie Groups）
 - 原书：Joan Sola et al., *A micro Lie theory*, §II-B（群作用定义与机器人中的应用）
 - 原书：John M. Lee, *Introduction to Smooth Manifolds*, Ch 7（李群与群作用）
+
+
+## 路由扩展
+- 若需要等变映射的设计 → `equivariance.md`（群作用下的等变性）
+- 若需要线性化群作用 → `representation.md`（群表示即线性群作用）
+- 若需要不变量分析 → `symmetry`（设计模式层的对称性分析）
+
+## 可扩展方向
+- 轨道-稳定子定理（orbit-stabilizer theorem）：群作用的轨道与稳定子关系
+- 传递/自由作用（transitive / free actions）：群作用的特殊类型
+- 齐性空间 G/H：群作用的轨道空间
+- 商流形（quotient manifold）：光滑群作用下的商结构
+- 切片定理（slice theorem）：紧群作用的局部结构
+- 动量映射（momentum map）：Hamilton 群作用的守恒量

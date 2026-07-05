@@ -48,3 +48,16 @@
 
 - 蒸馏稿：references/books/optimization-ml.md（Ch 22 Convex Optimization、§22.2 凸函数、§22.3 凸问题、§22.4 SDP/LMI）
 - 原书：Chong, Lu, Zak, *An Introduction to Optimization* 5th Ed., Chapter 22 (Convex Optimization Problems §22.1-22.4)
+
+
+## 路由扩展
+- 若问题有约束 → `constrained-optimization.md`（约束凸优化方法）
+- 若目标不可微 → `proximal-method.md`（近端方法处理非光滑部分）
+
+## 可扩展方向
+- 自协调函数（self-concordant functions）：Newton 法的收敛保证
+- 内点法（interior point methods）：大规模凸优化的多项式时间方法
+- 一阶方法收敛率（first-order convergence rates）：梯度下降的最优收敛速率
+- 加速方法（Nesterov acceleration）：Nesterov 动量加速与最优一阶方法
+- 在线凸优化（online convex optimization）：序列决策的 regret 分析
+- Bandit 凸优化（bandit convex optimization）：零阶信息下的凸优化

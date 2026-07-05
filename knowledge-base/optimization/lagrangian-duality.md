@@ -48,3 +48,17 @@
 
 - 蒸馏稿：references/books/optimization-ml.md（Ch 23 Lagrangian Duality、§23.5 强对偶、§23.6.3 Slater 条件）
 - 原书：Chong, Lu, Zak, *An Introduction to Optimization* 5th Ed., Chapter 23 (Lagrangian Duality §23.1-23.6) + Chapter 17 (LP Duality)
+
+
+## 路由扩展
+- 若需要从原始问题出发 → `constrained-optimization.md`（原始约束优化）
+- 若需要强对偶条件 → `convex-optimization.md`（凸问题的强对偶定理）
+- 若涉及 IB 目标函数的对偶形式 → `information-bottleneck.md`（信息瓶颈的变分对偶）
+
+## 可扩展方向
+- 增广 Lagrangian（augmented Lagrangian）：罚项增强的 Lagrangian 方法
+- 鞍点理论（saddle point theory）：Lagrangian 鞍点的存在性与求解
+- KKT 条件正则性（KKT regularity）：约束规范与 KKT 必要条件
+- 锥对偶（conic duality）：锥规划的对偶理论
+- Fenchel 对偶（Fenchel duality）：凸共轭与 Fenchel-Rockafellar 对偶
+- 极小极大对偶（minimax duality）：min-max 定理与对偶间隙

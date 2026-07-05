@@ -1,6 +1,6 @@
-# Knowledge Base Navigation
+# Mathematical Activation Anchor Index
 
-> This file is the v3 knowledge base index, helping you find specific knowledge cards from problem types.
+> knowledge-base/ is not a closed encyclopedia but an activation entry point for high-frequency mathematical structures. Each card is an activation anchor that answers: what mathematical concept to activate, what deeper knowledge it connects to, what AI design actions it translates to, and where to extend when it is insufficient.
 
 ## Knowledge Base Structure
 
@@ -28,12 +28,24 @@ The knowledge base is organized by mathematical domain, with 7 domains and 31 kn
 | Need information compression | information-bottleneck, entropy, kl-divergence |
 | Need topological regularization | persistent-homology, euler-characteristic |
 
-## Relationship to Thinking Lenses
+## When Anchors Are Not Enough
 
-Thinking lenses (`../lenses/`) handle "what perspective to use"; the knowledge base provides "concrete mathematical tools." Typical chain:
+The current 31 anchors cover the most commonly used mathematical structures in AI research. When a problem requires mathematical tools not among them:
 
-```
-Lens diagnosis → Knowledge card provides tools → Design pattern translates to AI module
-```
+1. Check the corresponding domain's `index.md` (e.g., `topology/index.md`) for extended concepts and reference book directions
+2. Enter the **Knowledge Gap Protocol** defined in SKILL.md to generate a temporary knowledge card
+3. Never respond with "knowledge base does not cover this" or force-fit the closest card
 
-For deeper study, `../references/books/*.md` provides 7 book distillations.
+## Domain Extension Index
+
+Each domain has an `index.md` that lists: domain trigger signals, core anchors, extended concepts, reference book directions, and temporary activation rules.
+
+| Domain | Extension Index |
+|--------|----------------|
+| Matrix Analysis | `matrix-analysis/index.md` |
+| Optimization | `optimization/index.md` |
+| Differential Geometry | `differential-geometry/index.md` |
+| Lie Theory | `lie-theory/index.md` |
+| Topology | `topology/index.md` |
+| Probability & Information | `probability/index.md` |
+| Information Geometry | `information-geometry/index.md` |

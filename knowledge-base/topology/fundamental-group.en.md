@@ -50,3 +50,17 @@ Low GPU friendliness. Computation of the fundamental group is inherently combina
 - Distillation notes: references/books/algebraic-geometry-rising-sea.md (Section 18 Cech Cohomology, local gluing and global obstructions)
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, Ch 17 (de Rham cohomology, the loop integral perspective)
 - Extended reading: Hatcher, *Algebraic Topology*, Ch 1 (standard textbook treatment of the fundamental group, including the Seifert-van Kampen theorem)
+
+
+## Routing Extensions
+- If higher-dimensional homology is needed -> `persistent-homology.md` (higher homology groups)
+- If geometric structure is involved -> `curvature.md` (relationship between geometry and topology)
+
+## Extensible Directions
+- Covering space theory: Galois correspondence between fundamental group and coverings
+- Van Kampen theorem: computational tool for fundamental groups
+- Higher homotopy groups: computation and obstructions of pi_n
+- Hurewicz theorem: relationship between homotopy and homology groups
+- Loop space: space of all loops based at a point
+- Braid group: algebraic structure of braids
+- Knot group: invariants of knots

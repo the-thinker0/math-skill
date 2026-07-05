@@ -52,3 +52,16 @@ High GPU friendliness. Computing the Euler characteristic is extremely cheap:
 - Distillation notes: references/books/differential-geometry.md (Ch 4 Curves and Hypersurfaces, intuition source for Gauss curvature)
 - Original text: John M. Lee, *Introduction to Smooth Manifolds*, Ch 17--18 (de Rham cohomology and topological invariants)
 - Extended reading: Hatcher, *Algebraic Topology*, Ch 2 (standard treatment of simplicial homology and the Euler characteristic)
+
+
+## Routing Extensions
+- If multi-scale topology analysis is needed -> `persistent-homology.md` (persistent homology provides scale-dependent topology)
+- If curvature-topology connection is involved -> `curvature.md` (Gauss-Bonnet theorem connects curvature and Euler characteristic)
+
+## Extensible Directions
+- Betti numbers: counting independent loops at each dimension
+- Poincare polynomial: generating function of Betti numbers
+- Lefschetz fixed point theorem: Euler characteristic and map fixed points
+- Morse inequalities: relationship between critical points and Betti numbers
+- Discrete Morse theory: Morse functions on complexes
+- Euler characteristic curve: Euler characteristic variation across thresholds
