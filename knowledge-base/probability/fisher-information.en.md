@@ -19,7 +19,7 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 
 ## Applicable Problems
 - **Parameter estimation efficiency assessment**: The Cramér-Rao bound gives the theoretical limit on the precision of any unbiased estimator
-- **Natural gradient descent**: Use $\mathcal{I}(\theta)^{-1} \nabla_\theta \mathcal{L}$ instead of the naive gradient, updating along geodesic directions on the statistical manifold (see `../information-geometry/natural-gradient.md`)
+- **Natural gradient descent**: Use $\mathcal{I}(\theta)^{-1} \nabla_\theta \mathcal{L}$ instead of the naive gradient, updating along geodesic directions on the statistical manifold (see `../information-geometry/natural-gradient.en.md`)
 - **Experimental design / active learning**: Select data points that maximize Fisher information, maximizing the information gain for parameter learning
 
 ## AI Design Translation
@@ -41,7 +41,7 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 - **Empirical Fisher ≠ True Fisher**: Replacing the expectation with a training set average introduces significant estimation bias when the sample size is insufficient, potentially causing the natural gradient direction to point in the wrong direction. This should be paired with learning rate warmup.
 
 ## Further References
-- Distillation draft: `references/books/` — no dedicated information geometry distillation draft at present
+- Distillation draft: `../../references/books/` — no dedicated information geometry distillation draft at present
 - Amari. *Information Geometry and Its Applications*. Springer, 2016
 - Amari & Nagaoka. *Methods of Information Geometry*. AMS, 2000
 - Martens. "Optimizing Neural Networks with Kronecker-Factored Approximate Curvature." *ICML*, 2015
@@ -49,8 +49,8 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 
 
 ## Routing Extensions
-- If a geometric perspective is needed -> `fisher-metric.en.md` (Fisher information as Riemannian metric)
-- If Fisher-based optimization is needed -> `natural-gradient.en.md` (natural gradient driven by Fisher information)
+- If a geometric perspective is needed -> `../information-geometry/fisher-metric.en.md` (Fisher information as Riemannian metric)
+- If Fisher-based optimization is needed -> `../information-geometry/natural-gradient.en.md` (natural gradient driven by Fisher information)
 - If Cramer-Rao bounds are needed -> `concentration-inequality.en.md` (Fisher information and estimation accuracy bounds)
 
 ## Extensible Directions

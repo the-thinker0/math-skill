@@ -51,7 +51,7 @@ Decomposes a matrix into a linear combination of eigenvalue-eigenvector pairs. F
 ## Routing Extensions
 - If truncation approximation is needed -> `low-rank-approximation.en.md` (SVD-based low-rank approximation)
 - If used for attention mechanism design -> `spectral-attention` (design pattern layer)
-- If spectral concentration bounds are needed -> `concentration-inequality.md` (concentration inequalities for random matrix spectra)
+- If spectral concentration bounds are needed -> `../probability/concentration-inequality.md` (concentration inequalities for random matrix spectra)
 
 ## Extensible Directions
 - SVD variants (truncated / randomized SVD): fast decomposition for large-scale matrices

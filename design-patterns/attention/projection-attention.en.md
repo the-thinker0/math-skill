@@ -31,7 +31,7 @@ scores = (Q @ P_Q) @ (K @ P_K).T / sqrt(r)
 attn = softmax(scores) @ V
 ```
 
-2. **Random Fixed Projection** (guaranteed by the JL Lemma):
+2. **Random Fixed Projection** (distance-preservation bound when JL conditions hold):
 ```
 P = random_gaussian(d, r) / sqrt(r)  # fixed, not trained
 scores = (Q @ P) @ (K @ P).T / sqrt(r)
@@ -61,7 +61,7 @@ scores = (Q @ eigenvecs) @ (K @ eigenvecs).T / sqrt(r)
 - **D8[~] Retrofittable, needs kernel-level validation**: Projection may be integrated into a FlashAttention-style kernel, but requires kernel-level verification
 
 ## Paper Phrasing
-"We decompose attention computation into two steps -- low-dimensional subspace projection and projected-space attention -- achieving a $d/r$-fold Key-cache compression (full KV-Cache compression requires separate V compression/reconstruction) while preserving attention quality and guaranteeing Johnson-Lindenstrauss distance preservation."
+"We decompose attention computation into low-dimensional subspace projection and projected-space attention to reduce Key dimensionality; V-cache must be handled separately. With an independent random projection and the sample-size / target-dimension conditions of the Johnson-Lindenstrauss lemma, Euclidean distances of the projected objects can be approximately preserved. This does not automatically guarantee softmax-attention quality, so attention/output error and task metrics must be reported."
 
 ## Risks
 - **Projection Direction Degeneracy**: Learnable projections may collapse onto a few directions (deterioration of the condition number of $P^T P$), causing attention distributions to degenerate. Orthogonal regularization $\|P^T P - I\|_F^2$ is required.

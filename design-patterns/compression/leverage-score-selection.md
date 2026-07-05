@@ -2,7 +2,7 @@
 > **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
 
 ## 适用问题
-当需要从大规模矩阵中选取最有代表性的行/列/token，且需保证下游线性代数运算精度时使用：KV-Cache token 选择、数据 coreset 构建、Nyström landmark 采样、分布式梯度压缩。核心诉求：**基于子空间投影的统计杠杆分数做采样，以概率保证逼近全量计算精度**。
+当需要从大规模矩阵中选取最有代表性的行/列/token，并希望在下游线性代数任务中获得可检验误差界时使用：KV-Cache token 选择、数据 coreset 构建、Nyström landmark 采样、分布式梯度压缩。核心诉求：**基于子空间投影的统计杠杆分数做采样，在矩阵采样理论假设下以高概率逼近全量计算**。
 
 ## 数学思想来源
 - 透镜：../../lenses/spectral.md（杠杆分数 = 行向量在主子空间上的投影能量）、../../lenses/probabilistic.md（概率采样与浓度不等式保证）、../../lenses/algorithmic.md（随机化算法的复杂度与精度权衡）
@@ -10,7 +10,7 @@
 
 ## 需要的数学知识
 - **统计杠杆分数**：$\ell_i = \|(V_k V_k^T)_i\|^2 = (V_k V_k^T)_{ii}$，第 $i$ 行在 rank-$k$ 子空间的投影能量；$\sum_i \ell_i = k$
-- **杠杆分数采样保证**：以 $p_i = \ell_i / k$ 采样 $s = O(k \log k / \epsilon^2)$ 行，$(1+\epsilon)$ 近似全量最小二乘（Drineas-Mahoney）
+- **杠杆分数采样界**：在最小二乘/子空间嵌入设定和独立重加权采样条件下，以 $p_i = \ell_i / k$ 采样 $s = O(k \log k / \epsilon^2)$ 行可得到 $(1+\epsilon)$ 近似（Drineas-Mahoney 类结果）
 - **Bernstein 矩阵界**：采样后 $\|\hat{A}^T \hat{A} - A^T A\|_2 \leq \epsilon \|A\|_F^2$，概率 $\geq 1-\delta$
 - **快速近似**：$\tilde{\ell}_i = \|(A\Omega)_i\|^2$（$\Omega$ 随机高斯），避免完整 SVD，$O(Ndk)$
 - **DPP 扩展**：行列式点过程 $P(S) \propto \det(L_S)$ 在杠杆分数基础上增加多样性保证
@@ -48,8 +48,8 @@
 
 ## 可实现结构
 - **随机投影杠杆层**：1 次 GEMM + 1 次 QR 即得近似杠杆分数，$O(Ndk)$
-- **KV-Cache 驱逐策略**：按杠杆分数排序驱逐，比 attention score 驱逐更有理论保证
-- **Coreset 构建器**：杠杆分数采样 + 重要性重加权，保证经验风险逼近全量
+- **KV-Cache 驱逐策略**：按杠杆分数排序驱逐；理论界主要来自矩阵子空间近似，迁移到 attention 质量需单独验证
+- **Coreset 构建器**：杠杆分数采样 + 重要性重加权，在相应采样假设下控制经验风险近似误差
 - **DPP 贪心扩展**：杠杆分数 + 互斥惩罚，兼顾重要性与多样性
 
 ## GPU 可行性
@@ -61,7 +61,7 @@
 - **D8[v]**：$A\Omega$ + QR + row-norm² 可融合避免物化中间矩阵
 
 ## 论文表述方式
-"采用统计杠杆分数作为 token 选择的重要性度量：通过随机投影在 $O(Ndk)$ 内近似 rank-$k$ 子空间杠杆分数，Drineas-Mahoney 理论保证 $O(k \log k / \epsilon^2)$ 次采样即可 $(1+\epsilon)$ 近似全量子空间。"
+"采用统计杠杆分数作为 token/行选择的重要性度量：通过随机投影在 $O(Ndk)$ 内近似 rank-$k$ 子空间杠杆分数，并在独立重加权采样、有效秩诊断和目标为子空间/最小二乘近似的前提下，使用 Drineas-Mahoney 类界选择样本数。对 KV-cache eviction，仍需报告 attention/output 误差与任务指标。"
 
 ## 风险
 - **秩参数 $k$ 选择**：杠杆分数依赖 rank-$k$ 子空间，$k$ 选错导致采样偏差；需先诊断有效秩

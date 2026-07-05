@@ -39,16 +39,16 @@ $$P(|f(X_1,\ldots,X_n) - \mathbb{E}[f]| \geq t) \leq 2\exp\left(-\frac{2t^2}{\su
 - **Boundedness assumption violated**: Under heavy-tailed distributions (e.g., power laws), Hoeffding does not apply; Bernstein or truncation tricks are needed. In LLM training, when gradients occasionally take extreme values, naive concentration bounds yield a false sense of security.
 
 ## Further References
-- Distillation draft: `references/books/` — no dedicated probability distillation draft at present; this card is based on standard probability theory textbooks
+- Distillation draft: `../../references/books/` — no dedicated probability distillation draft at present; this card is based on standard probability theory textbooks
 - Boucheron, Lugosi, Massart. *Concentration Inequalities: A Nonasymptotic Theory of Independence*. Oxford, 2013
 - Vershynin. *High-Dimensional Probability*. Cambridge, 2018 (Chapters 2-3)
-- Related knowledge cards: `entropy.md`, `fisher-information.md`
+- Related knowledge cards: `entropy.en.md`, `fisher-information.en.md`
 
 
 ## Routing Extensions
 - If information-theoretic bounds are needed -> `entropy.en.md` (entropy-based concentration inequalities)
 - If Donsker-Varadhan representation is needed -> `kl-divergence.en.md` (variational representation of KL divergence)
-- If random matrix bounds are involved -> `matrix-perturbation.md` (concentration behavior of random matrices)
+- If random matrix bounds are involved -> `../matrix-analysis/matrix-perturbation.md` (concentration behavior of random matrices)
 
 ## Extensible Directions
 - Martingale concentration (Azuma / Freedman): concentration inequalities for martingale differences

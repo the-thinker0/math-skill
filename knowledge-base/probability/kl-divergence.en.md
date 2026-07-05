@@ -45,10 +45,10 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 - **High gradient variance**: In RL (PPO/RLHF), KL estimation relies on sampling; high variance can lead to training instability. A clipped + linear approximation $\mathbb{E}[\log p - \log q]$ is commonly used in place of the exact KL.
 
 ## Further References
-- Distillation draft: `references/books/` — no dedicated information theory distillation draft at present
+- Distillation draft: `../../references/books/` — no dedicated information theory distillation draft at present
 - Cover & Thomas. *Elements of Information Theory*, Ch. 2-3. Wiley, 2006
 - Murphy. *Probabilistic Machine Learning: Advanced Topics*, Ch. 6. MIT Press, 2023
-- Related knowledge cards: `entropy.md`, `information-bottleneck.md`, `fisher-information.md`
+- Related knowledge cards: `entropy.en.md`, `information-bottleneck.en.md`, `fisher-information.en.md`
 
 
 ## Routing Extensions

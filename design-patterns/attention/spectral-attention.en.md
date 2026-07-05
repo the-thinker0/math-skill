@@ -11,7 +11,7 @@ When the input signal exhibits **frequency-domain/spectral structure** (periodic
 ## Required Mathematical Knowledge
 - **Discrete Fourier Transform (DFT/FFT)**: $O(n \log n)$ frequency-domain transform and the cyclic convolution theorem
 - **Graph Laplacian Spectral Decomposition**: $L = U \Lambda U^T$, where $U$ is the graph Fourier basis
-- **Irreducible Representations of the Cyclic Group $\mathbb{Z}_n$**: The DFT matrix is precisely the representation matrix of the cyclic group (see `references/books/abstract-algebra.en.md` Ch.4, Ch.11)
+- **Irreducible Representations of the Cyclic Group $\mathbb{Z}_n$**: The DFT matrix is precisely the representation matrix of the cyclic group (see `../../references/books/abstract-algebra.en.md` Ch.4, Ch.11)
 
 ## AI Module Form
 

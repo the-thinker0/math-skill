@@ -32,7 +32,7 @@ check_dir() {
 }
 
 check_contains() {
-    if grep -q "$2" "$1" 2>/dev/null; then
+    if grep -F -q -- "$2" "$1" 2>/dev/null; then
         echo -e "${GREEN}[PASS]${NC} $1 contains '$2'"
         PASS=$((PASS + 1))
     else
@@ -235,8 +235,7 @@ fi
 # --- CN/EN Pairing ---
 echo ""
 echo "--- CN/EN File Pairing ---"
-for cn_file in lenses/*.md; do
-    [ "${cn_file%.en.md}" != "$cn_file" ] && continue
+for cn_file in $(find commands skills agents lenses knowledge-base design-patterns references -name '*.md' ! -name '*.en.md' 2>/dev/null | sort); do
     en_file="${cn_file%.md}.en.md"
     if [ -f "$en_file" ]; then
         echo -e "${GREEN}[PASS]${NC} $cn_file has EN pair"
@@ -250,30 +249,60 @@ done
 # --- Cross-Reference Integrity ---
 echo ""
 echo "--- Cross-Reference Integrity ---"
-XREF_FAIL=0
-# Check that lens references in design patterns point to existing files
-for dp_file in design-patterns/*/*.md; do
-    [ "${dp_file%.en.md}" != "$dp_file" ] && continue
-    refs=$(grep -oE 'lenses/[a-z-]+\.md' "$dp_file" 2>/dev/null)
-    for ref in $refs; do
-        if [ ! -f "$ref" ]; then
-            echo -e "${RED}[FAIL]${NC} $dp_file references missing $ref"
-            FAIL=$((FAIL + 1))
-            XREF_FAIL=$((XREF_FAIL + 1))
-        fi
-    done
-    kb_refs=$(grep -oE 'knowledge-base/[a-z-]+/[a-z-]+\.md' "$dp_file" 2>/dev/null)
-    for ref in $kb_refs; do
-        if [ ! -f "$ref" ]; then
-            echo -e "${RED}[FAIL]${NC} $dp_file references missing $ref"
-            FAIL=$((FAIL + 1))
-            XREF_FAIL=$((XREF_FAIL + 1))
-        fi
-    done
-done
-if [ $XREF_FAIL -eq 0 ]; then
-    echo -e "${GREEN}[PASS]${NC} All cross-references resolve"
+XREF_OUTPUT=$(node <<'NODE'
+const fs = require('fs');
+const path = require('path');
+
+function walk(dir) {
+  let out = [];
+  if (!fs.existsSync(dir)) return out;
+  for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (ent.name === '.git' || ent.name === 'node_modules') continue;
+    const p = path.join(dir, ent.name);
+    if (ent.isDirectory()) out = out.concat(walk(p));
+    else if (/\.md$/.test(ent.name)) out.push(p);
+  }
+  return out;
+}
+
+const roots = ['commands', 'skills', 'agents', 'lenses', 'knowledge-base', 'design-patterns', 'references', 'tests/eval'];
+const bad = [];
+for (const file of roots.flatMap(walk)) {
+  const text = fs.readFileSync(file, 'utf8');
+  for (const match of text.matchAll(/`([^`]+)`/g)) {
+    const ref = match[1];
+    if (
+      /^https?:/.test(ref) ||
+      ref.includes('*') ||
+      ref.includes(' ') ||
+      ref.includes('|') ||
+      ref.includes('(') ||
+      ref.includes('$') ||
+      ref === 'math_book/' ||
+      ref.endsWith('/math_book/') ||
+      !(/\.md$|\/$/.test(ref))
+    ) continue;
+    const target = path.normalize(path.join(path.dirname(file), ref));
+    if (!fs.existsSync(target)) {
+      const line = text.slice(0, match.index).split('\n').length;
+      bad.push(`${file}:${line} -> \`${ref}\` => ${target}`);
+    }
+  }
+}
+
+if (bad.length) {
+  console.log(bad.join('\n'));
+  process.exit(1);
+}
+NODE
+)
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}[PASS]${NC} All backtick path references resolve"
     PASS=$((PASS + 1))
+else
+    echo "$XREF_OUTPUT"
+    echo -e "${RED}[FAIL]${NC} Missing backtick path references"
+    FAIL=$((FAIL + 1))
 fi
 
 # --- v3.0.1 Additions ---
@@ -302,6 +331,51 @@ check_contains "README.md" '不存储数学'
 check_contains "README.md" '激活锚点'
 check_contains "README.en-US.md" 'does not store mathematics'
 check_contains "README.en-US.md" 'Activation Anchor'
+
+# --- Semantic Regression Checks ---
+echo ""
+echo "--- Semantic Regression Checks ---"
+check_contains "design-patterns/compression/low-rank-kv-cache.md" 'O(Lk + kd)'
+check_contains "design-patterns/compression/low-rank-kv-cache.en.md" 'O(Lk + kd)'
+check_not_contains "design-patterns/compression/low-rank-kv-cache.md" '压缩到.*O(kd)'
+check_not_contains "design-patterns/compression/low-rank-kv-cache.en.md" 'to .*O(kd)'
+check_not_contains "design-patterns/compression/low-rank-kv-cache.md" 'softmax attention 需从因子重构完整'
+check_not_contains "design-patterns/compression/low-rank-kv-cache.en.md" 'must be reconstructed from the factored form'
+check_contains "design-patterns/compression/low-rank-kv-cache.md" '因子化 GEMM'
+check_contains "design-patterns/compression/low-rank-kv-cache.en.md" 'factorized GEMMs'
+check_contains "design-patterns/compression/low-rank-kv-cache.md" 'Eckart-Young 谱范数误差'
+check_contains "design-patterns/compression/low-rank-kv-cache.en.md" 'Eckart--Young spectral-norm error'
+check_not_contains "design-patterns/compression/low-rank-kv-cache.md" 'Weyl 扰动界保证'
+check_not_contains "design-patterns/compression/low-rank-kv-cache.en.md" 'Weyl perturbation bound guarantees'
+check_not_contains "knowledge-base/matrix-analysis/low-rank-approximation.md" '需先重构'
+check_not_contains "knowledge-base/matrix-analysis/low-rank-approximation.en.md" 'must first reconstruct'
+check_contains "knowledge-base/matrix-analysis/low-rank-approximation.md" '主子空间唯一'
+check_contains "knowledge-base/matrix-analysis/low-rank-approximation.en.md" 'principal subspace is unique'
+check_not_contains "knowledge-base/matrix-analysis/low-rank-approximation.md" '唯一最优解'
+check_not_contains "knowledge-base/matrix-analysis/low-rank-approximation.en.md" 'unique optimal solution'
+check_contains "knowledge-base/matrix-analysis/low-rank-approximation.md" 'O(mn)'
+check_contains "knowledge-base/matrix-analysis/low-rank-approximation.en.md" 'O(mn)'
+check_contains "knowledge-base/matrix-analysis/low-rank-approximation.en.md" 'information-bottleneck.en.md'
+check_contains "design-patterns/loss/constraint-penalty.md" '不等式乘子必须保持'
+check_contains "design-patterns/loss/constraint-penalty.en.md" 'inequality multipliers must satisfy'
+check_contains "design-patterns/compression/low-rank-kv-cache.md" 'Q_final'
+check_contains "design-patterns/compression/low-rank-kv-cache.en.md" 'Q_final'
+check_contains "design-patterns/routing/spectral-clustering-routing.md" 'cdist(X_sample, X_sample)**2'
+check_contains "design-patterns/routing/spectral-clustering-routing.en.md" 'cdist(X_sample, X_sample)**2'
+check_contains "design-patterns/attention/information-bottleneck-attention.md" 'logistic-normal'
+check_contains "design-patterns/attention/information-bottleneck-attention.en.md" 'logistic-normal'
+check_contains "design-patterns/compression/spectral-token-pruning.md" '未 mask 且不可约'
+check_contains "design-patterns/compression/spectral-token-pruning.en.md" 'unmasked irreducible'
+check_not_contains "design-patterns/routing/moe-routing.md" 'X%'
+check_not_contains "design-patterns/routing/moe-routing.en.md" 'X%'
+check_not_contains "design-patterns/routing/moe-routing.md" '>95%'
+check_not_contains "design-patterns/routing/moe-routing.en.md" 'exceeds 95%'
+check_not_contains "lenses/spectral.md" '必须使用 Jordan'
+check_not_contains "lenses/spectral.en.md" 'Jordan form is required'
+check_not_contains "design-patterns/loss/contrastive-loss.md" 'O(1/√N)'
+check_not_contains "design-patterns/loss/contrastive-loss.en.md" 'O(1/√N)'
+check_contains "design-patterns/overview.md" '严谨性约定'
+check_contains "design-patterns/overview.en.md" 'Rigor convention'
 
 # --- Count Verification ---
 echo ""

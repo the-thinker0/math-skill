@@ -81,7 +81,7 @@ Online Subspace Tracking (adaptation at inference):
 - **D8[~]**: Whitening (mean-sub -> cov -> inv_sqrt -> transform) can be partially fused
 
 ## Paper-Worthy Formulation
-"Based on orthogonal Procrustes theory, we obtain the optimal isometric mapping W* = UV^T (where USV^T = SVD(A^T B)) between source and target representations. Extending this to Deep CCA for nonlinear subspace alignment, principal angle analysis on the Grassmann manifold shows that post-alignment subspace distance converges at rate O(r/sqrt(N)), while the Barlow Twins redundancy reduction objective ensures feature dimension decorrelation."
+"Based on orthogonal Procrustes theory, we obtain the optimal isometric mapping W* = UV^T (where USV^T = SVD(A^T B)) between source and target representations. Extending this to Deep CCA for nonlinear subspace alignment, principal angles on the Grassmann manifold can measure pre/post alignment distance. Convergence rates depend on sample independence, spectral gaps, and covariance-estimation assumptions; the Barlow Twins objective penalizes cross-correlation but does not by itself guarantee semantic disentanglement, so report principal angles, CCA correlations, and downstream transfer metrics."
 
 ## Risks
 - SVD during backpropagation produces undefined gradients when singular values coincide; epsilon regularization is needed

@@ -53,7 +53,7 @@ GPU 友好度取决于是否有闭式 retraction：
 
 ## 路由扩展
 - 若需要距离的具体定义 → `metric-tensor.md`（度量张量决定测地线）
-- 若用作收缩映射 → `riemannian-optimization.md`（指数映射作为收缩映射）
+- 若用作收缩映射 → `../optimization/riemannian-optimization.md`（指数映射作为收缩映射）
 - 若需要偏离平坦空间的程度 → `curvature.md`（曲率控制测地线偏差）
 
 ## 可扩展方向

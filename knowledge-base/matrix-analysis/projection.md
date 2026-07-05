@@ -49,7 +49,7 @@
 
 ## 路由扩展
 - 若目标是压缩/降维 → `low-rank-approximation.md`（截断 SVD 实现）
-- 若需要在流形上做投影约束 → `riemannian-optimization.md`（黎曼流形上的约束优化）
+- 若需要在流形上做投影约束 → `../optimization/riemannian-optimization.md`（黎曼流形上的约束优化）
 - 若涉及共享与私有子空间分离 → `shared-private-decomposition`（设计模式层）
 
 ## 可扩展方向

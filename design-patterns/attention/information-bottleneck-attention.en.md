@@ -47,15 +47,18 @@ output = attn @ V
 
 **Scheme B: Variational Information Bottleneck Attention (VIB-Attention)**:
 ```python
-# Introduce stochastic bottleneck Z ~ q(Z|attention) to limit information throughput
+# Introduce a continuous stochastic bottleneck Z ~ q(Z|context) after value aggregation
 scores = (Q @ K.T) / sqrt(d)
 attn = softmax(scores)
-mu_z, log_var_z = attn, linear(attn)  # mean and learnable variance
-z = softmax(mu_z + exp(0.5 * log_var_z) * randn_like(mu_z))  # reparameterization + softmax
-kl = 0.5 * (mu_z^2 + exp(log_var_z) - log_var_z - 1).sum(-1).mean()  # KL vs prior
-output = z @ V
+context = attn @ V
+mu_z, log_var_z = linear_mu(context), linear_logvar(context)
+z = mu_z + exp(0.5 * log_var_z) * randn_like(mu_z)  # Gaussian reparameterization
+kl = 0.5 * (mu_z^2 + exp(log_var_z) - log_var_z - 1).sum(-1).mean()  # KL[q(z|context)||N(0,I)]
+output = linear_out(z)
 loss = task_loss + beta * kl
 ```
+
+If the bottleneck is applied directly on the attention simplex (e.g., noisy logits followed by softmax), the random variable is logistic-normal / Concrete-like. The closed-form Gaussian KL above no longer applies; use Monte Carlo KL, a Concrete KL approximation, or place the Gaussian KL on pre-softmax logits.
 
 **Scheme C: Mutual Information Maximization Attention (DIM Style)**:
 ```python

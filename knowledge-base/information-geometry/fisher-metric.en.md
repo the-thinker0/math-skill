@@ -24,7 +24,7 @@ $$\Gamma_{ijk}^{(\alpha)} = \mathbb{E}\left[\left(\partial_i \partial_j \ell + \
 - $\alpha = 1$: $e$-connection (exponential connection), corresponding to straight lines in the natural parameters of the exponential family
 - $\alpha = -1$: $m$-connection (mixture connection), corresponding to straight lines in the expectation parameters of the mixture family
 
-**Dually Flat Structure**: $(\mathcal{M}, g, \nabla^{(e)}, \nabla^{(m)})$ forms a dually flat manifold — the $e$-connection and $m$-connection are dual to each other with respect to $g$, and the generalized Pythagorean theorem holds.
+**Dually Flat Structure (conditional)**: Exponential families, mixture families, and related structured statistical models can make $(\mathcal{M}, g, \nabla^{(e)}, \nabla^{(m)})$ a dually flat manifold, where the $e$-connection and $m$-connection are dual with respect to $g$ and the generalized Pythagorean theorem holds. A general Fisher-Rao statistical manifold is not automatically dually flat; the model-family structure must be verified.
 
 ## Applicable Problems
 - **Geometric distance between distributions**: Comparing the "intrinsic difference" between two probabilistic models (e.g., output distributions of two language models)
@@ -53,17 +53,17 @@ $$\Gamma_{ijk}^{(\alpha)} = \mathbb{E}\left[\left(\partial_i \partial_j \ell + \
 - **Singularities of the statistical manifold**: In certain regions of the parameter space (e.g., degenerate points of mixture distributions), the Fisher metric may degenerate ($\det \mathcal{I} = 0$), causing geodesic distances to be undefined. This type of degeneracy arises in MoE when an expert's weight is zero.
 
 ## Further References
-- Distillation draft: `references/books/` — no dedicated information geometry distillation draft at present
+- Distillation draft: `../../references/books/` — no dedicated information geometry distillation draft at present
 - Amari & Nagaoka. *Methods of Information Geometry*. AMS/Oxford, 2000
 - Amari. *Information Geometry and Its Applications*. Springer, 2016
 - Ay, Jost, Le, Schwachhofer. *Information Geometry*. Springer, 2017
-- Related knowledge cards: `../probability/fisher-information.md`, `natural-gradient.md`
+- Related knowledge cards: `../probability/fisher-information.en.md`, `natural-gradient.en.md`
 
 
 ## Routing Extensions
 - If optimization application is needed -> `natural-gradient.en.md` (natural gradient descent under Fisher metric)
-- If a general Riemannian metric is needed -> `metric-tensor.md` (Fisher metric is a special case of Riemannian metric)
-- If local KL analysis is needed -> `kl-divergence.md` (local KL divergence equals Fisher metric)
+- If a general Riemannian metric is needed -> `../differential-geometry/metric-tensor.md` (Fisher metric is a special case of Riemannian metric)
+- If local KL analysis is needed -> `../probability/kl-divergence.md` (local KL divergence equals Fisher metric)
 
 ## Extensible Directions
 - Rao's distance: geodesic distance under Fisher-Rao metric

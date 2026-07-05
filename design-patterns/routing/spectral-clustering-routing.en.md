@@ -38,7 +38,7 @@ Input: X in R^{N x d}, number of clusters K
 
 Method 1 - Online Spectral Clustering Routing (periodic updates during training):
   // Update cluster centers every M steps; use nearest neighbor at inference
-  W = exp(-cdist(X_sample, X_sample) / (2 sigma^2))  // m x m sampled similarity
+  W = exp(-(cdist(X_sample, X_sample)**2) / (2 sigma^2))  // m x m RBF similarity
   L = I - D^{-1/2} W D^{-1/2}                         // normalized Laplacian
   U_k = eigsh(L, k=K, which='SM')                     // K smallest eigenvectors
   centers = kmeans(U_k, K)                             // K cluster centers
@@ -65,7 +65,7 @@ Method 2 - Differentiable Spectral Routing (end-to-end):
 
 Method 3 - Anchor Spectral Clustering (large-scale):
   anchors = kmeans_pp(X, m)                             // m anchor points, m << N
-  Z = exp(-cdist(X, anchors) / (2 sigma^2))             // N x m affinity matrix
+  Z = exp(-(cdist(X, anchors)**2) / (2 sigma^2))        // N x m RBF affinity matrix
   L_anchor = I - D_z^{-1/2} Z^T Z D_z^{-1/2}            // m x m Laplacian
   U_k = eigsh(L_anchor, K)                             // m x K eigenvectors
   // Nystrom extension: Z @ U_k extends anchor eigenvectors to all N points (non-learnable part)
@@ -86,11 +86,11 @@ Method 3 - Anchor Spectral Clustering (large-scale):
 - **Memory & KV-Cache**: N x N similarity matrix exceeds 64 MB when N > 4096; sampling-based dimensionality reduction is essential
 - **Low-precision stability**: Eigendecomposition recommended in fp32; exp(-dist/sigma^2) in fp16 requires distance clipping
 - **Parallelism & Communication**: Power iteration matvec is highly parallel; k-means assign + update steps can be batch-parallelized
-- **Sparse structure**: k-NN graph replaces fully connected graph; W sparsity > 95%, enabling SpMM acceleration
+- **Sparse structure**: k-NN graph replaces the fully connected graph; W sparsity is about $1-k_{\text{nn}}/N$, enabling SpMM acceleration
 - **Operator fusion**: Diagonal scaling in D^{-1/2} @ A @ D^{-1/2} can be fused; cdist + exp + normalize can be fused
 
 ## Paper-Worthy Formulation
-"We achieve differentiable routing via continuous relaxation of spectral clustering: constructing the normalized Laplacian of the token similarity graph, reducing the O(N^3) eigendecomposition to O(N * m * d + m^2 * K + m^3) through Nystrom approximation, and enabling GPU-friendly online spectral clustering via power iteration. Clustering quality, measured by Normalized Cut, guarantees an O(sqrt(log(N/K))) approximation ratio."
+"We implement routing through a continuous relaxation of spectral clustering: construct the normalized Laplacian of the token similarity graph, use Nystrom / anchor approximations plus power iteration to avoid a full O(N^3) eigendecomposition, and express the main work as GEMM, matvecs, and k-means. Normalized Cut can be reported as a clustering-quality metric, but approximation ratios depend on graph-model, sampling, and solver assumptions and should not be claimed unconditionally."
 
 ## Risks
 - The memory and computation cost of the N x N similarity matrix does not scale for long sequences; sampling or k-NN sparsification is mandatory

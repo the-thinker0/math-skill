@@ -54,7 +54,7 @@ GPU 友好度低。基本群的计算本质上是组合/代数的，而非数值
 
 ## 路由扩展
 - 若需要更高维同调 → `persistent-homology.md`（高阶同调群）
-- 若涉及几何结构 → `curvature.md`（几何与拓扑的关系）
+- 若涉及几何结构 → `../differential-geometry/curvature.md`（几何与拓扑的关系）
 
 ## 可扩展方向
 - 覆叠空间理论（covering space theory）：基本群与覆叠的 Galois 对应

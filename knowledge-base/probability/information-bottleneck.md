@@ -42,7 +42,7 @@ $$\mathcal{L}_{VIB} = \mathbb{E}_{p(x,y)}[-\log q_\phi(y|z)] + D_{KL}(p_\theta(z
 - **$\beta$ 调参敏感**：$\beta$ 过大会过度压缩（欠拟合），过小则退化为标准 ERM（无压缩效果）。需要信息平面分析或自适应 $\beta$ 调度。
 
 ## 深入参考
-- 蒸馏稿：`references/books/` 暂无专用 IB 蒸馏稿
+- 蒸馏稿：`../../references/books/` 暂无专用 IB 蒸馏稿
 - Tishby, Pereira, Bialek. "The Information Bottleneck Method." *arXiv:physics/0004057*, 2000
 - Alemi, Poole, Fischer, Dillon, Suresh, Murphy. "Deep Variational Information Bottleneck." *ICLR*, 2017
 - Shwartz-Ziv, Tishby. "Opening the Black Box of Deep Neural Networks via Information." *arXiv:1703.00810*, 2017

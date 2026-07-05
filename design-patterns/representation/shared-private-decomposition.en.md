@@ -18,7 +18,7 @@ Core requirement: **explicitly separate commonality from individuality to preven
   Projection matrices P_S + P_P = I, P_S * P_P = 0
 - **Information Decomposition (Williams & Beer PID)**:
   I(X; Y_1, Y_2) = Shared + Unique_1 + Unique_2 + Synergy
-  Shared = the redundant information component min(I(X; Y_1), I(X; Y_2))
+  Shared is the redundant-information term; min(I(X;Y_1), I(X;Y_2)) is only an early/simplified proxy, not the general Williams-Beer redundancy definition
 - **Low-Rank + Sparse Decomposition (RPCA)**: M = L + S, where L is low-rank (common) + S is sparse (specific)
   Solved via nuclear norm + L1 norm convex relaxation
 - **CCA (Canonical Correlation Analysis)**: max corr(W_1^T X, W_2^T Y), extracting shared variation between two sets of variables
@@ -42,7 +42,7 @@ Method 2 - Gated Decomposition (dynamic weighting):
   z = gate * z_shared + (1 - gate) * z_private
   // Gating allows per-dimension selection of shared/private contribution ratios
 
-Method 3 - Adversarial Decomposition (information-theoretic guarantee):
+Method 3 - Adversarial Decomposition (information-theoretic proxy):
   z_shared = E_shared(X)
   z_private = E_private[t](X)
   // Shared should be indistinguishable across tasks (adversarial gradient):
@@ -80,7 +80,7 @@ Dimension Allocation Principle:
 - **Operator fusion**: Additive fusion is trivial; gated fusion sigmoid -> multiply -> add can be fused
 
 ## Paper-Worthy Formulation
-"We decompose the multi-task representation space R^d into a direct sum S + P. The Shared subspace ensures task-invariance through adversarial training (H(T|Z_s) -> log T), while the Private subspace guarantees information complementarity with Shared via orthogonal regularization. Theoretical analysis shows that negative transfer decays as O(||P_S * P_P||_F) with increasing orthogonality."
+"We decompose the multi-task representation space R^d into a shared subspace S and task-private subspaces P: the shared branch reduces task identifiability through adversarial training, while the private branches use orthogonality / decorrelation regularization to reduce linear overlap with S. Information complementarity and reduced negative transfer must be validated with task-transfer matrices, mutual-information / PID proxies, and ablations; they are not automatically guaranteed by orthogonality alone."
 
 ## Risks
 - Min-max variational in adversarial training is unstable; the gradient reversal scale and lambda_adv require careful tuning

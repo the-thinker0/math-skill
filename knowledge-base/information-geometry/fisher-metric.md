@@ -24,7 +24,7 @@ $$\Gamma_{ijk}^{(\alpha)} = \mathbb{E}\left[\left(\partial_i \partial_j \ell + \
 - $\alpha = 1$：$e$-联络（指数联络），对应指数族的自然参数直线
 - $\alpha = -1$：$m$-联络（混合联络），对应混合族的期望参数直线
 
-**对偶平坦性**：$(\mathcal{M}, g, \nabla^{(e)}, \nabla^{(m)})$ 构成对偶平坦流形——$e$-联络和 $m$-联络关于 $g$ 互为对偶，广义勾股定理成立。
+**对偶平坦性（有条件）**：指数族、混合族等特定统计模型可使 $(\mathcal{M}, g, \nabla^{(e)}, \nabla^{(m)})$ 构成对偶平坦流形，$e$-联络和 $m$-联络关于 $g$ 互为对偶，广义勾股定理成立。一般 Fisher-Rao 统计流形不自动对偶平坦，需验证模型族结构。
 
 ## 适用问题
 - **分布间的几何距离**：比较两个概率模型（如两个语言模型的输出分布）的"本质差异"
@@ -53,7 +53,7 @@ $$\Gamma_{ijk}^{(\alpha)} = \mathbb{E}\left[\left(\partial_i \partial_j \ell + \
 - **统计流形的奇点**：在参数空间的某些区域（如混合分布的退化点），Fisher 度量可能退化（$\det \mathcal{I} = 0$），导致测地线距离不定义。在 MoE 中某专家权重为零时即出现此类退化。
 
 ## 深入参考
-- 蒸馏稿：`references/books/` 暂无专用信息几何蒸馏稿
+- 蒸馏稿：`../../references/books/` 暂无专用信息几何蒸馏稿
 - Amari & Nagaoka. *Methods of Information Geometry*. AMS/Oxford, 2000
 - Amari. *Information Geometry and Its Applications*. Springer, 2016
 - Ay, Jost, Le, Schwachhofer. *Information Geometry*. Springer, 2017
@@ -62,8 +62,8 @@ $$\Gamma_{ijk}^{(\alpha)} = \mathbb{E}\left[\left(\partial_i \partial_j \ell + \
 
 ## 路由扩展
 - 若需要优化应用 → `natural-gradient.md`（Fisher 度量下的自然梯度下降）
-- 若需要一般黎曼度量 → `metric-tensor.md`（Fisher 度量是黎曼度量的特例）
-- 若需要局部 KL 分析 → `kl-divergence.md`（局部 KL 散度等于 Fisher 度量）
+- 若需要一般黎曼度量 → `../differential-geometry/metric-tensor.md`（Fisher 度量是黎曼度量的特例）
+- 若需要局部 KL 分析 → `../probability/kl-divergence.md`（局部 KL 散度等于 Fisher 度量）
 
 ## 可扩展方向
 - Rao 距离（Rao's distance）：Fisher-Rao 度量下的测地距离

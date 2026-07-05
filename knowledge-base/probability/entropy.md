@@ -41,7 +41,7 @@ $$I(X; Y) = H(X) - H(X|Y) = H(Y) - H(Y|X) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}
 - **对 vocab 大小敏感**：大 vocab（如 LLM 的 128K tokenizer）下 softmax + 交叉熵的显存峰值可达数十 GB，需 chunked/online softmax 或 label smoothing 缓解。
 
 ## 深入参考
-- 蒸馏稿：`references/books/` 暂无专用信息论蒸馏稿
+- 蒸馏稿：`../../references/books/` 暂无专用信息论蒸馏稿
 - Cover & Thomas. *Elements of Information Theory*, 2nd Edition. Wiley, 2006
 - MacKay. *Information Theory, Inference, and Learning Algorithms*. Cambridge, 2003
 - 关联知识卡：`kl-divergence.md`、`information-bottleneck.md`

@@ -1,6 +1,6 @@
 # Skill 索引：透镜库、知识库、设计模式库、工作流范例
 
-> 本文件从 `SKILL.md` 提取，供需要查阅完整目录时使用。SKILL.md 保留精简摘要和指向本文件的链接。
+> 本文件从 `../skills/math-research-activator/SKILL.md` 提取，供需要查阅完整目录时使用。SKILL.md 保留精简摘要和指向本文件的链接。
 
 ## 语言路由与混合输入规则（完整版）
 
@@ -23,8 +23,8 @@
    - 若没有上下文，默认中文。
 
 5. **输出语言与主语言一致**
-   - 中文主语言 → 读取中文 `SKILL.md`，用中文回答，保留必要英文术语。
-   - 英文主语言 → 读取 `SKILL.en.md`，用英文回答。
+   - 中文主语言 → 读取中文 `../skills/math-research-activator/SKILL.md`，用中文回答，保留必要英文术语。
+   - 英文主语言 → 读取 `../skills/math-research-activator/SKILL.en.md`，用英文回答。
    - 用户明确要求"用英文/用中文"时，以用户显式要求为准。
 
 ## 透镜库（15 个数学视角）
@@ -33,21 +33,21 @@
 
 | 透镜 | 文件 | 核心视角 |
 |------|------|---------|
-| 公理化 | `../../lenses/axiomatization.md` | 审查假设的相容性/独立性/完备性 |
-| 对偶 | `../../lenses/duality.md` | 转换到对偶空间暴露约束与不变量 |
-| 对称性 | `../../lenses/symmetry.md` | 变换下的不变量与守恒律 |
-| 谱分解 | `../../lenses/spectral.md` | 特征值/奇异值揭示主导结构 |
-| 几何 | `../../lenses/geometric.md` | 度量/曲率/流形上的空间结构 |
-| 投影与分解 | `../../lenses/projection.md` | 正交分解、子空间分离、冲突消除 |
-| 变分 | `../../lenses/variational.md` | 约束下极值、能量最小化 |
-| 局部到整体 | `../../lenses/local-to-global.md` | 局部性质拼接为全局、层上同调障碍 |
-| 拓扑 | `../../lenses/topological.md` | 连续变形不变量、连通性、空洞 |
-| 范畴化 | `../../lenses/categorical.md` | 泛性质、函子、自然变换 |
-| 扰动 | `../../lenses/perturbation.md` | 小扰动的传播、稳定性、鲁棒性 |
-| 因果 | `../../lenses/causal.md` | 相关≠因果、干预、反事实 |
-| 博弈 | `../../lenses/game.md` | 多方策略互动、均衡、机制设计 |
-| 概率统计 | `../../lenses/probabilistic.md` | 量化不确定性、贝叶斯更新 |
-| 算法 | `../../lenses/algorithmic.md` | 复杂度、可行性、并行性 |
+| 公理化 | `../lenses/axiomatization.md` | 审查假设的相容性/独立性/完备性 |
+| 对偶 | `../lenses/duality.md` | 转换到对偶空间暴露约束与不变量 |
+| 对称性 | `../lenses/symmetry.md` | 变换下的不变量与守恒律 |
+| 谱分解 | `../lenses/spectral.md` | 特征值/奇异值揭示主导结构 |
+| 几何 | `../lenses/geometric.md` | 度量/曲率/流形上的空间结构 |
+| 投影与分解 | `../lenses/projection.md` | 正交分解、子空间分离、冲突消除 |
+| 变分 | `../lenses/variational.md` | 约束下极值、能量最小化 |
+| 局部到整体 | `../lenses/local-to-global.md` | 局部性质拼接为全局、层上同调障碍 |
+| 拓扑 | `../lenses/topological.md` | 连续变形不变量、连通性、空洞 |
+| 范畴化 | `../lenses/categorical.md` | 泛性质、函子、自然变换 |
+| 扰动 | `../lenses/perturbation.md` | 小扰动的传播、稳定性、鲁棒性 |
+| 因果 | `../lenses/causal.md` | 相关≠因果、干预、反事实 |
+| 博弈 | `../lenses/game.md` | 多方策略互动、均衡、机制设计 |
+| 概率统计 | `../lenses/probabilistic.md` | 量化不确定性、贝叶斯更新 |
+| 算法 | `../lenses/algorithmic.md` | 复杂度、可行性、并行性 |
 
 ## 知识库（按数学领域组织）
 
@@ -55,13 +55,13 @@
 
 | 领域 | 目录 | 知识卡片 |
 |------|------|---------|
-| 矩阵分析 | `../../knowledge-base/matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
-| 最优化 | `../../knowledge-base/optimization/` | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
-| 微分几何 | `../../knowledge-base/differential-geometry/` | manifold, tangent-space, metric-tensor, geodesic, curvature, connection |
-| 李理论 | `../../knowledge-base/lie-theory/` | group-action, lie-group, lie-algebra, representation, equivariance |
-| 拓扑 | `../../knowledge-base/topology/` | persistent-homology, euler-characteristic, fundamental-group |
-| 概率与信息 | `../../knowledge-base/probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
-| 信息几何 | `../../knowledge-base/information-geometry/` | natural-gradient, fisher-metric |
+| 矩阵分析 | `../knowledge-base/matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
+| 最优化 | `../knowledge-base/optimization/` | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
+| 微分几何 | `../knowledge-base/differential-geometry/` | manifold, tangent-space, metric-tensor, geodesic, curvature, connection |
+| 李理论 | `../knowledge-base/lie-theory/` | group-action, lie-group, lie-algebra, representation, equivariance |
+| 拓扑 | `../knowledge-base/topology/` | persistent-homology, euler-characteristic, fundamental-group |
+| 概率与信息 | `../knowledge-base/probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
+| 信息几何 | `../knowledge-base/information-geometry/` | natural-gradient, fisher-metric |
 
 ## 设计模式库（按 AI 组件组织）
 
@@ -69,11 +69,11 @@
 
 | 组件类型 | 目录 | 模式 |
 |---------|------|------|
-| 注意力 | `../../design-patterns/attention/` | projection-attention, spectral-attention, equivariant-attention, geometry-aware-attention, information-bottleneck-attention |
-| 损失函数 | `../../design-patterns/loss/` | orthogonality-loss, contrastive-loss, variational-loss, information-bottleneck-loss, constraint-penalty |
-| 路由 | `../../design-patterns/routing/` | optimal-transport-routing, graph-routing, moe-routing, spectral-clustering-routing |
-| 表示 | `../../design-patterns/representation/` | shared-private-decomposition, manifold-representation, equivariant-split, subspace-alignment |
-| 压缩 | `../../design-patterns/compression/` | low-rank-kv-cache, spectral-token-pruning, topology-preserving-compression, leverage-score-selection |
+| 注意力 | `../design-patterns/attention/` | projection-attention, spectral-attention, equivariant-attention, geometry-aware-attention, information-bottleneck-attention |
+| 损失函数 | `../design-patterns/loss/` | orthogonality-loss, contrastive-loss, variational-loss, information-bottleneck-loss, constraint-penalty |
+| 路由 | `../design-patterns/routing/` | optimal-transport-routing, graph-routing, moe-routing, spectral-clustering-routing |
+| 表示 | `../design-patterns/representation/` | shared-private-decomposition, manifold-representation, equivariant-split, subspace-alignment |
+| 压缩 | `../design-patterns/compression/` | low-rank-kv-cache, spectral-token-pruning, topology-preserving-compression, leverage-score-selection |
 
 ## 工作流范例
 
@@ -91,7 +91,7 @@
 
 第三步 知识查询：
   → low-rank-approximation（矩阵分析）
-  → leverage-score-selection（矩阵分析）
+  → leverage-score-selection（设计模式：压缩）
   → information-bottleneck（概率与信息）
 
 第四步 设计翻译：

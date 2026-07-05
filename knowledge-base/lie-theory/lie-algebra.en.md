@@ -54,7 +54,7 @@ High GPU friendliness. The core advantage of the Lie algebra is that it is a "li
 ## Routing Extensions
 - If the corresponding global group is needed -> `lie-group.en.md` (integrating Lie algebra yields Lie group)
 - If algebra representations are needed -> `representation.en.md` (representation theory of Lie algebras)
-- If acting as the tangent space of a group -> `tangent-space.md` (Lie algebra structure on tangent space)
+- If acting as the tangent space of a group -> `../differential-geometry/tangent-space.md` (Lie algebra structure on tangent space)
 
 ## Extensible Directions
 - Structure constants: components of Lie bracket in a basis

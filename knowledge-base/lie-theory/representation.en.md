@@ -55,7 +55,7 @@ GPU friendliness depends on the group size and representation dimension:
 ## Routing Extensions
 - If equivariant network design is needed -> `equivariance.en.md` (representation theory drives equivariant network construction)
 - If the specific form of group action is needed -> `group-action.en.md` (representations are linear group actions)
-- If irreducible decomposition is needed -> `spectral-decomposition.md` (analogous to spectral decomposition of matrices)
+- If irreducible decomposition is needed -> `../matrix-analysis/spectral-decomposition.md` (analogous to spectral decomposition of matrices)
 
 ## Extensible Directions
 - Irreducible representation: basic building blocks of representations

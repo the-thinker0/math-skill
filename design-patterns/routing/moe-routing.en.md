@@ -76,7 +76,7 @@ Auxiliary loss:
 - **D8[v]**: Gate -> top-k -> softmax -> weighted-sum can be fused; intra-expert FFN can be fused
 
 ## Paper-Worthy Formulation
-"We employ noisy top-k gating for sparse mixture-of-experts routing, activating a k/K fraction of parameters to achieve O(K) parameter capacity at O(k) inference cost. Combined with the load-balancing auxiliary loss L_aux = K * <f, P> and Router Z-loss, expert utilization exceeds 95%, yielding X% performance improvement over dense models under the same FLOPs budget."
+"We employ noisy top-k gating for sparse mixture-of-experts routing, activating only k experts per token to reduce activated compute while using the load-balancing auxiliary loss L_aux = K * <f, P> and Router Z-loss to stabilize routing logits. A paper should report measured expert utilization, overflow rate, all-to-all communication share, and quality deltas against dense baselines under matched FLOPs / parameter budgets; do not use unmeasured fixed-percentage placeholders."
 
 ## Risks
 - Load imbalance: A few experts are over-selected (Matthew effect), while remaining experts receive insufficient training

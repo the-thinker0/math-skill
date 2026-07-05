@@ -2,7 +2,7 @@
 > **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
 
 ## Target Problem
-Use when compressing representations while homologically preserving the intrinsic topological structure of the data (connected components, loops, cavities): latent-space compression (a toroidal manifold must not collapse into a line segment), knowledge distillation (student--teacher homological equivalence), 3D mesh simplification (genus invariance), KV-Cache semantic preservation (cluster structure must not collapse). Core objective: **compress dimensions or counts while ensuring that changes in the persistence diagram of persistent homology remain controlled**.
+Use when compressing representations while homologically preserving the intrinsic topological structure of the data (connected components, loops, cavities): latent-space compression (a toroidal manifold must not collapse into a line segment), knowledge distillation (student--teacher homological equivalence), 3D mesh simplification (genus invariance), KV-Cache semantic preservation (cluster structure must not collapse). Core objective: **compress dimensions or counts while constraining and measuring changes in the persistence diagram of persistent homology**.
 
 ## Mathematical Foundations
 - Lenses: ../../lenses/topological.en.md (topological invariants -- connected components and hole counts are invariant under continuous deformation), ../../lenses/spectral.en.md (Gauss--Bonnet linking curvature and Euler characteristic), ../../lenses/variational.en.md (constrained variational of compression ratio vs. topological fidelity)
@@ -54,7 +54,7 @@ Method 3 - Topology monitoring + adaptive compression ratio (at inference time):
 - **D8[v]**: cdist + threshold + count can be fused to avoid materializing the large distance matrix
 
 ## Paper-Worthy Formulation
-"Grounded in the Bottleneck stability theorem of persistent homology, we achieve $O(N^2)$-complexity topology-preserving regularization via Euler characteristic curve matching, ensuring that post-compression deviations in Betti numbers over persistence intervals are controlled by the Hausdorff distance."
+"Grounded in the Bottleneck stability theorem of persistent homology, we build a computable topology-preserving regularizer via Euler-characteristic curves or landmark approximations. Bottleneck distance can bound persistence-diagram changes when the filtration-function perturbation is controlled; Euler curves are incomplete proxies and do not by themselves guarantee per-degree Betti-number deviations, so persistence / Betti-curve deviations should be measured."
 
 ## Risks
 - **Persistent homology computational bottleneck**: exact boundary matrix reduction is highly serial ($O(N^3)$), necessitating reliance on Euler curve or landmark approximations

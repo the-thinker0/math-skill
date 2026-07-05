@@ -51,7 +51,7 @@
 ## 路由扩展
 - 若需要截断近似 → `low-rank-approximation.md`（基于 SVD 的低秩近似）
 - 若用于注意力机制设计 → `spectral-attention`（设计模式层）
-- 若需要谱的集中界 → `concentration-inequality.md`（随机矩阵谱的集中不等式）
+- 若需要谱的集中界 → `../probability/concentration-inequality.md`（随机矩阵谱的集中不等式）
 
 ## 可扩展方向
 - SVD 变体（truncated / randomized SVD）：大规模矩阵的快速分解

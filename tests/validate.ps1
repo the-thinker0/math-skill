@@ -183,6 +183,50 @@ Check-Contains "README.md" "激活锚点"
 Check-Contains "README.en-US.md" "does not store mathematics"
 Check-Contains "README.en-US.md" "Activation Anchor"
 
+# --- Semantic Regression Checks ---
+Write-Host "`n--- Semantic Regression Checks ---"
+Check-Contains "design-patterns\compression\low-rank-kv-cache.md" "O(Lk + kd)"
+Check-Contains "design-patterns\compression\low-rank-kv-cache.en.md" "O(Lk + kd)"
+Check-Not-Contains "design-patterns\compression\low-rank-kv-cache.md" "压缩到 `$O(kd)"
+Check-Not-Contains "design-patterns\compression\low-rank-kv-cache.en.md" "to `$O(kd)"
+Check-Not-Contains "design-patterns\compression\low-rank-kv-cache.md" "softmax attention 需从因子重构完整"
+Check-Not-Contains "design-patterns\compression\low-rank-kv-cache.en.md" "must be reconstructed from the factored form"
+Check-Contains "design-patterns\compression\low-rank-kv-cache.md" "因子化 GEMM"
+Check-Contains "design-patterns\compression\low-rank-kv-cache.en.md" "factorized GEMMs"
+Check-Contains "design-patterns\compression\low-rank-kv-cache.md" "Eckart-Young 谱范数误差"
+Check-Contains "design-patterns\compression\low-rank-kv-cache.en.md" "Eckart--Young spectral-norm error"
+Check-Not-Contains "design-patterns\compression\low-rank-kv-cache.md" "Weyl 扰动界保证"
+Check-Not-Contains "design-patterns\compression\low-rank-kv-cache.en.md" "Weyl perturbation bound guarantees"
+Check-Not-Contains "knowledge-base\matrix-analysis\low-rank-approximation.md" "需先重构"
+Check-Not-Contains "knowledge-base\matrix-analysis\low-rank-approximation.en.md" "must first reconstruct"
+Check-Contains "knowledge-base\matrix-analysis\low-rank-approximation.md" "主子空间唯一"
+Check-Contains "knowledge-base\matrix-analysis\low-rank-approximation.en.md" "principal subspace is unique"
+Check-Not-Contains "knowledge-base\matrix-analysis\low-rank-approximation.md" "唯一最优解"
+Check-Not-Contains "knowledge-base\matrix-analysis\low-rank-approximation.en.md" "unique optimal solution"
+Check-Contains "knowledge-base\matrix-analysis\low-rank-approximation.md" "O(mn)"
+Check-Contains "knowledge-base\matrix-analysis\low-rank-approximation.en.md" "O(mn)"
+Check-Contains "knowledge-base\matrix-analysis\low-rank-approximation.en.md" "information-bottleneck.en.md"
+Check-Contains "design-patterns\loss\constraint-penalty.md" "不等式乘子必须保持"
+Check-Contains "design-patterns\loss\constraint-penalty.en.md" "inequality multipliers must satisfy"
+Check-Contains "design-patterns\compression\low-rank-kv-cache.md" "Q_final"
+Check-Contains "design-patterns\compression\low-rank-kv-cache.en.md" "Q_final"
+Check-Contains "design-patterns\routing\spectral-clustering-routing.md" "cdist(X_sample, X_sample)**2"
+Check-Contains "design-patterns\routing\spectral-clustering-routing.en.md" "cdist(X_sample, X_sample)**2"
+Check-Contains "design-patterns\attention\information-bottleneck-attention.md" "logistic-normal"
+Check-Contains "design-patterns\attention\information-bottleneck-attention.en.md" "logistic-normal"
+Check-Contains "design-patterns\compression\spectral-token-pruning.md" "未 mask 且不可约"
+Check-Contains "design-patterns\compression\spectral-token-pruning.en.md" "unmasked irreducible"
+Check-Not-Contains "design-patterns\routing\moe-routing.md" "X%"
+Check-Not-Contains "design-patterns\routing\moe-routing.en.md" "X%"
+Check-Not-Contains "design-patterns\routing\moe-routing.md" ">95%"
+Check-Not-Contains "design-patterns\routing\moe-routing.en.md" "exceeds 95%"
+Check-Not-Contains "lenses\spectral.md" "必须使用 Jordan"
+Check-Not-Contains "lenses\spectral.en.md" "Jordan form is required"
+Check-Not-Contains "design-patterns\loss\contrastive-loss.md" "O(1/√N)"
+Check-Not-Contains "design-patterns\loss\contrastive-loss.en.md" "O(1/√N)"
+Check-Contains "design-patterns\overview.md" "严谨性约定"
+Check-Contains "design-patterns\overview.en.md" "Rigor convention"
+
 # --- npm Pack ---
 Write-Host "`n--- npm Pack Check ---"
 $packOutput = npm pack --dry-run 2>&1 | Out-String
@@ -204,14 +248,15 @@ if ($packOutput -match "design-patterns/") {
 
 # --- CN/EN Pairing (synced with validate.sh) ---
 Write-Host "`n--- CN/EN File Pairing ---"
-$cnLenses = Get-ChildItem -Path "lenses" -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" }
-foreach ($cn in $cnLenses) {
-    $enName = $cn.BaseName + ".en.md"
-    if (Test-Path "lenses\$enName") {
-        Write-Host "[PASS] $($cn.Name) has EN pair" -ForegroundColor Green
+$pairRoots = @("commands","skills","agents","lenses","knowledge-base","design-patterns","references")
+$cnFiles = Get-ChildItem -Path $pairRoots -Recurse -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" } | Sort-Object FullName
+foreach ($cn in $cnFiles) {
+    $enPath = Join-Path $cn.DirectoryName ($cn.BaseName + ".en.md")
+    if (Test-Path $enPath) {
+        Write-Host "[PASS] $($cn.FullName) has EN pair" -ForegroundColor Green
         $script:pass++
     } else {
-        Write-Host "[FAIL] $($cn.Name) missing EN pair" -ForegroundColor Red
+        Write-Host "[FAIL] $($cn.FullName) missing EN pair: $enPath" -ForegroundColor Red
         $script:fail++
     }
 }
@@ -219,32 +264,37 @@ foreach ($cn in $cnLenses) {
 # --- Cross-Reference Integrity (synced with validate.sh) ---
 Write-Host "`n--- Cross-Reference Integrity ---"
 $xrefFail = 0
-$dpFiles = Get-ChildItem -Path "design-patterns" -Recurse -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" }
-foreach ($dp in $dpFiles) {
-    $content = Get-Content $dp.FullName -Raw
-
-    $lensRefs = [regex]::Matches($content, 'lenses/([a-z-]+)\.md')
-    foreach ($ref in $lensRefs) {
-        $target = "lenses\" + $ref.Groups[1].Value + ".md"
-        if (-not (Test-Path $target)) {
-            Write-Host "[FAIL] $($dp.Name) references missing $($ref.Value)" -ForegroundColor Red
-            $script:fail++
-            $xrefFail++
+$xrefRoots = @("commands","skills","agents","lenses","knowledge-base","design-patterns","references","tests\eval")
+$mdFiles = Get-ChildItem -Path $xrefRoots -Recurse -Filter "*.md" -ErrorAction SilentlyContinue
+foreach ($file in $mdFiles) {
+    $content = Get-Content $file.FullName -Raw
+    $matches = [regex]::Matches($content, '`([^`]+)`')
+    foreach ($match in $matches) {
+        $ref = $match.Groups[1].Value
+        if (
+            $ref -match '^https?:' -or
+            $ref.Contains('*') -or
+            $ref.Contains(' ') -or
+            $ref.Contains('|') -or
+            $ref.Contains('(') -or
+            $ref.Contains('$') -or
+            $ref -eq 'math_book/' -or
+            $ref.EndsWith('/math_book/') -or
+            -not ($ref.EndsWith('.md') -or $ref.EndsWith('/'))
+        ) {
+            continue
         }
-    }
-
-    $kbRefs = [regex]::Matches($content, 'knowledge-base/([a-z-]+)/([a-z-]+)\.md')
-    foreach ($ref in $kbRefs) {
-        $target = "knowledge-base\" + $ref.Groups[1].Value + "\" + $ref.Groups[2].Value + ".md"
+        $target = [System.IO.Path]::GetFullPath((Join-Path $file.DirectoryName $ref))
         if (-not (Test-Path $target)) {
-            Write-Host "[FAIL] $($dp.Name) references missing $($ref.Value)" -ForegroundColor Red
+            $line = ($content.Substring(0, $match.Index) -split "`n").Count
+            Write-Host "[FAIL] $($file.FullName):$line references missing $ref => $target" -ForegroundColor Red
             $script:fail++
             $xrefFail++
         }
     }
 }
 if ($xrefFail -eq 0) {
-    Write-Host "[PASS] All cross-references resolved" -ForegroundColor Green
+    Write-Host "[PASS] All backtick path references resolve" -ForegroundColor Green
     $script:pass++
 }
 
@@ -286,4 +336,3 @@ if ($script:fail -eq 0) {
     Write-Host "Some checks failed!" -ForegroundColor Red
     exit 1
 }
-

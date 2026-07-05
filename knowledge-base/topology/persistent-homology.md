@@ -57,7 +57,7 @@ GPU 友好度有限，是持续同调落地的主要瓶颈：
 ## 路由扩展
 - 若需要拓扑不变量的计算 → `euler-characteristic.md`（Euler 示性数作为 Betti 数的交替和）
 - 若需要 1 维拓扑分析 → `fundamental-group.md`（基本群捕捉环路结构）
-- 若用于信息保持压缩 → `information-bottleneck.md`（拓扑保持的信息压缩）
+- 若用于信息保持压缩 → `../probability/information-bottleneck.md`（拓扑保持的信息压缩）
 
 ## 可扩展方向
 - 单纯复形类型（Cech, Vietoris-Rips, alpha）：不同复形构造的优缺点

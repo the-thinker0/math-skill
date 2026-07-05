@@ -18,7 +18,7 @@
   投影矩阵 P_S + P_P = I，P_S · P_P = 0
 - **信息分解 (Williams & Beer PID)**：
   I(X;Y₁,Y₂) = Shared + Unique₁ + Unique₂ + Synergy
-  Shared = min(I(X;Y₁), I(X;Y₂)) 的冗余信息部分
+  Shared 为冗余信息项；min(I(X;Y₁), I(X;Y₂)) 只是早期/简化代理，不是 Williams-Beer 冗余的一般定义
 - **低秩+稀疏分解 (RPCA)**：M = L + S，L 低秩（共性）+ S 稀疏（特异）
   通过核范数 + L1 范数凸松弛求解
 - **CCA (典型相关分析)**：max corr(W₁^T X, W₂^T Y)，提取两组变量的共享变异
@@ -42,7 +42,7 @@
   z = gate ⊙ z_shared + (1 - gate) ⊙ z_private
   // 门控允许逐维度选择 shared/private 的贡献比例
 
-方法3 - 对抗分解（信息论保证）：
+方法3 - 对抗分解（信息论代理）：
   z_shared = E_shared(X)
   z_private = E_private[t](X)
   // Shared 应无法区分任务（对抗梯度）：
@@ -80,9 +80,7 @@
 - **算子融合**：加法融合 trivial；门控融合的 sigmoid→multiply→add 可融合
 
 ## 论文表述方式
-"将多任务表示空间 R^d 分解为直和 S ⊕ P，Shared 子空间通过对抗训练确保任务无关性
-（H(T|Z_s)→log T），Private 子空间通过正交正则保证与 Shared 的信息互补，
-理论分析表明负迁移随正交性以 O(‖P_S·P_P‖_F) 衰减。"
+"将多任务表示空间 R^d 分解为共享子空间 S 与任务私有子空间 P：共享分支通过对抗训练降低任务可识别性，私有分支通过正交/去相关正则减少与共享分支的线性重叠。信息互补与负迁移降低需通过任务间迁移矩阵、互信息/PID 代理和消融实验验证，不能仅由正交性自动保证。"
 
 ## 风险
 - 对抗训练的 min-max 优化不稳定，梯度反转的 scale 和 λ_adv 需精心调节

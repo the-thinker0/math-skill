@@ -76,7 +76,7 @@ Hard Negative Mining:
 - **D8[v]**: L2-norm -> matmul -> scale -> log-softmax -> nll_loss can be fused
 
 ## Paper Phrasing
-"We employ temperature-scaled InfoNCE contrastive loss with a momentum encoder maintaining a negative sample queue of N=65536, maximizing the lower bound of positive-pair mutual information on the unit sphere. Theoretical analysis shows this lower bound converges at rate $O(1/\sqrt{N})$."
+"We employ temperature-scaled InfoNCE contrastive loss with a momentum encoder maintaining a negative-sample queue, optimizing proxies for positive-pair alignment and representation uniformity on the unit sphere. Mutual-information lower bounds and sampling-error rates depend on the negative-sample distribution, independence assumptions, and queue staleness; report ablations over queue size, temperature, negative-mining strategy, and downstream metrics."
 
 ## Risks
 - Too small $\tau$ causes training instability (excessively large gradients); too large $\tau$ makes all samples indistinguishable (degenerates to uniform distribution)

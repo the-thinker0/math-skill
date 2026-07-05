@@ -24,7 +24,7 @@
 
 ## AI 设计翻译
 
-- **对抗训练的 minimax 框架**：$L(\theta, \phi) = \mathbb{E}[\log D_\phi(x)] + \mathbb{E}[\log(1 - D_\phi(G_\theta(z)))]$。$G$ 和 $D$ 交替梯度上升/下降，核心操作是前向 + 反向传播（matmul 链）。梯度惩罚 / spectral norm 约束 $D$ 的 Lipschitz 保证 minimax 有鞍点。
+- **对抗训练的 minimax 框架**：$L(\theta, \phi) = \mathbb{E}[\log D_\phi(x)] + \mathbb{E}[\log(1 - D_\phi(G_\theta(z)))]$。$G$ 和 $D$ 交替梯度上升/下降，核心操作是前向 + 反向传播（matmul 链）。梯度惩罚 / spectral norm 可控制 $D$ 的 Lipschitz 常数并改善训练稳定性，但不保证非凸 minimax 一定存在或收敛到良性鞍点。
 - **SVM 对偶 + 核技巧**：原始 $\min_w \frac{1}{2}\|w\|^2 + C\sum\xi_i$ 转对偶 $\max_\alpha \sum\alpha_i - \frac{1}{2}\alpha^T(K \circ yy^T)\alpha$。核 Gram $K_{ij} = k(x_i, x_j)$ 是 matmul（线性核）或 elementwise（RBF 核）。对偶变量 $\alpha \in \mathbb{R}^n$，用 SMO 或梯度投影求解。
 - **增广 Lagrangian 约束训练**：$\mathcal{L}_{\text{AL}} = f(x) + \sum \lambda_i g_i(x) + \frac{\rho}{2}\sum g_i(x)^2$。内层对 $x$ 用 SGD 优化，外层对 $\lambda$ 梯度上升更新：$\lambda \leftarrow [\lambda + \rho g(x)]_+$。$\rho$ 项改善对偶函数的凹性（使对偶问题更容易求解），但对非凸原问题不保证全局收敛。收敛性依赖于：(a) 约束规格（如 LICQ/MFCQ），(b) 二阶充分条件，(c) $\rho$ 足够大以满足局部凸性条件。
 - **对偶分解 (Dual Decomposition)**：$\min \sum_k f_k(x_k)$ s.t. $\sum x_k \leq b$ 分解为各子问题 $\min_{x_k} f_k(x_k) + \lambda^T x_k$ 独立求解，主问题 $\max_\lambda g(\lambda)$ 用次梯度上升。天然可并行，适合分布式训练。
@@ -53,7 +53,7 @@
 ## 路由扩展
 - 若需要从原始问题出发 → `constrained-optimization.md`（原始约束优化）
 - 若需要强对偶条件 → `convex-optimization.md`（凸问题的强对偶定理）
-- 若涉及 IB 目标函数的对偶形式 → `information-bottleneck.md`（信息瓶颈的变分对偶）
+- 若涉及 IB 目标函数的对偶形式 → `../probability/information-bottleneck.md`（信息瓶颈的变分对偶）
 
 ## 可扩展方向
 - 增广 Lagrangian（augmented Lagrangian）：罚项增强的 Lagrangian 方法

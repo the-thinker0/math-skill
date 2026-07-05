@@ -47,7 +47,7 @@ Method 4 - Orthogonal Constraint Projection:
 
 ## Implementable Architectures
 - **Loss Wrapper**: ConstraintLoss(base_loss, constraints, rho_schedule) -- forward computes base_loss + Sum constraint.penalty()
-- **Dual Variable Management**: nn.Parameter stores lambda; negative learning rate set in the optimizer to achieve gradient ascent
+- **Dual Variable Management**: equality multipliers can use nn.Parameter with a negative learning rate for gradient ascent; inequality multipliers must satisfy $\lambda \geq 0$, so use explicit projected updates `lambda <- max(0, lambda + rho*h(x))` or clamp after optimizer steps
 - **Warm-up Strategy**: Optimize only base_loss for the first $N$ steps, then progressively activate constraint penalties
 - **Constraint Monitoring**: Record $\|g(x)\|$ at each step for visualization and adaptive rho adjustment
 
@@ -62,7 +62,7 @@ Method 4 - Orthogonal Constraint Projection:
 - **Operator Fusion**: Constraint computation + weighted summation + merging with base_loss can be fused into a single kernel
 
 ## Paper Phrasing
-"We employ the augmented Lagrangian method to convert hard constraints $g(x)=0$ into differentiable penalty terms $\lambda^T g(x) + \rho/2 \|g(x)\|^2$. Through alternating dual ascent updates of $\lambda$, constraint satisfaction is guaranteed to converge at rate $O(1/\rho)$ without requiring $\rho \to \infty$ (this holds for convex problems; for non-convex problems, only local convergence to KKT points is guaranteed, with constraint satisfaction depending on constraint qualifications such as LICQ/MFCQ), reducing constraint violations by 3x compared to pure penalty methods in experiments."
+"We employ the augmented Lagrangian method to convert hard constraints $g(x)=0$ into differentiable penalty terms $\lambda^T g(x) + \rho/2 \|g(x)\|^2$, using alternating dual ascent updates of $\lambda$ rather than relying only on $\rho \to \infty$. Under convexity, constraint qualifications such as LICQ/MFCQ, and sufficiently accurate inner solves, ALM can converge to KKT solutions; in non-convex training, report the measured constraint-violation curve instead of claiming a universal $O(1/\rho)$ rate."
 
 ## Risks
 - Excessively fast rho growth leads to ill-conditioned variational landscapes (deteriorating condition numbers), causing gradient vanishing or explosion

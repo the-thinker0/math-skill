@@ -20,12 +20,12 @@ A Hermitian matrix $A$ is positive semidefinite (PSD) if $x^HAx \geq 0$ for all 
 - Covariance matrices: $\Sigma = \mathbb{E}[xx^H] \succeq 0$; PCA/whitening relies on positive definiteness
 - Second-order optimization preconditioning: The PSD structure of the Hessian/Fisher information matrix guarantees descent directions
 - Semidefinite programming (SDP): optimizing a linear objective subject to $X \succeq 0$ constraints
-- Attention matrix analysis: Gram structure of the row-stochastic matrix output by softmax
+- Attention matrix analysis: a row-stochastic softmax attention matrix is generally not a Gram/PSD matrix; PSD tools apply only after explicitly constructing a symmetric PSD kernel (e.g. $K_{ij}=k(x_i,x_j)$) or symmetrizing and projecting to the PSD cone.
 
 ## AI Design Translation
 
 - **PSD kernel engineering (learnable kernels)**: Use the Schur product theorem to combine multiple PSD kernels: $K = K_1 \circ K_2 \circ \cdots$ (Hadamard product), guaranteeing the result remains PSD. Implemented as elementwise tensor multiplication `K = K1 * K2`, $O(n^2)$ elementwise, extremely GPU-friendly. Can parameterize $K_\theta(x,y) = \exp(-\|f_\theta(x)-f_\theta(y)\|^2)$ to guarantee PSD.
-- **Covariance whitening**: $\hat{x} = \Sigma^{-1/2}x$, where $\Sigma^{-1/2}$ is approximated via Newton-Schulz iteration (pure matmul). Newton-Schulz: $X_{k+1} = \frac{1}{2}X_k(3I - AX_k)$, two matmul operations per step, converging in 5-6 steps. BatchNorm can be viewed as an approximation to diagonal whitening.
+- **Covariance whitening**: $\hat{x} = \Sigma^{-1/2}x$, where $\Sigma^{-1/2}$ can be approximated via scaled Newton-Schulz iteration (pure matmul). A common coupled form uses $Y_0=A/\alpha, Z_0=I$, $T_k=\frac{1}{2}(3I-Z_kY_k)$, $Y_{k+1}=Y_kT_k, Z_{k+1}=T_kZ_k$, with $A^{-1/2}\approx Z_k/\sqrt{\alpha}$; an equivalent single-variable form is $X_{k+1}=\frac{1}{2}X_k(3I-AX_k^2)$. Convergence requires spectral scaling and positive definiteness; in low precision, residual checks are needed. 5-6 steps is an engineering budget, not a universal guarantee. BatchNorm can be viewed as an approximation to diagonal whitening.
 - **Cholesky preconditioner**: For a PSD Hessian $H$, use the $H = LL^H$ decomposition and solve $L^{-1}L^{-H}g$ instead of $H^{-1}g$. cuSOLVER provides batched Cholesky `potrf`. In K-FAC, the inversion of each Kronecker factor proceeds via Cholesky.
 - **Nearest PSD approximation (Higham)**: Given a symmetric matrix $A$, find the nearest PSD matrix $A_+ = \arg\min_{X \succeq 0} \|A - X\|_F$. Solution: EVD $A = U\Lambda U^H$, clamp negative values in $\Lambda$ to zero, $A_+ = U\Lambda_+ U^H$. Used to correct loss of positive definiteness in covariance matrices due to floating-point errors.
 - **Jitter / diagonal loading**: $A_{\text{stable}} = A + \epsilon I$ ($\epsilon \sim 10^{-6}$), ensuring numerical positive definiteness. Standard practice in Gaussian processes, kernel methods, and Cholesky decomposition. Implemented as `A + eps * torch.eye(n)`, a zero-cost operation.
@@ -51,9 +51,9 @@ A Hermitian matrix $A$ is positive semidefinite (PSD) if $x^HAx \geq 0$ for all 
 
 
 ## Routing Extensions
-- If solving SDP problems -> `convex-optimization.md` (semidefinite programming as convex optimization)
+- If solving SDP problems -> `../optimization/convex-optimization.md` (semidefinite programming as convex optimization)
 - If PSD matrix conditioning and perturbation are involved -> `matrix-perturbation.en.md` (eigenvalue perturbation bounds)
-- If used for Fisher information matrix -> `fisher-information.md` (PSD property of Fisher information)
+- If used for Fisher information matrix -> `../probability/fisher-information.md` (PSD property of Fisher information)
 
 ## Extensible Directions
 - Semidefinite programming (SDP): solution methods and applications

@@ -55,7 +55,7 @@ GPU 友好度取决于群的规模和表示维数：
 ## 路由扩展
 - 若需要等变网络设计 → `equivariance.md`（表示理论驱动等变网络构造）
 - 若需要群作用的具体形式 → `group-action.md`（表示是线性群作用）
-- 若需要不可约分解 → `spectral-decomposition.md`（类比为矩阵的谱分解）
+- 若需要不可约分解 → `../matrix-analysis/spectral-decomposition.md`（类比为矩阵的谱分解）
 
 ## 可扩展方向
 - 不可约表示（irreducible representation）：表示的基本构建块

@@ -51,8 +51,8 @@ GPU 友好度：曲率的核心难点是"不能物化全张量"。
 
 ## 路由扩展
 - 若需要局部几何分析 → `metric-tensor.md`（度量决定局部曲率）
-- 若需要全局拓扑分析 → `persistent-homology.md`（持续同调捕捉全局拓扑）
-- 若涉及曲率对稳定性的影响 → `matrix-perturbation.md`（曲率导致的扰动放大）
+- 若需要全局拓扑分析 → `../topology/persistent-homology.md`（持续同调捕捉全局拓扑）
+- 若涉及曲率对稳定性的影响 → `../matrix-analysis/matrix-perturbation.md`（曲率导致的扰动放大）
 
 ## 可扩展方向
 - 截面/Ricci/标量曲率（sectional / Ricci / scalar curvature）：不同维度的曲率概念

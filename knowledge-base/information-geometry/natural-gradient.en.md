@@ -12,7 +12,7 @@ $$\theta_{t+1} = \theta_t - \eta \nabla_\theta \mathcal{L}(\theta)$$
 $$\tilde{\nabla} \mathcal{L}(\theta) = \mathcal{I}(\theta)^{-1} \nabla_\theta \mathcal{L}(\theta)$$
 $$\theta_{t+1} = \theta_t - \eta \, \mathcal{I}(\theta)^{-1} \nabla_\theta \mathcal{L}(\theta)$$
 
-where $\mathcal{I}(\theta)$ is the Fisher information matrix (see `../../probability/fisher-information.md`).
+where $\mathcal{I}(\theta)$ is the Fisher information matrix (see `../probability/fisher-information.en.md`).
 
 **Equivalent Derivation (Constrained Optimization Perspective)**: The natural gradient is the solution to the following constrained optimization problem —
 $$\min_{\Delta\theta} \mathcal{L}(\theta + \Delta\theta) \quad \text{s.t.} \quad D_{KL}(p_\theta \| p_{\theta+\Delta\theta}) \leq \epsilon$$
@@ -47,17 +47,17 @@ where $A_l = \mathbb{E}[a_l a_l^T]$ (activation covariance) and $B_l = \mathbb{E
 - **Burn-in problem for covariance estimation**: In early training, $A_l, B_l$ estimates are inaccurate and the natural gradient direction may be wrong. The standard practice is to warm up with Adam/SGD for the first few hundred steps, then switch to K-FAC.
 
 ## Further References
-- Distillation draft: `references/books/` — no dedicated information geometry distillation draft at present
+- Distillation draft: `../../references/books/` — no dedicated information geometry distillation draft at present
 - Amari. *Natural Gradient Works Efficiently in Learning.* Neural Computation, 1998
 - Martens & Grosse. "Optimizing Neural Networks with Kronecker-Factored Approximate Curvature." *ICML*, 2015
 - Schulman et al. "Trust Region Policy Optimization." *ICML*, 2015
-- Related knowledge cards: `../../probability/fisher-information.md`, `fisher-metric.md`
+- Related knowledge cards: `../probability/fisher-information.en.md`, `fisher-metric.en.md`
 
 
 ## Routing Extensions
 - If metric definition is needed -> `fisher-metric.en.md` (Fisher metric is the foundation of natural gradient)
-- If a general Riemannian optimization framework is needed -> `riemannian-optimization.md` (natural gradient is a special case of Riemannian gradient)
-- If an information-theoretic perspective is needed -> `fisher-information.md` (statistical interpretation of Fisher information)
+- If a general Riemannian optimization framework is needed -> `../optimization/riemannian-optimization.md` (natural gradient is a special case of Riemannian gradient)
+- If an information-theoretic perspective is needed -> `../probability/fisher-information.en.md` (statistical interpretation of Fisher information)
 
 ## Extensible Directions
 - Mirror descent as natural gradient: equivalence on dual spaces

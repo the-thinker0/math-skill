@@ -50,7 +50,7 @@ Moderate GPU friendliness. Coordinate chart transformations are element-wise map
 ## Routing Extensions
 - If local structure analysis is needed -> `tangent-space.en.md` (tangent space provides local linear approximation)
 - If distance definition is needed -> `metric-tensor.en.md` (metric tensor defines distance on manifolds)
-- If optimization on manifolds is needed -> `riemannian-optimization.md` (Riemannian optimization methods)
+- If optimization on manifolds is needed -> `../optimization/riemannian-optimization.md` (Riemannian optimization methods)
 
 ## Extensible Directions
 - Submanifold: embedded and immersed submanifolds

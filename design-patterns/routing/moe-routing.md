@@ -76,9 +76,7 @@
 - **D8[v]**：gate → top-k → softmax → weighted-sum 可融合；专家内 FFN 可 fuse
 
 ## 论文表述方式
-"采用 noisy top-k 门控实现稀疏混合专家路由，激活 k/K 比例的参数以 O(k) 推理代价
-获得 O(K) 参数容量，配合负载均衡辅助损失 L_aux = K·⟨f,P⟩ 和 Router Z-loss 保证
-专家利用率 >95%，在同等 FLOPs 预算下相比 dense 模型提升 X% 性能。"
+"采用 noisy top-k 门控实现稀疏混合专家路由，每个 token 仅激活 k 个专家以降低激活计算，同时用负载均衡辅助损失 L_aux = K·⟨f,P⟩ 和 Router Z-loss 稳定路由 logits。论文中应报告专家利用率、溢出率、all-to-all 通信占比，以及同等 FLOPs/参数预算下相对 dense baseline 的实测质量差异；不得用未实测的固定百分比占位。"
 
 ## 风险
 - 负载不均衡：少数专家被过度选择（马太效应），其余专家得不到训练

@@ -71,7 +71,7 @@
     "references/"
   ],
   "scripts": {
-    "validate": "test -f tests/validate.sh && bash tests/validate.sh || powershell -ExecutionPolicy Bypass -File tests/validate.ps1",
+    "validate": "node -e \"const fs=require('fs'),cp=require('child_process');if(fs.existsSync('tests/validate.sh'))process.exit(cp.spawnSync('bash',['tests/validate.sh'],{stdio:'inherit'}).status||0);if(fs.existsSync('tests/validate.ps1'))process.exit(cp.spawnSync('powershell',['-ExecutionPolicy','Bypass','-File','tests/validate.ps1'],{stdio:'inherit'}).status||0);console.log('tests/ not available in published package');\"",
     "validate:sh": "test -f tests/validate.sh && bash tests/validate.sh || echo 'tests/ not available in published package'",
     "validate:win": "powershell -ExecutionPolicy Bypass -Command \"if (Test-Path tests/validate.ps1) { & tests/validate.ps1 } else { Write-Host 'tests/ not available in published package' }\"",
     "pack": "npm pack",

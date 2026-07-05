@@ -49,7 +49,7 @@ Maps a vector $v$ onto a subspace $\mathcal{S}$ such that the residual $v - Pv$ 
 
 ## Routing Extensions
 - If the goal is compression / dimensionality reduction -> `low-rank-approximation.en.md` (truncated SVD implementation)
-- If projection constraints are needed on a manifold -> `riemannian-optimization.md` (constrained optimization on Riemannian manifolds)
+- If projection constraints are needed on a manifold -> `../optimization/riemannian-optimization.md` (constrained optimization on Riemannian manifolds)
 - If shared vs. private subspace separation is involved -> `shared-private-decomposition` (design pattern layer)
 
 ## Extensible Directions

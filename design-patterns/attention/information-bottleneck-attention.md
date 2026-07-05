@@ -47,15 +47,18 @@ output = attn @ V
 
 **方案 B：变分信息瓶颈注意力（VIB-Attention）**：
 ```python
-# 引入随机瓶颈 Z ~ q(Z|attention)，限制信息通过量
+# 引入随机连续瓶颈 Z ~ q(Z|context)，限制 value 聚合后的信息通过量
 scores = (Q @ K.T) / sqrt(d)
 attn = softmax(scores)
-mu_z, log_var_z = attn, linear(attn)  # 均值与可学习方差
-z = softmax(mu_z + exp(0.5 * log_var_z) * randn_like(mu_z))  # 重参数化 + softmax
-kl = 0.5 * (mu_z^2 + exp(log_var_z) - log_var_z - 1).sum(-1).mean()  # KL vs 先验
-output = z @ V
+context = attn @ V
+mu_z, log_var_z = linear_mu(context), linear_logvar(context)
+z = mu_z + exp(0.5 * log_var_z) * randn_like(mu_z)  # 高斯重参数化
+kl = 0.5 * (mu_z^2 + exp(log_var_z) - log_var_z - 1).sum(-1).mean()  # KL[q(z|context)||N(0,I)]
+output = linear_out(z)
 loss = task_loss + beta * kl
 ```
+
+若瓶颈直接作用在 attention simplex 上（如对 logits 加噪后 softmax），变量分布是 logistic-normal / Concrete 类，不能再使用普通高斯到标准正态的闭式 KL；应使用 Monte Carlo KL、Concrete KL 近似，或把 KL 放在 softmax 前的 logits 高斯变量上。
 
 **方案 C：互信息最大化注意力（DIM 风格）**：
 ```python

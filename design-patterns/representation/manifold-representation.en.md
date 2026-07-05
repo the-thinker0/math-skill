@@ -76,7 +76,7 @@ Method 3 - Riemannian Optimization (optimize directly on the manifold):
 - **D8[v]**: Matmul + bias + activation within a chart can be fused; gating softmax + weighted-sum can be fused
 
 ## Paper-Worthy Formulation
-"Based on the manifold hypothesis, we constrain D-dimensional token representations to a d*-dimensional (intrinsic dimension estimate) submanifold, achieving piecewise-linear approximation via K local coordinate charts (Chart MoE) and preserving global geodesic structure through graph Laplacian manifold regularization, with theoretical guarantees that embedding error converges at rate O(N^{-2/d*})."
+"Based on the manifold hypothesis, we model D-dimensional token representations as a low-intrinsic-dimensional structure, approximate it with K local coordinate charts (Chart MoE), and use graph-Laplacian regularization to encourage local-neighborhood consistency. Embedding-error or geodesic-preservation bounds require assumptions on sampling density, manifold smoothness, graph construction, and estimator choice; in practice report neighborhood preservation, reconstruction error, and downstream metrics."
 
 ## Risks
 - Inaccurate intrinsic dimension d* estimation leads to over-compression or dimension waste

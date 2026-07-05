@@ -25,12 +25,12 @@ This system is a mathematical staff office for AI architecture innovation — no
 
 | Layer | Responsibility | Directory | Core Question |
 |-------|---------------|-----------|--------------|
-| **Thinking Lenses** | Diagnose problem structure, recommend mathematical perspectives | `../../lenses/*.md` | Which perspective should we view this problem through? |
-| **Math Knowledge** | Provide concrete mathematical tools (definitions/theorems/formulas) | `../../knowledge-base/*/*.md` | What specific mathematics does this perspective require? |
-| **Design Translation** | Translate mathematics into AI modules/losses/operators | `../../design-patterns/*/*.md` | How does this mathematics become model architecture? |
+| **Thinking Lenses** | Diagnose problem structure, recommend mathematical perspectives | `../../lenses/*.en.md` | Which perspective should we view this problem through? |
+| **Math Knowledge** | Provide concrete mathematical tools (definitions/theorems/formulas) | `../../knowledge-base/*/*.en.md` | What specific mathematics does this perspective require? |
+| **Design Translation** | Translate mathematics into AI modules/losses/operators | `../../design-patterns/*/*.en.md` | How does this mathematics become model architecture? |
 
 Auxiliary layers:
-- `../../references/books/*.md`: Distilled notes from 7 textbooks; full context when deeper understanding is needed
+- `../../references/books/*.en.md`: Distilled notes from 7 textbooks; full context when deeper understanding is needed
 - `../../references/gpu-friendly-math.en.md`: GPU Eight-Dimension Acceptance Gate (single source of truth)
 - `../../agents/math-critic.en.md`: Math-engineering dual critic
 
@@ -41,7 +41,7 @@ Auxiliary layers:
 | **A. Problem Analysis** | "Is this design sound?" "Are there gaps in the reasoning chain?" | Lenses → critic |
 | **B. Mechanism Design** | "Design a new attention mechanism" "Transfer X to Y" | Lenses → Knowledge → Design → critic |
 | **C. Knowledge Query** | "What is a tangent space on a manifold?" "How is the projection theorem applied?" | Knowledge |
-| **D. Verification & Review** | "Does this formula hold?" "What guarantees does this loss provide?" | Knowledge → critic |
+| **D. Verification & Review** | "Does this formula hold?" "What guarantees does this loss provide?" | Knowledge → relevant design patterns (if a concrete AI construct is cited) → critic |
 | **E. Pure Engineering** | Debugging, refactoring, hyperparameter tuning, code review | **Do not invoke the math system** |
 
 ## Lens Library (15 Mathematical Perspectives)
@@ -93,6 +93,8 @@ Scenario E (Engineering): No intervention
 
 ### Step 3: Output Format
 
+**Token-economy rule**: The following is the maximum structure, not the default full template. Trim to the user's question; for simple knowledge queries, provide only the needed definition / formula / risk. Expand design and GPU sections only when relevant, and do not restate loaded cards verbatim.
+
 **Scenario A/B Output**:
 1. **[Diagnosis]** Problem type + core tension
 2. **[Lens]** Recommend 1–3 mathematical perspectives (annotate why each is/is not suitable)
@@ -101,21 +103,21 @@ Scenario E (Engineering): No intervention
 5. **[GPU]** Run candidates through the Eight-Dimension Gate (friendly/retrofittable/unfriendly)
 6. **[Conclusion]** Retain candidates that pass both acceptance gates + next-step recommendations
 
-**Scenario C Output** (Knowledge Activation Protocol):
+**Scenario C Output** (Knowledge Activation Protocol, trimmed as needed):
 1. Minimal definition
 2. Core formulas
 3. Applicable problems
-4. AI design translation
-5. Engineering feasibility
+4. AI design translation (only when the question involves AI / operators)
+5. Engineering feasibility (only when implementation / GPU matters)
 6. Risks and failure conditions
-7. Further references (distilled book notes / original book paths)
+7. Further references (only when traceability is requested or the conclusion depends on book references)
 
-**Scenario D Output**:
+**Scenario D Output** (short conclusion first + conditions/boundaries):
 1. Conditions under which it holds
 2. Conditions under which it fails
 3. What it can guarantee at most
 4. What it cannot guarantee
-5. Engineering feasibility
+5. Engineering feasibility (only when implementation / GPU matters)
 
 **A conclusion must always be provided — never output analysis alone without convergence.**
 
@@ -134,8 +136,8 @@ See the quantitative checklist in `../../references/gpu-friendly-math.en.md`.
 
 ## Depth-of-Consultation Protocol
 
-- **Light**: Read knowledge cards (`../../knowledge-base/*/*.md`); self-contained and immediately usable
-- **Medium**: Read distilled book notes (`../../references/books/*.md`) for more complete context
+- **Light**: Read knowledge cards (`../../knowledge-base/*/*.en.md`); self-contained and immediately usable
+- **Medium**: Read distilled book notes (`../../references/books/*.en.md`) for more complete context
 - **Deep**: When `math_book/<PDF>` is available locally, the agent automatically runs `pdftotext` + grep to locate the original page
 
 ## Knowledge Gap Protocol

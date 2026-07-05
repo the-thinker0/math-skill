@@ -51,8 +51,8 @@ GPU 友好度取决于度量的结构化程度：
 
 
 ## 路由扩展
-- 若度量来自 Fisher 信息 → `natural-gradient.md`（Fisher 度量下的自然梯度）
-- 若需要黎曼梯度计算 → `riemannian-optimization.md`（度量决定的梯度方向）
+- 若度量来自 Fisher 信息 → `../information-geometry/natural-gradient.md`（Fisher 度量下的自然梯度）
+- 若需要黎曼梯度计算 → `../optimization/riemannian-optimization.md`（度量决定的梯度方向）
 - 若需要曲率分析 → `curvature.md`（度量决定的曲率张量）
 
 ## 可扩展方向

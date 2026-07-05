@@ -9,10 +9,10 @@
 - 知识：../../knowledge-base/matrix-analysis/spectral-decomposition.md（谱半径、特征向量中心性）、../../knowledge-base/matrix-analysis/matrix-perturbation.md（Geršgorin 圆盘、扰动界）、../../knowledge-base/matrix-analysis/positive-semidefinite.md（Gram 矩阵 PSD 结构）
 
 ## 需要的数学知识
-- **特征向量中心性**：对行随机（行 softmax）attention 矩阵 $A$，右主特征向量 $Ax = \lambda_1 x$ 退化为全 1 向量（因 $A \mathbf{1} = \mathbf{1}$），无法区分 token 重要性。**必须使用左主特征向量** $x^T A = \lambda_1 x^T$（等价于 $A^T x = \lambda_1 x$），即马尔可夫链的平稳分布，给出 PageRank 式重要性分数（Perron-Frobenius 保证非负）
+- **特征向量中心性**：对未 mask、正且不可约的行随机（行 softmax）attention 矩阵 $A$，右主特征向量 $Ax = \lambda_1 x$ 退化为全 1 向量（因 $A \mathbf{1} = \mathbf{1}$），无法区分 token 重要性；可使用左主特征向量 $x^T A = \lambda_1 x^T$（等价于 $A^T x = \lambda_1 x$）作为平稳分布/PageRank 式重要性。对 causal 或强 mask attention，链通常非不可约，平稳分布可能偏向早期 token；应改用 K/V 相似度图、对称化图，或加入 teleportation $A_\alpha=\alpha A+(1-\alpha)\mathbf{1}\pi^T$ 后再解释 PageRank。
 - **谱间隙**：$\Delta = \lambda_1 - \lambda_2$ 决定信息扩散速度，$\Delta$ 大 $\Rightarrow$ 少数 token 主导 $\Rightarrow$ 安全剪枝
 - **Fiedler 向量**：Laplacian $L_{\text{sym}}$ 的第二小特征向量给出最优二分割，幅值小 = 分割边界 = 重要
-- **谱扰动分析**：剪枝改变矩阵维度，不能直接套用 Weyl 定理。对对称化矩阵 $S = (A + A^T)/2$ 或 Laplacian $L$，可用 Cauchy 交错定理（Cauchy interlacing theorem）界定子矩阵特征值与原矩阵特征值的关系：$\lambda_i(L) \leq \lambda_i(L_{\text{pruned}}) \leq \lambda_{i+k}(L)$（$k$ 为删除的行/列数）。对非对称行随机矩阵，谱半径扰动可用 Bauer-Fike 或伪谱分析，但界不如 Hermitian 情形紧凑。
+- **谱扰动分析**：剪枝改变矩阵维度，不能直接套用 Weyl 定理。对固定 Hermitian 矩阵的主子矩阵（如不重新归一化的对称化矩阵 $S=(A+A^T)/2$），可用 Cauchy 交错定理界定特征值交错；若剪枝后重新归一化 Laplacian/attention graph，矩阵本身已改变，不能直接套该界。对非对称行随机矩阵，谱半径扰动可用 Bauer-Fike 或伪谱分析，但界不如 Hermitian 情形紧凑。
 
 ## AI 模块形式
 ```
@@ -20,9 +20,9 @@
 输入：K ∈ R^{L×d}    参数：保留比例 ρ ∈ (0,1]
 
 方法1 - 谱中心性剪枝（幂迭代，左特征向量）：
-  A = softmax(K @ K^T / √d)                  // L×L 行随机相似度图
+  A = softmax(K @ K^T / √d)                  // L×L 行随机相似度图；causal/mask 场景需另行处理
   // ⚠ A 为行随机矩阵，右主特征向量 = 全 1 向量（退化），必须用左主特征向量
-  // 左主特征向量 = A^T 的右主特征向量 = 马尔可夫链平稳分布（PageRank 式重要性）
+  // 左主特征向量 = A^T 的右主特征向量；仅在链不可约/加 teleportation 后可稳定解释为 PageRank
   v = ones(L) / √L
   for t in range(5): v = A^T @ v; v = v / ‖v‖  // 幂迭代 A^T（非 A），O(L²·T)
   indices = topk(v, ceil(ρ * L))              // 保留左特征向量中心性最高的 token
@@ -54,7 +54,7 @@
 - 算子融合：$KK^T$ + row-sum + topk 可融合为单一 kernel
 
 ## 论文表述方式
-"将 token 剪枝建模为有向图的谱稀疏化：利用行随机 attention 矩阵的**左**主特征向量（马尔可夫链平稳分布，PageRank 式中心性）量化全局重要性——右主特征向量因 $A\mathbf{1}=\mathbf{1}$ 退化为全 1 向量而不可用。Cauchy 交错定理保证对称化剪枝后特征值交错有序；对非对称 attention 矩阵，谱半径扰动可用伪谱分析界定，Geršgorin 圆盘提供 $O(L^2)$ 廉价替代。"
+"将 token 剪枝建模为有向图的谱稀疏化：在未 mask 且不可约的行随机图上，利用左主特征向量/PageRank 式中心性量化全局重要性；对 causal 或强 mask attention，则改用 K/V 相似度图、对称化图或 teleportation 后的 PageRank，避免平稳分布退化到早期 token。对固定 Hermitian 子矩阵可用 Cauchy 交错分析谱漂移；重新归一化或非对称图则需改用伪谱、Bauer-Fike 或 Geršgorin 圆盘等更弱但适用的扰动诊断。"
 
 ## 风险
 - **$L \times L$ 矩阵显存瓶颈**：长序列下相似度矩阵本身可能超出显存，必须采样或分块

@@ -41,10 +41,10 @@ $$I(X; Y) = H(X) - H(X|Y) = H(Y) - H(Y|X) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}
 - **Sensitive to vocabulary size**: With large vocabularies (e.g., 128K tokenizers for LLMs), the peak memory usage of softmax + cross-entropy can reach tens of GB, requiring chunked/online softmax or label smoothing for mitigation.
 
 ## Further References
-- Distillation draft: `references/books/` — no dedicated information theory distillation draft at present
+- Distillation draft: `../../references/books/` — no dedicated information theory distillation draft at present
 - Cover & Thomas. *Elements of Information Theory*, 2nd Edition. Wiley, 2006
 - MacKay. *Information Theory, Inference, and Learning Algorithms*. Cambridge, 2003
-- Related knowledge cards: `kl-divergence.md`, `information-bottleneck.md`
+- Related knowledge cards: `kl-divergence.en.md`, `information-bottleneck.en.md`
 
 
 ## Routing Extensions

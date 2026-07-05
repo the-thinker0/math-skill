@@ -50,7 +50,7 @@ GPU 友好度中等。坐标卡变换本身是逐元素的映射（可并行）�
 ## 路由扩展
 - 若需要局部结构分析 → `tangent-space.md`（切空间提供局部线性近似）
 - 若需要距离定义 → `metric-tensor.md`（度量张量定义流形上的距离）
-- 若需要在流形上做优化 → `riemannian-optimization.md`（黎曼优化方法）
+- 若需要在流形上做优化 → `../optimization/riemannian-optimization.md`（黎曼优化方法）
 
 ## 可扩展方向
 - 子流形（submanifold）：嵌入子流形与浸没子流形

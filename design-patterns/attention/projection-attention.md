@@ -31,7 +31,7 @@ scores = (Q @ P_Q) @ (K @ P_K).T / sqrt(r)
 attn = softmax(scores) @ V
 ```
 
-2. **随机固定投影**（JL 引理保证）：
+2. **随机固定投影**（满足 JL 条件时可给距离保持界）：
 ```
 P = random_gaussian(d, r) / sqrt(r)  # 固定不训练
 scores = (Q @ P) @ (K @ P).T / sqrt(r)
@@ -61,7 +61,7 @@ scores = (Q @ eigenvecs) @ (K @ eigenvecs).T / sqrt(r)
 - **D8[~]可改造需验证**：投影可融入 FlashAttention 的 online softmax 循环中
 
 ## 论文表述方式
-"我们将注意力计算分解为低维子空间投影与投影空间注意力两步，在保持注意力质量的同时将 Key-cache 压缩 $d/r$ 倍（V-cache 需独立处理），并保证 Johnson-Lindenstrauss 距离保持性。"
+"我们将注意力计算分解为低维子空间投影与投影空间注意力两步，以降低 Key 表示维度；V-cache 需独立处理。若使用独立随机投影并满足 Johnson-Lindenstrauss 的样本规模与维度条件，可近似保持投影对象的欧氏距离；这不自动保证 softmax attention 质量，需报告 attention/output 误差与任务指标。"
 
 ## 风险
 - **投影方向退化**：可学习投影可能坍缩到少数方向（$P^T P$ 条件数恶化），导致注意力分布退化。需加正交正则化 $\|P^T P - I\|_F^2$。

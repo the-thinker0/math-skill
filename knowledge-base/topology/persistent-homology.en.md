@@ -57,7 +57,7 @@ Limited GPU friendliness, which is the main bottleneck for deploying persistent 
 ## Routing Extensions
 - If topological invariant computation is needed -> `euler-characteristic.en.md` (Euler characteristic as alternating sum of Betti numbers)
 - If 1-dimensional topology analysis is needed -> `fundamental-group.en.md` (fundamental group captures loop structure)
-- If used for information-preserving compression -> `information-bottleneck.md` (topology-preserving information compression)
+- If used for information-preserving compression -> `../probability/information-bottleneck.md` (topology-preserving information compression)
 
 ## Extensible Directions
 - Simplicial complex types (Cech, Vietoris-Rips, alpha): advantages and disadvantages of different constructions

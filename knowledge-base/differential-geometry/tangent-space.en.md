@@ -49,8 +49,8 @@ High GPU friendliness. The core operations of the tangent space are linear algeb
 
 
 ## Routing Extensions
-- If gradient computation on manifolds is needed -> `riemannian-optimization.md` (gradient descent on manifolds)
-- If the tangent space of a group structure is involved -> `lie-algebra.md` (tangent space of a Lie group is its Lie algebra)
+- If gradient computation on manifolds is needed -> `../optimization/riemannian-optimization.md` (gradient descent on manifolds)
+- If the tangent space of a group structure is involved -> `../lie-theory/lie-algebra.md` (tangent space of a Lie group is its Lie algebra)
 - If covariant derivative is needed -> `connection.en.md` (connection defines covariant differentiation)
 
 ## Extensible Directions

@@ -24,7 +24,7 @@ Method 1 - Frobenius Orthogonal Regularization:
   L_orth = Sum_{i<j} ||W_i^T W_j||_F^2
   // Computation: O(K^2 * d * r^2), K typically <16 so cost is manageable
 
-Method 2 - Grassmann Distance (log-barrier based on principal angles):
+Method 2 - Subspace-overlap log barrier (based on principal angles):
   sigma_k = singular values of SVD(Q_i^T Q_j) (= cos(theta_k), theta_k are principal angles)
   // ⚠ Must first orthonormalize W_i, W_j: Q_i = qr(W_i).Q, Q_j = qr(W_j).Q
   // Otherwise singular values may exceed 1, making -log(1-sigma^2+eps) undefined
@@ -33,8 +33,9 @@ Method 2 - Grassmann Distance (log-barrier based on principal angles):
   // Correct formula: log-barrier, 0 at sigma=0 and → +∞ as sigma→1
   L_grass = Sum_{i<j} Sum_k -log(1 - sigma_k^2 + eps)  // = -Sum log(sin^2(theta_k)), 0 when orthogonal (theta=pi/2), →∞ when overlapping (theta→0)
 
-Method 3 - Efficient Cosine Decorrelation:
-  G = concat([W_1,...,W_K])^T * concat([W_1,...,W_K])  // single GEMM
+Method 3 - Efficient Normalized-Gram Decorrelation:
+  W_norm = column_normalize(concat([W_1,...,W_K]))       // without normalization this also penalizes norms, not only angles
+  G = W_norm^T * W_norm                                  // single GEMM
   L_corr = ||G * (1 - I)||_F^2   // mask out diagonal, penalize off-diagonal elements
 ```
 
@@ -54,7 +55,7 @@ Method 3 - Efficient Cosine Decorrelation:
 - **D8[v]**: matmul -> mask -> square -> sum can be fused into a single CUDA kernel
 
 ## Paper Phrasing
-"We introduce an orthogonality regularizer L_orth = Sum_{i<j} ||W_i^T W_j||_F^2 that constrains the feature spaces of submodules to the approximately orthogonal Grassmann sub-manifold, theoretically guaranteeing that redundancy across $K$ subspaces decays as $O(1/\sqrt{d})$."
+"We introduce an orthogonality regularizer L_orth = Sum_{i<j} ||Q_i^T Q_j||_F^2, where Q_i is an orthonormal basis for W_i, to penalize overlap between feature subspaces of different submodules. This can reduce linear redundancy, but any redundancy-decay rate requires random-subspace or data-distribution assumptions and should be reported through principal angles, mutual-information estimates, or downstream ablations."
 
 ## Risks
 - Excessively large lambda causes variational difficulties (orthogonal constraint conflicts with task objective); requires careful tuning or adaptive lambda

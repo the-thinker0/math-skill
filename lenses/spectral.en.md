@@ -17,7 +17,7 @@ This is a "decomposer's" perspective — breaking complex linear operators (matr
 ## What Problems It Is Not Suited For
 
 - Problems dominated by nonlinear effects — spectral decomposition is a linear tool
-- Operators that are not diagonalizable (non-normal matrices, defective matrices) — Jordan form is required
+- Operators that are non-diagonalizable or non-normal — Jordan form is mainly theoretical; for numerical / engineering use prefer Schur decomposition, SVD, or pseudospectral stability analysis
 - Problems that require preserving global topological structure — spectral methods may destroy topology
 
 ## Which Knowledge Domains It Routes To

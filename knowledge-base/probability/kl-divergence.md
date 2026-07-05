@@ -45,7 +45,7 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 - **梯度方差大**：在 RL（PPO/RLHF）中，KL 估计依赖采样，高方差可导致训练不稳定。常用 clip + 线性近似 $\mathbb{E}[\log p - \log q]$ 替代精确 KL。
 
 ## 深入参考
-- 蒸馏稿：`references/books/` 暂无专用信息论蒸馏稿
+- 蒸馏稿：`../../references/books/` 暂无专用信息论蒸馏稿
 - Cover & Thomas. *Elements of Information Theory*, Ch. 2-3. Wiley, 2006
 - Murphy. *Probabilistic Machine Learning: Advanced Topics*, Ch. 6. MIT Press, 2023
 - 关联知识卡：`entropy.md`、`information-bottleneck.md`、`fisher-information.md`

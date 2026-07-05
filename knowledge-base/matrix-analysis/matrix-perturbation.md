@@ -51,7 +51,7 @@
 
 ## 路由扩展
 - 若关注特征值灵敏度 → `spectral-decomposition.md`（谱分解的扰动分析）
-- 若涉及随机扰动界 → `concentration-inequality.md`（随机矩阵集中不等式）
+- 若涉及随机扰动界 → `../probability/concentration-inequality.md`（随机矩阵集中不等式）
 
 ## 可扩展方向
 - 伪谱（pseudospectra）：非正规矩阵的谱灵敏度分析

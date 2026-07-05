@@ -51,8 +51,8 @@ GPU friendliness: the core difficulty of curvature is that "the full tensor cann
 
 ## Routing Extensions
 - If local geometric analysis is needed -> `metric-tensor.en.md` (metric determines local curvature)
-- If global topological analysis is needed -> `persistent-homology.md` (persistent homology captures global topology)
-- If curvature's effect on stability is involved -> `matrix-perturbation.md` (curvature-induced perturbation amplification)
+- If global topological analysis is needed -> `../topology/persistent-homology.md` (persistent homology captures global topology)
+- If curvature's effect on stability is involved -> `../matrix-analysis/matrix-perturbation.md` (curvature-induced perturbation amplification)
 
 ## Extensible Directions
 - Sectional / Ricci / scalar curvature: curvature concepts at different dimensions

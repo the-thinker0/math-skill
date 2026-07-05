@@ -27,7 +27,7 @@
 ## AI 设计翻译
 
 - **Weight Clipping (WGAN)**：$W \leftarrow \text{clamp}(W, -c, c)$ 即投影到 $\ell_\infty$-box 约束。实现为 `torch.clamp(W, -c, c)`，elementwise 操作，零额外计算。简单但粗糙，不如谱归一化精细。
-- **谱归一化 (Spectral Normalization)**：约束 $\sigma_{\max}(W) \leq 1$，即投影到算子范数球。用 power iteration 估 $u \leftarrow W^T W u / \|W^T W u\|$，归一化 $W \leftarrow W / \sigma_{\max}$。每步 2 次 matvec + norm，PyTorch 内置 `torch.nn.utils.spectral_norm`。
+- **谱归一化 (Spectral Normalization)**：约束 $\sigma_{\max}(W) \leq 1$ 的常用工程做法是缩放重参数化 $W \leftarrow W / \max(1,\sigma_{\max})$，其中 $\sigma_{\max}$ 用 power iteration 估计。注意这不是 Frobenius 范数下到算子范数球的最近投影；真正最近投影需对奇异值逐个裁剪。每步约 2 次 matvec + norm，PyTorch 内置 `torch.nn.utils.spectral_norm`。
 - **投影梯度做 $\ell_2$-ball 约束**：$\text{proj}(w) = w \cdot \min(1, R/\|w\|_2)$，实现为 `w * min(1, R / w.norm())`，一次 norm + elementwise，$O(d)$。用于 trust region、对抗鲁棒的 $\epsilon$-ball 约束。
 - **增广 Lagrangian 做 RLHF/PPO**：$\mathcal{L} = -\mathbb{E}[r] + \lambda(\text{KL}(\pi\|\pi_{\text{ref}}) - \epsilon) + \frac{\rho}{2}(\text{KL} - \epsilon)^2$。内层对 $\pi$ 用 PPO 优化，外层 $\lambda \leftarrow \lambda + \rho(\text{KL} - \epsilon)$。KL 计算是 softmax + elementwise log-ratio，GPU 友好。
 - **惩罚法做稀疏/低秩约束**：$\mathcal{L}_{\text{penalty}} = \mathcal{L}_{\text{task}} + \rho \sum_i \max(0, \|w_i\|_1 - \tau)^2$ 约束每层稀疏度不超 $\tau$。惩罚项是 elementwise + reduce，可微且 GPU 友好。$\rho$ 递增策略：$\rho \leftarrow \beta \rho$（$\beta > 1$），每若干步加倍。

@@ -25,8 +25,8 @@
 
 ## AI 设计翻译
 
-- **Muon 优化器 (正交化梯度更新)**：将动量矩阵 $M$ 通过 Newton-Schulz 迭代投影到最近正交矩阵：$X_{k+1} = \frac{1}{2}X_k(3I - X_k^TX_k)$，5 步收敛。更新 $W \leftarrow W - \alpha \cdot U$（$U$ 为正交化结果）。核心是纯 matmul 链，每步 2 次 matmul，完全 tensor core 友好，bf16 稳定。
-- **谱归一化的流形视角**：约束 $\sigma_{\max}(W) = 1$ 等价于在 Stiefel 流形的某个切方向上做投影。Power iteration 估计方向 + 归一化 = 一种近似的黎曼梯度投影。实现同标准 spectral norm。
+- **Muon 优化器 (正交化梯度更新)**：将缩放后的动量矩阵 $M$ 通过 Newton-Schulz / polar 迭代近似其正交极因子，例如 $X_{k+1} = \frac{1}{2}X_k(3I - X_k^TX_k)$（需先归一化并满足谱条件）。固定 5 步是工程近似而非无条件收敛保证。更新 $W \leftarrow W - \alpha \cdot U$（$U$ 为正交化结果）。核心是 matmul 链，tensor core 友好，低精度下需缩放和残差监控。
+- **谱归一化的流形视角**：约束 $\sigma_{\max}(W) \leq 1$ 的常用做法是按最大奇异值缩放权重，属于重参数化/归一化；它不是 Stiefel 流形切空间投影，也不是到谱范数球的精确最近投影。Power iteration 只用于估计最大奇异方向。
 - **正交 RNN (orthogonal RNN)**：隐藏状态递推 $h_t = \sigma(W h_{t-1} + U x_t)$，约束 $W \in O(n)$ 避免梯度消失/爆炸。训练时用 Cayley 参数化 $W = (I-A)(I+A)^{-1}$（$A$ 反对称），反向传播走 $A$ 的无约束梯度。核心是矩阵求逆 $O(n^3)$（层维度小，可接受）。
 - **Poincaré 嵌入 (双曲空间)**：将层次数据嵌入 Poincaré ball $\mathcal{B}^n = \{x : \|x\| < 1\}$。距离 $d(x,y) = \text{arcosh}(1 + 2\|x-y\|^2 / ((1-\|x\|^2)(1-\|y\|^2)))$。梯度乘以度量因子 $(1-\|x\|^2)^2/4$ 即可。实现为 elementwise 缩放，$O(d)$。
 - **Grassmann 流形上的子空间学习**：将低秩子空间视为 Grassmann 流形上的点，用黎曼 SGD 在线更新。比 SVD 更适合 streaming 数据。投影 $P = QQ^T$ 的更新通过 QR 分解实现，核心是 matmul + thin QR。
@@ -53,9 +53,9 @@
 
 
 ## 路由扩展
-- 若需要局部线性化 → `tangent-space.md`（切空间上的梯度计算）
-- 若需要收缩映射的具体选择 → `metric-tensor.md`（度量决定收缩映射）
-- 若度量来自 Fisher 信息 → `natural-gradient.md`（Fisher 度量下的自然梯度）
+- 若需要局部线性化 → `../differential-geometry/tangent-space.md`（切空间上的梯度计算）
+- 若需要收缩映射的具体选择 → `../differential-geometry/metric-tensor.md`（度量决定收缩映射）
+- 若度量来自 Fisher 信息 → `../information-geometry/natural-gradient.md`（Fisher 度量下的自然梯度）
 
 ## 可扩展方向
 - 收缩映射类型（retraction types）：指数映射、投影收缩、Cayley 变换

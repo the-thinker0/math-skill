@@ -1,6 +1,6 @@
 # Skill Index: Lens Library, Knowledge Base, Design Pattern Library, Workflow Examples
 
-> This file is extracted from `SKILL.en.md` for reference when the full catalogs are needed. SKILL.en.md retains condensed summaries with links to this file.
+> This file is extracted from `../skills/math-research-activator/SKILL.en.md` for reference when the full catalogs are needed. SKILL.en.md retains condensed summaries with links to this file.
 
 ## Language Routing & Mixed-Input Rules (Full Version)
 
@@ -23,8 +23,8 @@ Language routing only determines "which language version to read" and "what lang
    - If there is no prior context, default to Chinese.
 
 5. **Output language matches primary language**
-   - Chinese primary → read `SKILL.md`, respond in Chinese, retaining necessary English terms.
-   - English primary → read `SKILL.en.md`, respond in English.
+   - Chinese primary → read `../skills/math-research-activator/SKILL.md`, respond in Chinese, retaining necessary English terms.
+   - English primary → read `../skills/math-research-activator/SKILL.en.md`, respond in English.
    - If the user explicitly requests "in English" / "in Chinese," follow the explicit request.
 
 ## Lens Library (15 Mathematical Perspectives)
@@ -33,21 +33,21 @@ Each lens answers: What is this perspective? What kinds of problems is it suited
 
 | Lens | File | Core Perspective |
 |------|------|-----------------|
-| Axiomatization | `../../lenses/axiomatization.en.md` | Examine consistency/independence/completeness of assumptions |
-| Duality | `../../lenses/duality.en.md` | Transform to the dual space to expose constraints and invariants |
-| Symmetry | `../../lenses/symmetry.en.md` | Invariants and conservation laws under transformations |
-| Spectral Decomposition | `../../lenses/spectral.en.md` | Eigenvalues/singular values reveal dominant structure |
-| Geometric | `../../lenses/geometric.en.md` | Metric/curvature/spatial structure on manifolds |
-| Projection & Decomposition | `../../lenses/projection.en.md` | Orthogonal decomposition, subspace separation, conflict elimination |
-| Variational | `../../lenses/variational.en.md` | Constrained extrema, energy minimization |
-| Local-to-Global | `../../lenses/local-to-global.en.md` | Patching local properties into global ones, cohomological obstructions |
-| Topological | `../../lenses/topological.en.md` | Invariants under continuous deformation, connectedness, holes |
-| Categorical | `../../lenses/categorical.en.md` | Universal properties, functors, natural transformations |
-| Perturbation | `../../lenses/perturbation.en.md` | Propagation of small perturbations, stability, robustness |
-| Causal | `../../lenses/causal.en.md` | Correlation ≠ causation, interventions, counterfactuals |
-| Game-Theoretic | `../../lenses/game.en.md` | Multi-agent strategic interaction, equilibria, mechanism design |
-| Probabilistic & Statistical | `../../lenses/probabilistic.en.md` | Quantifying uncertainty, Bayesian updating |
-| Algorithmic | `../../lenses/algorithmic.en.md` | Complexity, feasibility, parallelizability |
+| Axiomatization | `../lenses/axiomatization.en.md` | Examine consistency/independence/completeness of assumptions |
+| Duality | `../lenses/duality.en.md` | Transform to the dual space to expose constraints and invariants |
+| Symmetry | `../lenses/symmetry.en.md` | Invariants and conservation laws under transformations |
+| Spectral Decomposition | `../lenses/spectral.en.md` | Eigenvalues/singular values reveal dominant structure |
+| Geometric | `../lenses/geometric.en.md` | Metric/curvature/spatial structure on manifolds |
+| Projection & Decomposition | `../lenses/projection.en.md` | Orthogonal decomposition, subspace separation, conflict elimination |
+| Variational | `../lenses/variational.en.md` | Constrained extrema, energy minimization |
+| Local-to-Global | `../lenses/local-to-global.en.md` | Patching local properties into global ones, cohomological obstructions |
+| Topological | `../lenses/topological.en.md` | Invariants under continuous deformation, connectedness, holes |
+| Categorical | `../lenses/categorical.en.md` | Universal properties, functors, natural transformations |
+| Perturbation | `../lenses/perturbation.en.md` | Propagation of small perturbations, stability, robustness |
+| Causal | `../lenses/causal.en.md` | Correlation ≠ causation, interventions, counterfactuals |
+| Game-Theoretic | `../lenses/game.en.md` | Multi-agent strategic interaction, equilibria, mechanism design |
+| Probabilistic & Statistical | `../lenses/probabilistic.en.md` | Quantifying uncertainty, Bayesian updating |
+| Algorithmic | `../lenses/algorithmic.en.md` | Complexity, feasibility, parallelizability |
 
 ## Knowledge Base (Organized by Mathematical Domain)
 
@@ -55,13 +55,13 @@ Each knowledge card answers: Minimal definition, core formulas, applicable probl
 
 | Domain | Directory | Knowledge Cards |
 |--------|-----------|----------------|
-| Matrix Analysis | `../../knowledge-base/matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
-| Optimization | `../../knowledge-base/optimization/` | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
-| Differential Geometry | `../../knowledge-base/differential-geometry/` | manifold, tangent-space, metric-tensor, geodesic, curvature, connection |
-| Lie Theory | `../../knowledge-base/lie-theory/` | group-action, lie-group, lie-algebra, representation, equivariance |
-| Topology | `../../knowledge-base/topology/` | persistent-homology, euler-characteristic, fundamental-group |
-| Probability & Information | `../../knowledge-base/probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
-| Information Geometry | `../../knowledge-base/information-geometry/` | natural-gradient, fisher-metric |
+| Matrix Analysis | `../knowledge-base/matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
+| Optimization | `../knowledge-base/optimization/` | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
+| Differential Geometry | `../knowledge-base/differential-geometry/` | manifold, tangent-space, metric-tensor, geodesic, curvature, connection |
+| Lie Theory | `../knowledge-base/lie-theory/` | group-action, lie-group, lie-algebra, representation, equivariance |
+| Topology | `../knowledge-base/topology/` | persistent-homology, euler-characteristic, fundamental-group |
+| Probability & Information | `../knowledge-base/probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
+| Information Geometry | `../knowledge-base/information-geometry/` | natural-gradient, fisher-metric |
 
 ## Design Pattern Library (Organized by AI Component)
 
@@ -69,11 +69,11 @@ Each design pattern answers: Mathematical origin, AI module form, implementable 
 
 | Component Type | Directory | Patterns |
 |---------------|-----------|----------|
-| Attention | `../../design-patterns/attention/` | projection-attention, spectral-attention, equivariant-attention, geometry-aware-attention, information-bottleneck-attention |
-| Loss Functions | `../../design-patterns/loss/` | orthogonality-loss, contrastive-loss, variational-loss, information-bottleneck-loss, constraint-penalty |
-| Routing | `../../design-patterns/routing/` | optimal-transport-routing, graph-routing, moe-routing, spectral-clustering-routing |
-| Representation | `../../design-patterns/representation/` | shared-private-decomposition, manifold-representation, equivariant-split, subspace-alignment |
-| Compression | `../../design-patterns/compression/` | low-rank-kv-cache, spectral-token-pruning, topology-preserving-compression, leverage-score-selection |
+| Attention | `../design-patterns/attention/` | projection-attention, spectral-attention, equivariant-attention, geometry-aware-attention, information-bottleneck-attention |
+| Loss Functions | `../design-patterns/loss/` | orthogonality-loss, contrastive-loss, variational-loss, information-bottleneck-loss, constraint-penalty |
+| Routing | `../design-patterns/routing/` | optimal-transport-routing, graph-routing, moe-routing, spectral-clustering-routing |
+| Representation | `../design-patterns/representation/` | shared-private-decomposition, manifold-representation, equivariant-split, subspace-alignment |
+| Compression | `../design-patterns/compression/` | low-rank-kv-cache, spectral-token-pruning, topology-preserving-compression, leverage-score-selection |
 
 ## Workflow Example
 

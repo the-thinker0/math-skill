@@ -2,7 +2,7 @@
 > **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
 
 ## Target Problem
-Use when selecting the most representative rows / columns / tokens from a large-scale matrix while guaranteeing the precision of downstream linear algebra operations: KV-Cache token selection, data coreset construction, Nystrom landmark sampling, distributed gradient compression. Core objective: **sample based on statistical leverage scores derived from subspace projections, with probabilistic guarantees of approximating full-computation accuracy**.
+Use when selecting representative rows / columns / tokens from a large-scale matrix while seeking verifiable error bounds for downstream linear-algebra tasks: KV-Cache token selection, data coreset construction, Nystrom landmark sampling, distributed gradient compression. Core objective: **sample using statistical leverage scores derived from subspace projections, approximating full computation with high probability under matrix-sampling assumptions**.
 
 ## Mathematical Foundations
 - Lenses: ../../lenses/spectral.en.md (leverage scores = projection energy of row vectors onto the principal subspace), ../../lenses/probabilistic.en.md (probabilistic sampling and concentration inequality guarantees), ../../lenses/algorithmic.en.md (complexity--accuracy trade-offs of randomized algorithms)
@@ -10,7 +10,7 @@ Use when selecting the most representative rows / columns / tokens from a large-
 
 ## Required Mathematical Background
 - **Statistical Leverage Scores**: $\ell_i = \|(V_k V_k^T)_i\|^2 = (V_k V_k^T)_{ii}$, the projection energy of the $i$-th row onto the rank-$k$ subspace; $\sum_i \ell_i = k$
-- **Leverage Score Sampling Guarantee**: sampling $s = O(k \log k / \epsilon^2)$ rows with probabilities $p_i = \ell_i / k$ yields a $(1+\epsilon)$ approximation to full least squares (Drineas--Mahoney)
+- **Leverage Score Sampling Bound**: in least-squares / subspace-embedding settings with independent reweighted sampling, sampling $s = O(k \log k / \epsilon^2)$ rows with probabilities $p_i = \ell_i / k$ can yield a $(1+\epsilon)$ approximation (Drineas--Mahoney-style results)
 - **Bernstein Matrix Bound**: after sampling, $\|\hat{A}^T \hat{A} - A^T A\|_2 \leq \epsilon \|A\|_F^2$ with probability $\geq 1-\delta$
 - **Fast Approximation**: $\tilde{\ell}_i = \|(A\Omega)_i\|^2$ ($\Omega$ random Gaussian), avoids full SVD, $O(Ndk)$
 - **DPP Extension**: Determinantal Point Process $P(S) \propto \det(L_S)$ adds a diversity guarantee on top of leverage scores
@@ -48,8 +48,8 @@ Method 4 - DPP greedy diverse selection:
 
 ## Implementable Architectures
 - **Random projection leverage layer**: 1 GEMM + 1 QR yields approximate leverage scores in $O(Ndk)$
-- **KV-Cache eviction policy**: evict by leverage score ranking, with stronger theoretical guarantees than attention-score-based eviction
-- **Coreset constructor**: leverage score sampling + importance reweighting, ensuring empirical risk approximates the full-data risk
+- **KV-Cache eviction policy**: evict by leverage score ranking; the theory is mainly for matrix subspace approximation, so transfer to attention quality requires separate validation
+- **Coreset constructor**: leverage score sampling + importance reweighting, controlling empirical-risk approximation under the relevant sampling assumptions
 - **DPP greedy extension**: leverage scores + exclusion penalty, balancing importance and diversity
 
 ## GPU Feasibility
@@ -61,7 +61,7 @@ Method 4 - DPP greedy diverse selection:
 - **D8[v]**: $A\Omega$ + QR + row-norm² can be fused to avoid materializing intermediate matrices
 
 ## Paper-Worthy Formulation
-"We adopt statistical leverage scores as the importance metric for token selection: approximating rank-$k$ subspace leverage scores via random projection in $O(Ndk)$, with the Drineas--Mahoney theory guaranteeing that $O(k \log k / \epsilon^2)$ samples suffice for a $(1+\epsilon)$ approximation of the full subspace."
+"We adopt statistical leverage scores as the importance metric for token / row selection: approximate rank-$k$ subspace leverage scores via random projection in $O(Ndk)$, and use Drineas--Mahoney-style bounds to choose sample counts when the target is subspace / least-squares approximation under independent reweighted sampling and effective-rank diagnostics. For KV-cache eviction, attention/output error and task metrics must still be reported."
 
 ## Risks
 - **Rank parameter $k$ selection**: leverage scores depend on the rank-$k$ subspace; an incorrect $k$ leads to biased sampling -- the effective rank must be diagnosed first

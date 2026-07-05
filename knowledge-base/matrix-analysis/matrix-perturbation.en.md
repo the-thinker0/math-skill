@@ -51,7 +51,7 @@ Studies how the eigenvalues, singular values, and eigenspaces of a matrix $A$ ch
 
 ## Routing Extensions
 - If focusing on eigenvalue sensitivity -> `spectral-decomposition.en.md` (perturbation analysis of spectral decomposition)
-- If random perturbation bounds are involved -> `concentration-inequality.md` (random matrix concentration inequalities)
+- If random perturbation bounds are involved -> `../probability/concentration-inequality.md` (random matrix concentration inequalities)
 
 ## Extensible Directions
 - Pseudospectra: spectral sensitivity analysis for non-normal matrices

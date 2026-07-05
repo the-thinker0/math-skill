@@ -78,7 +78,7 @@ Method 3 - Group convolution / group pooling:
 - **Operator fusion**: Split -> batched matmul -> concat can be fused; group pooling scatter + reduce can be fused
 
 ## Paper-Worthy Formulation
-"Leveraging Schur's lemma from group representation theory, we decompose the d-dimensional feature space into a direct sum of irreducible representations of symmetry group G, with each component independently processed by equivariance-constrained linear layers. This achieves a d^2 / sum(m_i^2) improvement in parameter efficiency (where d = sum(m_i * dim(V_i)) is the total feature dimension and sum(m_i^2) is the number of free parameters under Schur constraints) while guaranteeing network equivariance under group actions, reducing generalization error by O(1/sqrt(|G|)) on symmetric data."
+"Leveraging Schur's lemma from group representation theory, we decompose the d-dimensional feature space into a direct sum of irreducible representations of the symmetry group G, with each component processed by equivariance-constrained linear layers. Under the assumed group action this enforces equivariance and reduces learnable degrees of freedom; the exact parameter savings depend on the representation decomposition and channel multiplicities. Generalization gains must be measured on tasks with the corresponding symmetry and should not be stated as an unconditional O(1/sqrt(|G|)) rate."
 
 ## Risks
 - Improper group selection (too large constrains cause underfitting, too small fails to capture symmetries)

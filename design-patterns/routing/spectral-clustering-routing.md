@@ -37,7 +37,7 @@
 
 方法1 - 在线谱聚类路由（训练时周期性更新）：
   // 每 M 步更新一次聚类中心，推理时用最近邻
-  W = exp(-cdist(X_sample, X_sample) / (2σ²))  // m×m 采样相似度
+  W = exp(-(cdist(X_sample, X_sample)**2) / (2σ²))  // m×m RBF 相似度
   L = I - D^{-1/2} W D^{-1/2}                    // 归一化拉普拉斯
   U_k = eigsh(L, k=K, which='SM')                // 前 K 个最小特征向量
   centers = kmeans(U_k, K)                        // K 个聚类中心
@@ -64,7 +64,7 @@
 
 方法3 - 锚点谱聚类（大规模）：
   anchors = kmeans_pp(X, m)                         // m 个锚点，m << N
-  Z = exp(-cdist(X, anchors) / (2σ²))               // N×m 亲和矩阵
+  Z = exp(-(cdist(X, anchors)**2) / (2σ²))          // N×m RBF 亲和矩阵
   L_anchor = I - D_z^{-1/2} Z^T Z D_z^{-1/2}        // m×m 拉普拉斯
   U_k = eigsh(L_anchor, K)                          // m×K 特征向量
   // Nyström 扩展：Z @ U_k 将锚点特征向量扩展到全部 N 个点（非可学习部分）
@@ -85,13 +85,12 @@
 - **显存与 KV-Cache**：N×N 相似度矩阵在 N>4096 时 >64MB，必须采样降维
 - **低精度稳定**：特征分解建议 fp32；exp(-dist/σ²) 在 fp16 下需 clip distance
 - **并行与通信**：幂迭代的 matvec 高度并行；k-means 的 assign+update 可批并行
-- **稀疏结构**：k-NN 图替代全连接图，W 稀疏度 >95%，SpMM 加速
+- **稀疏结构**：k-NN 图替代全连接图，W 稀疏度约为 $1-k_{\text{nn}}/N$，可用 SpMM 加速
 - **算子融合**：D^{-1/2}@A@D^{-1/2} 的对角缩放可融合；cdist+exp+normalize 可融合
 
 ## 论文表述方式
-"利用谱聚类的连续松弛实现可微路由：构造 token 相似度图的归一化拉普拉斯，
-通过 Nyström 近似将 O(N³) 特征分解降为 O(N·m·d + m²·K + m³)，配合幂迭代实现 GPU 友好的
-在线谱聚类，聚类质量以 Normalized Cut 衡量保证 O(√(log N/K)) 的近似比。"
+"利用谱聚类的连续松弛实现路由：构造 token 相似度图的归一化拉普拉斯，
+通过 Nyström / 锚点近似和幂迭代避免完整 O(N³) 特征分解，并将主要计算转化为 GEMM、matvec 与 k-means。Normalized Cut 可作为聚类质量指标，但近似比依赖图模型、采样策略和求解器假设，不能无条件宣称。"
 
 ## 风险
 - N×N 相似度矩阵的显存和计算在长序列下不可扩展，必须采样或 k-NN 稀疏化

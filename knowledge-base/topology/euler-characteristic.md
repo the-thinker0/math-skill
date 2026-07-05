@@ -56,7 +56,7 @@ GPU 友好度高。欧拉示性数的计算极其廉价：
 
 ## 路由扩展
 - 若需要多尺度拓扑分析 → `persistent-homology.md`（持续同调提供尺度依赖的拓扑）
-- 若涉及曲率-拓扑联系 → `curvature.md`（Gauss-Bonnet 定理连接曲率与 Euler 示性数）
+- 若涉及曲率-拓扑联系 → `../differential-geometry/curvature.md`（Gauss-Bonnet 定理连接曲率与 Euler 示性数）
 
 ## 可扩展方向
 - Betti 数（Betti numbers）：各维度的独立环路计数

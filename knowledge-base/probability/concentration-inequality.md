@@ -39,7 +39,7 @@ $$P(|f(X_1,\ldots,X_n) - \mathbb{E}[f]| \geq t) \leq 2\exp\left(-\frac{2t^2}{\su
 - **有界性假设违反**：重尾分布（如幂律）下 Hoeffding 不适用，需改用 Bernstein 或截断技巧。在 LLM 训练中梯度偶尔出现极大值时，朴素浓度界给出虚假安全感。
 
 ## 深入参考
-- 蒸馏稿：`references/books/` 暂无专用概率蒸馏稿，本卡基于标准概率论教材
+- 蒸馏稿：`../../references/books/` 暂无专用概率蒸馏稿，本卡基于标准概率论教材
 - Boucheron, Lugosi, Massart. *Concentration Inequalities: A Nonasymptotic Theory of Independence*. Oxford, 2013
 - Vershynin. *High-Dimensional Probability*. Cambridge, 2018（第 2-3 章）
 - 关联知识卡：`entropy.md`、`fisher-information.md`
@@ -48,7 +48,7 @@ $$P(|f(X_1,\ldots,X_n) - \mathbb{E}[f]| \geq t) \leq 2\exp\left(-\frac{2t^2}{\su
 ## 路由扩展
 - 若需要信息论界 → `entropy.md`（基于熵的集中不等式）
 - 若需要 Donsker-Varadhan 表示 → `kl-divergence.md`（KL 散度的变分表示）
-- 若涉及随机矩阵界 → `matrix-perturbation.md`（随机矩阵的集中行为）
+- 若涉及随机矩阵界 → `../matrix-analysis/matrix-perturbation.md`（随机矩阵的集中行为）
 
 ## 可扩展方向
 - 鞅集中（Azuma / Freedman）：鞅差的集中不等式

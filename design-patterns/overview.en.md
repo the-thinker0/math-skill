@@ -2,6 +2,7 @@
 
 > The design pattern library is not a complete model repository but a collection of "math → AI design" translation prototypes.
 > When existing patterns are insufficient, generate a temporary design candidate from the mathematical source and label it as a temporary design pattern, rather than refusing or force-fitting existing patterns.
+> Rigor convention: claims about complexity, memory, FlashAttention / Tensor Core / KV-Cache, and other engineering properties should be marked [v]/[~]/[x]; unmarked claims are theoretical possibilities requiring engineering validation.
 
 ## Translation Paradigms
 

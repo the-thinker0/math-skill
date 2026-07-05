@@ -1,6 +1,6 @@
 # Math Critic Sub-Agent
 
-> **File routing**: Follow the language routing rules in `../skills/math-research-activator/SKILL.en.md`. Chinese primary → load `math-critic.en.md`; English primary → use this file.
+> **File routing**: Follow the language routing rules in `../skills/math-research-activator/SKILL.en.md`. Chinese primary → load `math-critic.md`; English primary → use this file.
 
 ## Role
 
@@ -92,7 +92,7 @@ The first 15 dimensions cover the core review angles — assumptions, logic, mod
 - Does the problem belong to the NP-hard or undecidable class? Are approximation or heuristics needed?
 - Do the numerical methods converge? Is the precision sufficient?
 
-### 11. Information Structure Review -> probabilistic lens + `knowledge-base/probability/`
+### 11. Information Structure Review -> probabilistic lens + `../knowledge-base/probability/`
 
 - Is the information structure of the problem clear? Is there redundant or missing information?
 - Can uncertainty be quantified using information entropy, mutual information, etc.?
@@ -141,13 +141,13 @@ The first 15 dimensions cover the core review angles — assumptions, logic, mod
 - Are the inverse transforms and numerical components stable (condition number, ill-conditioning)?
 - Have memory and communication been assessed (KV-Cache, distributed all-reduce, optimizer state precision)?
 
-### 18. Modern-Math Activation Review -> `references/books/*`
+### 18. Modern-Math Activation Review -> `../references/books/*.en.md`
 
 > **Mandatory** when the deliverable claims to "activate modern mathematics into algorithms." Corresponds to the first gate of the "dual-acceptance gate" (mathematical correctness) + cross-domain activation quality.
 
 - Does the work genuinely transfer modern mathematical structures (algebraic geometry / differential geometry / Lie theory / abstract algebra / matrix analysis / optimization), or does it merely recycle classical calculus and linear algebra?
 - Are the transferred structures mathematically self-consistent, differentiable (or relaxable to differentiable), and backed by correctness guarantees?
-- Were the corresponding `references/books/*.md` distilled notes consulted? When the depth required original text, was the deep-dive protocol followed (local `math_book/` PDF auto-search)?
+- Were the corresponding `../references/books/*.en.md` distilled notes consulted? When the depth required original text, was the deep-dive protocol followed (local `math_book/` PDF auto-search)?
 - Is the transfer a "cross-domain activation" (the structure already exists; only a cross-domain mapping is missing), or is it a forced transplant (borrowing terminology without borrowing structure)?
 - Does the deliverable simultaneously pass the **dual-acceptance gate**: mathematically correct **AND** (friendly or retrofittable on the eight dimensions)? Are candidates that fail either criterion eliminated?
 
@@ -170,7 +170,7 @@ The first 15 dimensions cover the core review angles — assumptions, logic, mod
 
 ## Output Format
 
-Reports should follow the structure below. Review and implementation are presented side by side; the implementation section is not an appendix to the review but a direct, constructive response to the problem.
+The structure below is the full-report template, not the default response. For short questions, lead with conclusion + fatal/important issues + fix path + verification. Expand every subsection only for full reviews, paper-style reviews, or multi-candidate designs. Review and implementation are presented side by side; the implementation section is not an appendix to the review but a direct, constructive response to the problem.
 
 ```
 ## Review and Implementation Report

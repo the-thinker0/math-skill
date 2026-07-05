@@ -24,7 +24,7 @@ Transforms a constrained optimization problem (primal) into a maximization probl
 
 ## AI Design Translation
 
-- **Minimax framework for adversarial training**: $L(\theta, \phi) = \mathbb{E}[\log D_\phi(x)] + \mathbb{E}[\log(1 - D_\phi(G_\theta(z)))]$. $G$ and $D$ alternate between gradient ascent and descent; the core operations are forward + backward passes (matmul chains). Gradient penalty / spectral norm constrains the Lipschitz constant of $D$ to ensure the existence of a saddle point.
+- **Minimax framework for adversarial training**: $L(\theta, \phi) = \mathbb{E}[\log D_\phi(x)] + \mathbb{E}[\log(1 - D_\phi(G_\theta(z)))]$. $G$ and $D$ alternate between gradient ascent and descent; the core operations are forward + backward passes (matmul chains). Gradient penalty / spectral norm can control the Lipschitz constant of $D$ and improve training stability, but it does not guarantee that a non-convex minimax problem has, or converges to, a benign saddle point.
 - **SVM dual + kernel trick**: Primal $\min_w \frac{1}{2}\|w\|^2 + C\sum\xi_i$ converted to dual $\max_\alpha \sum\alpha_i - \frac{1}{2}\alpha^T(K \circ yy^T)\alpha$. The kernel Gram matrix $K_{ij} = k(x_i, x_j)$ is computed via matmul (linear kernel) or elementwise operations (RBF kernel). Dual variables $\alpha \in \mathbb{R}^n$ are solved using SMO or gradient projection.
 - **Augmented Lagrangian constrained training**: $\mathcal{L}_{\text{AL}} = f(x) + \sum \lambda_i g_i(x) + \frac{\rho}{2}\sum g_i(x)^2$. The inner loop optimizes $x$ via SGD; the outer loop updates $\lambda$ via gradient ascent: $\lambda \leftarrow [\lambda + \rho g(x)]_+$. The $\rho$ term improves the concavity of the dual function (making the dual problem easier to solve), but does NOT guarantee global convergence for non-convex original problems. Convergence depends on: (a) constraint qualifications (e.g., LICQ/MFCQ), (b) second-order sufficient conditions, (c) $\rho$ being large enough to satisfy local convexity conditions.
 - **Dual decomposition**: $\min \sum_k f_k(x_k)$ s.t. $\sum x_k \leq b$ decomposes into independent subproblems $\min_{x_k} f_k(x_k) + \lambda^T x_k$, with the master problem $\max_\lambda g(\lambda)$ solved via subgradient ascent. Naturally parallelizable, suitable for distributed training.
@@ -53,7 +53,7 @@ Transforms a constrained optimization problem (primal) into a maximization probl
 ## Routing Extensions
 - If starting from the primal problem -> `constrained-optimization.en.md` (primal constrained optimization)
 - If strong duality conditions are needed -> `convex-optimization.en.md` (strong duality theorem for convex problems)
-- If the dual form of IB objective is involved -> `information-bottleneck.md` (variational dual of information bottleneck)
+- If the dual form of IB objective is involved -> `../probability/information-bottleneck.md` (variational dual of information bottleneck)
 
 ## Extensible Directions
 - Augmented Lagrangian: penalty-enhanced Lagrangian methods

@@ -56,7 +56,7 @@ High GPU friendliness. Computing the Euler characteristic is extremely cheap:
 
 ## Routing Extensions
 - If multi-scale topology analysis is needed -> `persistent-homology.en.md` (persistent homology provides scale-dependent topology)
-- If curvature-topology connection is involved -> `curvature.md` (Gauss-Bonnet theorem connects curvature and Euler characteristic)
+- If curvature-topology connection is involved -> `../differential-geometry/curvature.md` (Gauss-Bonnet theorem connects curvature and Euler characteristic)
 
 ## Extensible Directions
 - Betti numbers: counting independent loops at each dimension

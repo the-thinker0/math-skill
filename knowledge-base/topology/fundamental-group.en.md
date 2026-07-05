@@ -54,7 +54,7 @@ Low GPU friendliness. Computation of the fundamental group is inherently combina
 
 ## Routing Extensions
 - If higher-dimensional homology is needed -> `persistent-homology.en.md` (higher homology groups)
-- If geometric structure is involved -> `curvature.md` (relationship between geometry and topology)
+- If geometric structure is involved -> `../differential-geometry/curvature.md` (relationship between geometry and topology)
 
 ## Extensible Directions
 - Covering space theory: Galois correspondence between fundamental group and coverings

@@ -9,10 +9,10 @@ Use when pruning must be based on the structural importance of tokens (rather th
 - Knowledge: ../../knowledge-base/matrix-analysis/spectral-decomposition.en.md (spectral radius, eigenvector centrality), ../../knowledge-base/matrix-analysis/matrix-perturbation.en.md (Geršgorin discs, perturbation bounds), ../../knowledge-base/matrix-analysis/positive-semidefinite.en.md (Gram matrix PSD structure)
 
 ## Required Mathematical Background
-- **Eigenvector Centrality**: For a row-stochastic (row-softmax) attention matrix $A$, the right principal eigenvector $Ax = \lambda_1 x$ degenerates to the all-ones vector (since $A \mathbf{1} = \mathbf{1}$), making it useless for distinguishing token importance. **Must use the LEFT principal eigenvector** $x^T A = \lambda_1 x^T$ (equivalently $A^T x = \lambda_1 x$), which gives the stationary distribution of the Markov chain and provides PageRank-like importance scores (Perron--Frobenius guarantees non-negativity)
+- **Eigenvector Centrality**: For an unmasked, positive, irreducible row-stochastic attention matrix $A$, the right principal eigenvector $Ax = \lambda_1 x$ degenerates to the all-ones vector (since $A \mathbf{1} = \mathbf{1}$), making it useless for distinguishing token importance; the left principal eigenvector $x^T A = \lambda_1 x^T$ (equivalently $A^T x = \lambda_1 x$) can be used as a stationary-distribution / PageRank-like score. For causal or heavily masked attention, the chain is often reducible and the stationary distribution may collapse toward early tokens; use a K/V similarity graph, a symmetrized graph, or teleportation $A_\alpha=\alpha A+(1-\alpha)\mathbf{1}\pi^T$ before interpreting PageRank.
 - **Spectral Gap**: $\Delta = \lambda_1 - \lambda_2$ governs the rate of information diffusion; large $\Delta \Rightarrow$ a few tokens dominate $\Rightarrow$ safe to prune
 - **Fiedler Vector**: the second-smallest eigenvector of the Laplacian $L_{\text{sym}}$ yields the optimal bipartition; small magnitude = partition boundary = important
-- **Spectral Perturbation Analysis**: Pruning changes the matrix dimension and cannot directly apply the Weyl theorem. For the symmetrized matrix $S = (A + A^T)/2$ or Laplacian $L$, the Cauchy interlacing theorem bounds the eigenvalues of the submatrix relative to the original: $\lambda_i(L) \leq \lambda_i(L_{\text{pruned}}) \leq \lambda_{i+k}(L)$ (where $k$ is the number of removed rows/columns). For non-symmetric row-stochastic matrices, spectral radius perturbation can be bounded via Bauer--Fike or pseudospectral analysis, though the bounds are less tight than in the Hermitian case.
+- **Spectral Perturbation Analysis**: Pruning changes the matrix dimension and cannot directly apply the Weyl theorem. For a principal submatrix of a fixed Hermitian matrix (e.g., a symmetrized matrix $S=(A+A^T)/2$ without re-normalization), Cauchy interlacing bounds eigenvalue interlacing. If the Laplacian / attention graph is re-normalized after pruning, the matrix itself has changed, so this bound no longer applies directly. For non-symmetric row-stochastic matrices, spectral radius perturbation can be bounded via Bauer--Fike or pseudospectral analysis, though the bounds are less tight than in the Hermitian case.
 
 ## AI Module Specification
 ```
@@ -20,9 +20,9 @@ Module: SpectralTokenPruner
 Input: K ∈ R^{L×d}    Parameters: retention ratio ρ ∈ (0,1]
 
 Method 1 - Spectral centrality pruning (power iteration, left eigenvector):
-  A = softmax(K @ K^T / √d)                  // L×L row-stochastic similarity graph
+  A = softmax(K @ K^T / √d)                  // L×L row-stochastic similarity graph; handle causal/masked cases separately
   // ⚠ A is row-stochastic: right principal eigenvector = all-ones (degenerate); must use left eigenvector
-  // Left principal eigenvector = right eigenvector of A^T = Markov chain stationary distribution (PageRank importance)
+  // Left principal eigenvector = right eigenvector of A^T; PageRank interpretation is stable only for irreducible/teleported chains
   v = ones(L) / √L
   for t in range(5): v = A^T @ v; v = v / ‖v‖  // power iteration on A^T (not A), O(L²·T)
   indices = topk(v, ceil(ρ * L))              // retain tokens with highest left-eigenvector centrality
@@ -54,7 +54,7 @@ Method 3 - Differentiable spectral pruning (end-to-end):
 - Operator fusion: $KK^T$ + row-sum + topk can be fused into a single kernel
 
 ## Paper-Worthy Formulation
-"We cast token pruning as spectral sparsification of a directed graph: leveraging the **left** principal eigenvector (Markov chain stationary distribution, PageRank-like centrality) of the row-stochastic attention matrix to quantify global importance -- the right principal eigenvector degenerates to the all-ones vector due to $A\mathbf{1}=\mathbf{1}$ and is therefore unusable. The Cauchy interlacing theorem guarantees ordered eigenvalue interlacing after symmetrized pruning; for non-symmetric attention matrices, spectral radius perturbation can be bounded via pseudospectral analysis, while Geršgorin discs provide an $O(L^2)$ inexpensive alternative."
+"We cast token pruning as spectral sparsification of a directed graph: on unmasked irreducible row-stochastic graphs, left-eigenvector / PageRank-like centrality can quantify global token importance; for causal or heavily masked attention, use a K/V similarity graph, a symmetrized graph, or teleported PageRank to avoid stationary-mass collapse toward early tokens. Cauchy interlacing applies to principal submatrices of fixed Hermitian matrices; after re-normalization or for non-symmetric graphs, use weaker but applicable diagnostics such as pseudospectral analysis, Bauer--Fike, or Geršgorin discs."
 
 ## Risks
 - **$L \times L$ matrix memory bottleneck**: for long sequences the similarity matrix itself may exceed available memory, necessitating sampling or chunking

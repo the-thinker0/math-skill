@@ -51,8 +51,8 @@ GPU friendliness depends on the structure of the metric:
 
 
 ## Routing Extensions
-- If the metric comes from Fisher information -> `natural-gradient.md` (natural gradient under Fisher metric)
-- If Riemannian gradient computation is needed -> `riemannian-optimization.md` (metric determines gradient direction)
+- If the metric comes from Fisher information -> `../information-geometry/natural-gradient.md` (natural gradient under Fisher metric)
+- If Riemannian gradient computation is needed -> `../optimization/riemannian-optimization.md` (metric determines gradient direction)
 - If curvature analysis is needed -> `curvature.en.md` (metric determines curvature tensor)
 
 ## Extensible Directions

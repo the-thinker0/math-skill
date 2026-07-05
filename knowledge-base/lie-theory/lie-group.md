@@ -54,7 +54,7 @@ GPU 友好度：关键看 exp/log 是否有闭式。
 ## 路由扩展
 - 若需要无穷小结构 → `lie-algebra.md`（李代数是李群的切空间）
 - 若需要线性表示 → `representation.md`（李群的有限维表示）
-- 若需要在李群上优化 → `riemannian-optimization.md`（李群上的黎曼优化）
+- 若需要在李群上优化 → `../optimization/riemannian-optimization.md`（李群上的黎曼优化）
 
 ## 可扩展方向
 - 单连通李群（simply connected Lie group）：万有覆叠群

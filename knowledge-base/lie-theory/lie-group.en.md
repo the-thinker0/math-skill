@@ -54,7 +54,7 @@ GPU friendliness: the key factor is whether exp/log has a closed form.
 ## Routing Extensions
 - If infinitesimal structure is needed -> `lie-algebra.en.md` (Lie algebra is the tangent space of a Lie group)
 - If linear representations are needed -> `representation.en.md` (finite-dimensional representations of Lie groups)
-- If optimization on Lie groups is needed -> `riemannian-optimization.md` (Riemannian optimization on Lie groups)
+- If optimization on Lie groups is needed -> `../optimization/riemannian-optimization.md` (Riemannian optimization on Lie groups)
 
 ## Extensible Directions
 - Simply connected Lie group: universal covering group

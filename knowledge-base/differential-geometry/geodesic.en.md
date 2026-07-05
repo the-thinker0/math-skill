@@ -53,7 +53,7 @@ GPU friendliness depends on whether a closed-form retraction exists:
 
 ## Routing Extensions
 - If the distance definition is needed -> `metric-tensor.en.md` (metric tensor determines geodesics)
-- If used as a retraction -> `riemannian-optimization.md` (exponential map as retraction)
+- If used as a retraction -> `../optimization/riemannian-optimization.md` (exponential map as retraction)
 - If deviation from flat space is needed -> `curvature.en.md` (curvature controls geodesic deviation)
 
 ## Extensible Directions

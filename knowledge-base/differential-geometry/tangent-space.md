@@ -49,8 +49,8 @@ GPU 友好度高。切空间的核心操作是线性代数：
 
 
 ## 路由扩展
-- 若需要在流形上计算梯度 → `riemannian-optimization.md`（流形上的梯度下降）
-- 若涉及群结构的切空间 → `lie-algebra.md`（李群的切空间即李代数）
+- 若需要在流形上计算梯度 → `../optimization/riemannian-optimization.md`（流形上的梯度下降）
+- 若涉及群结构的切空间 → `../lie-theory/lie-algebra.md`（李群的切空间即李代数）
 - 若需要协变导数 → `connection.md`（联络定义协变微分）
 
 ## 可扩展方向

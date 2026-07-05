@@ -2,7 +2,7 @@
 > **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
 
 ## 适用问题
-当压缩表示时需要同构保持数据的本质拓扑结构（连通性、环、空腔）时使用：隐空间压缩（环形流形不能压成线段）、知识蒸馏（学生-教师同调等价）、3D 网格简化（genus 不变）、KV-Cache 语义保持（聚类结构不坍缩）。核心诉求：**压缩维度或数量，保证持续同调的 persistence diagram 变化可控**。
+当压缩表示时需要同构保持数据的本质拓扑结构（连通性、环、空腔）时使用：隐空间压缩（环形流形不能压成线段）、知识蒸馏（学生-教师同调等价）、3D 网格简化（genus 不变）、KV-Cache 语义保持（聚类结构不坍缩）。核心诉求：**压缩维度或数量，同时约束并实测持续同调的 persistence diagram 变化**。
 
 ## 数学思想来源
 - 透镜：../../lenses/topological.md（拓扑不变量——连通性、洞数在连续变形下不变）、../../lenses/spectral.md（Gauss-Bonnet 连接曲率与欧拉示性数）、../../lenses/variational.md（压缩率 vs. 拓扑保真度的约束优化）
@@ -54,7 +54,7 @@
 - **D8[v]**：cdist + threshold + count 可融合避免物化大距离矩阵
 
 ## 论文表述方式
-"以持续同调的 Bottleneck 稳定性定理为理论基础，通过 Euler characteristic curve 匹配实现 $O(N^2)$ 复杂度的拓扑保真正则化，保证压缩后 Betti 数在持续区间上的偏差受 Hausdorff 距离控制。"
+"以持续同调的 Bottleneck 稳定性定理为理论基础，通过 Euler characteristic curve 或 landmark 近似构造可计算的拓扑正则。Bottleneck 距离可在滤流函数扰动受控时界定 persistence diagram 的变化；Euler curve 只是不完整代理，不能单独保证每阶 Betti 数偏差受控，需报告 persistence/Betti 曲线的实测偏差。"
 
 ## 风险
 - **持续同调计算瓶颈**：精确边界矩阵约化高度串行（$O(N^3)$），必须依赖 Euler curve 或 Landmark 近似

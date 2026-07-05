@@ -54,7 +54,7 @@ GPU 友好度高。李代数的核心优势是"线性空间"：
 ## 路由扩展
 - 若需要对应的全局群 → `lie-group.md`（李代数积分得到李群）
 - 若需要代数表示 → `representation.md`（李代数的表示理论）
-- 若作为群的切空间 → `tangent-space.md`（切空间的李代数结构）
+- 若作为群的切空间 → `../differential-geometry/tangent-space.md`（切空间的李代数结构）
 
 ## 可扩展方向
 - 结构常数（structure constants）：李括号在基下的分量

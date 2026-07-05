@@ -11,7 +11,7 @@ When the input possesses an **explicit symmetry group $G$ action** (rotation, tr
 ## Required Mathematical Knowledge
 - **Group Representation Theory Basics**: Linear representation of a group $G$, $\rho: G \to GL(V)$, and irreducible representation decomposition
 - **Equivariant Map Definition**: $f(g \cdot x) = \rho_{\text{out}}(g) \cdot f(x)$ for all $g \in G$
-- **Orbit-Stabilizer Theorem** (see `references/books/abstract-algebra.en.md` Ch.5): $|orbit| = |G|/|stab|$, giving the parameter sharing multiplier
+- **Orbit-Stabilizer Theorem** (see `../../references/books/abstract-algebra.en.md` Ch.5): $|orbit| = |G|/|stab|$, giving the parameter sharing multiplier
 - **Schur's Lemma**: An equivariant linear map between irreducible representations is either zero or a scalar multiple
 
 ## AI Module Form

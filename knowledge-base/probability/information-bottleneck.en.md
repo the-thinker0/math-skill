@@ -42,11 +42,11 @@ where $q_\phi(y|z)$ is the classifier/decoder, $r(z)$ is the prior distribution 
 - **Sensitive to $\beta$ tuning**: If $\beta$ is too large, excessive compression leads to underfitting; if too small, the objective degenerates to standard ERM (no compression effect). Information plane analysis or adaptive $\beta$ scheduling is required.
 
 ## Further References
-- Distillation draft: `references/books/` — no dedicated IB distillation draft at present
+- Distillation draft: `../../references/books/` — no dedicated IB distillation draft at present
 - Tishby, Pereira, Bialek. "The Information Bottleneck Method." *arXiv:physics/0004057*, 2000
 - Alemi, Poole, Fischer, Dillon, Suresh, Murphy. "Deep Variational Information Bottleneck." *ICLR*, 2017
 - Shwartz-Ziv, Tishby. "Opening the Black Box of Deep Neural Networks via Information." *arXiv:1703.00810*, 2017
-- Related knowledge cards: `entropy.md`, `kl-divergence.md`
+- Related knowledge cards: `entropy.en.md`, `kl-divergence.en.md`
 
 
 ## Routing Extensions

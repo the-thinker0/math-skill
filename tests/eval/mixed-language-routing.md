@@ -13,7 +13,7 @@ These prompts test the language routing decision system introduced in v3.0.1.
 
 - Primary language: **Chinese** (sentence frame, verbs, mood particles are Chinese)
 - English technical terms (attention, projection, loss, information bottleneck, manifold, routing, spectral decomposition, KV-cache) are domain terms and do NOT trigger English routing
-- Load: `SKILL.md` (Chinese activator)
+- Load: `../../skills/math-research-activator/SKILL.md` (Chinese activator)
 - Output language: Chinese, retaining necessary English technical terms
 - Diagnose intent normally (Scenario B: mechanism design)
 
@@ -37,7 +37,7 @@ These prompts test the language routing decision system introduced in v3.0.1.
 ## Expected Behavior
 
 - Primary language: **English** (English sentence frame, verbs, articles)
-- Load: `SKILL.en.md` (English activator)
+- Load: `../../skills/math-research-activator/SKILL.en.md` (English activator)
 - Output language: English
 
 ## Edge case: Chinese sentence frame with Chinese math term (Scenario B)

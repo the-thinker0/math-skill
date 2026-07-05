@@ -2,7 +2,7 @@
 
 ## 最小定义
 
-给定矩阵 $A \in \mathbb{R}^{m \times n}$，寻找秩不超过 $k$ 的矩阵 $B$ 使得 $\|A - B\|$ 最小。Eckart-Young-Mirsky 定理保证截断 SVD 给出 Frobenius 范数和谱范数下的唯一最优解：$B_k = \sum_{i=1}^k \sigma_i u_i v_i^H$。
+给定矩阵 $A \in \mathbb{R}^{m \times n}$，寻找秩不超过 $k$ 的矩阵 $B$ 使得 $\|A - B\|$ 最小。Eckart-Young-Mirsky 定理保证截断 SVD 给出 Frobenius 范数和谱范数下的一个最优解；当 $\sigma_k > \sigma_{k+1}$ 时，对应主子空间唯一：$B_k = \sum_{i=1}^k \sigma_i u_i v_i^H$。
 
 ## 核心公式
 
@@ -16,7 +16,7 @@
 ## 适用问题
 
 - LoRA 权重压缩：$W \approx W_0 + BA$，$B \in \mathbb{R}^{d \times r}, A \in \mathbb{R}^{r \times d}$，$r \ll d$
-- KV-Cache 压缩：将 Key/Value 缓存投影到低维子空间，显存 $O(n) \to O(k)$
+- KV-Cache 压缩：将 Key/Value 缓存投影到低秩因子格式，显存从 $O(Ld)$ 变为 $O(Lk + kd)$；标准 softmax 下序列长度仍为 $L$
 - PCA / 白化：数据协方差的前 $k$ 个主成分即截断 SVD
 - 梯度压缩：大模型梯度矩阵的有效秩通常远低于名义秩，可安全截断
 - 推荐系统 / 矩阵补全：低秩因子分解 $R \approx UV^H$
@@ -25,16 +25,16 @@
 
 - **LoRA (Low-Rank Adaptation)**：冻结 $W_0$，训练 $\Delta W = BA$（$r \ll d$），推理时合并 $W = W_0 + BA$。前向传播 = 两次 matmul（$x \to Ax \to BAx$），训练参数量从 $O(d^2)$ 降到 $O(dr)$。用 `torch.mm(B, torch.mm(A, x))` 或合并为单次 matmul。
 - **随机化 SVD 算子**：对大矩阵 $A \in \mathbb{R}^{m \times n}$，先采样 $Y = A\Omega$（$\Omega \in \mathbb{R}^{n \times (k+p)}$ 随机高斯），QR 分解 $Y = QR$，再算 $B = Q^HA$（小矩阵 $O(k \times n)$），对 $B$ 做 SVD。总复杂度 $O(mnk)$ 而非 $O(mn^2)$，核心操作全是 matmul。
-- **KV-Cache 低秩化**：维护 $K$ 的低秩因子形式 $K \approx U_k \Sigma_k V_k^H$（存储 $U_k \in \mathbb{R}^{L \times k}$ 和 $\Sigma_k V_k^H \in \mathbb{R}^{k \times d}$，共 $O(Lk + kd)$ 而非 $O(Ld)$）。每新到 token 做增量 PCA 或 streaming SVD 更新。**注意**：对标准 softmax attention，需先重构 $K_k = U_k (\Sigma_k V_k^H) \in \mathbb{R}^{L \times d}$，序列维度仍为 $L$（省显存不省计算）。仅在线性注意力（核特征映射 $\phi$）下，可利用因子形式计算 $\phi(Q)(\phi(K_k)^T V_k)$ 将序列维度从 $L$ 降至 $k$，同时省显存和计算。
+- **KV-Cache 低秩化**：维护 $K$ 的低秩因子形式 $K \approx U_k \Sigma_k V_k^H$（存储 $U_k \in \mathbb{R}^{L \times k}$ 和 $\Sigma_k V_k^H \in \mathbb{R}^{k \times d}$，共 $O(Lk + kd)$ 而非 $O(Ld)$）。每新到 token 做增量 PCA 或 streaming SVD 更新。**注意**：对标准 softmax attention，低秩因子不能当作 $k$ 个压缩 token；softmax 仍在长度 $L$ 上归一化。但可用因子化计算 $qK^T = (q(\Sigma_k V_k^H)^T)U_k^T$，避免物化 $L \times d$ 重构，并将 QK 内维从 $d$ 降到 $k$。仅在线性注意力中，且压缩 $\phi(K)^T V$、$\phi(K)^T\mathbf{1}$ 等可加统计量时，历史状态才可真正从 $L$ 降至 $k$ 个统计因子。
 - **核范数正则化**：$\mathcal{L} = \mathcal{L}_{\text{task}} + \lambda \|W\|_*$ 促进低秩解。但核范数计算需完整 SVD（$O(n^3)$），替代方案：(1) 用截断 SVD 近似；(2) 因子化 $\|W\|_* = \min_{W=UV^H} \frac{1}{2}(\|U\|_F^2 + \|V\|_F^2)$ 转为对 $U, V$ 的 Frobenius 正则。
-- **梯度低秩压缩 (分布式训练)**：将梯度 $G$ 截断为 $G_k$（top-$k$ SVD）后 all-reduce 通信量从 $O(d)$ 降到 $O(kd)$。用随机化 SVD 在每卡本地算，再合并。
+- **梯度低秩压缩 (分布式训练)**：对梯度矩阵 $G \in \mathbb{R}^{m \times n}$ 做 top-$k$ SVD 后传输因子，all-reduce 通信量从 $O(mn)$ 降到 $O(k(m+n))$（若 $m \approx n \approx d$，即 $O(d^2) \to O(kd)$）。用随机化 SVD 在每卡本地算，再合并。
 
 ## 工程可行性
 
-- **主要操作**：matmul + 小矩阵 SVD。LoRA 前向 = 两次 matmul；随机化 SVD = 三次 matmul + 一次小 QR；截断 SVD = 完整 SVD 的 $O(k/n)$ 倍（用 Lanczos）。
+- **主要操作**：matmul + 小矩阵 SVD。LoRA 前向 = 两次 matmul；随机化 SVD = 若干次 matmul + 一次 thin QR + 小矩阵 SVD，典型复杂度 $O(mnk)$（还依赖 oversampling、power iteration 和谱间隙）；Lanczos/随机化截断 SVD 通常远低于完整 SVD，但不能简单写成完整 SVD 的 $O(k/n)$ 倍。
 - **GPU 友好度**：极高。LoRA 前向/反向全是 tensor core matmul；随机化 SVD 的主要开销也是 matmul。小矩阵 SVD 有 cuSOLVER 的 batched 实现。
 - **复杂度**：LoRA 前向 $O(dk)$ per sample vs. $O(d^2)$ 全秩；随机化 SVD $O(mnk)$；完整 SVD $O(\min(m^2n, mn^2))$。
-- **显存**：LoRA 存储 $O(dr)$ vs. $O(d^2)$；KV-Cache 低秩化 $O(Lk)$ vs. $O(Ld)$。
+- **显存**：LoRA 存储 $O(dr)$ vs. $O(d^2)$；KV-Cache 低秩因子存储 $O(Lk + kd)$ vs. $O(Ld)$。
 
 ## 风险与失效条件
 
@@ -52,7 +52,7 @@
 ## 路由扩展
 - 若需要子空间投影的具体实现 → `projection.md`（投影算子）
 - 若需要分解工具的详细分析 → `spectral-decomposition.md`（SVD/EVD）
-- 若目标是信息保持压缩 → `information-bottleneck.md`（信息瓶颈理论）
+- 若目标是信息保持压缩 → `../probability/information-bottleneck.md`（信息瓶颈理论）
 
 ## 可扩展方向
 - 张量分解（CP / Tucker / TT）：高阶张量的低秩分解

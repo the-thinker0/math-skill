@@ -20,12 +20,12 @@ Hermitian 矩阵 $A$ 若对所有非零向量 $x$ 满足 $x^HAx \geq 0$，则称
 - 协方差矩阵：$\Sigma = \mathbb{E}[xx^H] \succeq 0$，PCA/白化依赖其正定性
 - 二阶优化预条件：Hessian/Fisher 信息矩阵的 PSD 结构保证下降方向
 - 半定规划 (SDP)：约束 $X \succeq 0$ 下的线性目标优化
-- Attention 矩阵分析：softmax 输出的行随机矩阵的 Gram 结构
+- Attention 矩阵分析：softmax 输出的行随机矩阵一般不是 Gram/PSD；只有显式构造对称 PSD kernel（如 $K_{ij}=k(x_i,x_j)$）或对称化并投影到 PSD cone 后，才能使用 PSD 工具。
 
 ## AI 设计翻译
 
 - **PSD 核工程 (可学习核)**：用 Schur 积定理组合多个 PSD 核：$K = K_1 \circ K_2 \circ \cdots$（Hadamard 积），保证结果始终 PSD。实现为 elementwise 张量乘 `K = K1 * K2`，$O(n^2)$ elementwise，极 GPU 友好。可参数化 $K_\theta(x,y) = \exp(-\|f_\theta(x)-f_\theta(y)\|^2)$ 保证 PSD。
-- **协方差白化 (Whitening)**：$\hat{x} = \Sigma^{-1/2}x$，其中 $\Sigma^{-1/2}$ 通过 Newton-Schulz 迭代近似（纯 matmul）。Newton-Schulz：$X_{k+1} = \frac{1}{2}X_k(3I - AX_k)$，每步两次 matmul，5-6 步收敛。BatchNorm 可视为对角白化的近似。
+- **协方差白化 (Whitening)**：$\hat{x} = \Sigma^{-1/2}x$，其中 $\Sigma^{-1/2}$ 可通过缩放后的 Newton-Schulz 迭代近似（纯 matmul）。常用 coupled 形式：$Y_0=A/\alpha, Z_0=I$，$T_k=\frac{1}{2}(3I-Z_kY_k)$，$Y_{k+1}=Y_kT_k, Z_{k+1}=T_kZ_k$，最后 $A^{-1/2}\approx Z_k/\sqrt{\alpha}$；或单变量形式 $X_{k+1}=\frac{1}{2}X_k(3I-AX_k^2)$。收敛需要谱缩放和正定条件，低精度下需残差监控；5-6 步只是常见工程预算。BatchNorm 可视为对角白化的近似。
 - **Cholesky 预条件子**：对 PSD Hessian $H$，用 $H = LL^H$ 分解后解 $L^{-1}L^{-H}g$ 代替 $H^{-1}g$。cuSOLVER 有 batched Cholesky `potrf`。K-FAC 中每个 Kronecker 因子的求逆即走 Cholesky。
 - **最近 PSD 近似 (Higham)**：给定对称矩阵 $A$，求最近 PSD 矩阵 $A_+ = \arg\min_{X \succeq 0} \|A - X\|_F$。解法：EVD $A = U\Lambda U^H$，将 $\Lambda$ 中负值截零，$A_+ = U\Lambda_+ U^H$。用于修正浮点误差导致的协方差矩阵失去正定性。
 - **Jitter / 对角加载**：$A_{\text{stable}} = A + \epsilon I$（$\epsilon \sim 10^{-6}$），保证数值正定性。高斯过程、核方法、Cholesky 分解中标准做法。实现为 `A + eps * torch.eye(n)`，零成本操作。
@@ -51,9 +51,9 @@ Hermitian 矩阵 $A$ 若对所有非零向量 $x$ 满足 $x^HAx \geq 0$，则称
 
 
 ## 路由扩展
-- 若需要求解 SDP 问题 → `convex-optimization.md`（半正定规划作为凸优化）
+- 若需要求解 SDP 问题 → `../optimization/convex-optimization.md`（半正定规划作为凸优化）
 - 若涉及 PSD 矩阵的条件与扰动 → `matrix-perturbation.md`（特征值扰动界）
-- 若用于 Fisher 信息矩阵 → `fisher-information.md`（Fisher 信息的 PSD 性质）
+- 若用于 Fisher 信息矩阵 → `../probability/fisher-information.md`（Fisher 信息的 PSD 性质）
 
 ## 可扩展方向
 - 半正定规划（semidefinite programming）：SDP 的求解方法与应用
