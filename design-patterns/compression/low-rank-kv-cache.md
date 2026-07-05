@@ -63,7 +63,7 @@
 ## GPU 可行性
 - 张量化/GEMM：随机化 SVD = 3 次 GEMM + 1 次小 SVD，完美映射 Tensor Core
 - 复杂度：$O(Ldk)$ 远优于 $O(Ld^2)$ 完整 SVD；$k \sim 256$ 时开销可忽略
-- 显存：序列维度从 $L$ 降至 $k$；Key-Cache 以基底+系数格式存储（$Q_k \in \mathbb{R}^{L \times k}$ + $B_k \in \mathbb{R}^{k \times d}$），总参数 $Lk + kd$，压缩比 $Ld/(Lk+kd) \approx d/k$（当 $L \gg k$）。V-Cache 需独立做类似压缩。端到端压缩比取决于 K/V 两者的存储格式与秩选取
+- 显存：Key-Cache 以低秩因子形式存储（$Q_k \in \mathbb{R}^{L \times k}$ + $B_k \in \mathbb{R}^{k \times d}$），总参数 $Lk + kd$，压缩比 $Ld/(Lk+kd) \approx d/k$（当 $L \gg k$）。注意 $Q_k$ 仍有 $L$ 维，序列长度未缩短；softmax attention 需从因子重构完整 $L \times d$ 矩阵。V-Cache 需独立做类似压缩。端到端压缩比取决于 K/V 两者的存储格式与秩选取
 - 低精度：SVD 建议 fp32（小矩阵可接受）；压缩后 KV 可回 bf16 存储
 - 并行：多层/多头压缩完全独立；增量更新 $O(kd)$ 极低延迟
 - 算子融合：$K\Omega$ + QR 可部分融合；仅在线性注意力下 QK^T 维度缩小（softmax 仍需重构完整 $L \times d$ 矩阵）

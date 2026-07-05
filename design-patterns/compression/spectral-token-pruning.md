@@ -5,7 +5,7 @@
 当需要基于 token 的结构性重要性（而非单纯 attention score）进行剪枝时使用：KV-Cache 驱逐、长文档摘要、推理加速（降低 $O(L^2)$）、多模态视觉 token 压缩。核心诉求：**用谱方法量化每个 token 的结构性重要性，实现信息损失最小的剪枝**。
 
 ## 数学思想来源
-- 透镜：../../lenses/spectral.md（识别主导谱分量、丢弃冗余分量）、../../lenses/algorithmic.md（复杂度分类与近似算法）、../../lenses/perturbation.md（剪枝 = 稀疏扰动，Weyl 界估谱漂移）
+- 透镜：../../lenses/spectral.md（识别主导谱分量、丢弃冗余分量）、../../lenses/algorithmic.md（复杂度分类与近似算法）、../../lenses/perturbation.md（剪枝 = 稀疏扰动，Cauchy 交错定理 / Bauer-Fike 伪谱分析界定谱漂移）
 - 知识：../../knowledge-base/matrix-analysis/spectral-decomposition.md（谱半径、特征向量中心性）、../../knowledge-base/matrix-analysis/matrix-perturbation.md（Geršgorin 圆盘、扰动界）、../../knowledge-base/matrix-analysis/positive-semidefinite.md（Gram 矩阵 PSD 结构）
 
 ## 需要的数学知识

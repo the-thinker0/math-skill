@@ -30,8 +30,9 @@ Method 2 - Augmented Lagrangian Method (ALM):
   lambda.data += rho * g(x).detach()   // dual ascent step
   // Converges faster than pure penalty, avoids rho -> infinity
   For inequality constraints h(x) <= 0:
-  L_ALM = Sum_j [lambda_j * max(0, h_j(x) + lambda_j/(2*rho)) + rho/2 * max(0, h_j(x) + lambda_j/(2*rho))^2 - lambda_j^2/(2*rho)]
-  // Strictly feasible constraints (h_j < -lambda_j/(2*rho)) are not penalized
+  L_ALM = Sum_j 1/(2*rho) * [max(0, lambda_j + rho*h_j(x))^2 - lambda_j^2]
+  // lambda update: lambda_j <- max(0, lambda_j + rho*h_j(x))
+  // Strictly feasible constraints (lambda_j + rho*h_j(x) < 0) are not penalized
 
 Method 3 - Softmax Projection onto Simplex (load balancing special case):
   p = softmax(logits / tau)           // project onto Delta^{K-1}

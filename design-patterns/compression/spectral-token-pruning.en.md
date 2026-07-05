@@ -5,7 +5,7 @@
 Use when pruning must be based on the structural importance of tokens (rather than raw attention scores alone): KV-Cache eviction, long-document summarization, inference acceleration (reducing $O(L^2)$), multimodal vision token compression. Core objective: **quantify the structural importance of each token via spectral methods, achieving pruning with minimal information loss**.
 
 ## Mathematical Foundations
-- Lenses: ../../lenses/spectral.en.md (identifying dominant spectral components, discarding redundant ones), ../../lenses/algorithmic.en.md (complexity classification and approximation algorithms), ../../lenses/perturbation.en.md (pruning = sparse perturbation, Weyl bound for spectral drift estimation)
+- Lenses: ../../lenses/spectral.en.md (identifying dominant spectral components, discarding redundant ones), ../../lenses/algorithmic.en.md (complexity classification and approximation algorithms), ../../lenses/perturbation.en.md (pruning = sparse perturbation, Cauchy interlacing theorem / Bauer-Fike pseudospectral analysis for spectral drift bounds)
 - Knowledge: ../../knowledge-base/matrix-analysis/spectral-decomposition.en.md (spectral radius, eigenvector centrality), ../../knowledge-base/matrix-analysis/matrix-perturbation.en.md (Geršgorin discs, perturbation bounds), ../../knowledge-base/matrix-analysis/positive-semidefinite.en.md (Gram matrix PSD structure)
 
 ## Required Mathematical Background

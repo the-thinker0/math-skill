@@ -63,7 +63,7 @@ Method 3 - Layer-wise adaptive: allocate per-layer, per-head k based on effectiv
 ## GPU Feasibility
 - Tensorization / GEMM: randomized SVD = 3 GEMMs + 1 small SVD, maps perfectly onto Tensor Cores
 - Complexity: $O(Ldk)$ is far superior to $O(Ld^2)$ full SVD; overhead negligible for $k \sim 256$
-- Memory: Sequence dimension reduced from $L$ to $k$; Key-Cache stored in basis+coefficient format ($Q_k \in \mathbb{R}^{L \times k}$ + $B_k \in \mathbb{R}^{k \times d}$), total parameters $Lk + kd$, compression ratio $Ld/(Lk+kd) \approx d/k$ (when $L \gg k$). V-Cache requires independent compression. End-to-end compression ratio depends on K/V storage format and rank selection
+- Memory: Key-Cache stored in low-rank factor form ($Q_k \in \mathbb{R}^{L \times k}$ + $B_k \in \mathbb{R}^{k \times d}$), total parameters $Lk + kd$, compression ratio $Ld/(Lk+kd) \approx d/k$ (when $L \gg k$). Note $Q_k$ still has $L$ dimension — sequence length is NOT reduced; softmax attention requires reconstructing the full $L \times d$ matrix from factors. V-Cache requires independent compression. End-to-end compression ratio depends on K/V storage format and rank selection
 - Low precision: SVD recommended in fp32 (acceptable for small matrices); compressed KV can be stored back in bf16
 - Parallelism: compression across layers / heads is fully independent; incremental update $O(kd)$ with very low latency
 - Operator fusion: $K\Omega$ + QR can be partially fused; the QK^T dimension in attention is reduced only for linear attention; softmax attention still requires full $L \times d$ reconstruction
