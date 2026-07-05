@@ -33,6 +33,14 @@ When core anchors are insufficient, the following concepts may need temporary ac
 - `../../references/books/smooth-manifolds.md`: Chapters 17-18, covering homology theory basics
 - `../../references/books/algebraic-geometry-rising-sea.md`: Cech cohomology sections
 
+## AI Translation Directions
+- persistent homology → representation topology monitor / topological regularization loss
+- euler characteristic → complexity metric / model selection criterion
+- fundamental group → loop structure detection / cycle-preserving compression
+- sheaf / gluing → cross-modal consistency loss / multi-view alignment
+- obstruction theory → alignment failure signal / topological bottleneck detection
+- simplicial complex → higher-order token relation graph / hypergraph attention
+
 ## Temporary Activation Rules
 When the problem requires mathematics not in the core anchors:
 1. First check whether extended concepts contain a match

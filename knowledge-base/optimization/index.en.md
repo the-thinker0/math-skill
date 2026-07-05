@@ -36,6 +36,13 @@ When core anchors are insufficient, the following concepts may need temporary ac
 ## Reference Book Directions
 - `../../references/books/optimization-ml.md`: comprehensive coverage of ML optimization, including convex optimization, stochastic methods, and second-order methods
 
+## AI Translation Directions
+- lagrangian duality → primal-dual training / adversarial loss / constrained generation
+- convex optimization → convex regularizers / proximal updates / mirror descent optimizer
+- constrained optimization → projected gradient / penalty loss / barrier methods in training
+- riemannian optimization → manifold-constrained parameters / natural gradient / geodesic update
+- proximal method → sparse regularization / ISTA/FISTA layers / proximal neural networks
+
 ## Temporary Activation Rules
 When the problem requires mathematics not in the core anchors:
 1. First check whether extended concepts contain a match

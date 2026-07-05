@@ -36,6 +36,13 @@
 ## 参考书方向
 - `../../references/books/optimization-ml.md`：机器学习优化的全面覆盖，包括凸优化、随机方法和二阶方法
 
+## AI 翻译方向
+- lagrangian duality → primal-dual training / adversarial loss / constrained generation
+- convex optimization → convex regularizers / proximal updates / mirror descent optimizer
+- constrained optimization → projected gradient / penalty loss / barrier methods in training
+- riemannian optimization → manifold-constrained parameters / natural gradient / geodesic update
+- proximal method → sparse regularization / ISTA/FISTA layers / proximal neural networks
+
 ## 临时激活规则
 当问题需要的数学不在核心锚点中时：
 1. 先检查扩展概念中是否有匹配

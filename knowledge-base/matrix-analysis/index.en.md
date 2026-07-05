@@ -35,6 +35,13 @@ When core anchors are insufficient, the following concepts may need temporary ac
 ## Reference Book Directions
 - `../../references/books/matrix-analysis.md`: comprehensive coverage of matrix analysis, especially spectral decomposition, perturbation theory, and matrix function chapters
 
+## AI Translation Directions
+- projection → subspace attention / conflict removal / shared-private split
+- spectral decomposition → low-rank KV cache / token pruning / stability monitor
+- low-rank approximation → LoRA / adapter modules / memory-efficient attention
+- positive-semidefinite → covariance-aware regularization / PSD-constrained loss
+- matrix perturbation → condition number monitoring / robustness-aware training
+
 ## Temporary Activation Rules
 When the problem requires mathematics not in the core anchors:
 1. First check whether extended concepts contain a match

@@ -38,6 +38,13 @@
 - `../../references/books/micro-lie-theory.md`：李群与李代数的核心内容
 - `../../references/books/abstract-algebra.md`：抽象代数基础，群论部分
 
+## AI 翻译方向
+- group action → data augmentation design / equivariant feature extraction
+- lie group → rotation-equivariant layers / SO(3)-parameterized modules / pose estimation
+- lie algebra → infinitesimal generators for continuous symmetries / steerable features
+- representation → irreducible feature decomposition / spherical harmonics / Wigner-D layers
+- equivariance → equivariant attention / weight sharing across orbits / orbit pooling
+
 ## 临时激活规则
 当问题需要的数学不在核心锚点中时：
 1. 先检查扩展概念中是否有匹配

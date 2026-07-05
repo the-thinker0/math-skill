@@ -37,6 +37,13 @@
 ## 参考书方向
 - `../../references/books/optimization-ml.md`：变分方法和概率推断相关章节
 
+## AI 翻译方向
+- concentration inequality → generalization bounds / confidence-aware predictions / tail-risk loss
+- entropy → entropy regularization / uncertainty estimation / exploration bonus
+- kl-divergence → distribution matching loss / knowledge distillation / policy regularization
+- information bottleneck → representation compression / VIB loss / uncertainty routing
+- fisher information → natural gradient / parameter sensitivity monitor / active learning
+
 ## 临时激活规则
 当问题需要的数学不在核心锚点中时：
 1. 先检查扩展概念中是否有匹配

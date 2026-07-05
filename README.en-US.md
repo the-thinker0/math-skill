@@ -24,13 +24,15 @@ The story of Sophus Lie forging a "dragon-slaying blade" tells us this: the Lie 
 
 ---
 
+> Math Skill does not store mathematics. It activates, routes, and translates mathematics for AI research.
+
 ## Philosophy
 
 When you face an AI research problem, this system helps you answer four questions:
 
 1. **What mathematical perspective should I use?** → Thinking Lenses
-2. **What specific math do I need?** → Knowledge Base
-3. **How do I turn math into model design?** → Design Translation
+2. **Which mathematical structures to activate?** → Activation Anchors / Temporary Knowledge Cards
+3. **How do I turn math into model design?** → Design Translation Prototypes
 4. **Is it mathematically sound and engineering-feasible?** → Critic
 
 ```
@@ -38,7 +40,7 @@ Problem
  ↓
 Thinking Lenses: What perspective fits this problem?
  ↓
-Math Knowledge: What specific tools does this perspective need?
+Activation Anchors: Which math structures to activate? Enter Knowledge Gap Protocol if insufficient
  ↓
 Design Translation: How do these tools become model structures / losses / operators?
  ↓
@@ -52,7 +54,7 @@ Critic: Mathematically sound? Engineering-feasible?
 | Layer | Role | Directory | Files |
 |-------|------|-----------|-------|
 | **Thinking Lenses** | Diagnose problem structure, recommend math perspectives | `lenses/*.md` | 15 |
-| **Math Knowledge** | Provide concrete math tools (definitions/theorems/formulas) | `knowledge-base/*/*.md` | 31 |
+| **Activation Anchors** | Activate high-frequency math structures; trigger Knowledge Gap Protocol when insufficient | `knowledge-base/*/*.md` | 31 |
 | **Design Translation** | Bridge math to AI modules/losses/operators | `design-patterns/*/*.md` | 22 |
 
 Supporting layers:
@@ -80,7 +82,7 @@ Supporting layers:
 | Probabilistic | `lenses/probabilistic.md` | Quantify uncertainty, Bayesian updating |
 | Algorithmic | `lenses/algorithmic.md` | Complexity, feasibility, parallelism |
 
-### Knowledge Base (by math domain)
+### Activation Anchors (by math domain)
 
 | Domain | Cards |
 |--------|-------|
@@ -224,6 +226,16 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 ---
 
 ## Changelog
+
+### v3.1.0 — Activation Anchors & Knowledge Gap Protocol
+
+**Repositioning**: from "math knowledge base" to "math activation system" — the knowledge base is not a closed encyclopedia but a collection of activation anchors.
+
+- **Core Principle**: Math Skill does not store mathematics; it activates, routes, and translates mathematics for AI research
+- **Knowledge Gap Protocol**: 6-step procedure for generating temporary knowledge cards when existing anchors don't cover the problem (gap identification → lens fallback → candidate localization → temporary card → design translation → upgrade recommendation)
+- **Domain Extension Indexes**: each of the 7 math domains gains an `index.md` with trigger signals, extended concepts, reference directions, and temporary activation rules
+- **Knowledge Card Repositioning**: every card gains "Routing Extensions" and "Extensible Directions" sections, transforming endpoints into routing nodes
+- **Design Pattern Positioning**: new `design-patterns/overview.md` declares the library as a math→AI translation prototype collection
 
 ### v3.0.1 — Token Optimization & Bilingual Completion
 

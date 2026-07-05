@@ -37,6 +37,14 @@
 - `../../references/books/differential-geometry.md`：黎曼几何的核心内容
 - `../../references/books/smooth-manifolds.md`：光滑流形、向量丛和微分形式
 
+## AI 翻译方向
+- manifold → latent space geometry / manifold-valued predictions / hyperbolic embeddings
+- tangent space → local linearization of parameter updates / tangent-space features
+- metric tensor → learned distance metrics / Fisher-Rao natural gradient / metric-aware loss
+- geodesic → interpolation on manifolds / geodesic regularization / shortest-path loss
+- curvature → loss landscape analysis / curvature-aware optimization / flatness seeking
+- connection → parallel transport of features / gauge-equivariant layers
+
 ## 临时激活规则
 当问题需要的数学不在核心锚点中时：
 1. 先检查扩展概念中是否有匹配

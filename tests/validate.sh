@@ -296,6 +296,10 @@ for domain in matrix-analysis optimization differential-geometry lie-theory topo
     check_file "knowledge-base/${domain}/index.md"
     check_file "knowledge-base/${domain}/index.en.md"
 done
+check_contains "README.md" '不存储数学'
+check_contains "README.md" '激活锚点'
+check_contains "README.en-US.md" 'does not store mathematics'
+check_contains "README.en-US.md" 'Activation Anchor'
 
 # --- Count Verification ---
 echo ""

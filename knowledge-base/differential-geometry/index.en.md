@@ -37,6 +37,14 @@ When core anchors are insufficient, the following concepts may need temporary ac
 - `../../references/books/differential-geometry.md`: core content of Riemannian geometry
 - `../../references/books/smooth-manifolds.md`: smooth manifolds, vector bundles, and differential forms
 
+## AI Translation Directions
+- manifold → latent space geometry / manifold-valued predictions / hyperbolic embeddings
+- tangent space → local linearization of parameter updates / tangent-space features
+- metric tensor → learned distance metrics / Fisher-Rao natural gradient / metric-aware loss
+- geodesic → interpolation on manifolds / geodesic regularization / shortest-path loss
+- curvature → loss landscape analysis / curvature-aware optimization / flatness seeking
+- connection → parallel transport of features / gauge-equivariant layers
+
 ## Temporary Activation Rules
 When the problem requires mathematics not in the core anchors:
 1. First check whether extended concepts contain a match

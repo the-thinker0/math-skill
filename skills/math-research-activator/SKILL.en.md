@@ -146,9 +146,9 @@ The user's intent matches one of scenarios A/B/C/D. Pure engineering tasks match
 
 ```
 Scenario A (Analysis): Select 1–3 lenses → output perspective diagnosis → critic review
-Scenario B (Design): Select 1–3 lenses → query knowledge cards → generate design patterns → critic review
-Scenario C (Query): Load knowledge cards directly → output per knowledge activation protocol
-Scenario D (Verification): Load knowledge cards → critic reviews conditions and boundaries
+Scenario B (Design): Select 1–3 lenses → invoke relevant activation anchors; if no coverage, enter Knowledge Gap Protocol → generate formal/temporary design patterns → critic review
+Scenario C (Query): Prefer loading relevant activation anchors; if no coverage, generate temporary knowledge card → output per knowledge activation protocol
+Scenario D (Verification): Load relevant anchors or temporary knowledge cards → critic reviews conditions and boundaries
 Scenario E (Engineering): No intervention
 ```
 
@@ -157,8 +157,8 @@ Scenario E (Engineering): No intervention
 **Scenario A/B Output**:
 1. **[Diagnosis]** Problem type + core tension
 2. **[Lens]** Recommend 1–3 mathematical perspectives (annotate why each is/is not suitable)
-3. **[Knowledge]** (Scenario B only) Required concrete mathematical tools (reference knowledge cards)
-4. **[Design]** (Scenario B only) Candidate AI module drafts (reference design patterns)
+3. **[Knowledge]** (Scenario B only) Activated mathematical structures (reference activation anchors or temporary knowledge cards)
+4. **[Design]** (Scenario B only) Candidate AI module drafts (reference design patterns or temporary design drafts)
 5. **[GPU]** Run candidates through the Eight-Dimension Gate (friendly/retrofittable/unfriendly)
 6. **[Conclusion]** Retain candidates that pass both acceptance gates + next-step recommendations
 

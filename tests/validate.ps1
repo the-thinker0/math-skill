@@ -176,6 +176,10 @@ foreach ($domain in $kbDomains) {
     Check-File "knowledge-base\$domain\index.md"
     Check-File "knowledge-base\$domain\index.en.md"
 }
+Check-Contains "README.md" "不存储数学"
+Check-Contains "README.md" "激活锚点"
+Check-Contains "README.en-US.md" "does not store mathematics"
+Check-Contains "README.en-US.md" "Activation Anchor"
 
 # --- npm Pack ---
 Write-Host "`n--- npm Pack Check ---"

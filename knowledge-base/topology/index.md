@@ -33,6 +33,14 @@
 - `../../references/books/smooth-manifolds.md`：第 17-18 章，覆盖同调论基础
 - `../../references/books/algebraic-geometry-rising-sea.md`：Cech 上同调部分
 
+## AI 翻译方向
+- persistent homology → representation topology monitor / topological regularization loss
+- euler characteristic → complexity metric / model selection criterion
+- fundamental group → loop structure detection / cycle-preserving compression
+- sheaf / gluing → cross-modal consistency loss / multi-view alignment
+- obstruction theory → alignment failure signal / topological bottleneck detection
+- simplicial complex → higher-order token relation graph / hypergraph attention
+
 ## 临时激活规则
 当问题需要的数学不在核心锚点中时：
 1. 先检查扩展概念中是否有匹配

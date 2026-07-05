@@ -35,6 +35,13 @@
 ## 参考书方向
 - `../../references/books/matrix-analysis.md`：矩阵分析全面覆盖，特别是谱分解、扰动理论和矩阵函数章节
 
+## AI 翻译方向
+- projection → subspace attention / conflict removal / shared-private split
+- spectral decomposition → low-rank KV cache / token pruning / stability monitor
+- low-rank approximation → LoRA / adapter modules / memory-efficient attention
+- positive-semidefinite → covariance-aware regularization / PSD-constrained loss
+- matrix perturbation → condition number monitoring / robustness-aware training
+
 ## 临时激活规则
 当问题需要的数学不在核心锚点中时：
 1. 先检查扩展概念中是否有匹配

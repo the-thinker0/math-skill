@@ -37,6 +37,13 @@ When core anchors are insufficient, the following concepts may need temporary ac
 ## Reference Book Directions
 - `../../references/books/optimization-ml.md`: variational methods and probabilistic inference chapters
 
+## AI Translation Directions
+- concentration inequality → generalization bounds / confidence-aware predictions / tail-risk loss
+- entropy → entropy regularization / uncertainty estimation / exploration bonus
+- kl-divergence → distribution matching loss / knowledge distillation / policy regularization
+- information bottleneck → representation compression / VIB loss / uncertainty routing
+- fisher information → natural gradient / parameter sensitivity monitor / active learning
+
 ## Temporary Activation Rules
 When the problem requires mathematics not in the core anchors:
 1. First check whether extended concepts contain a match

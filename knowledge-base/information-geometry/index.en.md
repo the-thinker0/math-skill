@@ -31,6 +31,13 @@ When core anchors are insufficient, the following concepts may need temporary ac
 ## Reference Book Directions
 - `../../references/books/smooth-manifolds.md`: Chapter 13 on Riemannian metrics, providing differential geometry foundations for information geometry
 
+## AI Translation Directions
+- natural gradient → parameter-space-aware optimizer / K-FAC / natural policy gradient
+- fisher metric → distribution distance in parameter space / model merging geometry / loss landscape metric
+- α-divergence → generalized variational inference / robust posterior approximation
+- Bregman divergence → mirror descent / online learning updates / exponential family fitting
+- dual flatness → efficient projection in distribution space / EM algorithm geometry
+
 ## Temporary Activation Rules
 When the problem requires mathematics not in the core anchors:
 1. First check whether extended concepts contain a match

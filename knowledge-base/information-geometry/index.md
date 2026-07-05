@@ -31,6 +31,13 @@
 ## 参考书方向
 - `../../references/books/smooth-manifolds.md`：第 13 章黎曼度量，为信息几何提供微分几何基础
 
+## AI 翻译方向
+- natural gradient → parameter-space-aware optimizer / K-FAC / natural policy gradient
+- fisher metric → distribution distance in parameter space / model merging geometry / loss landscape metric
+- α-divergence → generalized variational inference / robust posterior approximation
+- Bregman divergence → mirror descent / online learning updates / exponential family fitting
+- dual flatness → efficient projection in distribution space / EM algorithm geometry
+
 ## 临时激活规则
 当问题需要的数学不在核心锚点中时：
 1. 先检查扩展概念中是否有匹配

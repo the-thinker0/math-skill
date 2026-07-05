@@ -38,6 +38,13 @@ When core anchors are insufficient, the following concepts may need temporary ac
 - `../../references/books/micro-lie-theory.md`: core content of Lie groups and Lie algebras
 - `../../references/books/abstract-algebra.md`: abstract algebra foundations, group theory sections
 
+## AI Translation Directions
+- group action → data augmentation design / equivariant feature extraction
+- lie group → rotation-equivariant layers / SO(3)-parameterized modules / pose estimation
+- lie algebra → infinitesimal generators for continuous symmetries / steerable features
+- representation → irreducible feature decomposition / spherical harmonics / Wigner-D layers
+- equivariance → equivariant attention / weight sharing across orbits / orbit pooling
+
 ## Temporary Activation Rules
 When the problem requires mathematics not in the core anchors:
 1. First check whether extended concepts contain a match
