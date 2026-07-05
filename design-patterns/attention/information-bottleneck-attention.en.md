@@ -78,11 +78,11 @@ loss = -info_nce + beta * kl_bottleneck
 - **D4**: VIB requires additional $\mu_z$ and $\log\sigma_z$, approximately doubling attention weight memory
 - **D5**: log/exp in KL computations are stable under bf16 (standard log-softmax tricks)
 - **D6**: Regularization can be computed in parallel with forward propagation, introducing no serial dependencies
-- **D7**: KL regularization implicitly induces attention sparsity, amenable to block-sparse acceleration
+- **D7[~]**: KL regularization by itself does not induce sparsity (pushes toward uniform distribution); for sparsity, use an entropy penalty +beta * H(attn), which then enables block-sparse acceleration
 - **D8**: KL can be fused into the softmax kernel (FusedSoftmaxKL)
 
 ## Paper Phrasing
-"We propose information bottleneck attention, which models attention as an information bottleneck variational problem. By maximizing the mutual information between output and target while minimizing redundant information transmission from the input, it achieves theoretically optimal information selection and demonstrates enhanced sparsity and interpretability in experiments."
+"We propose information bottleneck attention, which models attention as an information bottleneck optimization problem. By maximizing the mutual information between output and target while constraining redundant information transmission from the input, the IB compression term by itself pushes toward a uniform distribution (maximum entropy), and its tension with the task loss produces non-uniform attention; explicit sparsity induction requires an additional entropy penalty term."
 
 ## Risks
 - **High Variance of Mutual Information Estimators**: The MINE/NWJ/InfoNCE estimators in Scheme C exhibit high variance in high-dimensional spaces, potentially causing training instability. It is recommended to first validate the basic effect of IB attention with Scheme A (KL regularization) before attempting the full IB objective.

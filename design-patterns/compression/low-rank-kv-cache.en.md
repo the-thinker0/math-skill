@@ -63,14 +63,14 @@ Method 3 - Layer-wise adaptive: allocate per-layer, per-head k based on effectiv
 ## GPU Feasibility
 - Tensorization / GEMM: randomized SVD = 3 GEMMs + 1 small SVD, maps perfectly onto Tensor Cores
 - Complexity: $O(Ldk)$ is far superior to $O(Ld^2)$ full SVD; overhead negligible for $k \sim 256$
-- Memory: Sequence dimension reduced from $L$ to $k$; Key-Cache stored in basis+coefficient format ($Q_k \in \mathbb{R}^{L \times k}$ + $B_k \in \mathbb{R}^{k \times d}$) achieves $L/k$-fold compression for Key alone; V-Cache requires independent compression. End-to-end compression ratio depends on K/V storage format and rank selection
+- Memory: Sequence dimension reduced from $L$ to $k$; Key-Cache stored in basis+coefficient format ($Q_k \in \mathbb{R}^{L \times k}$ + $B_k \in \mathbb{R}^{k \times d}$), total parameters $Lk + kd$, compression ratio $Ld/(Lk+kd) \approx d/k$ (when $L \gg k$). V-Cache requires independent compression. End-to-end compression ratio depends on K/V storage format and rank selection
 - Low precision: SVD recommended in fp32 (acceptable for small matrices); compressed KV can be stored back in bf16
 - Parallelism: compression across layers / heads is fully independent; incremental update $O(kd)$ with very low latency
-- Operator fusion: $K\Omega$ + QR can be partially fused; the QK^T dimension in attention is already reduced
+- Operator fusion: $K\Omega$ + QR can be partially fused; the QK^T dimension in attention is reduced only for linear attention; softmax attention still requires full $L \times d$ reconstruction
 
 **Quantitative assessment example** (standard transformer, d=128, n=2048, rank k=64):
 - D3: SVD computation O(n·d·k) ≈ 2048·128·64 ≈ 16.8M FLOPs (one-time); inference matmul O(n·k) per query
-- D4: KV-Cache from O(n·d) = 2048·128·2B ≈ 512KB; materialized format O(n·k + k·d) ≈ 2048·64·2B + 64·128·2B ≈ 278KB (compression ratio ~1.8x); basis+coefficient format ($Q_k \in \mathbb{R}^{n \times k}$ columns + $B_k = Q_k^T K \in \mathbb{R}^{k \times d}$) compresses Key-Cache to ~272KB (~32x), V-Cache requires independent compression
+- D4: KV-Cache from O(n·d) = 2048·128·2B ≈ 512KB; materialized format O(n·k + k·d) ≈ 2048·64·2B + 64·128·2B ≈ 278KB (compression ratio ~1.8x); basis+coefficient format ($Q_k \in \mathbb{R}^{n \times k}$ columns + $B_k = Q_k^T K \in \mathbb{R}^{k \times d}$) total parameters $nk + kd$, compression ratio $nd/(nk+kd) = d/k \cdot 1/(1+d/n) \approx d/k = 2x$, V-Cache requires independent compression
 - D5: Truncated SVD under bf16 amplifies singular value errors near σ_k by ~κ(A), requires caution
 - D8: SVD → matmul can be fused; online updates use incremental SVD to avoid full recomputation
 

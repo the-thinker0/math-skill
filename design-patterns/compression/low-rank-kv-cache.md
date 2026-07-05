@@ -63,14 +63,14 @@
 ## GPU 可行性
 - 张量化/GEMM：随机化 SVD = 3 次 GEMM + 1 次小 SVD，完美映射 Tensor Core
 - 复杂度：$O(Ldk)$ 远优于 $O(Ld^2)$ 完整 SVD；$k \sim 256$ 时开销可忽略
-- 显存：序列维度从 $L$ 降至 $k$；Key-Cache 以基底+系数格式存储（$Q_k \in \mathbb{R}^{L \times k}$ + $B_k \in \mathbb{R}^{k \times d}$）可获 $L/k$ 倍压缩，V-Cache 需独立做类似压缩。端到端压缩比取决于 K/V 两者的存储格式与秩选取
+- 显存：序列维度从 $L$ 降至 $k$；Key-Cache 以基底+系数格式存储（$Q_k \in \mathbb{R}^{L \times k}$ + $B_k \in \mathbb{R}^{k \times d}$），总参数 $Lk + kd$，压缩比 $Ld/(Lk+kd) \approx d/k$（当 $L \gg k$）。V-Cache 需独立做类似压缩。端到端压缩比取决于 K/V 两者的存储格式与秩选取
 - 低精度：SVD 建议 fp32（小矩阵可接受）；压缩后 KV 可回 bf16 存储
 - 并行：多层/多头压缩完全独立；增量更新 $O(kd)$ 极低延迟
-- 算子融合：$K\Omega$ + QR 可部分融合；attention 的 QK^T 维度已缩小
+- 算子融合：$K\Omega$ + QR 可部分融合；仅在线性注意力下 QK^T 维度缩小（softmax 仍需重构完整 $L \times d$ 矩阵）
 
 **量化评估示例**（标准 transformer, d=128, n=2048, rank k=64）：
 - D3: SVD 计算 O(n·d·k) ≈ 2048·128·64 ≈ 16.8M FLOPs（一次性）；推理时 matmul O(n·k) per query
-- D4: KV-Cache 从 O(n·d) = 2048·128·2B ≈ 512KB；物化格式 O(n·k + k·d) ≈ 2048·64·2B + 64·128·2B ≈ 278KB（压缩比 ~1.8x）；若改用基底+系数格式（$Q_k \in \mathbb{R}^{n \times k}$ 的 $k$ 列 + $B_k = Q_k^T K \in \mathbb{R}^{k \times d}$），Key-Cache 压缩至 ~272KB（~32x），V-Cache 需独立压缩
+- D4: KV-Cache 从 O(n·d) = 2048·128·2B ≈ 512KB；物化格式 O(n·k + k·d) ≈ 2048·64·2B + 64·128·2B ≈ 278KB（压缩比 ~1.8x）。基底+系数格式（$Q_k \in \mathbb{R}^{n \times k}$ 正交基 + $B_k = Q_k^T K \in \mathbb{R}^{k \times d}$）总参数 $nk + kd$，压缩比 $nd/(nk+kd) = d/k \cdot 1/(1 + d/n) \approx d/k = 2x$，V-Cache 需独立压缩
 - D5: 截断 SVD 在 bf16 下 σ_k 附近奇异值误差放大 ~κ(A)，需注意
 - D8: SVD → matmul 可融合；在线更新用 incremental SVD 避免全量重算
 

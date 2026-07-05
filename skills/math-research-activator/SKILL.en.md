@@ -5,7 +5,7 @@ description: |
 ---
 
 
-> **Language Routing & Mixed-Input Rules**: Judge primary language by sentence structure/verbs/mood particles. AI/math/engineering terms don't count. Code/paths/formulas excluded. When CN/EN ratio is close, follow last turn; default to Chinese if no context. Explicit request overrides. Chinese → this file, English → `SKILL.en.md`. Full rules: `../../references/skill-index.en.md`.
+> **Language Routing & Mixed-Input Rules**: Judge primary language by sentence structure/verbs/mood particles. AI/math/engineering terms don't count. Code/paths/formulas excluded. When CN/EN ratio is close, follow last turn; default to Chinese if no context. Explicit request overrides. Chinese → `SKILL.md`, English → this file. Full rules: `../../references/skill-index.en.md`.
 
 # Math Research OS
 

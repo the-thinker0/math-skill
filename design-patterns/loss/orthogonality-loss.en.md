@@ -18,13 +18,16 @@ In multi-expert / multi-task settings, representations learned by submodules are
 ```
 Module: OrthogonalDiversityLoss
 Input: K feature matrices {W_k in R^{d x r}}_{k=1}^K (weights or features of K submodules)
+  // Note: Grassmann distance requires QR decomposition of W_i first to obtain orthonormal bases Q_i
 
 Method 1 - Frobenius Orthogonal Regularization:
   L_orth = Sum_{i<j} ||W_i^T W_j||_F^2
   // Computation: O(K^2 * d * r^2), K typically <16 so cost is manageable
 
 Method 2 - Grassmann Distance (log-barrier based on principal angles):
-  sigma_k = singular values of SVD(W_i^T W_j) (= cos(theta_k), theta_k are principal angles)
+  sigma_k = singular values of SVD(Q_i^T Q_j) (= cos(theta_k), theta_k are principal angles)
+  // ⚠ Must first orthonormalize W_i, W_j: Q_i = qr(W_i).Q, Q_j = qr(W_j).Q
+  // Otherwise singular values may exceed 1, making -log(1-sigma^2+eps) undefined
   // ⚠ Original formula sigma^2*(1-sigma^2) is wrong: penalty is 0 at BOTH sigma=0 (orthogonal) AND sigma=1 (complete overlap)!
   // Fully overlapping subspaces receive zero penalty, defeating the orthogonality objective.
   // Correct formula: log-barrier, 0 at sigma=0 and → +∞ as sigma→1

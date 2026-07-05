@@ -12,7 +12,7 @@ Use when pruning must be based on the structural importance of tokens (rather th
 - **Eigenvector Centrality**: For a row-stochastic (row-softmax) attention matrix $A$, the right principal eigenvector $Ax = \lambda_1 x$ degenerates to the all-ones vector (since $A \mathbf{1} = \mathbf{1}$), making it useless for distinguishing token importance. **Must use the LEFT principal eigenvector** $x^T A = \lambda_1 x^T$ (equivalently $A^T x = \lambda_1 x$), which gives the stationary distribution of the Markov chain and provides PageRank-like importance scores (Perron--Frobenius guarantees non-negativity)
 - **Spectral Gap**: $\Delta = \lambda_1 - \lambda_2$ governs the rate of information diffusion; large $\Delta \Rightarrow$ a few tokens dominate $\Rightarrow$ safe to prune
 - **Fiedler Vector**: the second-smallest eigenvector of the Laplacian $L_{\text{sym}}$ yields the optimal bipartition; small magnitude = partition boundary = important
-- **Weyl Perturbation Bound**: pruning = removing rows/columns = rank-1 perturbation $E$, $|\lambda_i(A) - \lambda_i(A_{\text{pruned}})| \leq \|E\|_2$
+- **Spectral Perturbation Analysis**: Pruning changes the matrix dimension and cannot directly apply the Weyl theorem. For the symmetrized matrix $S = (A + A^T)/2$ or Laplacian $L$, the Cauchy interlacing theorem bounds the eigenvalues of the submatrix relative to the original: $\lambda_i(L) \leq \lambda_i(L_{\text{pruned}}) \leq \lambda_{i+k}(L)$ (where $k$ is the number of removed rows/columns). For non-symmetric row-stochastic matrices, spectral radius perturbation can be bounded via Bauer--Fike or pseudospectral analysis, though the bounds are less tight than in the Hermitian case.
 
 ## AI Module Specification
 ```
@@ -54,7 +54,7 @@ Method 3 - Differentiable spectral pruning (end-to-end):
 - Operator fusion: $KK^T$ + row-sum + topk can be fused into a single kernel
 
 ## Paper-Worthy Formulation
-"We cast token pruning as spectral sparsification of a directed graph: leveraging the **left** principal eigenvector (Markov chain stationary distribution, PageRank-like centrality) of the row-stochastic attention matrix to quantify global importance -- the right principal eigenvector degenerates to the all-ones vector due to $A\mathbf{1}=\mathbf{1}$ and is therefore unusable. The Weyl perturbation bound guarantees that post-pruning spectral drift does not exceed the $\ell_2$ norm of the removed tokens, while Geršgorin discs provide an $O(L^2)$ inexpensive alternative."
+"We cast token pruning as spectral sparsification of a directed graph: leveraging the **left** principal eigenvector (Markov chain stationary distribution, PageRank-like centrality) of the row-stochastic attention matrix to quantify global importance -- the right principal eigenvector degenerates to the all-ones vector due to $A\mathbf{1}=\mathbf{1}$ and is therefore unusable. The Cauchy interlacing theorem guarantees ordered eigenvalue interlacing after symmetrized pruning; for non-symmetric attention matrices, spectral radius perturbation can be bounded via pseudospectral analysis, while Geršgorin discs provide an $O(L^2)$ inexpensive alternative."
 
 ## Risks
 - **$L \times L$ matrix memory bottleneck**: for long sequences the similarity matrix itself may exceed available memory, necessitating sampling or chunking

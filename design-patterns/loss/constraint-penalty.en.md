@@ -29,6 +29,9 @@ Method 2 - Augmented Lagrangian Method (ALM):
   // lambda is a learnable parameter (nn.Parameter), updated via gradient ascent:
   lambda.data += rho * g(x).detach()   // dual ascent step
   // Converges faster than pure penalty, avoids rho -> infinity
+  For inequality constraints h(x) <= 0:
+  L_ALM = Sum_j [lambda_j * max(0, h_j(x) + lambda_j/(2*rho)) + rho/2 * max(0, h_j(x) + lambda_j/(2*rho))^2 - lambda_j^2/(2*rho)]
+  // Strictly feasible constraints (h_j < -lambda_j/(2*rho)) are not penalized
 
 Method 3 - Softmax Projection onto Simplex (load balancing special case):
   p = softmax(logits / tau)           // project onto Delta^{K-1}
@@ -58,7 +61,7 @@ Method 4 - Orthogonal Constraint Projection:
 - **Operator Fusion**: Constraint computation + weighted summation + merging with base_loss can be fused into a single kernel
 
 ## Paper Phrasing
-"We employ the augmented Lagrangian method to convert hard constraints $g(x)=0$ into differentiable penalty terms $\lambda^T g(x) + \rho/2 \|g(x)\|^2$. Through alternating dual ascent updates of $\lambda$, constraint satisfaction is guaranteed to converge at rate $O(1/\rho)$ without requiring $\rho \to \infty$, reducing constraint violations by 3x compared to pure penalty methods in experiments."
+"We employ the augmented Lagrangian method to convert hard constraints $g(x)=0$ into differentiable penalty terms $\lambda^T g(x) + \rho/2 \|g(x)\|^2$. Through alternating dual ascent updates of $\lambda$, constraint satisfaction is guaranteed to converge at rate $O(1/\rho)$ without requiring $\rho \to \infty$ (this holds for convex problems; for non-convex problems, only local convergence to KKT points is guaranteed, with constraint satisfaction depending on constraint qualifications such as LICQ/MFCQ), reducing constraint violations by 3x compared to pure penalty methods in experiments."
 
 ## Risks
 - Excessively fast rho growth leads to ill-conditioned variational landscapes (deteriorating condition numbers), causing gradient vanishing or explosion
