@@ -83,6 +83,8 @@ echo ""
 echo "--- Commands ---"
 check_file "commands/ask.md"
 check_contains "commands/ask.md" 'math-research-activator'
+check_file "commands/ask.en.md"
+check_contains "commands/ask.en.md" 'SKILL.en.md'
 
 # --- Lenses ---
 echo ""
@@ -137,6 +139,7 @@ check_file "references/inspiration.md"
 check_dir "references/books"
 for book in abstract-algebra algebraic-geometry-rising-sea differential-geometry matrix-analysis micro-lie-theory optimization-ml smooth-manifolds; do
     check_file "references/books/${book}.md"
+    check_file "references/books/${book}.en.md"
 done
 
 # --- Agents ---
@@ -272,6 +275,13 @@ if [ $XREF_FAIL -eq 0 ]; then
     echo -e "${GREEN}[PASS]${NC} All cross-references resolve"
     PASS=$((PASS + 1))
 fi
+
+# --- v3.0.1 Additions ---
+echo ""
+echo "--- v3.0.1 Additions ---"
+check_contains "skills/math-research-activator/SKILL.md" '混合输入'
+check_contains "skills/math-research-activator/SKILL.en.md" 'Mixed-Input'
+check_file "tests/eval/mixed-language-routing.md"
 
 # --- Count Verification ---
 echo ""

@@ -77,6 +77,8 @@ Check-File "skills\math-research-activator\SKILL.en.md"
 # --- Commands ---
 Write-Host "`n--- Commands ---"
 Check-File "commands\ask.md"
+Check-File "commands\ask.en.md"
+Check-Contains "commands\ask.en.md" "SKILL.en.md"
 
 # --- Lenses ---
 Write-Host "`n--- Lenses ---"
@@ -107,6 +109,11 @@ foreach ($type in $types) {
 Write-Host "`n--- References ---"
 Check-File "references\gpu-friendly-math.md"
 Check-Dir "references\books"
+$books = @("abstract-algebra","algebraic-geometry-rising-sea","differential-geometry","matrix-analysis","micro-lie-theory","optimization-ml","smooth-manifolds")
+foreach ($book in $books) {
+    Check-File "references\books\$book.md"
+    Check-File "references\books\$book.en.md"
+}
 
 # --- Agents ---
 Write-Host "`n--- Agents ---"
@@ -149,6 +156,12 @@ Write-Host "`n--- Eval Tests ---"
 Check-File "tests\eval\should-trigger-design.md"
 Check-File "tests\eval\should-trigger-knowledge.md"
 Check-File "tests\eval\should-not-trigger.md"
+Check-File "tests\eval\mixed-language-routing.md"
+
+# --- v3.0.1 Additions ---
+Write-Host "`n--- v3.0.1 Additions ---"
+Check-Contains "skills\math-research-activator\SKILL.md" "混合输入"
+Check-Contains "skills\math-research-activator\SKILL.en.md" "Mixed-Input"
 
 # --- npm Pack ---
 Write-Host "`n--- npm Pack Check ---"
