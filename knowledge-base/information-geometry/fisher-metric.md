@@ -13,7 +13,7 @@ $$g_{ij}(\theta) = \frac{\partial^2}{\partial \theta_i' \partial \theta_j'} D_{K
 即 $D_{KL}(p_\theta \| p_{\theta+d\theta}) = \frac{1}{2} \sum_{i,j} g_{ij}(\theta) \, d\theta_i \, d\theta_j + O(\|d\theta\|^3)$。
 
 **线元（分布间的无穷小距离）**：
-$$ds^2 = \sum_{i,j} g_{ij}(\theta) \, d\theta_i \, d\theta_j = 2 \, D_{KL}(p_\theta \| p_{\theta+d\theta})$$
+$$ds^2 = \sum_{i,j} g_{ij}(\theta) \, d\theta_i \, d\theta_j \approx 2 \, D_{KL}(p_\theta \| p_{\theta+d\theta}) \quad \text{（二阶局部展开，当 } d\theta \to 0 \text{ 时渐近成立）}$$
 
 **测地线距离（有限分布间距离）**：
 $$d(p_{\theta_1}, p_{\theta_2}) = \inf_{\gamma} \int_0^1 \sqrt{\dot{\gamma}^T \mathcal{I}(\gamma(t)) \dot{\gamma}} \, dt$$

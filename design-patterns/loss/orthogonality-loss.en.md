@@ -23,9 +23,12 @@ Method 1 - Frobenius Orthogonal Regularization:
   L_orth = Sum_{i<j} ||W_i^T W_j||_F^2
   // Computation: O(K^2 * d * r^2), K typically <16 so cost is manageable
 
-Method 2 - Grassmann Distance (based on principal angles):
-  sigma_k = singular values of SVD(W_i^T W_j)
-  L_grass = Sum_{i<j} Sum_k sigma_k^2 * (1 - sigma_k^2)  // penalizes singular values that are neither 0 nor 1
+Method 2 - Grassmann Distance (log-barrier based on principal angles):
+  sigma_k = singular values of SVD(W_i^T W_j) (= cos(theta_k), theta_k are principal angles)
+  // ⚠ Original formula sigma^2*(1-sigma^2) is wrong: penalty is 0 at BOTH sigma=0 (orthogonal) AND sigma=1 (complete overlap)!
+  // Fully overlapping subspaces receive zero penalty, defeating the orthogonality objective.
+  // Correct formula: log-barrier, 0 at sigma=0 and → +∞ as sigma→1
+  L_grass = Sum_{i<j} Sum_k -log(1 - sigma_k^2 + eps)  // = -Sum log(sin^2(theta_k)), 0 when orthogonal (theta=pi/2), →∞ when overlapping (theta→0)
 
 Method 3 - Efficient Cosine Decorrelation:
   G = concat([W_1,...,W_K])^T * concat([W_1,...,W_K])  // single GEMM

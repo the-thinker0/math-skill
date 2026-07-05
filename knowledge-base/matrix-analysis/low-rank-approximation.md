@@ -25,7 +25,7 @@
 
 - **LoRA (Low-Rank Adaptation)**：冻结 $W_0$，训练 $\Delta W = BA$（$r \ll d$），推理时合并 $W = W_0 + BA$。前向传播 = 两次 matmul（$x \to Ax \to BAx$），训练参数量从 $O(d^2)$ 降到 $O(dr)$。用 `torch.mm(B, torch.mm(A, x))` 或合并为单次 matmul。
 - **随机化 SVD 算子**：对大矩阵 $A \in \mathbb{R}^{m \times n}$，先采样 $Y = A\Omega$（$\Omega \in \mathbb{R}^{n \times (k+p)}$ 随机高斯），QR 分解 $Y = QR$，再算 $B = Q^HA$（小矩阵 $O(k \times n)$），对 $B$ 做 SVD。总复杂度 $O(mnk)$ 而非 $O(mn^2)$，核心操作全是 matmul。
-- **KV-Cache 低秩化**：维护 $K_k = K P_k$（$P_k$ 为投影到前 $k$ 主成分），每新到 token 做增量 PCA 或 streaming SVD 更新。Attention 计算 $\text{softmax}(Q K_k^H / \sqrt{d}) V_k$，三次 matmul，序列维度从 $L$ 降到 $k$。
+- **KV-Cache 低秩化**：维护 $K$ 的低秩因子形式 $K \approx U_k \Sigma_k V_k^H$（存储 $U_k \in \mathbb{R}^{L \times k}$ 和 $\Sigma_k V_k^H \in \mathbb{R}^{k \times d}$，共 $O(Lk + kd)$ 而非 $O(Ld)$）。每新到 token 做增量 PCA 或 streaming SVD 更新。**注意**：对标准 softmax attention，需先重构 $K_k = U_k (\Sigma_k V_k^H) \in \mathbb{R}^{L \times d}$，序列维度仍为 $L$（省显存不省计算）。仅在线性注意力（核特征映射 $\phi$）下，可利用因子形式计算 $\phi(Q)(\phi(K_k)^T V_k)$ 将序列维度从 $L$ 降至 $k$，同时省显存和计算。
 - **核范数正则化**：$\mathcal{L} = \mathcal{L}_{\text{task}} + \lambda \|W\|_*$ 促进低秩解。但核范数计算需完整 SVD（$O(n^3)$），替代方案：(1) 用截断 SVD 近似；(2) 因子化 $\|W\|_* = \min_{W=UV^H} \frac{1}{2}(\|U\|_F^2 + \|V\|_F^2)$ 转为对 $U, V$ 的 Frobenius 正则。
 - **梯度低秩压缩 (分布式训练)**：将梯度 $G$ 截断为 $G_k$（top-$k$ SVD）后 all-reduce 通信量从 $O(d)$ 降到 $O(kd)$。用随机化 SVD 在每卡本地算，再合并。
 

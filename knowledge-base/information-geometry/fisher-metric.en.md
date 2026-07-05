@@ -13,7 +13,7 @@ $$g_{ij}(\theta) = \frac{\partial^2}{\partial \theta_i' \partial \theta_j'} D_{K
 That is, $D_{KL}(p_\theta \| p_{\theta+d\theta}) = \frac{1}{2} \sum_{i,j} g_{ij}(\theta) \, d\theta_i \, d\theta_j + O(\|d\theta\|^3)$.
 
 **Line Element (infinitesimal distance between distributions)**:
-$$ds^2 = \sum_{i,j} g_{ij}(\theta) \, d\theta_i \, d\theta_j = 2 \, D_{KL}(p_\theta \| p_{\theta+d\theta})$$
+$$ds^2 = \sum_{i,j} g_{ij}(\theta) \, d\theta_i \, d\theta_j \approx 2 \, D_{KL}(p_\theta \| p_{\theta+d\theta}) \quad \text{(second-order local expansion, asymptotically exact as } d\theta \to 0\text{)}$$
 
 **Geodesic Distance (finite distance between distributions)**:
 $$d(p_{\theta_1}, p_{\theta_2}) = \inf_{\gamma} \int_0^1 \sqrt{\dot{\gamma}^T \mathcal{I}(\gamma(t)) \dot{\gamma}} \, dt$$

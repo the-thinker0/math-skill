@@ -24,10 +24,26 @@
   Q_k = qr(K @ Omega)[0]                   // L×(k+p) 正交基底（GEMM + QR）
   B_k = Q_k^T @ K                          // (k+p)×d 小矩阵 GEMM
   U_r, S_r, Vt_r = svd(B_k)               // 小矩阵 SVD
-  K_comp = S_r[:k] * Vt_r[:k, :]           // k×d 压缩 Key
+  K_comp = S_r[:k] * Vt_r[:k, :]           // k×d 压缩 Key（低秩因子）
   // V_comp 定义：对 V 做类似的截断 SVD，V_comp = Σ_k^{(V)} · Vt_k^{(V)}（k×d 压缩 Value）
   // 或者，若 K 和 V 共享列空间基底 Q_k，则 V_comp = Q_k^T @ V（投影到同一低秩子空间）
-  // Attention: softmax(Q @ K_comp^T / √d) @ V_comp，序列维度 L → k
+  //
+  // ⚠ 关键区分——低秩因子不能直接替代原始序列参与 softmax attention：
+  //   K ≈ Q_k @ K_comp（L×d 重构），softmax 是非线性操作，
+  //   softmax(Q @ K_comp^T / √d) @ V_comp ≠ softmax(Q @ K^T / √d) @ V
+  //   因此 k 个"压缩 token"的解释仅对线性注意力成立，对 softmax 注意力不成立。
+  //
+  // 模式 A - 标准 softmax attention（省显存不省计算）：
+  //   K_recon = Q_k @ K_comp                // 重构 L×d Key
+  //   V_recon = Q_k @ V_comp                // 重构 L×d Value（若共享基底）
+  //   Attention: softmax(Q @ K_recon^T / √d) @ V_recon，序列维度仍为 L
+  //   // 优势：存储从 O(Ld) 降至 O(Lk + kd)，但计算量不变
+  //
+  // 模式 B - 线性注意力（核特征映射 φ，省显存且省计算）：
+  //   用核特征映射 φ 替代 softmax，Attn = φ(Q) @ (φ(K)^T @ V) / (φ(Q) @ φ(K)^T @ 1)
+  //   利用低秩因子：φ(K) ≈ φ(Q_k @ K_comp)，或直接对 K_comp 做核映射
+  //   中间矩阵 φ(K_comp)^T @ V_comp ∈ R^{k×d}，序列维度 L → k
+  //   // 此时 k 个压缩 token 的解释成立，同时节省显存和计算
 
 方法2 - 流式增量压缩（低延迟）：
   维护基底 (U_basis ∈ R^{k×d})，新 token 到来：
@@ -59,7 +75,7 @@
 - D8: SVD → matmul 可融合；在线更新用 incremental SVD 避免全量重算
 
 ## 论文表述方式
-"基于 Eckart-Young-Mirsky 定理，采用随机化 SVD 将 KV-Cache 投影到最优秩-$k$ 子空间，以 $O(Ldk)$ 复杂度将序列维度从 $L$ 降至 $k$。Weyl 扰动界保证 K/V 矩阵本身的压缩误差不超过 $\sigma_{k+1}$；attention 输出的端到端误差界进一步依赖 query 范数、softmax Lipschitz 常数和温度参数。实际显存压缩比取决于存储格式（物化 vs 基底+系数）及 V-Cache 的独立压缩策略。"
+"基于 Eckart-Young-Mirsky 定理，采用随机化 SVD 将 KV-Cache 投影到最优秩-$k$ 子空间，以 $O(Ldk)$ 复杂度将存储从 $O(Ld)$ 压缩至 $O(Lk + kd)$（基底+系数格式）。对标准 softmax attention，需从因子形式重构完整 $L \times d$ 矩阵，节省显存但不节省计算；仅在线性注意力（核特征映射）下，序列维度的计算复杂度才从 $L$ 降至 $k$。Weyl 扰动界保证 K/V 矩阵本身的压缩误差不超过 $\sigma_{k+1}$；attention 输出的端到端误差界进一步依赖 query 范数、softmax Lipschitz 常数和温度参数。实际显存压缩比取决于存储格式（物化 vs 基底+系数）及 V-Cache 的独立压缩策略。"
 
 ## 风险
 - **秩选取不当**：$k$ 过小导致 $\sigma_{k+1}$ 不可忽略，长距离 recall 下降；需监控奇异值衰减曲线

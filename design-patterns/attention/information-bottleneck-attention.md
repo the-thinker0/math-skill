@@ -19,12 +19,29 @@
 
 **方案 A：KL 正则化注意力（最简 IB 注意力）**：
 ```python
-# 注意力分布 q(z|x) 与均匀先验的 KL 散度作为 IB 正则
+# ⚠ 注意 KL 方向的语义：
+# KL(attn || uniform) = log(n) - H(attn)
+# 最小化 +beta * KL(attn || uniform) = 最大化 H(attn) → 推向均匀分布（最大熵/最大压缩）
+# 这本身不诱导稀疏性！稀疏性来自压缩项与 task_loss 的张力。
+# 若需要显式诱导稀疏注意力，应使用熵惩罚 +beta * H(attn)（最小化熵）。
+
 scores = (Q @ K.T) / sqrt(d)
 attn = softmax(scores)
 uniform_prior = ones_like(attn) / n
-kl_reg = (attn * (log(attn + eps) - log(uniform_prior))).sum(dim=-1).mean()
-loss = task_loss + beta * kl_reg
+
+# 正确的 IB 压缩项：KL(q(z|x) || p(z))，p(z) 为固定先验
+# 最小化此项 → 压缩信息（推向先验），与 task_loss 的张力产生有用注意力
+kl_compression = (attn * (log(attn + eps) - log(uniform_prior))).sum(dim=-1).mean()
+# = log(n) - H(attn)
+
+# IB 目标：min task_loss + beta * I(X;Z)，其中 I(X;Z) ≈ KL(attn || prior)
+loss_ib = task_loss + beta * kl_compression
+# 注意：此项单独作用会推向均匀；稀疏性来自 task_loss 的反向拉力
+
+# 替代方案：显式稀疏性诱导（非 IB 压缩，而是熵惩罚）
+entropy = -(attn * log(attn + eps)).sum(dim=-1).mean()
+loss_sparse = task_loss + beta * entropy  # 最小化熵 → 注意力集中 → 隐式 Top-K
+
 output = attn @ V
 ```
 
@@ -50,7 +67,7 @@ loss = -info_nce + beta * kl_bottleneck
 ```
 
 ## 可实现结构
-- **IB-Sparse Attention**：将 KL 正则化为注意力稀疏性的软约束——KL 对均匀先越大 → 注意力越集中 → 隐式 Top-K 选择
+- **IB-Sparse Attention**：IB 压缩项 KL(attn || uniform) 本身推向均匀分布（最大熵），但与 task_loss 的张力迫使注意力在"压缩所有信息"与"选择性传递有用信息"之间取舍，从而隐式产生非均匀注意力。若要**显式**诱导稀疏（Top-K 选择），应使用熵惩罚 `+beta * H(attn)`（最小化注意力熵 → 集中化），而非依赖 IB 压缩项
 - **Dropout 的 IB 解释**：Dropout 是一种随机信息瓶颈——随机阻断部分信息通道，迫使模型学习鲁棒表示。Dropout rate 对应 $\beta$ 参数
 - **Multi-Head 信息分配**：不同 head 学习不同的信息瓶颈（不同 $\beta$），有的 head 传递全局信息，有的只传递局部信息
 

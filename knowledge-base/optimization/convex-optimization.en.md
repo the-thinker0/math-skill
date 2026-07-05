@@ -2,7 +2,7 @@
 
 ## Minimal Definition
 
-Optimization problems that minimize a convex function over a convex set. Convexity guarantees that a local optimum is also a global optimum, and the first-order condition ($\nabla f = 0$) is both necessary and sufficient. Convex problems are the only class in optimization theory that guarantees global optimality with efficient solvability.
+Optimization problems that minimize a convex function over a convex set. Convexity guarantees that a local optimum is also a global optimum. For **unconstrained, differentiable** convex optimization, the first-order condition ($\nabla f(x^*) = 0$) is both necessary and sufficient; for **constrained** convex optimization ($\min f(x)$ s.t. $x \in C$), the KKT conditions are necessary and sufficient under Slater's condition; for **non-smooth** convex optimization, the optimality condition is $0 \in \partial f(x^*) + N_C(x^*)$, where $N_C$ is the normal cone of the constraint set. Convex problems are the only class in optimization theory that guarantees global optimality with efficient solvability.
 
 ## Core Formulas
 

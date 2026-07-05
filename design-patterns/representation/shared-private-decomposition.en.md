@@ -46,8 +46,13 @@ Method 3 - Adversarial Decomposition (information-theoretic guarantee):
   z_shared = E_shared(X)
   z_private = E_private[t](X)
   // Shared should be indistinguishable across tasks (adversarial gradient):
+  // ⚠ Sign correctness is critical! Original formula L_adv = -CE with flip_gradient creates a double sign reversal:
+  //   Discriminator minimizes -CE → gets worse at prediction; Encoder (sees +CE after reversal) → helps discriminator → shared becomes MORE task-specific!
+  // Correct approach: L_adv = +CE, combined with flip_gradient:
+  //   Discriminator minimizes +CE → learns to predict task from shared
+  //   Encoder (gradient reversed) sees -CE → maximizes discriminator loss → shared becomes task-independent
   task_pred = classifier(z_shared.flip_gradient())
-  L_adv = -CE(task_pred, t)        // Shared contains no task information
+  L_adv = CE(task_pred, t)        // Discriminator: minimize CE to predict task; Encoder: sees -CE after reversal, maximizes CE, making shared task-independent
   // Private should be discriminative across tasks:
   L_private = CE(classifier(z_private), t)
   L = L_task + lambda_adv * L_adv + lambda_priv * L_private

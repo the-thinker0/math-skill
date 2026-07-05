@@ -25,7 +25,7 @@
 
 ## 可迁移到 AI/Infra 的核心结构
 
-- **切空间 = 参数/隐空间的局部线性化（local linearization）**。`df_p: T_pM → T_{f(p)}N` 就是 Jacobian / pushforward；反向传播 = 沿复合映射做 pushforward（链式法则的几何版）。一切一阶方法都活在切空间里。
+- **切空间 = 参数/隐空间的局部线性化（local linearization）**。`df_p: T_pM → T_{f(p)}N` 就是 Jacobian / pushforward（前推，对应 JVP / 前向模式 AD）；反向传播 = 余切丛上的拉回（pullback on cotangent bundle，VJP = 向量-Jacobian 积 = 余向量的拉回），即沿复合映射做 pullback（链式法则的几何版）。一切一阶方法都活在切空间里。
 - **梯度是余向量（covector），不是向量**。autodiff 给出的是 1-form（余切空间元素）；要变成可下降的方向（切向量）必须用 **度量升指标**（(sharp)）。欧氏度量 → 普通梯度；Fisher 度量 → 自然梯度（natural gradient）。**这是自然梯度 / 镜像下降的流形根因**。
 - **约束集 = 子流形（submanifold）**。正则水平集定理：当 g 是 submersion 时 `g(x)=c` 的解集是光滑子流形；约束优化 = 在子流形上做无约束优化。
 - **李群 = 可微的对称群**。SO(n)/U(n)/Stiefel/Grassmann 都是流形；其李代数（如反对称矩阵 so(n)）是线性空间，用 `exp` 映射回群 → **把"约束权重"重参数化为"无约束李代数 + exp"**。
@@ -57,7 +57,7 @@
 
 逐维对照：
 
-- **D1–D2** 切空间运算（pushforward/pullback、Jacobian-向量积、把梯度投影到切空间）**天然是 batched GEMM** [v]——反向传播本就是 pushforward，这部分对 GPU 极友好。**但** retraction/exp 多半要 QR、特征分解、矩阵指数或小矩阵求逆：QR/eig **不是干净的 GEMM**，是带串行依赖的分解（cuSOLVER 批量小矩阵尚可，大矩阵 O(n³) 且并行差）→ **可改造** 而非天然友好。
+- **D1–D2** 切空间运算（pushforward/pullback、Jacobian-向量积、把梯度投影到切空间）**天然是 batched GEMM** [v]——反向传播本就是 pullback（VJP），这部分对 GPU 极友好。**但** retraction/exp 多半要 QR、特征分解、矩阵指数或小矩阵求逆：QR/eig **不是干净的 GEMM**，是带串行依赖的分解（cuSOLVER 批量小矩阵尚可，大矩阵 O(n³) 且并行差）→ **可改造** 而非天然友好。
 - **D3 复杂度**：测地线距离、平行移动、一般 `log|det J|` 都是 O(n³) 起。**改造**：限定有闭式测地线的流形（球面/双曲/SO(3)）；归一化流用三角/耦合层让 log-det 退化成对角和（O(n)）。
 - **D5 低精度**：[~] **最大坑**。矩阵 `exp / log / sqrt`、特征分解、SPD 的仿射不变度量在 bf16/fp16 下 **灾难性不稳定**，常静默地需要 fp32/fp64。流形原语经常"表面能跑、数值早已发散"。
 - **D6 并行与通信**：scaling-and-squaring 的平方链、ODE 积分步、Householder/QR 都有 **串行递推**，难跨 SM/设备 overlap。反例向好：显式辛积分器（leapfrog）高并行 [v]。

@@ -24,10 +24,26 @@ Method 1 - Offline periodic compression (most practical):
   Q_k = qr(K @ Omega)[0]                   // L×(k+p) orthonormal basis (GEMM + QR)
   B_k = Q_k^T @ K                          // (k+p)×d small matrix GEMM
   U_r, S_r, Vt_r = svd(B_k)               // small matrix SVD
-  K_comp = S_r[:k] * Vt_r[:k, :]           // k×d compressed Key
+  K_comp = S_r[:k] * Vt_r[:k, :]           // k×d compressed Key (low-rank factor)
   // V_comp definition: apply analogous truncated SVD to V, V_comp = Σ_k^{(V)} · Vt_k^{(V)} (k×d compressed Value)
   // Alternatively, if K and V share column-space basis Q_k, then V_comp = Q_k^T @ V (project onto same low-rank subspace)
-  // Attention: softmax(Q @ K_comp^T / √d) @ V_comp, sequence dimension L → k
+  //
+  // ⚠ Critical distinction -- low-rank factors CANNOT directly replace the original sequence in softmax attention:
+  //   K ≈ Q_k @ K_comp (L×d reconstruction); softmax is a nonlinear operation, so
+  //   softmax(Q @ K_comp^T / √d) @ V_comp ≠ softmax(Q @ K^T / √d) @ V
+  //   The "k compressed tokens" interpretation is only valid for linear attention, not softmax attention.
+  //
+  // Mode A - Standard softmax attention (saves memory, not compute):
+  //   K_recon = Q_k @ K_comp                // reconstruct L×d Key
+  //   V_recon = Q_k @ V_comp                // reconstruct L×d Value (if shared basis)
+  //   Attention: softmax(Q @ K_recon^T / √d) @ V_recon, sequence dimension remains L
+  //   // Advantage: storage reduced from O(Ld) to O(Lk + kd), but compute is unchanged
+  //
+  // Mode B - Linear attention (kernel feature map φ, saves both memory and compute):
+  //   Replace softmax with kernel feature map φ: Attn = φ(Q) @ (φ(K)^T @ V) / (φ(Q) @ φ(K)^T @ 1)
+  //   Exploit low-rank factors: φ(K) ≈ φ(Q_k @ K_comp), or apply kernel map directly to K_comp
+  //   Intermediate matrix φ(K_comp)^T @ V_comp ∈ R^{k×d}, sequence dimension L → k
+  //   // Here the "k compressed tokens" interpretation is valid, saving both memory and compute
 
 Method 2 - Streaming incremental compression (low latency):
   Maintain basis (U_basis ∈ R^{k×d}), on new token arrival:
@@ -59,7 +75,7 @@ Method 3 - Layer-wise adaptive: allocate per-layer, per-head k based on effectiv
 - D8: SVD → matmul can be fused; online updates use incremental SVD to avoid full recomputation
 
 ## Paper-Worthy Formulation
-"Building on the Eckart--Young--Mirsky theorem, we employ randomized SVD to project the KV-Cache onto the optimal rank-$k$ subspace, reducing the sequence dimension from $L$ to $k$ at $O(Ldk)$ complexity. The Weyl perturbation bound guarantees that the K/V matrix compression error itself does not exceed $\sigma_{k+1}$; the end-to-end attention output error bound further depends on query norms, the softmax Lipschitz constant, and the temperature parameter. The actual memory compression ratio depends on the storage format (materialized vs. basis+coefficient) and the independent V-Cache compression strategy."
+"Building on the Eckart--Young--Mirsky theorem, we employ randomized SVD to project the KV-Cache onto the optimal rank-$k$ subspace, compressing storage from $O(Ld)$ to $O(Lk + kd)$ (basis+coefficient format) at $O(Ldk)$ complexity. For standard softmax attention, the full $L \times d$ matrix must be reconstructed from the factored form, saving memory but not compute; only with linear attention (kernel feature map) does the computational sequence dimension truly reduce from $L$ to $k$. The Weyl perturbation bound guarantees that the K/V matrix compression error itself does not exceed $\sigma_{k+1}$; the end-to-end attention output error bound further depends on query norms, the softmax Lipschitz constant, and the temperature parameter. The actual memory compression ratio depends on the storage format (materialized vs. basis+coefficient) and the independent V-Cache compression strategy."
 
 ## Risks
 - **Improper rank selection**: $k$ too small causes $\sigma_{k+1}$ to be non-negligible, degrading long-range recall; singular value decay curves must be monitored

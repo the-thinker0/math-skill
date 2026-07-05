@@ -13,7 +13,7 @@ Minimizes an objective $f(x)$ over a constraint set $\mathcal{C} = \{x : g_i(x) 
   - $\lambda_i g_i(x) = 0$ (complementary slackness)
 - Projected gradient method: $x_{k+1} = \text{proj}_{\mathcal{C}}(x_k - \alpha \nabla f(x_k))$
 - Penalty function method: $\min_x f(x) + \frac{\rho}{2}\sum [\max(0, g_i(x))]^2 + \frac{\rho}{2}\sum h_j(x)^2$
-- Augmented Lagrangian: $\mathcal{L}_\rho(x,\lambda) = f(x) + \sum \lambda_i g_i(x) + \frac{\rho}{2}\sum g_i(x)^2$
+- Augmented Lagrangian (inequality constraints $g_i(x) \leq 0$): $\mathcal{L}_\rho(x,\lambda) = f(x) + \frac{\rho}{2}\sum_i \left[\max\!\left(0,\; \frac{\lambda_i}{\rho} + g_i(x)\right)^2 - \left(\frac{\lambda_i}{\rho}\right)^2\right]$ (strictly feasible constraints where $g_i(x) < 0$ and $\lambda_i/\rho + g_i(x) \leq 0$ are not penalized; for equality constraints this reduces to $\mathcal{L}_\rho = f(x) + \sum \nu_j h_j(x) + \frac{\rho}{2}\sum h_j(x)^2$)
 - Armijo line search (constrained version): $\alpha$ satisfies $f(\text{proj}_\mathcal{C}(x - \alpha \nabla f)) \leq f(x) - \sigma \alpha \|\nabla f\|^2$
 
 ## Applicable Problems

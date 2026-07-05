@@ -288,6 +288,8 @@ echo ""
 echo "--- v3.1.0 Additions ---"
 check_contains "skills/math-research-activator/SKILL.md" '知识缺口协议'
 check_contains "skills/math-research-activator/SKILL.en.md" 'Knowledge Gap Protocol'
+check_file "references/skill-index.md"
+check_file "references/skill-index.en.md"
 check_contains "knowledge-base/overview.md" '激活锚点'
 check_contains "knowledge-base/overview.en.md" 'Activation Anchor'
 check_file "design-patterns/overview.md"

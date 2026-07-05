@@ -9,7 +9,7 @@ Optimization on smooth manifolds $\mathcal{M}$ (e.g., the orthogonal group $O(n)
 - Riemannian gradient: $\text{grad} f(x) = \text{proj}_{T_x\mathcal{M}}(\nabla f(x))$ (Euclidean gradient projected onto the tangent space)
 - Riemannian gradient descent: $x_{k+1} = R_{x_k}(-\alpha_k \cdot \text{grad} f(x_k))$, where $R$ is a retraction
 - Tangent space of the orthogonal group $O(n)$: $T_Q O(n) = \{Q\Omega : \Omega^T = -\Omega\}$ (left multiplication by skew-symmetric matrices)
-- Cayley retraction for the orthogonal group: $R_Q(\xi) = Q(I + \frac{1}{2}\Omega)^{-1}(I - \frac{1}{2}\Omega)$, $\xi = Q\Omega$
+- Cayley retraction for the orthogonal group: $R_Q(\xi) = Q(I + \frac{1}{2}\Omega)^{-1}(I - \frac{1}{2}\Omega)$, $\xi = Q\Omega$; equivalently in $A$-form: let $G = \nabla f(Q)$ be the Euclidean gradient and $A = GQ^T - QG^T$ (skew-symmetric), then $R_Q(t) = (I + \frac{t}{2}A)^{-1}(I - \frac{t}{2}A)Q$, with step size $t > 0$ moving along the negative gradient (descent direction)
 - Polar decomposition retraction: $R_Q(\xi) = (Q + \xi)(I + \xi^T\xi)^{-1/2}$ (projection onto the nearest orthogonal matrix)
 - Newton-Schulz orthogonalization: $X_{k+1} = \frac{1}{2}X_k(3I - X_k^T X_k)$, converging to the nearest orthogonal matrix
 - Hyperbolic space (Poincaré ball): $\text{grad}_{\mathcal{H}} f = \frac{(1-\|x\|^2)^2}{4} \nabla f(x)$

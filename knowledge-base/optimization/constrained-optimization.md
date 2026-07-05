@@ -13,7 +13,7 @@
   - $\lambda_i g_i(x) = 0$（互补松弛）
 - 投影梯度法：$x_{k+1} = \text{proj}_{\mathcal{C}}(x_k - \alpha \nabla f(x_k))$
 - 惩罚函数法：$\min_x f(x) + \frac{\rho}{2}\sum [\max(0, g_i(x))]^2 + \frac{\rho}{2}\sum h_j(x)^2$
-- 增广 Lagrangian：$\mathcal{L}_\rho(x,\lambda) = f(x) + \sum \lambda_i g_i(x) + \frac{\rho}{2}\sum g_i(x)^2$
+- 增广 Lagrangian（不等式约束 $g_i(x) \leq 0$）：$\mathcal{L}_\rho(x,\lambda) = f(x) + \frac{\rho}{2}\sum_i \left[\max\!\left(0,\; \frac{\lambda_i}{\rho} + g_i(x)\right)^2 - \left(\frac{\lambda_i}{\rho}\right)^2\right]$（严格可行约束 $g_i(x) < 0$ 且 $\lambda_i/\rho + g_i(x) \leq 0$ 时不受惩罚；等式约束退化为 $\mathcal{L}_\rho = f(x) + \sum \nu_j h_j(x) + \frac{\rho}{2}\sum h_j(x)^2$）
 - Armijo 线搜索（约束版）：$\alpha$ 满足 $f(\text{proj}_\mathcal{C}(x - \alpha \nabla f)) \leq f(x) - \sigma \alpha \|\nabla f\|^2$
 
 ## 适用问题

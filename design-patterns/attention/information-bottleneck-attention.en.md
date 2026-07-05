@@ -19,12 +19,29 @@ When the attention mechanism needs to **selectively transmit useful information 
 
 **Scheme A: KL-Regularized Attention (Simplest IB Attention)**:
 ```python
-# KL divergence between attention distribution q(z|x) and uniform prior as IB regularizer
+# ⚠ Note the semantic direction of KL:
+# KL(attn || uniform) = log(n) - H(attn)
+# Minimizing +beta * KL(attn || uniform) = maximizing H(attn) → pushes toward uniform (max entropy / max compression)
+# This does NOT induce sparsity by itself! Sparsity emerges from the tension with task_loss.
+# For explicit sparsity induction, use an entropy penalty +beta * H(attn) (minimize entropy).
+
 scores = (Q @ K.T) / sqrt(d)
 attn = softmax(scores)
 uniform_prior = ones_like(attn) / n
-kl_reg = (attn * (log(attn + eps) - log(uniform_prior))).sum(dim=-1).mean()
-loss = task_loss + beta * kl_reg
+
+# Correct IB compression term: KL(q(z|x) || p(z)), where p(z) is a fixed prior
+# Minimizing this term → compresses information (pushes toward prior); tension with task_loss yields useful attention
+kl_compression = (attn * (log(attn + eps) - log(uniform_prior))).sum(dim=-1).mean()
+# = log(n) - H(attn)
+
+# IB objective: min task_loss + beta * I(X;Z), where I(X;Z) ≈ KL(attn || prior)
+loss_ib = task_loss + beta * kl_compression
+# Note: this term alone pushes toward uniform; sparsity arises from the counter-pull of task_loss
+
+# Alternative: explicit sparsity induction (not IB compression, but entropy penalty)
+entropy = -(attn * log(attn + eps)).sum(dim=-1).mean()
+loss_sparse = task_loss + beta * entropy  # minimize entropy → concentrated attention → implicit Top-K
+
 output = attn @ V
 ```
 
@@ -50,7 +67,7 @@ loss = -info_nce + beta * kl_bottleneck
 ```
 
 ## Implementable Architectures
-- **IB-Sparse Attention**: KL regularization serves as a soft constraint on attention sparsity -- larger KL relative to uniform prior leads to more concentrated attention, yielding implicit Top-K selection
+- **IB-Sparse Attention**: The IB compression term KL(attn || uniform) by itself pushes toward uniform (maximum entropy), but its tension with task_loss forces the attention to balance between "compressing all information" and "selectively transmitting useful information," implicitly producing non-uniform attention. For **explicit** sparsity induction (Top-K selection), use an entropy penalty `+beta * H(attn)` (minimize attention entropy → concentration), rather than relying on the IB compression term alone
 - **IB Interpretation of Dropout**: Dropout is a form of stochastic information bottleneck -- randomly blocking information channels forces the model to learn robust representations. The dropout rate corresponds to the $\beta$ parameter
 - **Multi-Head Information Allocation**: Different heads learn different information bottlenecks (different $\beta$); some heads transmit global information, others only local information
 

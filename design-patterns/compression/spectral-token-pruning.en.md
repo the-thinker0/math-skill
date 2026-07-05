@@ -9,7 +9,7 @@ Use when pruning must be based on the structural importance of tokens (rather th
 - Knowledge: ../../knowledge-base/matrix-analysis/spectral-decomposition.en.md (spectral radius, eigenvector centrality), ../../knowledge-base/matrix-analysis/matrix-perturbation.en.md (Geršgorin discs, perturbation bounds), ../../knowledge-base/matrix-analysis/positive-semidefinite.en.md (Gram matrix PSD structure)
 
 ## Required Mathematical Background
-- **Eigenvector Centrality**: the principal eigenvector of the attention matrix $A$ satisfies $Ax = \lambda_1 x$; component $x_i$ quantifies the global influence of token $i$ (Perron--Frobenius guarantees non-negativity)
+- **Eigenvector Centrality**: For a row-stochastic (row-softmax) attention matrix $A$, the right principal eigenvector $Ax = \lambda_1 x$ degenerates to the all-ones vector (since $A \mathbf{1} = \mathbf{1}$), making it useless for distinguishing token importance. **Must use the LEFT principal eigenvector** $x^T A = \lambda_1 x^T$ (equivalently $A^T x = \lambda_1 x$), which gives the stationary distribution of the Markov chain and provides PageRank-like importance scores (Perron--Frobenius guarantees non-negativity)
 - **Spectral Gap**: $\Delta = \lambda_1 - \lambda_2$ governs the rate of information diffusion; large $\Delta \Rightarrow$ a few tokens dominate $\Rightarrow$ safe to prune
 - **Fiedler Vector**: the second-smallest eigenvector of the Laplacian $L_{\text{sym}}$ yields the optimal bipartition; small magnitude = partition boundary = important
 - **Weyl Perturbation Bound**: pruning = removing rows/columns = rank-1 perturbation $E$, $|\lambda_i(A) - \lambda_i(A_{\text{pruned}})| \leq \|E\|_2$
@@ -19,11 +19,13 @@ Use when pruning must be based on the structural importance of tokens (rather th
 Module: SpectralTokenPruner
 Input: K ∈ R^{L×d}    Parameters: retention ratio ρ ∈ (0,1]
 
-Method 1 - Spectral centrality pruning (power iteration):
-  A = softmax(K @ K^T / √d)                  // L×L similarity graph
+Method 1 - Spectral centrality pruning (power iteration, left eigenvector):
+  A = softmax(K @ K^T / √d)                  // L×L row-stochastic similarity graph
+  // ⚠ A is row-stochastic: right principal eigenvector = all-ones (degenerate); must use left eigenvector
+  // Left principal eigenvector = right eigenvector of A^T = Markov chain stationary distribution (PageRank importance)
   v = ones(L) / √L
-  for t in range(5): v = A @ v; v = v / ‖v‖  // power iteration O(L²·T)
-  indices = topk(v, ceil(ρ * L))              // retain tokens with highest centrality
+  for t in range(5): v = A^T @ v; v = v / ‖v‖  // power iteration on A^T (not A), O(L²·T)
+  indices = topk(v, ceil(ρ * L))              // retain tokens with highest left-eigenvector centrality
 
 Method 2 - Geršgorin cheap pruning (zero iterations):
   S = K @ K^T / √d                         // L×L raw similarity matrix (pre-softmax, so row sums vary)
@@ -31,14 +33,14 @@ Method 2 - Geršgorin cheap pruning (zero iterations):
   indices = topk(gersh_score, ceil(ρ * L))    // O(L²) elementwise, no power iteration needed
 
 Method 3 - Differentiable spectral pruning (end-to-end):
-  v = power_iteration(A, T=5)
+  v = power_iteration(A^T, T=5)               // left principal eigenvector (power iteration on A^T)
   gate = sigmoid(v @ W_gate / τ)               // soft gating, τ annealing
   K_gated = gate * K                            // per-token scaling
   L_sparse = ‖gate‖_1 / L                       // sparsity regularization
 ```
 
 ## Implementable Architectures
-- **Power iteration centrality**: 5-step matvec to estimate the principal eigenvector, $O(L^2 \cdot 5)$, suitable for moderate-length sequences
+- **Power iteration centrality**: 5-step matvec to estimate the principal eigenvector of $A^T$ (i.e., the left principal eigenvector / stationary distribution of $A$), $O(L^2 \cdot 5)$, suitable for moderate-length sequences
 - **Sampling approximation**: for $L > 4096$, sample $m$ anchor points and construct an $m \times m$ submatrix for spectral analysis
 - **Multi-head fusion**: average the attention graphs across different heads before performing spectral analysis
 - **Progressive pruning**: incrementally increase the pruning ratio across layers (light pruning in shallow layers, heavy pruning in deep layers)
@@ -52,7 +54,7 @@ Method 3 - Differentiable spectral pruning (end-to-end):
 - Operator fusion: $KK^T$ + row-sum + topk can be fused into a single kernel
 
 ## Paper-Worthy Formulation
-"We cast token pruning as spectral sparsification of a directed graph: leveraging the Perron--Frobenius principal eigenvector of the attention matrix to quantify global centrality, with the Weyl perturbation bound guaranteeing that post-pruning spectral drift does not exceed the $\ell_2$ norm of the removed tokens, while Geršgorin discs provide an $O(L^2)$ inexpensive alternative."
+"We cast token pruning as spectral sparsification of a directed graph: leveraging the **left** principal eigenvector (Markov chain stationary distribution, PageRank-like centrality) of the row-stochastic attention matrix to quantify global importance -- the right principal eigenvector degenerates to the all-ones vector due to $A\mathbf{1}=\mathbf{1}$ and is therefore unusable. The Weyl perturbation bound guarantees that post-pruning spectral drift does not exceed the $\ell_2$ norm of the removed tokens, while Geršgorin discs provide an $O(L^2)$ inexpensive alternative."
 
 ## Risks
 - **$L \times L$ matrix memory bottleneck**: for long sequences the similarity matrix itself may exceed available memory, necessitating sampling or chunking

@@ -24,8 +24,11 @@
   W ≈ C · W_m^{-1} · C^T，将特征分解降维到 m×m
 - **谱松弛连续化**：离散聚类分配 → 连续特征向量 → 可微路由
   用 softmax(U_k · W_proj) 替代硬 k-means 分配
-- **幂迭代加速**：不需完整特征分解，只需前 k 个特征向量
-  用 Lanczos/Arnoldi 迭代 O(N²·k·iter) 或 randomized SVD O(N²·k)
+- **幂迭代加速**：不需完整特征分解，只需拉普拉斯 $L$ 的前 $k$ 个**最小**特征向量
+  ⚠ 幂迭代天然找**最大**特征向量，因此不能直接对 $L$ 做幂迭代！
+  正确做法：(1) 对相似度矩阵 $W$（或归一化 $D^{-1/2}WD^{-1/2}$）做幂迭代找最大特征向量
+  （对应 $L$ 的最小特征向量）；(2) 对 $L$ 用 Lanczos + which='SM'；(3) 移位逆迭代 $(L - \sigma I)^{-1}$
+  Lanczos/Arnoldi 迭代 O(N²·k·iter) 或 randomized SVD O(N²·k)
 
 ## AI 模块形式
 ```
@@ -38,9 +41,12 @@
   L = I - D^{-1/2} W D^{-1/2}                    // 归一化拉普拉斯
   U_k = eigsh(L, k=K, which='SM')                // 前 K 个最小特征向量
   centers = kmeans(U_k, K)                        // K 个聚类中心
-  // 路由：将新 token 投影到谱空间后分配
-  proj = X @ W_proj                               // N→K 维投影（可学习）
-  assignment = argmin(cdist(proj, centers))        // 最近中心分配
+  // 路由：将新 token 嵌入到谱空间后分配
+  // ⚠ X @ W_proj 仅为可学习线性投影，不是 Nyström 扩展！
+  // 真正的 Nyström 扩展：v_new = (1/λ) * W(x_new, X_sample) @ v，其中 v 为特征向量，λ 为特征值
+  proj_nystrom = (1/λ_k) * W_new_sample @ U_k    // Nyström 扩展：x_new 到 m 个采样点的相似度 × 特征向量
+  proj = X @ W_proj                               // 替代方案：可学习线性投影（非 Nyström，但可端到端训练）
+  assignment = argmin(cdist(proj_nystrom, centers))  // 最近中心分配
 
 方法2 - 可微谱路由（端到端）：
   // 用 softmax 松弛替代硬分配
@@ -48,8 +54,10 @@
   A = exp(sim_matrix / τ)                          // 相似度图（可学习 τ）
   D_inv_sqrt = diag(1 / sqrt(sum(A, dim=1) + ε))
   L_norm = I - D_inv_sqrt @ A @ D_inv_sqrt         // 归一化拉普拉斯
-  // 近似前 K 个特征向量（幂迭代 + 正交化）
-  U_k = power_iteration_approx(L_norm, K, steps=5)  // N×K
+  // ⚠ 幂迭代找最大特征向量，但谱聚类需要 L_norm 的最小特征向量！
+  // 对归一化相似度矩阵做幂迭代：其最大特征向量 = L_norm 的最小特征向量
+  W_norm = D_inv_sqrt @ A @ D_inv_sqrt             // = I - L_norm
+  U_k = power_iteration_approx(W_norm, K, steps=5)  // N×K（W_norm 的最大特征向量 = L_norm 的最小）
   // 软分配
   cluster_logits = U_k @ W_cluster                  // N×K（可学习投影）
   route_probs = softmax(cluster_logits / τ_route)    // 软路由概率
@@ -59,7 +67,9 @@
   Z = exp(-cdist(X, anchors) / (2σ²))               // N×m 亲和矩阵
   L_anchor = I - D_z^{-1/2} Z^T Z D_z^{-1/2}        // m×m 拉普拉斯
   U_k = eigsh(L_anchor, K)                          // m×K 特征向量
-  route = Z @ U_k @ W_proj                           // N×K 路由分数
+  // Nyström 扩展：Z @ U_k 将锚点特征向量扩展到全部 N 个点（非可学习部分）
+  embedding_nystrom = Z @ U_k                       // N×K Nyström 扩展嵌入
+  route = embedding_nystrom @ W_proj                 // N×K 可学习投影后的路由分数
 ```
 
 ## 可实现结构

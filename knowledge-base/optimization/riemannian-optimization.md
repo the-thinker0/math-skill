@@ -9,7 +9,7 @@
 - 黎曼梯度：$\text{grad} f(x) = \text{proj}_{T_x\mathcal{M}}(\nabla f(x))$（欧氏梯度投影到切空间）
 - 黎曼梯度下降：$x_{k+1} = R_{x_k}(-\alpha_k \cdot \text{grad} f(x_k))$，$R$ 为收缩映射（retraction）
 - 正交群 $O(n)$ 的切空间：$T_Q O(n) = \{Q\Omega : \Omega^T = -\Omega\}$（反对称矩阵左乘）
-- 正交群收缩映射（Cayley）：$R_Q(\xi) = Q(I + \frac{1}{2}\Omega)^{-1}(I - \frac{1}{2}\Omega)$，$\xi = Q\Omega$
+- 正交群收缩映射（Cayley）：$R_Q(\xi) = Q(I + \frac{1}{2}\Omega)^{-1}(I - \frac{1}{2}\Omega)$，$\xi = Q\Omega$；等价地用 $A$-形式：设 $G = \nabla f(Q)$ 为欧氏梯度，$A = GQ^T - QG^T$（反对称），则 $R_Q(t) = (I + \frac{t}{2}A)^{-1}(I - \frac{t}{2}A)Q$，步长 $t > 0$ 沿负梯度方向移动（下降方向）
 - 极分解收缩：$R_Q(\xi) = (Q + \xi)(I + \xi^T\xi)^{-1/2}$（投影到最近正交矩阵）
 - Newton-Schulz 正交化：$X_{k+1} = \frac{1}{2}X_k(3I - X_k^T X_k)$，收敛到最近正交矩阵
 - 双曲空间（Poincaré ball）：$\text{grad}_{\mathcal{H}} f = \frac{(1-\|x\|^2)^2}{4} \nabla f(x)$

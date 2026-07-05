@@ -46,8 +46,13 @@
   z_shared = E_shared(X)
   z_private = E_private[t](X)
   // Shared 应无法区分任务（对抗梯度）：
+  // ⚠ 符号正确性至关重要！原公式 L_adv = -CE 与 flip_gradient 形成双重符号反转：
+  //   判别器最小化 -CE → 变差；编码器（梯度反转后看到 +CE）→ 帮助判别器 → shared 变得更任务相关！
+  // 正确做法：L_adv = +CE，配合 flip_gradient：
+  //   判别器最小化 +CE → 学会从 shared 预测任务
+  //   编码器（梯度反转）看到 -CE → 最大化判别器损失 → shared 不含任务信息
   task_pred = classifier(z_shared.flip_gradient())
-  L_adv = -CE(task_pred, t)       // Shared 不含任务信息
+  L_adv = CE(task_pred, t)       // 判别器：最小化 CE 预测任务；编码器：梯度反转后最大化 CE，使 shared 任务无关
   // Private 应能区分任务：
   L_private = CE(classifier(z_private), t)
   L = L_task + λ_adv·L_adv + λ_priv·L_private

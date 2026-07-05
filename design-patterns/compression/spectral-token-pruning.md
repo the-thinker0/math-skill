@@ -9,7 +9,7 @@
 - 知识：../../knowledge-base/matrix-analysis/spectral-decomposition.md（谱半径、特征向量中心性）、../../knowledge-base/matrix-analysis/matrix-perturbation.md（Geršgorin 圆盘、扰动界）、../../knowledge-base/matrix-analysis/positive-semidefinite.md（Gram 矩阵 PSD 结构）
 
 ## 需要的数学知识
-- **特征向量中心性**：attention 矩阵 $A$ 的主特征向量 $Ax = \lambda_1 x$，分量 $x_i$ 量化 token $i$ 的全局影响力（Perron-Frobenius 保证非负）
+- **特征向量中心性**：对行随机（行 softmax）attention 矩阵 $A$，右主特征向量 $Ax = \lambda_1 x$ 退化为全 1 向量（因 $A \mathbf{1} = \mathbf{1}$），无法区分 token 重要性。**必须使用左主特征向量** $x^T A = \lambda_1 x^T$（等价于 $A^T x = \lambda_1 x$），即马尔可夫链的平稳分布，给出 PageRank 式重要性分数（Perron-Frobenius 保证非负）
 - **谱间隙**：$\Delta = \lambda_1 - \lambda_2$ 决定信息扩散速度，$\Delta$ 大 $\Rightarrow$ 少数 token 主导 $\Rightarrow$ 安全剪枝
 - **Fiedler 向量**：Laplacian $L_{\text{sym}}$ 的第二小特征向量给出最优二分割，幅值小 = 分割边界 = 重要
 - **Weyl 扰动界**：剪枝 = 删除行/列 = 秩-1 扰动 $E$，$|\lambda_i(A) - \lambda_i(A_{\text{pruned}})| \leq \|E\|_2$
@@ -19,11 +19,13 @@
 模块：SpectralTokenPruner
 输入：K ∈ R^{L×d}    参数：保留比例 ρ ∈ (0,1]
 
-方法1 - 谱中心性剪枝（幂迭代）：
-  A = softmax(K @ K^T / √d)                  // L×L 相似度图
+方法1 - 谱中心性剪枝（幂迭代，左特征向量）：
+  A = softmax(K @ K^T / √d)                  // L×L 行随机相似度图
+  // ⚠ A 为行随机矩阵，右主特征向量 = 全 1 向量（退化），必须用左主特征向量
+  // 左主特征向量 = A^T 的右主特征向量 = 马尔可夫链平稳分布（PageRank 式重要性）
   v = ones(L) / √L
-  for t in range(5): v = A @ v; v = v / ‖v‖  // 幂迭代 O(L²·T)
-  indices = topk(v, ceil(ρ * L))              // 保留中心性最高的 token
+  for t in range(5): v = A^T @ v; v = v / ‖v‖  // 幂迭代 A^T（非 A），O(L²·T)
+  indices = topk(v, ceil(ρ * L))              // 保留左特征向量中心性最高的 token
 
 方法2 - Geršgorin 廉价剪枝（零迭代）：
   S = K @ K^T / √d                         // L×L 原始相似度矩阵（非 softmax，行使行和有区分度）
@@ -31,14 +33,14 @@
   indices = topk(gersh_score, ceil(ρ * L))    // O(L²) elementwise，无需幂迭代
 
 方法3 - 可微谱剪枝（端到端）：
-  v = power_iteration(A, T=5)
+  v = power_iteration(A^T, T=5)               // 左主特征向量（A^T 的幂迭代）
   gate = sigmoid(v @ W_gate / τ)               // 软门控，τ 退火
   K_gated = gate * K                            // 逐 token 缩放
   L_sparse = ‖gate‖_1 / L                       // 稀疏正则
 ```
 
 ## 可实现结构
-- **幂迭代中心性**：5 步 matvec 估计主特征向量，$O(L^2 \cdot 5)$，适合中等序列
+- **幂迭代中心性**：5 步 matvec 估计 $A^T$ 的主特征向量（即 $A$ 的左主特征向量 / 平稳分布），$O(L^2 \cdot 5)$，适合中等序列
 - **采样近似**：$L > 4096$ 时采样 $m$ 个锚点，构造 $m \times m$ 子矩阵做谱分析
 - **多头融合**：不同头的 attention 图取平均后再做谱分析
 - **渐进式剪枝**：逐层递增剪枝比例（浅层少剪、深层多剪）
@@ -52,7 +54,7 @@
 - 算子融合：$KK^T$ + row-sum + topk 可融合为单一 kernel
 
 ## 论文表述方式
-"将 token 剪枝建模为有向图的谱稀疏化：利用 attention 矩阵的 Perron-Frobenius 主特征向量量化全局中心性，Weyl 扰动界保证剪枝后谱漂移不超过被移除 token 的 $\ell_2$ 范数，Geršgorin 圆盘提供 $O(L^2)$ 廉价替代。"
+"将 token 剪枝建模为有向图的谱稀疏化：利用行随机 attention 矩阵的**左**主特征向量（马尔可夫链平稳分布，PageRank 式中心性）量化全局重要性——右主特征向量因 $A\mathbf{1}=\mathbf{1}$ 退化为全 1 向量而不可用。Weyl 扰动界保证剪枝后谱漂移不超过被移除 token 的 $\ell_2$ 范数，Geršgorin 圆盘提供 $O(L^2)$ 廉价替代。"
 
 ## 风险
 - **$L \times L$ 矩阵显存瓶颈**：长序列下相似度矩阵本身可能超出显存，必须采样或分块
