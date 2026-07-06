@@ -84,7 +84,7 @@ Supporting layers:
 
 ### Activation Anchors (by math domain)
 
-| Domain | Cards |
+| Domain | Anchors |
 |--------|-------|
 | Matrix Analysis | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
 | Optimization | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
@@ -158,10 +158,11 @@ Step 2  Lens Selection:
   2. Information-theoretic (preserve max mutual information states)
   3. Topological (preserve key connection points in sequence structure)
 
-Step 3  Knowledge Query:
-  → low-rank-approximation (matrix analysis)
-  → leverage-score-selection (matrix analysis)
-  → information-bottleneck (probability & information)
+Step 3  Activation Anchors:
+  → low-rank-approximation (Matrix Analysis anchor)
+  → leverage-score-selection (Design Pattern: compression)
+  → information-bottleneck (Probability & Information anchor)
+  If existing anchors are insufficient, enter Knowledge Gap Protocol to generate a temporary knowledge card.
 
 Step 4  Design Translation:
   Candidate A: Spectral KV Compression (low-rank + leverage score)
@@ -226,6 +227,11 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 ---
 
 ## Changelog
+
+### v3.1.2 — README Residual Terminology Fix
+
+- **Workflow example**: Step 3 changed from "Knowledge Query" to "Activation Anchors"; `leverage-score-selection` label corrected from "matrix analysis" to "Design Pattern: compression"
+- **Activation anchors table**: column header changed from "Cards" to "Anchors"
 
 ### v3.1.1 — Terminology Consistency Cleanup
 

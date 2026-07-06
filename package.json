@@ -1,6 +1,6 @@
 {
   "name": "math-skill",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "面向 AI 架构创新的数学研究操作系统 v3.1：思想透镜 / 激活锚点 / 设计翻译原型，支持知识缺口协议与临时知识卡。Math Research OS for AI architecture design: thinking lenses + activation anchors + design translation prototypes with Knowledge Gap Protocol.",
   "keywords": [
     "math",

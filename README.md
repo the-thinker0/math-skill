@@ -84,7 +84,7 @@ Sophus Lie 打造"屠龙刀"的故事告诉我们：为解微分方程发明的�
 
 ### 激活锚点（按数学领域）
 
-| 领域 | 知识卡片 |
+| 领域 | 锚点 |
 |------|---------|
 | 矩阵分析 | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
 | 最优化 | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
@@ -158,10 +158,11 @@ git clone https://github.com/the-thinker0/math-skill.git
   2. 信息论（保留最大互信息状态）
   3. 拓扑（保留序列结构关键连接点）
 
-第三步 知识查询：
-  → low-rank-approximation（矩阵分析）
-  → leverage-score-selection（矩阵分析）
-  → information-bottleneck（概率与信息）
+第三步 激活锚点：
+  → low-rank-approximation（矩阵分析锚点）
+  → leverage-score-selection（压缩设计模式）
+  → information-bottleneck（概率与信息锚点）
+  若现有锚点不足，进入 Knowledge Gap Protocol 生成临时知识卡。
 
 第四步 设计翻译：
   候选 A：Spectral KV Compression（低秩 + leverage score）
@@ -226,6 +227,11 @@ math-skill/
 ---
 
 ## 变更日志
+
+### v3.1.2 — README 残留口径修复
+
+- **工作流范例**：第三步从"知识查询"改为"激活锚点"，`leverage-score-selection` 标签从"矩阵分析"改为"压缩设计模式"
+- **激活锚点表头**：列名从"知识卡片"改为"锚点"
 
 ### v3.1.1 — 术语闭环清洁
 

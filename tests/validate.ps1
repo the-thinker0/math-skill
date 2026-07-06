@@ -59,7 +59,7 @@ function Check-Not-Contains {
 }
 
 Write-Host "========================================"
-Write-Host "  Math Skill Validation (v3.1.1 PS)"
+Write-Host "  Math Skill Validation (v3.1.2 PS)"
 Write-Host "========================================"
 
 # --- Infrastructure ---
