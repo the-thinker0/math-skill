@@ -228,17 +228,14 @@ math-skill/
 
 ## 变更日志
 
-### v3.1.2 — README 残留口径修复
-
-- **工作流范例**：第三步从"知识查询"改为"激活锚点"，`leverage-score-selection` 标签从"矩阵分析"改为"压缩设计模式"
-- **激活锚点表头**：列名从"知识卡片"改为"锚点"
-
 ### v3.1.1 — 术语闭环清洁
 
 - **skill-index 口径统一**：标题、知识库小节、工作流范例从"知识库/知识查询"改为"激活锚点"
 - **package.json description**：更新为新定位描述
 - **README 使用表**：机制设计、知识查询、验证审查路径从"知识"改为"激活锚点/临时知识卡"
+- **README 工作流范例**：第三步从"知识查询"改为"激活锚点"，`leverage-score-selection` 标签从"矩阵分析"改为"压缩设计模式"
 - **README 目录结构**：`knowledge-base/` 注释从"数学知识库"改为"激活锚点"
+- **README 激活锚点表头**：列名从"知识卡片"改为"锚点"
 - **SKILL.md / SKILL.en.md**：三层架构表和意图诊断表从"数学知识/Math Knowledge"改为"激活锚点/Activation Anchors"
 - **英文 README 书目链接**：蒸馏文件从 `.md` 改为 `.en.md`
 - **validate 关键词**：从检查"数学知识/Math Knowledge"改为"激活锚点/Activation Anchors"

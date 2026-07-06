@@ -228,17 +228,14 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 
 ## Changelog
 
-### v3.1.2 — README Residual Terminology Fix
-
-- **Workflow example**: Step 3 changed from "Knowledge Query" to "Activation Anchors"; `leverage-score-selection` label corrected from "matrix analysis" to "Design Pattern: compression"
-- **Activation anchors table**: column header changed from "Cards" to "Anchors"
-
 ### v3.1.1 — Terminology Consistency Cleanup
 
 - **skill-index alignment**: title, knowledge base section, and workflow example updated from "knowledge base / knowledge query" to "activation anchors"
 - **package.json description**: updated to new positioning
 - **README usage table**: mechanism design, knowledge query, and verification paths updated from "Knowledge" to "Anchors / Temporary Card"
+- **README workflow example**: Step 3 changed from "Knowledge Query" to "Activation Anchors"; `leverage-score-selection` label corrected from "matrix analysis" to "Design Pattern: compression"
 - **README directory structure**: `knowledge-base/` comment updated from "Math knowledge" to "Activation anchors"
+- **README activation anchors table**: column header changed from "Cards" to "Anchors"
 - **SKILL.md / SKILL.en.md**: three-layer architecture table and intent diagnosis table updated from "Math Knowledge" to "Activation Anchors"
 - **English README book links**: distillation files changed from `.md` to `.en.md`
 - **validate keywords**: checks updated from "Math Knowledge" to "Activation Anchors"
