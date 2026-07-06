@@ -1,7 +1,7 @@
 ---
 name: math-research-activator
 description: |
-  Mathematical research OS — auto-diagnoses user intent, routes to thinking lenses, math knowledge base, or design translation layer. Triggers on architecture/operator design, theoretical analysis, math-to-AI transfer. Does NOT trigger for pure engineering tasks (debug, refactoring, hyperparameter tuning).
+  Mathematical research OS — auto-diagnoses user intent, routes to thinking lenses, activation anchors, or design translation layer. Triggers on architecture/operator design, theoretical analysis, math-to-AI transfer. Does NOT trigger for pure engineering tasks (debug, refactoring, hyperparameter tuning).
 ---
 
 
@@ -26,7 +26,7 @@ This system is a mathematical staff office for AI architecture innovation — no
 | Layer | Responsibility | Directory | Core Question |
 |-------|---------------|-----------|--------------|
 | **Thinking Lenses** | Diagnose problem structure, recommend mathematical perspectives | `../../lenses/*.en.md` | Which perspective should we view this problem through? |
-| **Math Knowledge** | Provide concrete mathematical tools (definitions/theorems/formulas) | `../../knowledge-base/*/*.en.md` | What specific mathematics does this perspective require? |
+| **Activation Anchors** | Activate high-frequency math structures; trigger Knowledge Gap Protocol when insufficient | `../../knowledge-base/*/*.en.md` | What math structures does this perspective require? |
 | **Design Translation** | Translate mathematics into AI modules/losses/operators | `../../design-patterns/*/*.en.md` | How does this mathematics become model architecture? |
 
 Auxiliary layers:
@@ -39,16 +39,16 @@ Auxiliary layers:
 | Scenario | Diagnostic Signal | Invocation Path |
 |----------|------------------|-----------------|
 | **A. Problem Analysis** | "Is this design sound?" "Are there gaps in the reasoning chain?" | Lenses → critic |
-| **B. Mechanism Design** | "Design a new attention mechanism" "Transfer X to Y" | Lenses → Knowledge → Design → critic |
-| **C. Knowledge Query** | "What is a tangent space on a manifold?" "How is the projection theorem applied?" | Knowledge |
-| **D. Verification & Review** | "Does this formula hold?" "What guarantees does this loss provide?" | Knowledge → relevant design patterns (if a concrete AI construct is cited) → critic |
+| **B. Mechanism Design** | "Design a new attention mechanism" "Transfer X to Y" | Lenses → Anchors → Design → critic |
+| **C. Knowledge Query** | "What is a tangent space on a manifold?" "How is the projection theorem applied?" | Anchors |
+| **D. Verification & Review** | "Does this formula hold?" "What guarantees does this loss provide?" | Anchors → relevant design patterns (if a concrete AI construct is cited) → critic |
 | **E. Pure Engineering** | Debugging, refactoring, hyperparameter tuning, code review | **Do not invoke the math system** |
 
 ## Lens Library (15 Mathematical Perspectives)
 
 15 lenses covering: Axiomatization, Duality, Symmetry, Spectral Decomposition, Geometric, Projection & Decomposition, Variational, Local-to-Global, Topological, Categorical, Perturbation, Causal, Game-Theoretic, Probabilistic & Statistical, Algorithmic. Directory: `../../lenses/*.en.md`. Full catalog table: `../../references/skill-index.en.md`.
 
-## Knowledge Base (Organized by Mathematical Domain)
+## Activation Anchors (Organized by Mathematical Domain)
 
 7 domains: Matrix Analysis, Optimization, Differential Geometry, Lie Theory, Topology, Probability & Information, Information Geometry. Directory: `../../knowledge-base/*/*.en.md`. Full catalog table: `../../references/skill-index.en.md`.
 

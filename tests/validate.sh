@@ -52,7 +52,7 @@ check_not_contains() {
 }
 
 echo "========================================"
-echo "  Math Skill Validation (v3.1.0)"
+echo "  Math Skill Validation (v3.1.1)"
 echo "========================================"
 
 # --- Infrastructure ---
@@ -72,10 +72,10 @@ check_file "skills/math-research-activator/SKILL.md"
 check_file "skills/math-research-activator/SKILL.en.md"
 check_contains "skills/math-research-activator/SKILL.md" '三层正交架构'
 check_contains "skills/math-research-activator/SKILL.md" '思想透镜'
-check_contains "skills/math-research-activator/SKILL.md" '数学知识'
+check_contains "skills/math-research-activator/SKILL.md" '激活锚点'
 check_contains "skills/math-research-activator/SKILL.md" '设计翻译'
 check_contains "skills/math-research-activator/SKILL.en.md" 'Thinking Lenses'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Math Knowledge'
+check_contains "skills/math-research-activator/SKILL.en.md" 'Activation Anchors'
 check_contains "skills/math-research-activator/SKILL.en.md" 'Design Translation'
 
 # --- Commands ---

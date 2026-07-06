@@ -1,4 +1,4 @@
-# Skill 索引：透镜库、知识库、设计模式库、工作流范例
+# Skill 索引：透镜库、激活锚点、设计翻译原型、工作流范例
 
 > 本文件从 `../skills/math-research-activator/SKILL.md` 提取，供需要查阅完整目录时使用。SKILL.md 保留精简摘要和指向本文件的链接。
 
@@ -49,11 +49,11 @@
 | 概率统计 | `../lenses/probabilistic.md` | 量化不确定性、贝叶斯更新 |
 | 算法 | `../lenses/algorithmic.md` | 复杂度、可行性、并行性 |
 
-## 知识库（按数学领域组织）
+## 激活锚点（按数学领域组织）
 
-每个知识卡片回答：最小定义、核心公式、适用问题、AI 设计翻译、工程可行性、风险。
+每个锚点不是封闭知识卡，而是回答：激活什么数学结构、连接哪些更深知识、可翻译成哪些 AI 设计动作、不足时如何扩展。
 
-| 领域 | 目录 | 知识卡片 |
+| 领域 | 目录 | 锚点 |
 |------|------|---------|
 | 矩阵分析 | `../knowledge-base/matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
 | 最优化 | `../knowledge-base/optimization/` | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
@@ -89,10 +89,11 @@
   2. 信息论（保留最大互信息状态）
   3. 拓扑（保留序列结构关键连接点）
 
-第三步 知识查询：
-  → low-rank-approximation（矩阵分析）
-  → leverage-score-selection（设计模式：压缩）
-  → information-bottleneck（概率与信息）
+第三步 激活锚点：
+  → low-rank-approximation（矩阵分析锚点）
+  → leverage-score-selection（压缩设计模式）
+  → information-bottleneck（概率与信息锚点）
+  若现有锚点不足，进入 Knowledge Gap Protocol 生成临时知识卡。
 
 第四步 设计翻译：
   候选 A：Spectral KV Compression（低秩 + leverage score）

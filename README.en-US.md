@@ -127,9 +127,9 @@ git clone https://github.com/the-thinker0/math-skill.git
 | Scenario | Signal | Path |
 |----------|--------|------|
 | Problem Analysis | "Is this design sound?" | Lenses → Critic |
-| Mechanism Design | "Design a new attention" | Lenses → Knowledge → Design → Critic |
-| Knowledge Query | "What is tangent space and how does it relate to gradient optimization?" | Knowledge |
-| Verification | "Does this formula hold?" | Knowledge → Critic |
+| Mechanism Design | "Design a new attention" | Lenses → Anchors / Temporary Card → Design → Critic |
+| Knowledge Query | "What is tangent space and how does it relate to gradient optimization?" | Anchors; Knowledge Gap Protocol if insufficient |
+| Verification | "Does this formula hold?" | Anchors / Temporary Card → Critic |
 | Pure Engineering | debug, refactoring, tuning | **Not triggered** |
 
 **Manual trigger**:
@@ -182,7 +182,7 @@ math-skill/
 ├── skills/
 │   └── math-research-activator/    # Orchestrator: intent diagnosis + routing
 ├── lenses/                         # 15 thinking lenses (reasoning methodology)
-├── knowledge-base/                 # Math knowledge (by domain)
+├── knowledge-base/                 # Activation anchors by math domain, not a closed encyclopedia
 │   ├── matrix-analysis/            # Matrix analysis (5 cards)
 │   ├── optimization/               # Optimization (5 cards)
 │   ├── differential-geometry/      # Differential geometry (6 cards)
@@ -213,19 +213,29 @@ math-skill/
 
 | # | Title | Author(s) | Publisher / Edition | Year | ISBN | Distillation |
 |---|-------|-----------|-------------------|------|------|-------------|
-| 1 | *Contemporary Abstract Algebra* | Joseph A. Gallian | Brooks/Cole, Cengage, 8th ed. | 2013 | 978-1-133-59971-5 | `abstract-algebra.md` |
-| 2 | *The Rising Sea: Foundations of Algebraic Geometry* | Ravi Vakil | Princeton University Press | 2025 | 978-0-691-26866-8 | `algebraic-geometry-rising-sea.md` |
-| 3 | *Manifolds and Differential Geometry* | Jeffrey M. Lee | AMS, Graduate Studies in Math Vol. 107 | 2009 | 978-0-8218-4815-9 | `differential-geometry.md` |
-| 4 | *Matrix Analysis* | Roger A. Horn, Charles R. Johnson | Cambridge University Press, 2nd ed. | 2013 | 978-0-521-83940-2 | `matrix-analysis.md` |
-| 5 | *A micro Lie theory for state estimation in robotics* | Joan Solà et al. | arXiv:1812.01537v9 | 2021 | — | `micro-lie-theory.md` |
-| 6 | *An Introduction to Optimization, With Applications to ML* | Chong, Lu, Żak | John Wiley & Sons, 5th ed. | 2024 | 978-1-119-87763-9 | `optimization-ml.md` |
-| 7 | *Introduction to Smooth Manifolds* | John M. Lee | Springer, GTM 218, 2nd ed. | 2013 | 978-1-4419-9981-8 | `smooth-manifolds.md` |
+| 1 | *Contemporary Abstract Algebra* | Joseph A. Gallian | Brooks/Cole, Cengage, 8th ed. | 2013 | 978-1-133-59971-5 | `abstract-algebra.en.md` |
+| 2 | *The Rising Sea: Foundations of Algebraic Geometry* | Ravi Vakil | Princeton University Press | 2025 | 978-0-691-26866-8 | `algebraic-geometry-rising-sea.en.md` |
+| 3 | *Manifolds and Differential Geometry* | Jeffrey M. Lee | AMS, Graduate Studies in Math Vol. 107 | 2009 | 978-0-8218-4815-9 | `differential-geometry.en.md` |
+| 4 | *Matrix Analysis* | Roger A. Horn, Charles R. Johnson | Cambridge University Press, 2nd ed. | 2013 | 978-0-521-83940-2 | `matrix-analysis.en.md` |
+| 5 | *A micro Lie theory for state estimation in robotics* | Joan Solà et al. | arXiv:1812.01537v9 | 2021 | — | `micro-lie-theory.en.md` |
+| 6 | *An Introduction to Optimization, With Applications to ML* | Chong, Lu, Żak | John Wiley & Sons, 5th ed. | 2024 | 978-1-119-87763-9 | `optimization-ml.en.md` |
+| 7 | *Introduction to Smooth Manifolds* | John M. Lee | Springer, GTM 218, 2nd ed. | 2013 | 978-1-4419-9981-8 | `smooth-manifolds.en.md` |
 
 Distillation files ship with the npm package. For full-fidelity lookups, place PDFs in the `math_book/` folder.
 
 ---
 
 ## Changelog
+
+### v3.1.1 — Terminology Consistency Cleanup
+
+- **skill-index alignment**: title, knowledge base section, and workflow example updated from "knowledge base / knowledge query" to "activation anchors"
+- **package.json description**: updated to new positioning
+- **README usage table**: mechanism design, knowledge query, and verification paths updated from "Knowledge" to "Anchors / Temporary Card"
+- **README directory structure**: `knowledge-base/` comment updated from "Math knowledge" to "Activation anchors"
+- **SKILL.md / SKILL.en.md**: three-layer architecture table and intent diagnosis table updated from "Math Knowledge" to "Activation Anchors"
+- **English README book links**: distillation files changed from `.md` to `.en.md`
+- **validate keywords**: checks updated from "Math Knowledge" to "Activation Anchors"
 
 ### v3.1.0 — Activation Anchors & Knowledge Gap Protocol
 

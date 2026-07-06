@@ -1,4 +1,4 @@
-# Skill Index: Lens Library, Knowledge Base, Design Pattern Library, Workflow Examples
+# Skill Index: Lens Library, Activation Anchors, Design Translation Prototypes, Workflow Examples
 
 > This file is extracted from `../skills/math-research-activator/SKILL.en.md` for reference when the full catalogs are needed. SKILL.en.md retains condensed summaries with links to this file.
 
@@ -49,11 +49,11 @@ Each lens answers: What is this perspective? What kinds of problems is it suited
 | Probabilistic & Statistical | `../lenses/probabilistic.en.md` | Quantifying uncertainty, Bayesian updating |
 | Algorithmic | `../lenses/algorithmic.en.md` | Complexity, feasibility, parallelizability |
 
-## Knowledge Base (Organized by Mathematical Domain)
+## Activation Anchors (Organized by Mathematical Domain)
 
-Each knowledge card answers: Minimal definition, core formulas, applicable problems, AI design translation, engineering feasibility, risks.
+Each anchor is not a closed knowledge card but answers: what math structure to activate, what deeper knowledge it connects to, what AI design actions it translates to, and how to extend when insufficient.
 
-| Domain | Directory | Knowledge Cards |
+| Domain | Directory | Anchors |
 |--------|-----------|----------------|
 | Matrix Analysis | `../knowledge-base/matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
 | Optimization | `../knowledge-base/optimization/` | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
@@ -89,10 +89,11 @@ Step 2 — Lens Selection:
   2. Information Theory (retain states with maximum mutual information)
   3. Topological (preserve critical connectivity points of sequential structure)
 
-Step 3 — Knowledge Query:
-  → low-rank-approximation (Matrix Analysis)
+Step 3 — Activation Anchors:
+  → low-rank-approximation (Matrix Analysis anchor)
   → leverage-score-selection (Design Pattern: compression)
-  → information-bottleneck (Probability & Information)
+  → information-bottleneck (Probability & Information anchor)
+  If existing anchors are insufficient, enter Knowledge Gap Protocol to generate a temporary knowledge card.
 
 Step 4 — Design Translation:
   Candidate A: Spectral KV Compression (low-rank + leverage score)

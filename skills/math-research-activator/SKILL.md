@@ -1,8 +1,8 @@
 ---
 name: math-research-activator
 description: |
-  数学研究操作系统：自动诊断用户意图，路由到思想透镜、数学知识库或设计翻译层。触发于设计/改进模型架构/算子/注意力、分析理论性质、迁移数学结构到 AI 设计。不触发于纯工程任务（debug、重构、调参）。
-  English: Mathematical research OS — auto-diagnoses user intent, routes to thinking lenses, math knowledge base, or design translation layer. Triggers on architecture/operator design, theoretical analysis, math-to-AI transfer. Does NOT trigger for pure engineering tasks.
+  数学研究操作系统：自动诊断用户意图，路由到思想透镜、激活锚点或设计翻译层。触发于设计/改进模型架构/算子/注意力、分析理论性质、迁移数学结构到 AI 设计。不触发于纯工程任务（debug、重构、调参）。
+  English: Mathematical research OS — auto-diagnoses user intent, routes to thinking lenses, activation anchors, or design translation layer. Triggers on architecture/operator design, theoretical analysis, math-to-AI transfer. Does NOT trigger for pure engineering tasks.
 ---
 
 > **语言路由与混合输入规则**：看句式/动词/语气词主框架判定主语言。AI/数学/工程术语不计入。代码/路径/公式不计入。中英接近时沿用上一轮，无上下文默认中文。显式要求优先。中文→本文件，英文→`SKILL.en.md`。完整规则见 `../../references/skill-index.md`。
@@ -26,7 +26,7 @@ description: |
 | 层 | 职责 | 目录 | 核心问题 |
 |----|------|------|---------|
 | **思想透镜** | 诊断问题结构，推荐数学视角 | `../../lenses/*.md` | 这个问题该用什么视角看？ |
-| **数学知识** | 提供具体数学工具（定义/定理/公式） | `../../knowledge-base/*/*.md` | 这个视角需要哪些具体数学？ |
+| **激活锚点** | 激活高频数学结构，并在不足时触发 Knowledge Gap Protocol | `../../knowledge-base/*/*.md` | 这个视角需要激活哪些数学结构？ |
 | **设计翻译** | 把数学变成 AI 模块/loss/算子 | `../../design-patterns/*/*.md` | 这些数学怎么变成模型结构？ |
 
 辅助层：
@@ -39,16 +39,16 @@ description: |
 | 场景 | 诊断信号 | 调用路径 |
 |------|---------|---------|
 | **A. 问题分析** | "这个设计合理吗？""逻辑链有没有漏洞？" | 透镜 → critic |
-| **B. 机制设计** | "设计新 attention""把 X 迁移到 Y" | 透镜 → 知识 → 设计 → critic |
-| **C. 知识查询** | "流形上的切空间是什么？""投影定理怎么用？" | 知识 |
-| **D. 验证审查** | "这个公式成立吗？""loss 能保证什么？" | 知识 → 相关设计模式（若引用具体 AI 构造）→ critic |
+| **B. 机制设计** | "设计新 attention""把 X 迁移到 Y" | 透镜 → 激活锚点 → 设计 → critic |
+| **C. 知识查询** | "流形上的切空间是什么？""投影定理怎么用？" | 激活锚点 |
+| **D. 验证审查** | "这个公式成立吗？""loss 能保证什么？" | 激活锚点 → 相关设计模式（若引用具体 AI 构造）→ critic |
 | **E. 纯工程** | debug、重构、调参、代码审查 | **不调用数学系统** |
 
 ## 透镜库（15 个数学视角）
 
 15 个透镜覆盖：公理化、对偶、对称性、谱分解、几何、投影与分解、变分、局部到整体、拓扑、范畴化、扰动、因果、博弈、概率统计、算法。目录：`../../lenses/*.md`。完整目录表见 `../../references/skill-index.md`。
 
-## 知识库（按数学领域组织）
+## 激活锚点（按数学领域组织）
 
 7 个领域：矩阵分析、最优化、微分几何、李理论、拓扑、概率与信息、信息几何。目录：`../../knowledge-base/*/*.md`。完整目录表见 `../../references/skill-index.md`。
 

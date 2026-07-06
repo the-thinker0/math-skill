@@ -127,9 +127,9 @@ git clone https://github.com/the-thinker0/math-skill.git
 | 场景 | 诊断信号 | 调用路径 |
 |------|---------|---------|
 | 问题分析 | "这个设计合理吗？" | 透镜 → critic |
-| 机制设计 | "设计新 attention" | 透镜 → 知识 → 设计 → critic |
-| 知识查询 | "切空间和梯度优化有什么关系？" | 知识 |
-| 验证审查 | "这个公式成立吗？" | 知识 → critic |
+| 机制设计 | "设计新 attention" | 透镜 → 激活锚点/临时知识卡 → 设计翻译 → critic |
+| 知识查询 | "切空间和梯度优化有什么关系？" | 激活锚点；不足则 Knowledge Gap Protocol |
+| 验证审查 | "这个公式成立吗？" | 激活锚点/临时知识卡 → critic |
 | 纯工程 | debug、重构、调参 | **不调用** |
 
 **手动触发**：
@@ -182,7 +182,7 @@ math-skill/
 ├── skills/
 │   └── math-research-activator/    # 总控：意图诊断 + 路由
 ├── lenses/                         # 15 个思想透镜（推理方法论）
-├── knowledge-base/                 # 数学知识库（按领域组织）
+├── knowledge-base/                 # 激活锚点（按数学领域组织，非封闭百科）
 │   ├── matrix-analysis/            # 矩阵分析（5 卡片）
 │   ├── optimization/               # 最优化（5 卡片）
 │   ├── differential-geometry/      # 微分几何（6 卡片）
@@ -226,6 +226,16 @@ math-skill/
 ---
 
 ## 变更日志
+
+### v3.1.1 — 术语闭环清洁
+
+- **skill-index 口径统一**：标题、知识库小节、工作流范例从"知识库/知识查询"改为"激活锚点"
+- **package.json description**：更新为新定位描述
+- **README 使用表**：机制设计、知识查询、验证审查路径从"知识"改为"激活锚点/临时知识卡"
+- **README 目录结构**：`knowledge-base/` 注释从"数学知识库"改为"激活锚点"
+- **SKILL.md / SKILL.en.md**：三层架构表和意图诊断表从"数学知识/Math Knowledge"改为"激活锚点/Activation Anchors"
+- **英文 README 书目链接**：蒸馏文件从 `.md` 改为 `.en.md`
+- **validate 关键词**：从检查"数学知识/Math Knowledge"改为"激活锚点/Activation Anchors"
 
 ### v3.1.0 — 激活锚点与知识缺口协议
 
