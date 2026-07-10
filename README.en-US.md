@@ -16,6 +16,14 @@
 
 ---
 
+## 📢 Community Announcements
+
+> **This skill is under rapid iteration — your feedback and suggestions are warmly welcome!** Your input is the core driver of our continuous evolution. Feel free to reach out via GitHub Issues or Discussions.
+
+> **【Coming Soon】** Cryptography-related content will be added to support cryptography research — including number theory foundations, finite fields, coding theory, lattice-based cryptography, and more. Stay tuned!
+
+---
+
 ## Inspiration
 
 The story of Sophus Lie forging a "dragon-slaying blade" tells us this: the Lie group–Lie algebra machinery invented to solve differential equations ended up becoming the lingua franca for describing symmetry and robot state estimation — the value of a mathematical tool far outlives its original intent, which is exactly the prototype of "cross-domain activation." See [`references/inspiration.en.md`](references/inspiration.en.md).
