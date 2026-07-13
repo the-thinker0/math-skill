@@ -1,6 +1,6 @@
 # Skill Index: Lens Library, Activation Anchors, Design Translation Prototypes, Workflow Examples
 
-> This file is extracted from `../skills/math-research-activator/SKILL.en.md` for reference when the full catalogs are needed. SKILL.en.md retains condensed summaries with links to this file.
+> This file is extracted from `../SKILL.en.md` for reference when the full catalogs are needed. SKILL.en.md retains condensed summaries with links to this file.
 
 ## Language Routing & Mixed-Input Rules (Full Version)
 
@@ -23,8 +23,8 @@ Language routing only determines "which language version to read" and "what lang
    - If there is no prior context, default to Chinese.
 
 5. **Output language matches primary language**
-   - Chinese primary → read `../skills/math-research-activator/SKILL.md`, respond in Chinese, retaining necessary English terms.
-   - English primary → read `../skills/math-research-activator/SKILL.en.md`, respond in English.
+   - Chinese primary → read `../SKILL.md`, respond in Chinese, retaining necessary English terms.
+   - English primary → read `../SKILL.en.md`, respond in English.
    - If the user explicitly requests "in English" / "in Chinese," follow the explicit request.
 
 ## Lens Library (15 Mathematical Perspectives)
@@ -74,6 +74,16 @@ Each design pattern answers: Mathematical origin, AI module form, implementable 
 | Routing | `../design-patterns/routing/` | optimal-transport-routing, graph-routing, moe-routing, spectral-clustering-routing |
 | Representation | `../design-patterns/representation/` | shared-private-decomposition, manifold-representation, equivariant-split, subspace-alignment |
 | Compression | `../design-patterns/compression/` | low-rank-kv-cache, spectral-token-pruning, topology-preserving-compression, leverage-score-selection |
+
+## Cryptography Book Distillations (3 New Books)
+
+The reference layer now covers 10 books. The following three support cryptographic security definitions, constructions, reduction proofs, and protocol analysis. Their contents are already in English, so they intentionally use the ordinary `.md` suffix.
+
+| Book | File | Primary Use |
+|------|------|-------------|
+| Boneh & Shoup, *A Graduate Course in Applied Cryptography* | `books/applied-cryptography.md` | Attack games, reduction proofs, symmetric/public-key constructions, zero knowledge, and protocols |
+| Goldreich, *Foundations of Cryptography, Volume 1: Basic Tools* | `books/foundations-of-cryptography.md` | Computational indistinguishability, OWF/PRG/PRF, zero knowledge, and commitments |
+| Katz & Lindell, *Introduction to Modern Cryptography*, 2nd ed. | `books/introduction-to-modern-cryptography.md` | Formal security definitions, IND/CCA, MACs, hashing, and digital signatures |
 
 ## Workflow Example
 

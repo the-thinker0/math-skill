@@ -1,6 +1,6 @@
 # Skill 索引：透镜库、激活锚点、设计翻译原型、工作流范例
 
-> 本文件从 `../skills/math-research-activator/SKILL.md` 提取，供需要查阅完整目录时使用。SKILL.md 保留精简摘要和指向本文件的链接。
+> 本文件从 `../SKILL.md` 提取，供需要查阅完整目录时使用。SKILL.md 保留精简摘要和指向本文件的链接。
 
 ## 语言路由与混合输入规则（完整版）
 
@@ -23,8 +23,8 @@
    - 若没有上下文，默认中文。
 
 5. **输出语言与主语言一致**
-   - 中文主语言 → 读取中文 `../skills/math-research-activator/SKILL.md`，用中文回答，保留必要英文术语。
-   - 英文主语言 → 读取 `../skills/math-research-activator/SKILL.en.md`，用英文回答。
+   - 中文主语言 → 读取中文 `../SKILL.md`，用中文回答，保留必要英文术语。
+   - 英文主语言 → 读取 `../SKILL.en.md`，用英文回答。
    - 用户明确要求"用英文/用中文"时，以用户显式要求为准。
 
 ## 透镜库（15 个数学视角）
@@ -74,6 +74,16 @@
 | 路由 | `../design-patterns/routing/` | optimal-transport-routing, graph-routing, moe-routing, spectral-clustering-routing |
 | 表示 | `../design-patterns/representation/` | shared-private-decomposition, manifold-representation, equivariant-split, subspace-alignment |
 | 压缩 | `../design-patterns/compression/` | low-rank-kv-cache, spectral-token-pruning, topology-preserving-compression, leverage-score-selection |
+
+## 密码学参考书蒸馏稿（新增 3 本）
+
+参考层现共 10 本书。以下 3 本用于密码学安全定义、构造、归约证明与协议分析；正文为英文蒸馏稿，沿用普通 `.md` 后缀。
+
+| 书目 | 文件 | 主要用途 |
+|------|------|---------|
+| Boneh & Shoup, *A Graduate Course in Applied Cryptography* | `books/applied-cryptography.md` | 攻击游戏、归约证明、对称/公钥构造、零知识与协议 |
+| Goldreich, *Foundations of Cryptography, Volume 1: Basic Tools* | `books/foundations-of-cryptography.md` | 计算不可区分、OWF/PRG/PRF、零知识与承诺 |
+| Katz & Lindell, *Introduction to Modern Cryptography*, 2nd ed. | `books/introduction-to-modern-cryptography.md` | 形式化安全定义、IND/CCA、MAC、哈希与数字签名 |
 
 ## 工作流范例
 

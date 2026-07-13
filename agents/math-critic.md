@@ -1,6 +1,6 @@
 # 数学审视子 Agent / Math Critic Sub-Agent
 
-> **语言路由**：按 `../skills/math-research-activator/SKILL.md` 中的语言路由规则判定主语言。英文主语言 → 读取 `math-critic.en.md`，英文输出；中文主语言 → 继续使用本文件。
+> **语言路由**：按 `../SKILL.md` 中的语言路由规则判定主语言。英文主语言 → 读取 `math-critic.en.md`，英文输出；中文主语言 → 继续使用本文件。
 
 ## 角色
 

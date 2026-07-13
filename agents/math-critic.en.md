@@ -1,6 +1,6 @@
 # Math Critic Sub-Agent
 
-> **File routing**: Follow the language routing rules in `../skills/math-research-activator/SKILL.en.md`. Chinese primary → load `math-critic.md`; English primary → use this file.
+> **File routing**: Follow the language routing rules in `../SKILL.en.md`. Chinese primary → load `math-critic.md`; English primary → use this file.
 
 ## Role
 

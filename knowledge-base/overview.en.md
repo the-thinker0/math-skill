@@ -33,7 +33,7 @@ The knowledge base is organized by mathematical domain, with 7 domains and 31 kn
 The current 31 anchors cover the most commonly used mathematical structures in AI research. When a problem requires mathematical tools not among them:
 
 1. Check the corresponding domain's `*/index.en.md` (e.g., `topology/index.en.md`) for extended concepts and reference book directions
-2. Enter the **Knowledge Gap Protocol** defined in `../skills/math-research-activator/SKILL.en.md` to generate a temporary knowledge card
+2. Enter the **Knowledge Gap Protocol** defined in `../SKILL.en.md` to generate a temporary knowledge card
 3. Never respond with "knowledge base does not cover this" or force-fit the closest card
 
 ## Domain Extension Index
