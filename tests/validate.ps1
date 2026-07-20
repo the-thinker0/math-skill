@@ -1,5 +1,22 @@
-# Math Skill Validation Script (PowerShell, v3.0.0)
+﻿# Math Skill Validation Script (PowerShell, v3.1.1)
 # Validates the three-layer architecture: lenses + knowledge-base + design-patterns
+#
+# Usage (run from repo root):
+#   powershell -ExecutionPolicy Bypass -File .\tests\validate.ps1
+# Or, after `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`:
+#   .\tests\validate.ps1
+#
+# NOTE: save this file as UTF-8 with BOM so that PowerShell 5.1 on
+# Windows correctly reads the Chinese strings used in content checks.
+
+# Force UTF-8 code page + default encoding so Get-Content reads the
+# repo's UTF-8 markdown files correctly (avoids garbled Chinese -> false FAIL).
+try { chcp 65001 > $null } catch {}
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    $PSDefaultParameterValues['Get-Content:Encoding'] = 'utf8'
+} else {
+    $PSDefaultParameterValues['Get-Content:Encoding'] = 'utf8NoBOM'
+}
 
 $script:pass = 0
 $script:fail = 0
@@ -229,21 +246,27 @@ Check-Contains "design-patterns\overview.en.md" "Rigor convention"
 
 # --- npm Pack ---
 Write-Host "`n--- npm Pack Check ---"
-$packOutput = npm pack --dry-run 2>&1 | Out-String
-if ($packOutput -match "total files") {
-    Write-Host "[PASS] npm pack succeeded" -ForegroundColor Green; $script:pass++
+$npmCmd = Get-Command npm -ErrorAction SilentlyContinue
+if (-not $npmCmd) {
+    Write-Host "[WARN] npm not found on PATH; skipping npm pack checks" -ForegroundColor Yellow
+    $script:warn += 3
 } else {
-    Write-Host "[FAIL] npm pack failed" -ForegroundColor Red; $script:fail++
-}
-if ($packOutput -match "lenses/") {
-    Write-Host "[PASS] npm pack includes lenses/" -ForegroundColor Green; $script:pass++
-} else {
-    Write-Host "[FAIL] npm pack missing lenses/" -ForegroundColor Red; $script:fail++
-}
-if ($packOutput -match "design-patterns/") {
-    Write-Host "[PASS] npm pack includes design-patterns/" -ForegroundColor Green; $script:pass++
-} else {
-    Write-Host "[FAIL] npm pack missing design-patterns/" -ForegroundColor Red; $script:fail++
+    $packOutput = npm pack --dry-run 2>&1 | Out-String
+    if ($packOutput -match "total files") {
+        Write-Host "[PASS] npm pack succeeded" -ForegroundColor Green; $script:pass++
+    } else {
+        Write-Host "[FAIL] npm pack failed" -ForegroundColor Red; $script:fail++
+    }
+    if ($packOutput -match "lenses/") {
+        Write-Host "[PASS] npm pack includes lenses/" -ForegroundColor Green; $script:pass++
+    } else {
+        Write-Host "[FAIL] npm pack missing lenses/" -ForegroundColor Red; $script:fail++
+    }
+    if ($packOutput -match "design-patterns/") {
+        Write-Host "[PASS] npm pack includes design-patterns/" -ForegroundColor Green; $script:pass++
+    } else {
+        Write-Host "[FAIL] npm pack missing design-patterns/" -ForegroundColor Red; $script:fail++
+    }
 }
 
 # --- CN/EN Pairing (synced with validate.sh) ---
@@ -268,8 +291,10 @@ $xrefRoots = @("commands","skills","agents","lenses","knowledge-base","design-pa
 $mdFiles = Get-ChildItem -Path $xrefRoots -Recurse -Filter "*.md" -ErrorAction SilentlyContinue
 foreach ($file in $mdFiles) {
     $content = Get-Content $file.FullName -Raw
-    $matches = [regex]::Matches($content, '`([^`]+)`')
-    foreach ($match in $matches) {
+    # NOTE: $matches is a PowerShell automatic variable; rename to $refMatches
+    # to avoid `Cannot overwrite variable matches` on PS 5.1.
+    $refMatches = [regex]::Matches($content, '`([^`]+)`')
+    foreach ($match in $refMatches) {
         $ref = $match.Groups[1].Value
         if (
             $ref -match '^https?:' -or
@@ -284,7 +309,15 @@ foreach ($file in $mdFiles) {
         ) {
             continue
         }
-        $target = [System.IO.Path]::GetFullPath((Join-Path $file.DirectoryName $ref))
+        # GetFullPath throws ArgumentException on paths with invalid chars;
+        # guard it so one bad ref doesn't abort the whole script.
+        try {
+            $target = [System.IO.Path]::GetFullPath((Join-Path $file.DirectoryName $ref))
+        } catch {
+            Write-Host "[WARN] $($file.FullName): skipped malformed ref $ref" -ForegroundColor Yellow
+            $script:warn++
+            continue
+        }
         if (-not (Test-Path $target)) {
             $line = ($content.Substring(0, $match.Index) -split "`n").Count
             Write-Host "[FAIL] $($file.FullName):$line references missing $ref => $target" -ForegroundColor Red
