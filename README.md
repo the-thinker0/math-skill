@@ -2,9 +2,7 @@
   <a href="README.md">中文</a> | <a href="README.en-US.md">English</a>
 </p>
 
-# 📐 Math Skill — 面向 AI 架构创新的数学研究操作系统
-
-> **思想系统不负责给定理，知识系统不负责乱启发，设计层不负责装深刻。**
+# 📐 Math Skill — 面向 AI 与密码学创新的数学研究操作系统
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![npm version](https://img.shields.io/npm/v/math-skill.svg)](https://www.npmjs.com/package/math-skill)

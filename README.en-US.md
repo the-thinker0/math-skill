@@ -2,9 +2,7 @@
   <a href="README.md">中文</a> | <a href="README.en-US.md">English</a>
 </p>
 
-# 📐 Math Skill — A Mathematical Research Operating System for AI Architecture Design
-
-> **The thinking system does not hand out theorems. The knowledge system does not improvise inspiration. The design layer does not fake profundity.**
+# 📐 Math Skill — A Mathematical Research Operating System for AI and Cryptography Innovation
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![npm version](https://img.shields.io/npm/v/math-skill.svg)](https://www.npmjs.com/package/math-skill)
