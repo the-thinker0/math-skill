@@ -20,7 +20,7 @@
 
 > **This skill is under rapid iteration — your feedback and suggestions are warmly welcome!** Your input is the core driver of our continuous evolution. Feel free to reach out via GitHub Issues or Discussions.
 
-> **【Coming Soon】** Cryptography-related content will be added to support cryptography research — including number theory foundations, finite fields, coding theory, lattice-based cryptography, and more. Stay tuned!
+> **v3.2.0 is live**: The cryptography track is officially integrated — 3 distilled classics of modern cryptography (Boneh-Shoup / Goldreich / Katz-Lindell) plus a Domain Router layer. AI and cryptography share mathematical foundations but each has exclusive specialty layers, with no cross-domain pollution. See the changelog for details.
 
 ---
 
@@ -66,9 +66,22 @@ Critic: Mathematically sound? Engineering-feasible?
 | **Design Translation** | Bridge math to AI modules/losses/operators | `design-patterns/*/*.md` | 22 |
 
 Supporting layers:
-- `references/books/*.md`: 7 book distillations for deep context
+- `references/books/*.md`: 10 book distillations (7 AI-direction + 3 cryptography-direction) for deep context
 - `references/gpu-friendly-math.en.md`: GPU 8-dimension acceptance gate
-- `agents/math-critic.en.md`: Math-engineering dual critic
+- `agents/math-critic.en.md`: Math-engineering dual critic (19 dimensions, including cryptographic security review)
+
+### Domain Router (new in v3.2.0)
+
+AI research and cryptography **share** mathematical foundations (probability/information/algebra/matrix/spectrum/optimization) but each has **exclusive** specialty layers. After intent diagnosis and before lens invocation, Domain Router determines the problem's domain and decides which anchors/books/design patterns to load, avoiding cross-domain pollution and token waste.
+
+| Domain | Loaded Content | Signal Keywords |
+|--------|----------------|------------------|
+| **AI Research** | `knowledge-base/` (7 domains, 31 anchors) + `design-patterns/` (5 types, 22 patterns) + 7 AI books | attention/loss/routing/representation/compression/MoE/transformer/KV-cache/LoRA/SSM/diffusion/RL |
+| **Cryptography** | 3 crypto books + shared math anchors (on demand) | encryption/signature/MAC/PRF/PRG/PRP/OWF/CCA/CPA/AE/ZK/reduction/DL/CDH/DDH/RSA/ECC/lattice |
+| **Pure Math** | `lenses/` + corresponding `knowledge-base/` anchors | probability/information/entropy/group/ring/field/matrix/spectrum/optimization/convexity/perturbation/complexity |
+| **AI×Crypto** | dual-domain load + intersection annotation | "PRF for watermarking," "adversarial example reduction," "verifiable inference" |
+
+> Rules: domain judgment precedes lens invocation; shared math is not redundantly loaded; no pollution across non-cross domains; gap-protocol temporary cards are domain-tagged.
 
 ### 15 Thinking Lenses
 
@@ -206,11 +219,11 @@ math-skill/
 │   ├── representation/             # Representation (4 patterns)
 │   └── compression/                # Compression (4 patterns)
 ├── references/                     # Reference layer
-│   ├── books/                      # 7 book distillations
+│   ├── books/                      # 10 book distillations (7 AI + 3 crypto)
 │   ├── gpu-friendly-math.en.md     # GPU 8-dimension gate
 │   ├── agentic-workflow.en.md      # Collaboration style
 │   └── inspiration.en.md           # Inspiration
-├── agents/math-critic.en.md           # Math-engineering dual critic
+├── agents/math-critic.en.md           # Math-engineering dual critic (19 dims, with crypto security review)
 ├── commands/ask.en.md                 # /ask manual entry
 ├── math_book/                      # Local PDFs (not published)
 └── README.md / LICENSE
@@ -219,6 +232,8 @@ math-skill/
 ---
 
 ## Recommended Books
+
+### AI Direction (7 books)
 
 | # | Title | Author(s) | Publisher / Edition | Year | ISBN | Distillation |
 |---|-------|-----------|-------------------|------|------|-------------|
@@ -230,11 +245,37 @@ math-skill/
 | 6 | *An Introduction to Optimization, With Applications to ML* | Chong, Lu, Żak | John Wiley & Sons, 5th ed. | 2024 | 978-1-119-87763-9 | `optimization-ml.en.md` |
 | 7 | *Introduction to Smooth Manifolds* | John M. Lee | Springer, GTM 218, 2nd ed. | 2013 | 978-1-4419-9981-8 | `smooth-manifolds.en.md` |
 
+### Cryptography Direction (3 books, new in v3.2.0)
+
+| # | Title | Author(s) | Publisher / Edition | Year | ISBN | Distillation |
+|---|-------|-----------|-------------------|------|------|-------------|
+| 8 | *A Graduate Course in Applied Cryptography* | Dan Boneh & Victor Shoup | v0.4 online | 2017 | — | `applied-cryptography.md` |
+| 9 | *Foundations of Cryptography, Volume 1: Basic Tools* | Oded Goldreich | Cambridge University Press | 2001 | 978-0-521-79235-9 | `foundations-of-cryptography.md` |
+| 10 | *Introduction to Modern Cryptography* | Jonathan Katz & Yehuda Lindell | CRC Press, 2nd ed. | 2015 | 978-1-4665-7026-1 | `introduction-to-modern-cryptography.md` |
+
+> Crypto book contents are already in English, so they use the `.md` suffix (no CN/EN split). They are loaded when Domain Router determines the problem is cryptography or AI×crypto intersection.
+
 Distillation files ship with the npm package. For full-fidelity lookups, place PDFs in the `math_book/` folder.
 
 ---
 
 ## Changelog
+
+### v3.2.0 — Cryptography Track + Domain Router
+
+**Cryptography track officially landed**: reference layer expanded from 7 to 10 books, with 3 modern cryptography classics distilled into the same activation-index format as AI-direction books (~125-155 lines each, preserving core ideas and key bridging facts).
+
+- **3 new crypto books**:
+  - `references/books/applied-cryptography.md` (Boneh & Shoup): attack games / reduction proofs / constructions / protocols
+  - `references/books/foundations-of-cryptography.md` (Goldreich): computational indistinguishability / OWF-PRG-PRF equivalence chain / simulation paradigm / meta-theorems
+  - `references/books/introduction-to-modern-cryptography.md` (Katz & Lindell): formal definitions / CPA-CCA-AE / construction paradigms / implementation pitfalls
+- **Domain Router** (core innovation): after intent diagnosis and before lens invocation, judges problem domain (AI/Crypto/pure-math/intersection), loads domain-specific content, shared math not redundantly loaded, avoids cross-domain pollution and token waste
+- **SKILL.md / SKILL.en.md**: new Domain Router section + routing rules + decision flow diagram; main workflow integrates domain tags and domain-specific routing (AI uses design-patterns + GPU gate; crypto uses reduction templates + assumption/pitfall checks)
+- **math-critic upgraded to 19 dimensions**: new dim 19 "Cryptographic Security Review" (security definitions / reduction tightness / assumption dependency / composition pitfalls / anti-patterns / cross-domain transfer validity / Domain Router consistency)
+- **skill-index / overview**: added Domain Router overview table and crypto book activation-family tags; overview gained Domain Router loading note
+- **Token optimization**: crypto books compressed from 2084 to 404 lines (~80% reduction); Domain Router trims output by domain, avoiding full-load; output format emphasizes "after domain judgment, only expand the domain-specific subsection". Quantified estimate: pure AI problems skip the 3 crypto books entirely (saving ~400 lines/call), pure crypto problems skip all 22 AI design-patterns (saving ~2200-3300 lines/call); the crypto books' own compression saves another ~872 lines/call
+- **File cleanup**: removed duplicate `SKILL.md/SKILL.en.md/original-texts.md/original-texts.en.md` mistakenly placed in repo root by the contributor (canonical versions live in `skills/math-research-activator/`); fixed SKILL relative paths in `agents/math-critic.{en,}.md` and `knowledge-base/overview.en.md`
+- **AI/Cryptography isolation guarantee**: Domain Router rule 4 explicitly states "pure AI problems do not load crypto books; pure crypto problems do not load AI design patterns," preventing conceptual confusion at the loading layer
 
 ### v3.1.1 — Terminology Consistency Cleanup
 

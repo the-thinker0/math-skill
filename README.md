@@ -20,7 +20,7 @@
 
 > **本 Skill 正在快速迭代中，欢迎各位使用者提出宝贵的使用感受和改进建议！** 你的反馈是我们持续进化的核心动力。欢迎通过 GitHub Issues 或 Discussions 与我们交流。
 
-> **【预告】** 密码学相关内容即将加入，以支持密码学研究工作——包括数论基础、有限域、编码理论、格密码等方向，敬请期待！
+> **v3.2.0 已上线**：密码学方向正式接入——3 本现代密码学经典（Boneh-Shoup / Goldreich / Katz-Lindell）精简蒸馏稿 + Domain Router 路由层，AI 与密码学共享数学根基、独有专业层，互不污染。详见变更日志。
 
 ---
 
@@ -66,9 +66,22 @@ Sophus Lie 打造"屠龙刀"的故事告诉我们：为解微分方程发明的�
 | **设计翻译** | 把数学变成 AI 模块/loss/算子 | `design-patterns/*/*.md` | 22 |
 
 辅助层：
-- `references/books/*.md`：7 本书蒸馏稿，需要深入时的完整上下文
+- `references/books/*.md`：10 本书蒸馏稿（7 本 AI 方向 + 3 本密码学方向），需要深入时的完整上下文
 - `references/gpu-friendly-math.md`：GPU 八维验收门
-- `agents/math-critic.md`：数学-工程双重批判器
+- `agents/math-critic.md`：数学-工程双重批判器（19 维，含密码学安全审视）
+
+### Domain Router（v3.2.0 新增）
+
+AI 研究与密码学**共享**数学根基（概率/信息/代数/矩阵/谱/优化），但**独有**各自专业层。Domain Router 在意图诊断后、调用透镜前，先判定问题归属，决定加载哪些锚点/书稿/设计模式，避免跨域污染与 token 浪费。
+
+| Domain | 加载内容 | 信号词 |
+|--------|---------|--------|
+| **AI 研究** | `knowledge-base/`（7 领域 31 锚点）+ `design-patterns/`（5 类 22 模式）+ AI 方向 7 本书 | attention/loss/routing/representation/compression/MoE/transformer/KV-cache/LoRA/SSM/扩散/RL |
+| **密码学** | 3 本密码学书稿 + 共用数学锚点（按需） | 加密/签名/MAC/PRF/PRG/PRP/OWF/CCA/CPA/AE/零知识/归约/DL/CDH/DDH/RSA/ECC/格密码 |
+| **纯数学** | `lenses/` + `knowledge-base/` 对应锚点 | 概率/信息/熵/群/环/域/矩阵/谱/优化/凸性/扰动/复杂度 |
+| **AI×密码交叉** | 双 domain 加载 + 交叉点标注 | "PRF 做模型水印""对抗样本归约""可验证推理" |
+
+> 规则：domain 判定先于透镜调用；共用数学不重复加载；不跨域时不污染；缺口协议临时卡标注 domain。
 
 ### 15 个思想透镜
 
@@ -206,11 +219,11 @@ math-skill/
 │   ├── representation/             # 表示（4 模式）
 │   └── compression/                # 压缩（4 模式）
 ├── references/                     # 参考层
-│   ├── books/                      # 7 本书蒸馏稿
+│   ├── books/                      # 10 本书蒸馏稿（7 AI + 3 密码学）
 │   ├── gpu-friendly-math.md        # GPU 八维验收门
 │   ├── agentic-workflow.md         # 协作方式
 │   └── inspiration.md              # 灵感来源
-├── agents/math-critic.md           # 数学-工程双重批判器
+├── agents/math-critic.md           # 数学-工程双重批判器（19 维，含密码学安全审视）
 ├── commands/ask.md                 # /ask 手动入口
 ├── math_book/                      # 本地 PDF（不发布）
 └── README.md / LICENSE
@@ -219,6 +232,8 @@ math-skill/
 ---
 
 ## 推荐书目
+
+### AI 方向（7 本）
 
 | # | 书名 | 作者 | 出版社 / 版次 | 年份 | ISBN | 蒸馏文件 |
 |---|------|------|-------------|------|------|---------|
@@ -230,11 +245,37 @@ math-skill/
 | 6 | *An Introduction to Optimization, With Applications to ML* | Chong, Lu, Żak | John Wiley & Sons, 5th ed. | 2024 | 978-1-119-87763-9 | `optimization-ml.md` |
 | 7 | *Introduction to Smooth Manifolds* | John M. Lee | Springer, GTM 218, 2nd ed. | 2013 | 978-1-4419-9981-8 | `smooth-manifolds.md` |
 
+### 密码学方向（3 本，v3.2.0 新增）
+
+| # | 书名 | 作者 | 出版社 / 版次 | 年份 | ISBN | 蒸馏文件 |
+|---|------|------|-------------|------|------|---------|
+| 8 | *A Graduate Course in Applied Cryptography* | Dan Boneh & Victor Shoup | v0.4 在线版 | 2017 | — | `applied-cryptography.md` |
+| 9 | *Foundations of Cryptography, Volume 1: Basic Tools* | Oded Goldreich | Cambridge University Press | 2001 | 978-0-521-79235-9 | `foundations-of-cryptography.md` |
+| 10 | *Introduction to Modern Cryptography* | Jonathan Katz & Yehuda Lindell | CRC Press, 2nd ed. | 2015 | 978-1-4665-7026-1 | `introduction-to-modern-cryptography.md` |
+
+> 密码学书稿正文为英文，沿用 `.md` 后缀（不分中英）；Domain Router 判定为密码学或 AI×密码交叉时加载。
+
 蒸馏文件已随 npm 包发布。如需全保真原文，将 PDF 放入 `math_book/` 文件夹即可。
 
 ---
 
 ## 变更日志
+
+### v3.2.0 — 密码学方向接入 + Domain Router
+
+**密码学方向正式落地**：参考层从 7 本扩到 10 本，新增 3 本现代密码学经典蒸馏稿，精简为与 AI 方向书稿一致的激活索引格式（约 125-155 行/本，保留核心思想与关键桥接事实）。
+
+- **新增 3 本密码学书稿**：
+  - `references/books/applied-cryptography.md`（Boneh & Shoup）：攻击游戏/归约证明/构造/协议
+  - `references/books/foundations-of-cryptography.md`（Goldreich）：计算不可区分/OWF-PRG-PRF 等价链/模拟范式/元定理
+  - `references/books/introduction-to-modern-cryptography.md`（Katz & Lindell）：形式化定义/CPA-CCA-AE/构造范式/实现陷阱
+- **Domain Router 路由层**（核心创新）：在意图诊断后、透镜调用前判定问题 domain（AI/密码/纯数学/交叉），按 domain 加载专属内容，共用数学不重复加载，避免跨域污染与 token 浪费
+- **SKILL.md / SKILL.en.md**：新增 Domain Router 小节 + 路由规则 + 判定流程图；主流程整合 domain 标注与 domain-specific 路由（AI 走 design-patterns + GPU 门，密码走归约模板 + 假设/陷阱检查）
+- **math-critic 升级为 19 维**：新增第 19 维「密码学安全审视」（安全定义/归约紧度/假设依赖/合成陷阱/反模式/跨域迁移合理性/Domain Router 一致性）
+- **skill-index / overview**：补 Domain Router 总览表与密码学书稿激活家族标注；overview 增 Domain Router 加载提示
+- **Token 优化**：密码学书稿从 2084 行精简到 404 行（压缩 ~80%）；Domain Router 按 domain 裁剪输出，避免全量加载；输出格式强调"domain 判定后只展开该 domain 专属小节"。量化估算：纯 AI 问题完全不加载 3 本密码学书稿（省约 400 行/次），纯密码学问题完全不加载 22 个 AI design-patterns（省约 2200-3300 行/次）；密码学书稿本身的精简再省约 872 行/次
+- **文件清理**：删除朋友误放在根目录的重复 `SKILL.md/SKILL.en.md/original-texts.md/original-texts.en.md`（权威版本在 `skills/math-research-activator/`）；修正 `agents/math-critic.{en,}.md` 与 `knowledge-base/overview.en.md` 中的 SKILL 相对路径
+- **AI 与密码学隔离保证**：Domain Router 规则 4 明确"纯 AI 问题不加载密码学书稿；纯密码学问题不加载 AI 设计模式"，从加载层防止概念混淆
 
 ### v3.1.1 — 术语闭环清洁
 

@@ -33,8 +33,10 @@
 现有 31 个锚点覆盖 AI 研究中最常用的数学结构。当问题需要的数学工具不在其中时：
 
 1. 查看对应领域的 `*/index.md`（如 `topology/index.md`），获取扩展概念和参考书方向
-2. 进入 SKILL.md 中定义的**知识缺口协议**，生成临时知识卡
+2. 进入 `../skills/math-research-activator/SKILL.md` 中定义的**知识缺口协议**，生成临时知识卡
 3. 不得回答"知识库未覆盖"或强行套用最相近卡片
+
+> **Domain Router 提示**（v3.2.0）：本知识库主要服务 **AI 研究层** 与 **共用数学层**。若 Domain Router 判定问题属**密码学层**，优先查阅 `../references/skill-index.md` 列出的 3 本密码学书稿；共用数学锚点（如 `probability/entropy`、`matrix-analysis/spectral-decomposition`）按需加载，不重复。密码学专属概念（OWF/PRF/CCA/归约证明等）不在此 31 锚点内，通过临时知识卡或密码学书稿激活。
 
 ## 领域扩展索引
 

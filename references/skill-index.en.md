@@ -1,6 +1,19 @@
 # Skill Index: Lens Library, Activation Anchors, Design Translation Prototypes, Workflow Examples
 
-> This file is extracted from `../SKILL.en.md` for reference when the full catalogs are needed. SKILL.en.md retains condensed summaries with links to this file.
+> This file is extracted from `../skills/math-research-activator/SKILL.en.md` for reference when the full catalogs are needed. SKILL.en.md retains condensed summaries with links to this file.
+
+## Domain Router Overview (v3.2.0)
+
+> Full definition: see the Domain Router section in `../skills/math-research-activator/SKILL.en.md`. Only a summary table here:
+
+| Domain | Loaded Content | Signal Keywords |
+|--------|----------------|------------------|
+| **AI Research** | `../knowledge-base/` (7 domains, 31 anchors) + `../design-patterns/` (5 types, 22 patterns) + 7 AI books | attention/loss/routing/representation/compression/MoE/transformer/KV-cache/LoRA/SSM/diffusion/RL |
+| **Cryptography** | 3 crypto books + shared math anchors (on demand) | encryption/signature/MAC/PRF/PRG/PRP/OWF/CCA/CPA/AE/ZK/reduction/DL/CDH/DDH/RSA/ECC/lattice |
+| **Pure Math** | `../lenses/` + corresponding `../knowledge-base/` anchors | probability/information/entropy/group/ring/field/matrix/spectrum/optimization/convexity/perturbation/complexity |
+| **AI×Crypto** | dual-domain load + intersection annotation | "PRF for watermarking," "adversarial example reduction," "verifiable inference" |
+
+> Core rules: domain judgment precedes lens invocation; shared math loads on demand by problem structure (not by domain tag); no pollution across non-cross domains; gap-protocol temporary cards are domain-tagged.
 
 ## Language Routing & Mixed-Input Rules (Full Version)
 
@@ -23,8 +36,8 @@ Language routing only determines "which language version to read" and "what lang
    - If there is no prior context, default to Chinese.
 
 5. **Output language matches primary language**
-   - Chinese primary → read `../SKILL.md`, respond in Chinese, retaining necessary English terms.
-   - English primary → read `../SKILL.en.md`, respond in English.
+   - Chinese primary → read `../skills/math-research-activator/SKILL.md`, respond in Chinese, retaining necessary English terms.
+   - English primary → read `../skills/math-research-activator/SKILL.en.md`, respond in English.
    - If the user explicitly requests "in English" / "in Chinese," follow the explicit request.
 
 ## Lens Library (15 Mathematical Perspectives)
@@ -77,13 +90,15 @@ Each design pattern answers: Mathematical origin, AI module form, implementable 
 
 ## Cryptography Book Distillations (3 New Books)
 
-The reference layer now covers 10 books. The following three support cryptographic security definitions, constructions, reduction proofs, and protocol analysis. Their contents are already in English, so they intentionally use the ordinary `.md` suffix.
+The reference layer now covers 10 books. The following three support cryptographic security definitions, constructions, reduction proofs, and protocol analysis. Their contents are already in English, so they intentionally use the ordinary .md suffix without a CN/EN split (unlike the AI-direction books which are paired CN/EN; crypto books are English-only, hence no .en.md version).
 
-| Book | File | Primary Use |
-|------|------|-------------|
-| Boneh & Shoup, *A Graduate Course in Applied Cryptography* | `books/applied-cryptography.md` | Attack games, reduction proofs, symmetric/public-key constructions, zero knowledge, and protocols |
-| Goldreich, *Foundations of Cryptography, Volume 1: Basic Tools* | `books/foundations-of-cryptography.md` | Computational indistinguishability, OWF/PRG/PRF, zero knowledge, and commitments |
-| Katz & Lindell, *Introduction to Modern Cryptography*, 2nd ed. | `books/introduction-to-modern-cryptography.md` | Formal security definitions, IND/CCA, MACs, hashing, and digital signatures |
+| Book | File | Primary Use | Activation Family |
+|------|------|-------------|--------------------|
+| Boneh & Shoup, *A Graduate Course in Applied Cryptography* | `books/applied-cryptography.md` | Attack games, reduction proofs, symmetric/public-key constructions, zero knowledge, and protocols | Definitions/Reductions/Primitives/Protocols |
+| Goldreich, *Foundations of Cryptography, Volume 1: Basic Tools* | `books/foundations-of-cryptography.md` | Computational indistinguishability, OWF/PRG/PRF, zero knowledge, and commitments | Definitions/Proofs/Constructions/Meta-theorems |
+| Katz & Lindell, *Introduction to Modern Cryptography*, 2nd ed. | `books/introduction-to-modern-cryptography.md` | Formal security definitions, IND/CCA, MACs, hashing, and digital signatures | Definitions/Proofs/Primitives/Assumptions/Constructions |
+
+> **Domain Router note**: These three books belong to the **Cryptography Layer** and are loaded only when Domain Router determines the problem is cryptography or AI×crypto intersection. Pure AI problems do not load them. Shared math anchors (probability/information/algebra) are loaded on demand without redundancy.
 
 ## Workflow Example
 

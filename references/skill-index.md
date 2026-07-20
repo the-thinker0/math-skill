@@ -1,6 +1,19 @@
 # Skill 索引：透镜库、激活锚点、设计翻译原型、工作流范例
 
-> 本文件从 `../SKILL.md` 提取，供需要查阅完整目录时使用。SKILL.md 保留精简摘要和指向本文件的链接。
+> 本文件从 `../skills/math-research-activator/SKILL.md` 提取，供需要查阅完整目录时使用。SKILL.md 保留精简摘要和指向本文件的链接。
+
+## Domain Router 总览（v3.2.0）
+
+> 完整定义见 `../skills/math-research-activator/SKILL.md` 的 Domain Router 小节。此处仅列摘要表：
+
+| Domain | 加载内容 | 信号词 |
+|--------|---------|--------|
+| **AI 研究** | `../knowledge-base/`（7 领域 31 锚点）+ `../design-patterns/`（5 类 22 模式）+ AI 方向 7 本书 | attention/loss/routing/representation/compression/MoE/transformer/KV-cache/LoRA/SSM/扩散/RL |
+| **密码学** | 3 本密码学书稿 + 共用数学锚点（按需） | 加密/签名/MAC/PRF/PRG/PRP/OWF/CCA/CPA/AE/零知识/归约/DL/CDH/DDH/RSA/ECC/格密码 |
+| **纯数学** | `../lenses/` + `../knowledge-base/` 对应锚点 | 概率/信息/熵/群/环/域/矩阵/谱/优化/凸性/扰动/复杂度 |
+| **AI×密码交叉** | 双 domain 加载 + 交叉点标注 | "PRF 做模型水印""对抗样本归约""可验证推理" |
+
+> 核心规则：domain 判定先于透镜调用；共用数学按问题结构（非 domain 标签）按需加载；不跨域时不污染；缺口协议临时卡标注 domain。
 
 ## 语言路由与混合输入规则（完整版）
 
@@ -23,8 +36,8 @@
    - 若没有上下文，默认中文。
 
 5. **输出语言与主语言一致**
-   - 中文主语言 → 读取中文 `../SKILL.md`，用中文回答，保留必要英文术语。
-   - 英文主语言 → 读取 `../SKILL.en.md`，用英文回答。
+   - 中文主语言 → 读取中文 `../skills/math-research-activator/SKILL.md`，用中文回答，保留必要英文术语。
+   - 英文主语言 → 读取 `../skills/math-research-activator/SKILL.en.md`，用英文回答。
    - 用户明确要求"用英文/用中文"时，以用户显式要求为准。
 
 ## 透镜库（15 个数学视角）
@@ -77,13 +90,15 @@
 
 ## 密码学参考书蒸馏稿（新增 3 本）
 
-参考层现共 10 本书。以下 3 本用于密码学安全定义、构造、归约证明与协议分析；正文为英文蒸馏稿，沿用普通 `.md` 后缀。
+参考层现共 10 本书。以下 3 本用于密码学安全定义、构造、归约证明与协议分析；正文为英文蒸馏稿，不分中英（与 AI 方向书稿的中英成对并列不同；密码学书稿正文已是英文，故无 .en.md 版本）。
 
-| 书目 | 文件 | 主要用途 |
-|------|------|---------|
-| Boneh & Shoup, *A Graduate Course in Applied Cryptography* | `books/applied-cryptography.md` | 攻击游戏、归约证明、对称/公钥构造、零知识与协议 |
-| Goldreich, *Foundations of Cryptography, Volume 1: Basic Tools* | `books/foundations-of-cryptography.md` | 计算不可区分、OWF/PRG/PRF、零知识与承诺 |
-| Katz & Lindell, *Introduction to Modern Cryptography*, 2nd ed. | `books/introduction-to-modern-cryptography.md` | 形式化安全定义、IND/CCA、MAC、哈希与数字签名 |
+| 书目 | 文件 | 主要用途 | 激活家族 |
+|------|------|---------|---------|
+| Boneh & Shoup, *A Graduate Course in Applied Cryptography* | `books/applied-cryptography.md` | 攻击游戏、归约证明、对称/公钥构造、零知识与协议 | 定义系/归约系/原语系/协议系 |
+| Goldreich, *Foundations of Cryptography, Volume 1: Basic Tools* | `books/foundations-of-cryptography.md` | 计算不可区分、OWF/PRG/PRF、零知识与承诺、元定理 | 定义系/证明系/构造系/元理系 |
+| Katz & Lindell, *Introduction to Modern Cryptography*, 2nd ed. | `books/introduction-to-modern-cryptography.md` | 形式化安全定义、IND/CCA、MAC、哈希与数字签名、构造范式 | 定义系/证明系/原语系/假设系/构造系 |
+
+> **Domain Router 提示**：这三本书属**密码学层**，仅当 Domain Router 判定问题属密码学或 AI×密码交叉时加载。纯 AI 问题不加载。共用数学锚点（概率/信息/代数）按需加载，不重复。
 
 ## 工作流范例
 

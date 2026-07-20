@@ -141,6 +141,10 @@ for book in abstract-algebra algebraic-geometry-rising-sea differential-geometry
     check_file "references/books/${book}.md"
     check_file "references/books/${book}.en.md"
 done
+# Cryptography books (v3.2.0): English-only, no CN/EN split
+for book in applied-cryptography foundations-of-cryptography introduction-to-modern-cryptography; do
+    check_file "references/books/${book}.md"
+done
 
 # --- Agents ---
 echo ""
@@ -235,7 +239,15 @@ fi
 # --- CN/EN Pairing ---
 echo ""
 echo "--- CN/EN File Pairing ---"
+# Cryptography books are English-only (no CN/EN split); skip them in pairing check.
+# See references/skill-index.md for the rationale.
+CRYPTO_BOOKS="applied-cryptography|foundations-of-cryptography|introduction-to-modern-cryptography"
 for cn_file in $(find commands skills agents lenses knowledge-base design-patterns references -name '*.md' ! -name '*.en.md' 2>/dev/null | sort); do
+    if echo "$cn_file" | grep -qE "references/books/($CRYPTO_BOOKS)\.md$"; then
+        echo -e "${GREEN}[PASS]${NC} $cn_file (English-only crypto book, no EN pair needed)"
+        PASS=$((PASS + 1))
+        continue
+    fi
     en_file="${cn_file%.md}.en.md"
     if [ -f "$en_file" ]; then
         echo -e "${GREEN}[PASS]${NC} $cn_file has EN pair"

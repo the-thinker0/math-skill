@@ -1,8 +1,8 @@
 ---
 name: math-research-activator
 description: |
-  数学研究操作系统：自动诊断用户意图，路由到思想透镜、激活锚点或设计翻译层。触发于设计/改进模型架构/算子/注意力、分析理论性质、迁移数学结构到 AI 设计。不触发于纯工程任务（debug、重构、调参）。
-  English: Mathematical research OS — auto-diagnoses user intent, routes to thinking lenses, activation anchors, or design translation layer. Triggers on architecture/operator design, theoretical analysis, math-to-AI transfer. Does NOT trigger for pure engineering tasks.
+  数学研究操作系统：自动诊断用户意图，路由到思想透镜、激活锚点或设计翻译层。触发于设计/改进模型架构/算子/注意力、分析理论性质、迁移数学结构到 AI 设计，以及密码学安全定义、构造、归约证明与协议分析。不触发于纯工程任务（debug、重构、调参）。
+  English: Mathematical research OS — auto-diagnoses user intent, routes to thinking lenses, activation anchors, or design translation layer. Triggers on architecture/operator design, theoretical analysis, math-to-AI transfer, and cryptographic definitions, constructions, reductions, or protocol analysis. Does NOT trigger for pure engineering tasks.
 ---
 
 > **语言路由与混合输入规则**：看句式/动词/语气词主框架判定主语言。AI/数学/工程术语不计入。代码/路径/公式不计入。中英接近时沿用上一轮，无上下文默认中文。显式要求优先。中文→本文件，英文→`SKILL.en.md`。完整规则见 `../../references/skill-index.md`。
@@ -11,7 +11,7 @@ description: |
 
 > "思想系统不负责给定理，知识系统不负责乱启发，设计层不负责装深刻。"
 
-本系统是面向 AI 架构创新的数学参谋部——不是武器库，而是告诉你：**这场仗是什么仗、该用什么兵种、怎么部署、哪里会翻车。**
+本系统是面向 AI 架构创新与密码学研究的数学参谋部——不是武器库，而是告诉你：**这场仗是什么仗、该用什么兵种、怎么部署、哪里会翻车。**
 
 ## 核心原则
 
@@ -30,7 +30,7 @@ description: |
 | **设计翻译** | 把数学变成 AI 模块/loss/算子 | `../../design-patterns/*/*.md` | 这些数学怎么变成模型结构？ |
 
 辅助层：
-- `../../references/books/*.md`：7 本书的蒸馏稿，需要深入时的完整上下文
+- `../../references/books/*.md`：10 本书的蒸馏稿，需要深入时的完整上下文；其中 3 本密码学书稿见 `../../references/skill-index.md`
 - `../../references/gpu-friendly-math.md`：GPU 八维验收门（唯一权威）
 - `../../agents/math-critic.md`：数学-工程双重批判器
 
@@ -64,36 +64,85 @@ description: |
 以下任务**无论工作区含什么**都不触发：代码审查、debug、重构、调参、构建部署、纯事实查询、通用软件工程。
 
 ### Gate 1 · 环境信号
-工作区含架构核心代码（attention/transformer/MoE、`*.cu`/kernel）或研究笔记。仅 `model.py`、`trainer.py` 等常规文件**不构成**环境信号。
+工作区含架构核心代码（attention/transformer/MoE、`*.cu`/kernel）或研究笔记，**或**密码学相关代码/协议描述/安全证明草稿。仅 `model.py`、`trainer.py` 等常规文件**不构成**环境信号。
 
 ### Gate 2 · 任务信号
-用户任务涉及**设计/改进**新架构/算子、**分析**理论性质、**迁移**数学结构到 AI 设计，或**查询与 AI 研究相关的数学知识**（如"切空间在优化中怎么用"）。纯百科式数学查询（如"什么是群"且无 AI 上下文）不自动触发，但可通过 `/ask` 手动进入。
+用户任务涉及**设计/改进**新架构/算子、**分析**理论性质、**迁移**数学结构到 AI 设计、**分析密码学构造/安全定义/归约证明/协议**，或**查询与 AI 研究相关的数学知识**（如"切空间在优化中怎么用"）。纯百科式数学或密码学事实查询不自动触发，但可通过 `/ask` 手动进入。
 
 ### Gate 3 · 意图匹配
 用户意图匹配场景 A/B/C/D 之一。纯工程任务匹配场景 E → 不介入。
 
 > **`/ask` 入口**：手动调用时跳过 Gate 1 和 Gate 2，仅执行 Gate 0（排除门）+ Gate 3（意图匹配），可直接进入任意场景包括知识查询。
 
+## Domain Router（v3.2.0 新增）
+
+> AI 研究与密码学**共享**数学根基，但**独有**各自的专业层。Domain Router 在意图诊断后、调用透镜前，先判定问题归属，决定加载哪些锚点/书稿/设计模式，避免跨域污染与 token 浪费。
+
+### 三层归属判定
+
+| 层 | 信号词示例 | 加载内容 | 独有/共用 |
+|----|-----------|---------|----------|
+| **AI 研究层** | attention、loss、routing、representation、compression、MoE、transformer、KV-cache、LoRA、SSM、扩散、RL | `../../knowledge-base/`（7 领域 31 锚点）+ `../../design-patterns/`（5 类 22 模式）+ AI 方向 7 本书 | AI 独有 |
+| **密码学层** | 加密、签名、MAC、PRF/PRG/PRP、OWF、CCA、CPA、AE、零知识、归约证明、攻击游戏、DL/CDH/DDH、RSA、ECC、格密码 | 3 本密码学书稿 + 共用数学锚点（按需）+ 临时知识卡 | 密码独有 |
+| **共用数学层** | 概率、信息论、熵、群、环、域、矩阵、谱、优化、凸性、扰动、复杂度 | `../../knowledge-base/` 中的对应锚点 + `../../lenses/` 透镜 | 共用 |
+
+### 路由规则
+
+1. **先判 domain**：从用户关键词判定主 domain（AI / 密码 / 纯数学查询）。
+2. **共用数学不重复加载**：若 domain 是密码学，共用数学锚点（如 `../../knowledge-base/probability/entropy.md`、`../../knowledge-base/matrix-analysis/spectral-decomposition.md`）按需加载，**不**加载 AI 专属的 `../../design-patterns/`。
+   - **"按需"判定条件**：当且仅当问题的数学结构映射到该共用锚点的核心定义/公式时加载。即问题陈述中显式出现该锚点对应的核心概念（如"谱""熵""凸""扰动"），或透镜路由/critic 明确指向该锚点。**domain 标签不决定共用锚点加载与否，问题结构决定。**
+3. **跨域时显式标注**：若问题确实是 AI×密码交叉（如"用 PRF 做模型水印""对抗样本的归约证明"），Domain Router 显式列出两个 domain 的加载项，并标注交叉点。
+   - **交叉点标注模板**（四元组，供 critic 第 19 维第 6 检查点审查）：
+     1. **密码学原语 + 安全性质**（如"PRF + 伪随机性"）
+     2. **AI 模块 + 功能需求**（如"水印 + 唯一可追踪性"）
+     3. **迁移方向**（密码→AI / AI→密码）
+     4. **迁移后假设可达性**（原假设在 AI 场景是否仍可达成？如"PRF 的 PRF 假设在 ML 部署中是否可满足"）
+4. **不跨域时不污染**：纯 AI 问题不加载密码学书稿；纯密码学问题不加载 AI 设计模式。避免 token 浪费与概念混淆。
+5. **缺口协议分 domain**：Knowledge Gap Protocol 生成的临时知识卡标注 domain（AI/密码/共用），便于后续升级到对应正式卡片。
+
+### Domain Router 判定流程图
+
+```
+用户问题
+  ↓
+[Gate 0-3 触发?]
+  ↓ 是
+Domain Router: 关键词判定主 domain
+  ├─ AI 研究 → 加载 knowledge-base + design-patterns + AI 书稿
+  ├─ 密码学  → 加载密码学书稿 + 共用数学锚点（按需）
+  ├─ 纯数学  → 只加载 lenses + 对应 knowledge-base 锚点
+  └─ AI×密码 → 双 domain 加载 + 交叉点标注
+  ↓
+[场景 A/B/C/D 路由]
+  ↓
+[透镜 → 锚点/书稿 → 设计翻译（仅 AI）/ 归约模板（仅密码）→ critic]
+```
+
 ## 主流程
 
 ### 第一步：诊断意图
 1. 判断用户意图属于场景 A/B/C/D/E 哪个
-2. 提取问题核心张力：想保留什么？想抑制什么？约束是什么？工程瓶颈是什么？
-3. 输出问题类型分类
+2. **Domain Router 判定**：问题归属（AI / 密码 / 纯数学 / 交叉）
+3. 提取问题核心张力：想保留什么？想抑制什么？约束是什么？工程瓶颈是什么？
+4. 输出问题类型分类 + domain 标注
 
 ### 第二步：路由调用
 
 ```
 场景 A（分析）：选 1-3 个透镜 → 输出视角诊断 → critic 审查
 场景 B（设计）：选 1-3 个透镜 → 调用相关激活锚点；若无覆盖则进入 Knowledge Gap Protocol → 生成正式/临时设计模式 → critic 审查
-场景 C（查询）：优先加载相关激活锚点；若无覆盖则生成临时知识卡 → 按知识激活协议输出
+  · AI domain：设计模式来自 design-patterns/，产出 attention/loss/routing/representation/compression
+  · 密码 domain：设计模式来自密码学书稿的构造范式（SPN/Feistel/Merkle-Damgård/KEM-DEM/Fiat-Shamir），产出加密/MAC/签名/协议
+场景 C（查询）：优先加载相关激活锚点或密码学书稿；若无覆盖则生成临时知识卡 → 按知识激活协议输出
 场景 D（验证）：加载相关锚点或临时知识卡 → critic 审查条件与边界
+  · AI domain：过 GPU 八维验收门
+  · 密码 domain：过归约紧度 + 假设依赖 + 实现陷阱检查（不必过 GPU 门）
 场景 E（工程）：不介入
 ```
 
 ### 第三步：输出格式
 
-**Token 经济原则**：以下是最长结构，不是默认全文模板。按用户问题裁剪；简单知识查询只给必要定义/公式/风险，设计与 GPU 内容只在与问题有关时展开；避免复述已加载卡片全文。
+**Token 经济原则**：以下是最长结构，不是默认全文模板。按用户问题裁剪；简单知识查询只给必要定义/公式/风险，设计与 GPU/归约内容只在与问题有关时展开；避免复述已加载卡片全文；**Domain Router 已判定 domain 后，只展开该 domain 的专属小节**。
 
 **场景 A/B 输出**：
 1. **[诊断]** 问题类型 + 核心张力
@@ -137,7 +186,7 @@ description: |
 ## 深度查阅协议
 
 - **轻度**：读知识卡片（`../../knowledge-base/*/*.md`），自足可用
-- **中度**：读书蒸馏稿（`../../references/books/*.md`），获取更完整上下文
+- **中度**：读书蒸馏稿（`../../references/books/*.md`），获取更完整上下文；密码学问题优先查阅 `../../references/skill-index.md` 列出的 3 本专门书稿
 - **深度**：本机有 `math_book/<PDF>` 时，Agent 自动 `pdftotext` + grep 定位原文页
 
 ## 知识缺口协议 / Knowledge Gap Protocol
