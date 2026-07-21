@@ -2,7 +2,7 @@
 
 > 本文件是 `../SKILL.md` 的按需目录。主入口只保留选择规则；不要为清晰问题默认加载本索引。
 
-## Domain Router 总览（v3.2.0）
+## Domain Router 总览（v3.2.0+；路由规则以根 `../SKILL.md` 为准）
 
 > 完整定义见 `../SKILL.md` 的 Domain Router 小节。此处仅列摘要表：
 
@@ -120,23 +120,22 @@
   问题类型：序列记忆压缩 + 信息保留 + 长程结构
   核心张力：压缩 token 数量 vs 不破坏长期依赖
 
-第二步 透镜选择：
+第二步 透镜选择（默认 ≤2）：
   1. 谱分解（保留主导子空间）
-  2. 信息论（保留最大互信息状态）
-  3. 拓扑（保留序列结构关键连接点）
+  2. 概率/信息（保留互信息敏感状态）
+  （拓扑仅在用户强调连通/桥接结构时再加，不计入默认预算）
 
 第三步 激活锚点：
   → low-rank-approximation（矩阵分析锚点）
-  → leverage-score-selection（压缩设计模式）
   → information-bottleneck（概率与信息锚点）
+  → leverage-score-selection 或 low-rank-kv-cache（0–2 个压缩设计模式）
   若现有锚点不足，进入 Knowledge Gap Protocol 生成临时知识卡。
 
 第四步 设计翻译：
-  候选 A：Spectral KV Compression（低秩 + leverage score）
-  候选 B：Information-Preserving Cache（query sensitivity）
-  候选 C：Topology-Preserving Cache（图桥接节点保留）
+  主方案：Spectral KV Compression（低秩 + leverage score）
+  备选仅写关键差异：Information-Preserving Cache（依赖未来 query 估计）
 
-第五步 Critic 审查：
-  A 最 GPU 友好，B 需估计未来 query 有不确定性，C 图构建成本过高
-  建议：优先 A，B 作轻量 gate
+第五步 紧凑审查（普通任务不加载完整 critic）：
+  主方案最 GPU 友好；备选需估计未来 query，不确定性更高
+  结论：优先主方案；需要 query 敏感保留时再加轻量 gate
 ```

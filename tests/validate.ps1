@@ -101,6 +101,11 @@ Check-File "skills\math-research-activator\SKILL.en.md"
 Check-Contains "SKILL.md" "渐进加载与 token 预算"
 Check-Contains "SKILL.en.md" "Progressive loading and token budget"
 Check-Contains "skills\math-research-activator\SKILL.md" "../../SKILL.md"
+Check-Contains "skills\math-research-activator\SKILL.md" "也用于与 AI 研究有关的数学查询"
+Check-Contains "skills\math-research-activator\SKILL.en.md" "Also use for mathematics questions tied to AI research"
+Check-Contains "agents\math-critic.md" "knowledge-base/cryptography/"
+Check-Contains "agents\math-critic.en.md" "knowledge-base/cryptography/"
+Check-Contains "references\skill-index.md" "默认 ≤2"
 
 # --- Commands ---
 Write-Host "`n--- Commands ---"

@@ -274,7 +274,8 @@ math-skill/
 - **数学概念与工程断言校正**：修正一般投影的 Moore–Penrose 伪逆条件、attention/QKV 与线性投影的边界、KL 散度方向、低秩近似的梯度表述、正交损失的形状/归一化条件，以及抽象代数与几何书稿中的若干过度类比；所有保证、等价、稳定和最优性表述强调成立条件或降级为待验证假设。
 - **密码学书稿完整双语化**：新增 `applied-cryptography.en.md`、`foundations-of-cryptography.en.md`、`introduction-to-modern-cryptography.en.md`。commands、agents、lenses、knowledge-base、design-patterns 与 references 现均保持中英文件配对；按用户主语言只加载一侧，避免双份上下文。
 - **GPU 审查改为相关性驱动**：不再要求每个候选机械覆盖八个维度；先声明 shape、baseline 与部署约束，只评会影响决策的维度，无关项标 `N/A`。要求用 FLOPs、峰值中间张量/状态、字节量、通信量或低精度风险等可核查信号支持判断，并明确“可写成 GEMM”不等于实际更快。
-- **critic 与输出质量收敛**：普通任务使用入口内的紧凑检查，只有论文级或显式全面审查才加载 19 维 critic；现代数学激活维度只在确有迁移声称时强制，密码学使用专属安全审查，探索性候选必须标注假设、边界和证伪方法。
+- **critic 与输出质量收敛**：普通任务使用入口内的紧凑检查，只有论文级或显式全面审查才加载 19 维 critic；现代数学激活维度只在确有迁移声称时强制，密码学优先加载 `knowledge-base/cryptography/` 锚点再按需读书稿，不以 GPU 清单作安全门；探索性候选必须标注假设、边界和证伪方法。
+- **审查后残余一致性修补（发布前）**：兼容入口 description 与根 `SKILL.md` 对齐（补回数学查询触发）；索引工作流范例改回默认 ≤2 透镜；CLAUDE/eval 去除过时 Gate 术语并更正 books 双语事实；层上同调 $H^1$ 措辞收紧，避免与层公理混淆。
 - **索引、路由样例与语言规则同步**：更新 `skill-index`、`knowledge-base/overview`、agentic workflow 和 A/B/C/D/E eval 场景，补充假阳性、交叉域、知识缺口与主语言判断边界；代码、路径、公式和英文技术词不参与主语言投票。
 - **测试职责边界清理**：移除仅服务本次审计的六维输出评分和 token/cost 回归规范，保留与 skill 行为直接相关的路由、隔离、双语、引用与语义回归场景。
 - **验证与发布完整性**：Bash/PowerShell 验证覆盖根入口 frontmatter、兼容转发、37 张锚点、中英配对、交叉引用、Domain Router 隔离、Knowledge Gap Protocol、GPU 量化信号和高风险语义回归；npm 包显式包含根 `SKILL*.md`，排除 PDF、`math_book/`、测试与本地 npm 缓存。

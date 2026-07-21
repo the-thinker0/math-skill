@@ -20,4 +20,4 @@ These prompts should NOT trigger the math research OS at all.
 - Activator diagnoses Scenario E (pure engineering)
 - Does NOT load any lenses, knowledge cards, or design patterns
 - Either stays silent or explicitly says "this is an engineering task, math system not applicable"
-- Gate 0 (exclusion gate) should catch all of these
+- The exclusion rule in root `../../SKILL.md` ("classify by object and guarantee") should catch all of these before any math material is loaded

@@ -5,13 +5,13 @@ A sheaf $\mathcal{F}$ assigns an algebraic structure (group/ring/vector space) $
 - **Local sections**: $\mathcal{F}(U)$ is the set of "local solutions" on $U$
 - **Sheaf axiom (gluing)**: if $\{U_i\}$ is an open cover of $U$ and $s_i\in\mathcal{F}(U_i)$ agree on overlaps $U_i\cap U_j$, then there exists a unique $s\in\mathcal{F}(U)$ restricting to each $s_i$
 
-Sheaf cohomology $H^i(X,\mathcal{F})$ measures the obstruction to gluing local solutions into a global one — the first cohomology $H^1$ is the most basic "local-consistent but global-contradictory" diagnostic. Čech cohomology, computed via the intersection complex of an open cover, is the most commonly used approximate form in engineering.
+Sheaf cohomology $H^i(X,\mathcal{F})$ measures local-to-global obstructions finer than the section-gluing axiom itself — for example extension classes, principal-bundle classification, or higher gluing problems. The first cohomology $H^1$ is the most commonly used obstruction diagnostic; Čech cohomology, computed via the intersection complex of an open cover, is the most commonly used approximate form in engineering.
 
 ## Core Formulas
 - **Sheaf condition (gluing axiom)**: $\mathcal{F}(U)\to\prod_i\mathcal{F}(U_i)\rightrightarrows\prod_{i,j}\mathcal{F}(U_i\cap U_j)$ is an equalizer
 - **Čech complex**: $C^p(\mathcal{U},\mathcal{F})=\prod_{i_0<\cdots<i_p}\mathcal{F}(U_{i_0\cdots i_p})$, differential $d^p:C^p\to C^{p+1}$ formed from restriction maps
 - **Cohomology groups**: $H^i(X,\mathcal{F})=\ker d^i/\mathsf{im}\,d^{i-1}$
-- **$H^1=0$ criterion**: local solutions can be glued globally; this is the necessary and sufficient condition for "local consistency ⇒ global consistency"
+- **Meaning of $H^1=0$**: For many extension, principal-bundle, or gluing-obstruction problems, $H^1$ measures whether local data can be lifted to a global object. Note: a true sheaf already guarantees by the gluing axiom that “sections agreeing on overlaps ⇒ a unique global section,” so $H^1=0$ must not be stated as a blanket necessary-and-sufficient condition for arbitrary “local consistency ⇒ global consistency.” Engineering diagnoses should first specify which cohomology problem is being measured.
 - **Spectral sequence (Leray)**: $E_2^{p,q}=H^p(\mathcal{U},\mathcal{H}^q)$ converges to $H^{p+q}(X,\mathcal{F})$, computing higher cohomology
 - **Relation to de Rham cohomology**: $H^i_{\mathsf{dR}}(X)\cong H^i(X,\Omega_X^{\bullet})$, de Rham cohomology is a special case of sheaf cohomology
 - **Vanishing theorems** (Cartan Theorem A/B, Serre): on affine varieties, coherent sheaf cohomology $H^i=0$ for $i>0$; on projective space, line bundle $\mathcal{O}(d)$ has $H^i$ vanishing for certain $d$ ranges

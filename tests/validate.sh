@@ -513,6 +513,21 @@ check_contains "SKILL.en.md" 'ordinary A/B/D tasks'
 check_contains "README.md" 'v3.3.0 — 路由收敛'
 check_contains "README.en-US.md" 'v3.3.0 — Routing Convergence'
 
+# --- Pre-release Consistency Check (v3.3.0) ---
+echo ""
+echo "--- Pre-release Consistency Check ---"
+check_contains "skills/math-research-activator/SKILL.md" '也用于与 AI 研究有关的数学查询'
+check_contains "skills/math-research-activator/SKILL.en.md" 'Also use for mathematics questions tied to AI research'
+check_contains "agents/math-critic.md" 'knowledge-base/cryptography/'
+check_contains "agents/math-critic.en.md" 'knowledge-base/cryptography/'
+check_contains "agents/math-critic.md" '不以 GPU 清单作安全门'
+check_contains "agents/math-critic.en.md" 'Never use the GPU checklist as a security gate'
+check_contains "references/skill-index.md" '默认 ≤2'
+check_contains "references/skill-index.en.md" 'default ≤2'
+check_not_contains "tests/eval/should-not-trigger.md" 'Gate 0'
+check_contains "knowledge-base/algebraic-geometry/sheaf-cohomology.md" '不能把 $H^1=0$ 笼统写成'
+check_contains "knowledge-base/algebraic-geometry/sheaf-cohomology.en.md" 'must not be stated as a blanket'
+
 # --- High-Risk Semantic Regression Checks ---
 echo ""
 echo "--- High-Risk Semantic Regression Checks ---"

@@ -5,13 +5,13 @@
 - **局部截面**：$\mathcal{F}(U)$ 是 $U$ 上的"局部解"集合
 - **粘合公理（sheaf axiom）**：若 $\{U_i\}$ 是 $U$ 的开覆盖，且 $s_i\in\mathcal{F}(U_i)$ 在交叠 $U_i\cap U_j$ 上一致，则存在唯一 $s\in\mathcal{F}(U)$ 限制到每个 $U_i$ 为 $s_i$
 
-层上同调 $H^i(X,\mathcal{F})$ 度量"局部解无法粘成全局解"的障碍——一阶上同调 $H^1$ 是最基本的"局部一致但全局矛盾"诊断量。Čech 上同调用开覆盖的交并复形计算，是工程上最常用的近似形式。
+层上同调 $H^i(X,\mathcal{F})$ 度量比“截面粘合公理”更细的局部到整体障碍——例如扩张类、主丛分类或高阶粘合问题。一阶上同调 $H^1$ 是最常用的障碍诊断量；Čech 上同调用开覆盖的交并复形计算，是工程上最常用的近似形式。
 
 ## 核心公式
 - **层条件**（粘合公理）：$\mathcal{F}(U)\to\prod_i\mathcal{F}(U_i)\rightrightarrows\prod_{i,j}\mathcal{F}(U_i\cap U_j)$ 是等化子
 - **Čech 复形**：$C^p(\mathcal{U},\mathcal{F})=\prod_{i_0<\cdots<i_p}\mathcal{F}(U_{i_0\cdots i_p})$，微分 $d^p:C^p\to C^{p+1}$ 由限制映射构成
 - **上同调群**：$H^i(X,\mathcal{F})=\ker d^i/\mathsf{im}\,d^{i-1}$
-- **$H^1=0$ 的判据**：局部解可全局粘合；这是"局部一致 ⇒ 全局一致"的充分必要条件
+- **$H^1=0$ 的含义**：对许多扩张、主丛或粘合障碍问题，$H^1$ 刻画局部数据能否升成全局对象。注意：真层本身已由粘合公理保证“交叠一致的截面 ⇒ 唯一全局截面”，因此不能把 $H^1=0$ 笼统写成任意“局部一致 ⇒ 全局一致”的充要条件；工程诊断应先写清所测障碍对应哪一类上同调问题。
 - **谱序列（Leray）**：$E_2^{p,q}=H^p(\mathcal{U},\mathcal{H}^q)$ 收敛到 $H^{p+q}(X,\mathcal{F})$，计算高阶上同调
 - **与 de Rham 上同调关系**：$H^i_{\mathsf{dR}}(X)\cong H^i(X,\Omega_X^{\bullet})$，de Rham 上同调是层上同调的特例
 - **消失定理**（Cartan Theorem A/B、Serre）：仿射簇上凝聚层的 $H^i=0$（$i>0$）；投影空间上线丛 $\mathcal{O}(d)$ 的 $H^i$ 在某些 $d$ 范围消失

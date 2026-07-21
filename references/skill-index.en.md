@@ -2,7 +2,7 @@
 
 > This is the on-demand catalog for `../SKILL.md`. The main entry keeps only selection rules; do not load this index by default for a clear request.
 
-## Domain Router Overview (v3.2.0)
+## Domain Router Overview (v3.2.0+; routing rules follow root `../SKILL.md`)
 
 > Full definition: see the Domain Router section in `../SKILL.md`. Only a summary table appears here:
 
@@ -120,23 +120,22 @@ Step 1 — Diagnosis: Scenario B (Mechanism Design)
   Problem type: Sequence memory compression + information preservation + long-range structure
   Core tension: Compressing token count vs. preserving long-range dependencies
 
-Step 2 — Lens Selection:
+Step 2 — Lens Selection (default ≤2):
   1. Spectral Decomposition (preserve dominant subspace)
-  2. Information Theory (retain states with maximum mutual information)
-  3. Topological (preserve critical connectivity points of sequential structure)
+  2. Probabilistic / Information (retain mutual-information-sensitive states)
+  (Add Topology only if the user emphasizes connectivity/bridging; it is outside the default budget)
 
 Step 3 — Activation Anchors:
   → low-rank-approximation (Matrix Analysis anchor)
-  → leverage-score-selection (Design Pattern: compression)
   → information-bottleneck (Probability & Information anchor)
+  → leverage-score-selection or low-rank-kv-cache (0–2 compression design patterns)
   If existing anchors are insufficient, enter Knowledge Gap Protocol to generate a temporary knowledge card.
 
 Step 4 — Design Translation:
-  Candidate A: Spectral KV Compression (low-rank + leverage score)
-  Candidate B: Information-Preserving Cache (query sensitivity)
-  Candidate C: Topology-Preserving Cache (graph bridge-node retention)
+  Primary: Spectral KV Compression (low-rank + leverage score)
+  Alternative only by decisive difference: Information-Preserving Cache (depends on future-query estimates)
 
-Step 5 — Critic Review:
-  A is most GPU-friendly; B requires estimating future queries with inherent uncertainty; C has prohibitive graph construction cost
-  Recommendation: Prioritize A; use B as a lightweight gate
+Step 5 — Compact Review (do not load the full critic for ordinary tasks):
+  Primary is most GPU-friendly; alternative needs future-query estimates and is more uncertain
+  Conclusion: Prefer the primary design; add a lightweight gate only when query-sensitive retention is required
 ```
