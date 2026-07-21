@@ -1,6 +1,6 @@
 # Eval: Should Trigger — Analysis (Scenario A)
 
-These prompts SHOULD trigger the analysis pipeline: Lenses → Critic (no design output, no GPU gate unless analysis explicitly involves GPU).
+These prompts SHOULD trigger the analysis route: 1–2 lenses → compact assumption/logic/boundary review. Do not load the full critic unless the user asks for a comprehensive or paper-grade review.
 
 ## Test Cases
 
@@ -16,16 +16,16 @@ These prompts SHOULD trigger the analysis pipeline: Lenses → Critic (no design
 ## Expected Behavior
 
 - Activator diagnoses Scenario A (analysis)
-- Selects 1-3 relevant lenses (with reasons why each is/is not suitable)
-- Outputs structure: **[诊断]** problem type + core tension → **[透镜]** recommended perspectives → **[结论]** conclusion
-- Does NOT output [设计] (no design draft) or [GPU] (unless analysis explicitly involves GPU)
-- Loads critic for review
+- Selects 1–2 relevant lenses; do not narrate rejected lenses unless that changes the conclusion
+- Leads with the conclusion, then gives only the 2–4 decisive assumptions, boundaries, or counterexamples; no fixed diagnostic/lens headings are required
+- Does not draft a new design or add GPU analysis unless the question requires it
+- Uses the compact review checklist by default; full critic is conditional
 - **Must give a conclusion, not just analysis** — never output analysis alone without convergence
-- For test case 8, must identify the bug (penalty is 0 at both extremes) and recommend the correct log-barrier form
+- For test case 8, must distinguish “encourages binary singular values” from “penalizes overlap”: `σ²(1-σ²)` is zero at both 0 and 1, while no-overlap needs a monotone penalty such as `Σσ²`; a barrier near 1 is an option only when strict separation is intended
 
 ## Key Assertions
 
-- Output follows the [诊断] → [透镜] → [结论] format
-- Critic is invoked to review assumptions and logic
+- Output is conclusion-first and omits internal route narration unless routing itself is under test
+- Assumptions and logic are reviewed without requiring the full critic file
 - No design pattern loading unless the user explicitly asks for a redesign
 - Conclusion is actionable, not just descriptive

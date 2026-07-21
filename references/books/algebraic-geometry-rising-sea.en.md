@@ -145,7 +145,7 @@ First the overview mapping, then detailed expansion:
 
 ## Anti-patterns
 
-- **Putting abstract/derived-functor cohomology directly into the training forward pass**: symbolic computation, gradient-free, not computable -- the classic "beautiful but not computable," violating the GPU eight dimensions. Use Cech + fixed covers with differentiable proxies.
+- **Putting abstract/derived-functor cohomology directly into a training forward pass** usually lacks a direct differentiable and efficient implementation. A Cech complex or fixed cover is only a problem-dependent discrete proxy; its scale complexity, approximation semantics, and empirical value must still be validated.
 - **Introducing the full Scheme/Proj machinery to "look advanced"** when the task only needs a graph Laplacian: over-engineering, violating "Simplicity First." Ask first: "does a trivial sheaf (= standard GNN) suffice?"
 - **Treating Zariski topology / generic points and other discrete structures as differentiable objects** to optimize: type error.
 - **Making Cech covers dynamic with unstructured overlaps**: degenerates into random memory access, destroying GPU parallelism (D7).

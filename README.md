@@ -18,7 +18,7 @@
 
 > **本 Skill 正在快速迭代中，欢迎各位使用者提出宝贵的使用感受和改进建议！** 你的反馈是我们持续进化的核心动力。欢迎通过 GitHub Issues 或 Discussions 与我们交流。
 
-> **v3.2.0 已上线**：密码学方向正式接入——3 本现代密码学经典（Boneh-Shoup / Goldreich / Katz-Lindell）精简蒸馏稿 + Domain Router 路由层，AI 与密码学共享数学根基、独有专业层，互不污染。详见变更日志。
+> **v3.2.1**：根 `SKILL.md` 成为 Codex 权威入口，插件目录保留薄兼容层；Domain Router 改为按目标与保证判域，并加入渐进加载/token 预算。密码学锚点已去除不严谨的 AI 类比。
 
 ---
 
@@ -62,13 +62,13 @@ Sophus Lie 打造"屠龙刀"的故事告诉我们：为解微分方程发明的�
 | 层 | 职责 | 目录 | 文件数 |
 |----|------|------|--------|
 | **思想透镜** | 诊断问题结构，推荐数学视角 | `lenses/*.md` | 15 |
-| **激活锚点** | 激活高频数学结构，不足时触发知识缺口协议 | `knowledge-base/*/*.md` | 31 |
+| **激活锚点** | 33 个共用数学锚点 + 4 个密码学锚点；不足时触发知识缺口协议 | `knowledge-base/*/*.md` | 37 |
 | **设计翻译** | 把数学变成 AI 模块/loss/算子 | `design-patterns/*/*.md` | 22 |
 
 辅助层：
 - `references/books/*.md`：10 本书蒸馏稿（7 本 AI 方向 + 3 本密码学方向），需要深入时的完整上下文
-- `references/gpu-friendly-math.md`：GPU 八维验收门
-- `agents/math-critic.md`：数学-工程双重批判器（19 维，含密码学安全审视）
+- `references/gpu-friendly-math.md`：按需 GPU 检查；不适用维度标 N/A
+- `agents/math-critic.md`：仅全面/论文级审查按需加载的 19 维深度批判器
 
 ### Domain Router（v3.2.0 新增）
 
@@ -76,9 +76,9 @@ AI 研究与密码学**共享**数学根基（概率/信息/代数/矩阵/谱/�
 
 | Domain | 加载内容 | 信号词 |
 |--------|---------|--------|
-| **AI 研究** | `knowledge-base/`（7 领域 31 锚点）+ `design-patterns/`（5 类 22 模式）+ AI 方向 7 本书 | attention/loss/routing/representation/compression/MoE/transformer/KV-cache/LoRA/SSM/扩散/RL |
-| **密码学** | 3 本密码学书稿 + 共用数学锚点（按需） | 加密/签名/MAC/PRF/PRG/PRP/OWF/CCA/CPA/AE/零知识/归约/DL/CDH/DDH/RSA/ECC/格密码 |
-| **纯数学** | `lenses/` + `knowledge-base/` 对应锚点 | 概率/信息/熵/群/环/域/矩阵/谱/优化/凸性/扰动/复杂度 |
+| **共用数学** | 8 域 33 锚点 + 相关透镜 | 概率/信息/代数/几何/矩阵/谱/优化/拓扑/复杂度 |
+| **AI 研究** | 共用数学按需 + 0–2 个相关设计原型；书稿只在深查时加载 | attention/loss/routing/representation/compression/MoE/transformer/KV-cache/LoRA/SSM/扩散/RL |
+| **密码学** | 4 张密码锚点；不足时才查 3 本密码书稿；共用数学按需 | 加密/签名/MAC/PRF/PRG/PRP/OWF/CCA/CPA/AE/零知识/归约/DL/CDH/DDH/RSA/ECC/格密码 |
 | **AI×密码交叉** | 双 domain 加载 + 交叉点标注 | "PRF 做模型水印""对抗样本归约""可验证推理" |
 
 > 规则：domain 判定先于透镜调用；共用数学不重复加载；不跨域时不污染；缺口协议临时卡标注 domain。
@@ -114,6 +114,8 @@ AI 研究与密码学**共享**数学根基（概率/信息/代数/矩阵/谱/�
 | 拓扑 | persistent-homology, euler-characteristic, fundamental-group |
 | 概率与信息 | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
 | 信息几何 | natural-gradient, fisher-metric |
+| 代数几何 | sheaf-cohomology, grassmannian-plucker |
+| 密码学（独有） | prf-prg-owf, reduction-proof-template, attack-game-framework, cca-cpa-ae-hierarchy |
 
 ### 设计模式库（按 AI 组件）
 
@@ -135,11 +137,13 @@ AI 研究与密码学**共享**数学根基（概率/信息/代数/矩阵/谱/�
 请帮我安装 math-skill：https://github.com/the-thinker0/math-skill，并教我如何使用
 ```
 
-手动安装：
+Codex 手动安装（把整个仓库作为一个自足 skill，而不是只复制内层目录）：
 
 ```bash
-git clone https://github.com/the-thinker0/math-skill.git
+git clone https://github.com/the-thinker0/math-skill.git ~/.codex/skills/math-research-activator
 ```
+
+根 `SKILL.md` 是 Codex 权威入口；`skills/math-research-activator/SKILL.md` 只是 Claude/plugin 风格兼容入口并转发到根文件。不要单独复制内层目录，否则它引用的知识库与设计模式不完整。
 
 ### 使用
 
@@ -220,7 +224,7 @@ math-skill/
 │   └── compression/                # 压缩（4 模式）
 ├── references/                     # 参考层
 │   ├── books/                      # 10 本书蒸馏稿（7 AI + 3 密码学）
-│   ├── gpu-friendly-math.md        # GPU 八维验收门
+│   ├── gpu-friendly-math.md        # GPU 维度清单（仅评相关项）
 │   ├── agentic-workflow.md         # 协作方式
 │   └── inspiration.md              # 灵感来源
 ├── agents/math-critic.md           # 数学-工程双重批判器（19 维，含密码学安全审视）
@@ -249,11 +253,11 @@ math-skill/
 
 | # | 书名 | 作者 | 出版社 / 版次 | 年份 | ISBN | 蒸馏文件 |
 |---|------|------|-------------|------|------|---------|
-| 8 | *A Graduate Course in Applied Cryptography* | Dan Boneh & Victor Shoup | v0.4 在线版 | 2017 | — | `applied-cryptography.md` |
-| 9 | *Foundations of Cryptography, Volume 1: Basic Tools* | Oded Goldreich | Cambridge University Press | 2001 | 978-0-521-79235-9 | `foundations-of-cryptography.md` |
-| 10 | *Introduction to Modern Cryptography* | Jonathan Katz & Yehuda Lindell | CRC Press, 2nd ed. | 2015 | 978-1-4665-7026-1 | `introduction-to-modern-cryptography.md` |
+| 8 | *A Graduate Course in Applied Cryptography* | Dan Boneh & Victor Shoup | v0.4 在线版 | 2017 | — | `applied-cryptography.md` / `.en.md` |
+| 9 | *Foundations of Cryptography, Volume 1: Basic Tools* | Oded Goldreich | Cambridge University Press | 2001 | 978-0-521-79235-9 | `foundations-of-cryptography.md` / `.en.md` |
+| 10 | *Introduction to Modern Cryptography* | Jonathan Katz & Yehuda Lindell | CRC Press, 2nd ed. | 2015 | 978-1-4665-7026-1 | `introduction-to-modern-cryptography.md` / `.en.md` |
 
-> 密码学书稿正文为英文，沿用 `.md` 后缀（不分中英）；Domain Router 判定为密码学或 AI×密码交叉时加载。
+> 三份密码学蒸馏稿均已中英配对；按用户主语言选择 `.md` 或 `.en.md`，且仍只在锚点不足或需要书稿深度时加载。
 
 蒸馏文件已随 npm 包发布。如需全保真原文，将 PDF 放入 `math_book/` 文件夹即可。
 
@@ -263,11 +267,16 @@ math-skill/
 
 ### v3.2.1 — 设计哲学修正与可靠性增强
 
+- **入口结构收敛**：根 `SKILL.md` / `SKILL.en.md` 成为唯一规范入口；`skills/math-research-activator/` 仅保留兼容转发层，避免双份正文漂移，同时保留 Claude/plugin 布局兼容性
+- **最小上下文预算**：入口正文约减半，场景 A–D 分别限制透镜、锚点与设计原型数量；概念查询、纯密码问题和普通验证不再默认加载完整 critic、书稿或 GPU 清单
+- **路由与领域隔离修正**：按“目标对象 + 所求保证”判域，单个 `hash/attack/security` 词不触发密码路由；纯密码先走 4 张专属锚点，AI×密码才加载交叉两侧
+- **数学与密码学准确性修正**：清理 projection/QKV、KL、低秩梯度、正交损失，以及 PRF/PRG/OWF、CPA/CCA/AE、归约、KEM/DEM 等卡片和书稿中的过度类比或错误工程断言
 - **设计哲学明确化**：`SKILL.md` / `SKILL.en.md` 新增"设计哲学：activator 而非百科"小节，声明 skill 是思考的 activator 和数学锚点，`knowledge-base/` 回归数学结构本身（不固化具体 AI 架构），`design-patterns/` 定位为翻译范式示范而非模板库；新增"兼容性原则"小节，声明对未预置架构的研究问题通过透镜路由 + 锚点激活 + 临时知识卡完成引导
 - **密码学锚点补齐**：新增 `knowledge-base/cryptography/` 目录，含 `prf-prg-owf`、`reduction-proof-template`、`attack-game-framework`、`cca-cpa-ae-hierarchy` 四张锚点卡（中英成对），使 Domain Router 的密码学层加载有实质锚点（修复 v3.2.0 理念不一致：此前声明加载密码学层但无结构化锚点）
+- **密码学书稿双语补齐**：Boneh–Shoup、Goldreich、Katz–Lindell 三份蒸馏稿新增 `.en.md`，参考层 10 本书现全部中英配对
 - **代数几何锚点补齐**：新增 `knowledge-base/algebraic-geometry/` 目录，含 `sheaf-cohomology`、`grassmannian-plucker` 两张锚点卡（中英成对），覆盖 `design-patterns/` 已使用但无锚点的数学结构（层上同调、格拉斯曼流形）
 - **测试覆盖扩展**：新增场景 A（问题分析）、场景 D（验证审查）、交叉域路由（AI×密码四元组标注）、Knowledge Gap Protocol、Domain Router 隔离（不污染保证）五类 eval 测试
-- **validate.sh 结构化检查**：新增知识卡 6 必备小节检查、设计模式 8 维 GPU 评估关键词检查、Domain Router 隔离一致性检查、Knowledge Gap Protocol 6 步骤关键词检查
+- **validate.sh 结构化检查**：检查根入口/frontmatter/兼容层、37 张卡片与双语配对、适用 GPU 维度及量化信号、Domain Router 隔离、Knowledge Gap Protocol、跨引用和高风险语义回归
 - **critic 19 维分层**：核心维度 / 情境维度 / 强制维度 / 元维度分层标注，减少 Agent 的认知负担
 - **inspiration.md 拆分**：技术灵感部分（屠龙刀故事）保留；哲学内容（人生最优化等）移至 `musings.md`，避免与 skill 严谨技术风格冲突
 

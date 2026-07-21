@@ -1,5 +1,5 @@
 #!/bin/bash
-# Math Skill Validation Script (v3.0.0)
+# Math Skill Validation Script (v3.2.1)
 # Validates the three-layer architecture: lenses + knowledge-base + design-patterns
 
 RED='\033[0;31m'
@@ -64,27 +64,34 @@ check_contains "package.json" '"lenses/"'
 check_contains "package.json" '"design-patterns/"'
 check_contains "package.json" '"knowledge-base/"'
 check_contains "package.json" '"references/"'
+check_file "SKILL.md"
+check_file "SKILL.en.md"
+if [ "$(head -n 1 SKILL.md)" = "---" ] && [ "$(head -n 1 SKILL.en.md)" = "---" ]; then
+    echo -e "${GREEN}[PASS]${NC} canonical entries start with YAML frontmatter"
+    PASS=$((PASS + 1))
+else
+    echo -e "${RED}[FAIL]${NC} canonical entry has bytes/text before YAML frontmatter"
+    FAIL=$((FAIL + 1))
+fi
 
 # --- Activator ---
 echo ""
 echo "--- Activator ---"
-check_file "skills/math-research-activator/SKILL.md"
-check_file "skills/math-research-activator/SKILL.en.md"
-check_contains "skills/math-research-activator/SKILL.md" '三层正交架构'
-check_contains "skills/math-research-activator/SKILL.md" '思想透镜'
-check_contains "skills/math-research-activator/SKILL.md" '激活锚点'
-check_contains "skills/math-research-activator/SKILL.md" '设计翻译'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Thinking Lenses'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Activation Anchors'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Design Translation'
+check_contains "SKILL.md" 'Domain Router'
+check_contains "SKILL.md" '渐进加载与 token 预算'
+check_contains "SKILL.md" 'Knowledge Gap Protocol'
+check_contains "SKILL.en.md" 'Progressive loading and token budget'
+check_contains "SKILL.en.md" 'Domain Router'
+check_contains "skills/math-research-activator/SKILL.md" '../../SKILL.md'
+check_contains "skills/math-research-activator/SKILL.en.md" '../../SKILL.en.md'
 
 # --- Commands ---
 echo ""
 echo "--- Commands ---"
 check_file "commands/ask.md"
-check_contains "commands/ask.md" 'math-research-activator'
+check_contains "commands/ask.md" '../SKILL.md'
 check_file "commands/ask.en.md"
-check_contains "commands/ask.en.md" 'SKILL.en.md'
+check_contains "commands/ask.en.md" '../SKILL.en.md'
 
 # --- Lenses ---
 echo ""
@@ -104,12 +111,12 @@ done
 echo ""
 echo "--- Knowledge Base ---"
 check_dir "knowledge-base"
-KB_DOMAINS="matrix-analysis optimization differential-geometry lie-theory topology probability information-geometry"
+KB_DOMAINS="matrix-analysis optimization differential-geometry lie-theory topology probability information-geometry algebraic-geometry cryptography"
 KB_TOTAL=0
 for domain in $KB_DOMAINS; do
     check_dir "knowledge-base/${domain}"
-    count=$(find "knowledge-base/${domain}" -name "*.md" ! -name "*.en.md" 2>/dev/null | wc -l)
-    en_count=$(find "knowledge-base/${domain}" -name "*.en.md" 2>/dev/null | wc -l)
+    count=$(find "knowledge-base/${domain}" -name "*.md" ! -name "*.en.md" ! -name "index.md" 2>/dev/null | wc -l)
+    en_count=$(find "knowledge-base/${domain}" -name "*.en.md" ! -name "index.en.md" 2>/dev/null | wc -l)
     KB_TOTAL=$((KB_TOTAL + count))
     echo -e "  ${GREEN}[INFO]${NC} ${domain}: ${count} CN + ${en_count} EN cards"
 done
@@ -137,13 +144,9 @@ check_file "references/gpu-friendly-math.md"
 check_file "references/agentic-workflow.md"
 check_file "references/inspiration.md"
 check_dir "references/books"
-for book in abstract-algebra algebraic-geometry-rising-sea differential-geometry matrix-analysis micro-lie-theory optimization-ml smooth-manifolds; do
+for book in abstract-algebra algebraic-geometry-rising-sea differential-geometry matrix-analysis micro-lie-theory optimization-ml smooth-manifolds applied-cryptography foundations-of-cryptography introduction-to-modern-cryptography; do
     check_file "references/books/${book}.md"
     check_file "references/books/${book}.en.md"
-done
-# Cryptography books (v3.2.0): English-only, no CN/EN split
-for book in applied-cryptography foundations-of-cryptography introduction-to-modern-cryptography; do
-    check_file "references/books/${book}.md"
 done
 
 # --- Agents ---
@@ -195,7 +198,7 @@ check_contains "README.en-US.md" 'design-patterns/'
 # --- npm Pack Check ---
 echo ""
 echo "--- npm Pack Check ---"
-PACK_OUTPUT=$(npm pack --dry-run 2>&1)
+PACK_OUTPUT=$(npm pack --dry-run --cache "$PWD/.npm-cache" 2>&1)
 if echo "$PACK_OUTPUT" | grep -q "total files"; then
     echo -e "${GREEN}[PASS]${NC} npm pack --dry-run succeeded"
     PASS=$((PASS + 1))
@@ -228,6 +231,14 @@ else
     FAIL=$((FAIL + 1))
 fi
 
+if echo "$PACK_OUTPUT" | grep -q "SKILL.md"; then
+    echo -e "${GREEN}[PASS]${NC} npm pack includes canonical root SKILL.md"
+    PASS=$((PASS + 1))
+else
+    echo -e "${RED}[FAIL]${NC} npm pack MISSING canonical root SKILL.md"
+    FAIL=$((FAIL + 1))
+fi
+
 if echo "$PACK_OUTPUT" | grep -q "math_book/\|\.pdf"; then
     echo -e "${RED}[FAIL]${NC} npm pack includes PDFs or math_book/"
     FAIL=$((FAIL + 1))
@@ -239,15 +250,7 @@ fi
 # --- CN/EN Pairing ---
 echo ""
 echo "--- CN/EN File Pairing ---"
-# Cryptography books are English-only (no CN/EN split); skip them in pairing check.
-# See references/skill-index.md for the rationale.
-CRYPTO_BOOKS="applied-cryptography|foundations-of-cryptography|introduction-to-modern-cryptography"
 for cn_file in $(find commands skills agents lenses knowledge-base design-patterns references -name '*.md' ! -name '*.en.md' 2>/dev/null | sort); do
-    if echo "$cn_file" | grep -qE "references/books/($CRYPTO_BOOKS)\.md$"; then
-        echo -e "${GREEN}[PASS]${NC} $cn_file (English-only crypto book, no EN pair needed)"
-        PASS=$((PASS + 1))
-        continue
-    fi
     en_file="${cn_file%.md}.en.md"
     if [ -f "$en_file" ]; then
         echo -e "${GREEN}[PASS]${NC} $cn_file has EN pair"
@@ -279,7 +282,8 @@ function walk(dir) {
 
 const roots = ['commands', 'skills', 'agents', 'lenses', 'knowledge-base', 'design-patterns', 'references', 'tests/eval'];
 const bad = [];
-for (const file of roots.flatMap(walk)) {
+const files = roots.flatMap(walk).concat(['SKILL.md', 'SKILL.en.md']);
+for (const file of files) {
   const text = fs.readFileSync(file, 'utf8');
   for (const match of text.matchAll(/`([^`]+)`/g)) {
     const ref = match[1];
@@ -320,15 +324,15 @@ fi
 # --- v3.0.1 Additions ---
 echo ""
 echo "--- v3.0.1 Additions ---"
-check_contains "skills/math-research-activator/SKILL.md" '混合输入'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Mixed-Input'
+check_contains "SKILL.md" '主语言'
+check_contains "SKILL.en.md" 'primary language'
 check_file "tests/eval/mixed-language-routing.md"
 
 # --- v3.1.0 Additions ---
 echo ""
 echo "--- v3.1.0 Additions ---"
-check_contains "skills/math-research-activator/SKILL.md" '知识缺口协议'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Knowledge Gap Protocol'
+check_contains "SKILL.md" 'Knowledge Gap Protocol'
+check_contains "SKILL.en.md" 'Knowledge Gap Protocol'
 check_file "references/skill-index.md"
 check_file "references/skill-index.en.md"
 check_contains "knowledge-base/overview.md" '激活锚点'
@@ -401,8 +405,13 @@ for domain in $KB_DOMAINS_STRUCT; do
         grep -q '## 最小定义' "$cn_file" 2>/dev/null || missing="${missing}最小定义 "
         grep -q '## 核心公式' "$cn_file" 2>/dev/null || missing="${missing}核心公式 "
         grep -q '## 适用问题' "$cn_file" 2>/dev/null || missing="${missing}适用问题 "
-        grep -q '## AI 设计翻译' "$cn_file" 2>/dev/null || missing="${missing}AI设计翻译 "
-        grep -q '## 工程可行性' "$cn_file" 2>/dev/null || missing="${missing}工程可行性 "
+        if [ "$domain" = "cryptography" ]; then
+            grep -q '## 密码学构造与跨域边界' "$cn_file" 2>/dev/null || missing="${missing}密码学构造与跨域边界 "
+            grep -q '## 实现注意事项' "$cn_file" 2>/dev/null || missing="${missing}实现注意事项 "
+        else
+            grep -q '## AI 设计翻译' "$cn_file" 2>/dev/null || missing="${missing}AI设计翻译 "
+            grep -q '## 工程可行性' "$cn_file" 2>/dev/null || missing="${missing}工程可行性 "
+        fi
         grep -q '## 风险与失效条件' "$cn_file" 2>/dev/null || missing="${missing}风险与失效条件 "
         if [ -z "$missing" ]; then
             echo -e "${GREEN}[PASS]${NC} $cn_file has all 6 required sections"
@@ -417,8 +426,13 @@ for domain in $KB_DOMAINS_STRUCT; do
         grep -q '## Minimal Definition' "$en_file" 2>/dev/null || missing="${missing}Minimal Definition "
         grep -q '## Core Formulas' "$en_file" 2>/dev/null || missing="${missing}Core Formulas "
         grep -q '## Applicable Problems' "$en_file" 2>/dev/null || missing="${missing}Applicable Problems "
-        grep -q '## AI Design Translation' "$en_file" 2>/dev/null || missing="${missing}AI Design Translation "
-        grep -q '## Engineering Feasibility' "$en_file" 2>/dev/null || missing="${missing}Engineering Feasibility "
+        if [ "$domain" = "cryptography" ]; then
+            grep -q '## Cryptographic Construction and Cross-Domain Boundary' "$en_file" 2>/dev/null || missing="${missing}Cryptographic Boundary "
+            grep -q '## Implementation Considerations' "$en_file" 2>/dev/null || missing="${missing}Implementation Considerations "
+        else
+            grep -q '## AI Design Translation' "$en_file" 2>/dev/null || missing="${missing}AI Design Translation "
+            grep -q '## Engineering Feasibility' "$en_file" 2>/dev/null || missing="${missing}Engineering Feasibility "
+        fi
         grep -q '## Risks and Failure Conditions' "$en_file" 2>/dev/null || missing="${missing}Risks and Failure Conditions "
         if [ -z "$missing" ]; then
             echo -e "${GREEN}[PASS]${NC} $en_file has all 6 required sections"
@@ -430,65 +444,20 @@ for domain in $KB_DOMAINS_STRUCT; do
     done
 done
 
-# --- Design Pattern GPU 8-Dimension Check (v3.2.1) ---
+# --- Design Pattern GPU Relevance Check (v3.2.1) ---
 echo ""
-echo "--- Design Pattern GPU 8-Dimension Check ---"
-# Each design pattern (excluding overview) must mention at least 6/8 GPU dimensions.
-# Design patterns use D1-D8 markers (e.g., D1[v], D2[~]); accept either D1-D8 markers OR the Chinese/English keywords.
-# Chinese keywords: 张量化 GEMM 复杂度 显存 低精度 并行 稀疏 融合
-# English keywords: Tensorization GEMM Complexity Memory Low-precision Parallelism Sparsity Fusion
-GPU_DIMS_CN="张量化 GEMM 复杂度 显存 低精度 并行 稀疏 融合"
-GPU_DIMS_EN="Tensorization GEMM Complexity Memory Low Parallelism Sparsity Fusion"
-# D1-D8 markers (universally recognized in design patterns)
-GPU_DIMS_D="D1 D2 D3 D4 D5 D6 D7 D8"
-for dp_file in $(find design-patterns -name '*.md' ! -name '*.en.md' ! -name 'overview.md' 2>/dev/null | sort); do
-    found=0
-    for kw in $GPU_DIMS_CN; do
-        if grep -q "$kw" "$dp_file" 2>/dev/null; then
-            found=$((found + 1))
-        fi
-    done
-    # Also count D1-D8 markers
-    d_found=0
-    for d in $GPU_DIMS_D; do
-        if grep -qE "\\b${d}\\b" "$dp_file" 2>/dev/null; then
-            d_found=$((d_found + 1))
-        fi
-    done
-    # Take the max of keyword count and D-marker count
-    if [ "$d_found" -gt "$found" ]; then
-        found=$d_found
-    fi
-    if [ "$found" -ge 6 ]; then
-        echo -e "${GREEN}[PASS]${NC} $dp_file covers $found/8 GPU dimensions"
+echo "--- Design Pattern GPU Relevance Check ---"
+# Require an explicit GPU section and at least one quantitative complexity/memory signal.
+# Do not require all eight dimensions: irrelevant dimensions must be N/A rather than boilerplate.
+for dp_file in $(find design-patterns -name '*.md' ! -name 'overview.md' ! -name 'overview.en.md' 2>/dev/null | sort); do
+    missing=""
+    grep -qE '^## (GPU 可行性|GPU Feasibility)' "$dp_file" 2>/dev/null || missing="${missing}GPU-section "
+    grep -qE 'O\(|FLOPs|[Bb]ytes|显存|[Mm]emory|复杂度|[Cc]omplexity' "$dp_file" 2>/dev/null || missing="${missing}quantitative-signal "
+    if [ -z "$missing" ]; then
+        echo -e "${GREEN}[PASS]${NC} $dp_file has relevant GPU analysis"
         PASS=$((PASS + 1))
     else
-        echo -e "${RED}[FAIL]${NC} $dp_file only covers $found/8 GPU dimensions (need >=6): $GPU_DIMS_CN or D1-D8"
-        FAIL=$((FAIL + 1))
-    fi
-done
-for dp_file in $(find design-patterns -name '*.en.md' ! -name 'overview.en.md' 2>/dev/null | sort); do
-    found=0
-    for kw in $GPU_DIMS_EN; do
-        if grep -q "$kw" "$dp_file" 2>/dev/null; then
-            found=$((found + 1))
-        fi
-    done
-    # Also count D1-D8 markers
-    d_found=0
-    for d in $GPU_DIMS_D; do
-        if grep -qE "\\b${d}\\b" "$dp_file" 2>/dev/null; then
-            d_found=$((d_found + 1))
-        fi
-    done
-    if [ "$d_found" -gt "$found" ]; then
-        found=$d_found
-    fi
-    if [ "$found" -ge 6 ]; then
-        echo -e "${GREEN}[PASS]${NC} $dp_file covers $found/8 GPU dimensions"
-        PASS=$((PASS + 1))
-    else
-        echo -e "${RED}[FAIL]${NC} $dp_file only covers $found/8 GPU dimensions (need >=6): $GPU_DIMS_EN or D1-D8"
+        echo -e "${RED}[FAIL]${NC} $dp_file missing: $missing"
         FAIL=$((FAIL + 1))
     fi
 done
@@ -496,10 +465,14 @@ done
 # --- Domain Router Isolation Check (v3.2.1) ---
 echo ""
 echo "--- Domain Router Isolation Check ---"
-check_contains "skills/math-research-activator/SKILL.md" '纯 AI 问题不加载密码学书稿'
-check_contains "skills/math-research-activator/SKILL.md" '纯密码学问题不加载 AI 设计模式'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Pure AI problems do not load cryptography books'
-check_contains "skills/math-research-activator/SKILL.en.md" 'pure crypto problems do not load AI design patterns'
+check_contains "SKILL.md" '不加载密码学锚点/书稿'
+check_contains "SKILL.md" '不加载 AI 设计模式'
+check_contains "SKILL.en.md" 'Do not load crypto anchors/books'
+check_contains "SKILL.en.md" 'Do not load AI design patterns'
+check_not_contains "knowledge-base/cryptography/attack-game-framework.md" '^## AI 设计翻译'
+check_not_contains "knowledge-base/cryptography/cca-cpa-ae-hierarchy.md" '^## AI 设计翻译'
+check_not_contains "knowledge-base/cryptography/reduction-proof-template.md" '^## AI 设计翻译'
+check_not_contains "knowledge-base/cryptography/prf-prg-owf.md" '^## AI 设计翻译'
 # Verify cryptography layer has structured anchors (not just books)
 CRYPTO_ANCHOR_COUNT=$(find "knowledge-base/cryptography" -name '*.md' ! -name '*.en.md' ! -name 'index.md' 2>/dev/null | wc -l)
 if [ "$CRYPTO_ANCHOR_COUNT" -ge 4 ]; then
@@ -522,30 +495,36 @@ fi
 # --- Knowledge Gap Protocol Check (v3.2.1) ---
 echo ""
 echo "--- Knowledge Gap Protocol Check ---"
-check_contains "skills/math-research-activator/SKILL.md" '缺口识别'
-check_contains "skills/math-research-activator/SKILL.md" '透镜回退'
-check_contains "skills/math-research-activator/SKILL.md" '候选知识定位'
-check_contains "skills/math-research-activator/SKILL.md" '临时知识卡'
-check_contains "skills/math-research-activator/SKILL.md" '设计翻译'
-check_contains "skills/math-research-activator/SKILL.md" '升级建议'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Gap Identification'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Lens Fallback'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Candidate Knowledge Localization'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Temporary Knowledge Card'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Design Translation'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Upgrade Recommendation'
+check_contains "SKILL.md" 'Knowledge Gap Protocol'
+check_contains "SKILL.md" '缺口类型'
+check_contains "SKILL.md" '临时卡必须标注 domain'
+check_contains "SKILL.en.md" 'Knowledge Gap Protocol'
+check_contains "SKILL.en.md" 'temporary card must state its domain'
 
 # --- Design Philosophy Check (v3.2.1) ---
 echo ""
-echo "--- Design Philosophy Check ---"
-check_contains "skills/math-research-activator/SKILL.md" 'activator 而非百科'
-check_contains "skills/math-research-activator/SKILL.md" '回归数学本身'
-check_contains "skills/math-research-activator/SKILL.md" '引导思考而非替代思考'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Activator, Not Encyclopedia'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Return to mathematics itself'
-check_contains "skills/math-research-activator/SKILL.en.md" 'Guide thinking'
+echo "--- Progressive Loading Check ---"
+check_contains "SKILL.md" '最少但足够'
+check_contains "SKILL.md" '不展示内部加载路径'
+check_contains "SKILL.md" '普通 A/B/D 场景使用上述检查即可'
+check_contains "SKILL.en.md" 'smallest sufficient'
+check_contains "SKILL.en.md" 'Do not repeat cards or expose internal load paths'
+check_contains "SKILL.en.md" 'ordinary A/B/D tasks'
 check_contains "README.md" 'v3.2.1 设计哲学修正'
 check_contains "README.en-US.md" 'v3.2.1 Design Philosophy Refinement'
+
+# --- High-Risk Semantic Regression Checks ---
+echo ""
+echo "--- High-Risk Semantic Regression Checks ---"
+check_contains "knowledge-base/matrix-analysis/projection.md" '一般情形用 Moore--Penrose 伪逆'
+check_contains "knowledge-base/matrix-analysis/projection.md" '不是线性投影'
+check_not_contains "knowledge-base/matrix-analysis/projection.md" 'ResNet 的正交残差'
+check_contains "knowledge-base/cryptography/prf-prg-owf.md" '3 轮给出选择明文意义下的 PRP，4 轮给出'
+check_not_contains "knowledge-base/cryptography/prf-prg-owf.md" '通常是 small GEMM'
+check_contains "knowledge-base/cryptography/cca-cpa-ae-hierarchy.md" '不能映射成“训练数据量 ≥ 模型参数量”'
+check_not_contains "knowledge-base/cryptography/reduction-proof-template.md" '差分隐私假设'
+check_contains "references/gpu-friendly-math.md" '`N/A` 不计分'
+check_contains "package.json" '"version": "3.2.1"'
 
 # --- Count Verification ---
 echo ""

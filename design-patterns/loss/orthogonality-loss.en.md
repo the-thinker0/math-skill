@@ -45,14 +45,14 @@ Method 3 - Efficient Normalized-Gram Decorrelation:
 - **Block Computation**: When $K$ is large, perform mini-batch sampling over $(i,j)$ pairs, computing only $B$ out of $\binom{K}{2}$ pairs per step
 
 ## GPU Feasibility
-- **D1[v]**: Core operation is matmul ($W^T W$) -- standard GEMM, perfectly mapped to Tensor Cores
+- **D1[~]**: The core operation is expressible as GEMM, but small $Kr$ can be launch-bound or underutilize Tensor Cores.
 - **D2[v]**: Method 3 requires only 1 GEMM + 1 element-wise mask + Frobenius norm
-- **D3[v]**: $O(K \cdot d \cdot r)$ storage + $O(d \cdot r^2 \cdot K)$ or $O(K^2 \cdot d \cdot r^2)$ computation; negligible when $K < 16$
-- **D4[v]**: Intermediate matrices are on the order of $d \times r \cdot K$, adding no KV-Cache overhead
-- **D5[v]**: Frobenius norm is a sum of squares, safe under fp16; Grassmann SVD is recommended in fp32
-- **D6[v]**: The $K$ pairs are embarrassingly parallel; can be distributed across GPUs with all-reduce
-- **D7[v]**: If $W_k$ is itself sparse (e.g., MoE gate), masking further increases sparsity
-- **D8[v]**: matmul -> mask -> square -> sum can be fused into a single CUDA kernel
+- **D3[~]**: Method 3 costs $O(d(Kr)^2)$ for the GEMM and stores both $O(dKr)$ inputs and an $O((Kr)^2)$ Gram matrix. It is negligible only when $Kr$ is small enough.
+- **D4[~]**: It avoids an explicit $d\times d$ projector but materializes a $(Kr)\times(Kr)$ Gram matrix. KV-cache is not an applicable metric here.
+- **D5[~]**: Square sums can overflow or accumulate error in fp16; use fp32 accumulation. Run QR/SVD in at least fp32 and test gradients near repeated singular values.
+- **D6[~]**: The $\binom K2$ pairs are parallel. A reduction is needed only if this auxiliary loss is split across devices; keeping it local is usually cheaper.
+- **D7[N/A]**: This loss normally uses small dense matrices. Removing the Gram diagonal does not create useful structured sparsity, and sparse $W_k$ does not in general imply a sparse Gram matrix.
+- **D8[~]**: Masking and square-sum reduction can use a fused epilogue or a separate fused reduction, but they do not automatically fuse into a vendor GEMM kernel. Verify launch and memory-traffic savings with a profiler.
 
 ## Paper Phrasing
 "We introduce an orthogonality regularizer L_orth = Sum_{i<j} ||Q_i^T Q_j||_F^2, where Q_i is an orthonormal basis for W_i, to penalize overlap between feature subspaces of different submodules. This can reduce linear redundancy, but any redundancy-decay rate requires random-subspace or data-distribution assumptions and should be reported through principal angles, mutual-information estimates, or downstream ablations."

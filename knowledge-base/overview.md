@@ -4,7 +4,7 @@
 
 ## 知识库结构
 
-知识库按数学领域组织，共 7 个领域、31 张知识卡片。每张卡片包含：最小定义、核心公式、适用问题、AI 设计翻译、工程可行性、风险与失效条件。
+知识库按领域组织，共 9 个目录、37 张知识卡片：其中 8 个共享数学领域含 33 张锚点，密码学领域含 4 张专属锚点。共享数学卡按需给出 AI/工程翻译；密码学卡优先保持安全定义、构造与归约语义，不强塞 AI 或 GPU 模板。
 
 | 领域 | 目录 | 卡片 | 典型应用 |
 |------|------|------|---------|
@@ -15,6 +15,8 @@
 | 拓扑 | `topology/` | persistent-homology, euler-characteristic, fundamental-group | 拓扑正则、隐空间监控 |
 | 概率与信息 | `probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information | VAE、知识蒸馏、泛化界 |
 | 信息几何 | `information-geometry/` | natural-gradient, fisher-metric | 自然梯度下降、Fisher-Rao 度量 |
+| 代数几何 | `algebraic-geometry/` | grassmannian-plucker, sheaf-cohomology | 子空间参数化、局部到整体一致性 |
+| 密码学（领域专属） | `cryptography/` | prf-prg-owf, attack-game-framework, cca-cpa-ae-hierarchy, reduction-proof-template | 安全定义、构造、攻击游戏、归约证明 |
 
 ## 从问题找知识卡
 
@@ -30,13 +32,13 @@
 
 ## 当锚点不够时
 
-现有 31 个锚点覆盖 AI 研究中最常用的数学结构。当问题需要的数学工具不在其中时：
+现有 33 个共享数学锚点与 4 个密码学锚点覆盖高频结构。当问题需要的工具不在其中时：
 
 1. 查看对应领域的 `*/index.md`（如 `topology/index.md`），获取扩展概念和参考书方向
-2. 进入 `../skills/math-research-activator/SKILL.md` 中定义的**知识缺口协议**，生成临时知识卡
+2. 进入根 `../SKILL.md` 中定义的**知识缺口协议**，生成临时知识卡
 3. 不得回答"知识库未覆盖"或强行套用最相近卡片
 
-> **Domain Router 提示**（v3.2.0）：本知识库主要服务 **AI 研究层** 与 **共用数学层**。若 Domain Router 判定问题属**密码学层**，优先查阅 `../references/skill-index.md` 列出的 3 本密码学书稿；共用数学锚点（如 `probability/entropy`、`matrix-analysis/spectral-decomposition`）按需加载，不重复。密码学专属概念（OWF/PRF/CCA/归约证明等）不在此 31 锚点内，通过临时知识卡或密码学书稿激活。
+> **Domain Router 提示**：纯密码问题先加载 `cryptography/` 的最小相关锚点；只有锚点不足或用户要求文献级深度时才查 `../references/books/`。共享数学锚点按需加载且不复制密码学语义。纯 AI 问题不因出现 “hash”“attack”“security”等单词就自动进入密码学路由。
 
 ## 领域扩展索引
 
@@ -51,3 +53,5 @@
 | 拓扑 | `topology/index.md` |
 | 概率与信息 | `probability/index.md` |
 | 信息几何 | `information-geometry/index.md` |
+| 代数几何 | `algebraic-geometry/index.md` |
+| 密码学 | `cryptography/index.md` |

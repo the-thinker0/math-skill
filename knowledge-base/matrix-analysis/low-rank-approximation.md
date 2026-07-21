@@ -18,7 +18,7 @@
 - LoRA 权重压缩：$W \approx W_0 + BA$，$B \in \mathbb{R}^{d \times r}, A \in \mathbb{R}^{r \times d}$，$r \ll d$
 - KV-Cache 压缩：将 Key/Value 缓存投影到低秩因子格式，显存从 $O(Ld)$ 变为 $O(Lk + kd)$；标准 softmax 下序列长度仍为 $L$
 - PCA / 白化：数据协方差的前 $k$ 个主成分即截断 SVD
-- 梯度压缩：大模型梯度矩阵的有效秩通常远低于名义秩，可安全截断
+- 梯度压缩：若实测奇异值衰减快，可截断并用误差反馈控制偏差；“梯度天然低秩、可安全截断”不是普遍定理
 - 推荐系统 / 矩阵补全：低秩因子分解 $R \approx UV^H$
 
 ## AI 设计翻译
@@ -40,7 +40,7 @@
 
 - **秩选择错误**：$k$ 过小导致信息丢失（$\sigma_{k+1}$ 不可忽略），$k$ 过大失去压缩意义。解决：监控奇异值衰减曲线，选 $\sum_{i>k}\sigma_i^2 / \sum\sigma_i^2 < \epsilon$ 的拐点。
 - **随机化 SVD 精度不足**：oversampling $p$ 太小（通常 $p = 5 \sim 10$）或 power iteration 次数不足时，低阶奇异值估计偏差大。解决：增加 $q = 1 \sim 2$ 步 power iteration $Y = (AA^H)^q A\Omega$，但增加 matmul 次数。
-- **LoRA 不适用于所有层**：Attention 的 Q/K/V 通常低秩有效，但 FFN 层和 embedding 的有效秩可能接近满秩，强行 LoRA 会损失精度。需逐层诊断有效秩。
+- **LoRA 不适用于所有层**：不同层和任务的更新谱差异很大，不能预设 Q/K/V 一定低秩而 FFN/embedding 一定满秩。应比较逐层奇异值、验证损失与相同参数预算下的基线。
 - **核范数 proximal 的 SVD 开销**：soft-thresholding $\text{prox}_{\lambda\|\cdot\|_*}(A) = U(\Sigma - \lambda I)_+ V^H$ 需要 SVD，大矩阵每步算不起。解决：用因子化替代或随机化近似。
 
 ## 深入参考

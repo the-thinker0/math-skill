@@ -16,7 +16,7 @@ These prompts should NOT load content from unrelated domains. Pure AI should not
 - Does NOT load the 3 crypto books (references/books/applied-cryptography.md, foundations-of-cryptography.md, introduction-to-modern-cryptography.md)
 - Does NOT load knowledge-base/cryptography/ anchors
 - Does NOT trigger critic dimension 19 (cryptographic security review)
-- Does NOT pass the GPU eight-dimension gate (wait — AI domain DOES pass GPU gate; crypto does NOT)
+- Uses only the GPU dimensions relevant to an implementation decision; does not print eight boilerplate rows
 - Domain Router rule 4 enforced: pure AI does not load crypto content
 
 ## Should load ONLY crypto (not AI)
@@ -29,16 +29,16 @@ These prompts should NOT load content from unrelated domains. Pure AI should not
 ## Expected Behavior
 
 - Domain Router judges the problem as pure cryptography
-- Loads: 3 crypto books + knowledge-base/cryptography/ anchors + shared math anchors on demand (probability, matrix-analysis if the problem's mathematical structure maps to those anchors)
+- Loads the smallest relevant `../../knowledge-base/cryptography/` anchor set; shared math by structure and one crypto book only if the anchors are insufficient or the user requests literature depth
 - Does NOT load design-patterns/ (attention, loss, routing, representation, compression)
-- Does NOT pass the GPU eight-dimension gate (crypto domain uses reduction tightness + assumption dependency + implementation pitfall checks, NOT the GPU gate)
+- Does NOT use the GPU checklist as a security gate (crypto uses security definitions, reduction tightness, assumptions, and implementation pitfalls)
 - Domain Router rule 4 enforced: pure crypto does not load AI design-patterns
 
 ## Edge Cases
 
 ### Edge case 1: Crypto concept with shared math (should load shared, not AI design-patterns)
 
-- "分析 RSA 的归约紧度，需要算大数模乘的复杂度" → loads crypto books + shared math (probability for advantage bounds, matrix-analysis if relevant) + knowledge-base/cryptography/ anchors; does NOT load AI design-patterns.
+- "分析 RSA 的归约紧度，需要算大数模乘的复杂度" → loads a crypto reduction anchor plus algorithmic/complexity material as needed; a crypto book is conditional, and AI design patterns remain excluded.
 
 ### Edge case 2: AI concept that sounds crypto but isn't
 

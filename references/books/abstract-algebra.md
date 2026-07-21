@@ -52,41 +52,30 @@
 
 1. **群等变层 G-equivariant layer**（源：5, 6, 10）：把对称群 G 的作用实现为置换/旋转矩阵 ρ(g)，权重沿轨道共享，约束 f(g·x)=ρ(g)·f(x)。实现上对每个 g∈G 把输入用 ρ(g) 变换后过同一组权重，再聚合——相当于把卷积核扩成 [\|G\|, C_out, C_in] 的 batched GEMM，独立参数量 ↓\|G\| 倍。落地模型：CNN（平移）、G-CNN（Dₙ steerable filter）、DeepSets/Set Transformer（Sₙ）、E(3)-等变 GNN（点云/分子）。
 2. **热带 / min-plus 注意力与路由**（源：12–14 环公理松弛）：把 softmax 的 (×,+)+exp 换成 (+, min/max) 的 min-plus matmul：score⊕=min_k(Q_ik+K_kj)。硬 Top-K 路由 → 热带半环**分段线性门控**（次可微——折点需 LogSumExp 软化，软化后退回标准 softmax；替代不可微的 argmax）。Viterbi、DTW、最短路本质都是这条 min-plus matmul——见 `../gpu-friendly-math.md` 的 Tropical Gating 范例（只在低维门控用、且**不上 Tensor Core**——max/min 落 CUDA core，主干仍走标准 (×,+) GEMM）。
-3. **置换不变聚合 permutation-invariant aggregation**（源：9, 29）：对 Sₙ 作用取商即得 sum/max/mean pooling——天然 O(n) 且并行友好，是 DeepSets ρ(Σφ(xᵢ)) 与 GNN message passing 的代数基础。Burnside 计数（29）可在设计期估"本质不同的配置有多少"，用于预测参数节省比与数据去重收益。
-4. **有限域编码做 Infra**（源：22, 31）：线性码 c=mG（生成矩阵 G 在 GF(q) 上）做容错存储与梯度压缩，Hamming 距离给纠错能力下界；Shamir 秘密共享（GF(p) 多项式插值，t 个分片可恢复）做联邦学习安全聚合；有限域哈希/CRC 做去重与一致性校验。共性：纯 int/bitwise，放数据流前后处理。
+3. **置换不变聚合 permutation-invariant aggregation**（源：9, 29）：sum/max/mean 都是置换不变聚合；DeepSets 的 `ρ(Σφ(xᵢ))` 有相应表示定理，但具体条件需另述。Burnside 引理能精确计数有限群作用的轨道；只有参数共享或去重方案确实按这些轨道识别等价对象时，轨道数才可转成资源估计。
+4. **有限域编码做 Infra**（源：22, 31）：线性码 `c=mG` 可用于容错存储或编码计算；Hamming 距离决定可检测/纠正的错误数。Shamir 秘密共享可作为安全聚合协议的组件，但隐私还取决于参与方阈值、掉线、认证和威胁模型。CRC 适合误码检测，不提供密码学抗碰撞性。
 5. **循环群表示 → 频域 token mixing**（源：4, 11）：Zₙ 的不可约表示即 DFT 基，催生 FFT 卷积（O(n log n) 取代 O(n²)）、RoPE（把位置编成 SO(2) 旋转、即 Z 上的酉表示）、循环/相对位置编码。有限阿贝尔群分类定理（11）保证任意此类周期结构都可分解成循环分量做 FFT。
 6. **群上的傅里叶 / 谱方法**（源：10 同态 + 4/11）：把表示论的不可约分解推广到一般有限群，得到群卷积定理——谱 GNN、球面 CNN（SO(3) 上的调和分析）即其特例；代价是非阿贝尔群的快速变换不一定存在，需评估复杂度。
 
 ## GPU 友好性警告
 
-> 八维标准与判分规则唯一来源：`../gpu-friendly-math.md`（张量化 / GEMM 可映射 / 复杂度 / 显存 / 低精度 / 并行 / 稀疏 / 算子融合）。此处只给本书结构的逐维裁决。
+> 仅在实现问题中按 `../gpu-friendly-math.md` 评估相关维度；代数结构本身没有统一的“GPU 友好/不友好”标签。
 
-**焦点 A：半环 GEMM 能上 Tensor Core 吗？——默认不能。**
+- **min/max-plus 矩阵乘**：标准 Tensor Core MAC 不原生支持其半环运算；朴素稠密算法为 O(n³)。是否有更快算法依模型与数值域而定，工程上应与专用 kernel 和问题规模基准比较。
+- **数值与梯度**：max/min 避免指数上溢，但加法、无穷元表示、tie 和低精度比较仍会出问题。max/min 几乎处处可微且可用次梯度；log-sum-exp 是平滑近似，会改变精确半环语义，并不“退回普通 GEMM”等价计算。
+- **群作用**：置换常可用索引/gather，高维表示可用稠密或稀疏算子；哪种更快取决于形状、复用和内存访问。低精度也可能破坏理论上的正交/酉约束，需测不变量漂移。
+- **有限域运算**：通常走整数、位运算、查表或专用 kernel，不使用浮点 Tensor Core MAC；它可出现在训练相关协议或编码中，但不可微部分需要与梯度路径明确隔离。
+- **禁止显式枚举大群**：例如 |Sₙ|=n!；可考虑生成元、轨道或问题特定参数化，但这些替代是否保持所需等变性必须证明。
 
-- **D2 GEMM 可映射（[x]不友好）**：Tensor Core 硬件只做 (×,+) 的 MAC（fp16/bf16/fp8 累加到 fp32）。min-plus / max-plus 用的是 (+, min/max)，**非原生**，朴素 tropical GEMM 退化到 CUDA core 标量比较，吃不到 Tensor Core。
-- **D3 复杂度（[x]）**：min-plus 矩阵乘没有 Strassen 式亚立方加速（等价于 APSP 难题），朴素 O(n³)。
-- **D5 低精度（[v]）**：tropical 用 max/min，无 exp 上溢，反而数值稳健。
-- **D8 可微/融合（[~]可改造）**：min/max 不可微，需松弛。
-- **改造（→ 八维转友好）**：① log-sum-exp 软化 min/max 退回 (×,+) 稳定 softmax，重上 Tensor Core；② 把热带运算**只放在低维门控**，主干仍走标准 (×,+) GEMM（范例文件中 Tropical Gating = D1[v] / D2[x] 非 Tensor Core GEMM / D3[v] 逐 token 门控亚二次，D8 需 LogSumExp 软化）；③ 分块——块内标准 GEMM、块间 min-plus 归约。
-
-**焦点 B：群操作能张量化吗？——小群能，大群和精确算术不能。**
-
-- **有限群作用（D1/D2 [v]）**：置换矩阵 / 稠密表示矩阵 → batched GEMM，G-CNN 已工程化。正交的旋转/置换矩阵在 bf16 下数值稳定（D5 [v]）。
-- **大群枚举（D3/D4 [x]）**：\|Sₙ\|=n! 爆炸，显式枚举群元素 → 显存与算力爆。**改造**：只用生成元（26 Generators and Relations）+ Cayley 图（30）做局部传播，不物化整群。
-- **置换 = gather/scatter（D7/D1/D8 [x]）**：实现为不规则 gather/scatter 会 warp divergence。**改造**：固定置换模式预编译为结构化稀疏或 dense 索引。
-- **有限域 / 模算术（D2 [x]、D1/D6 [v]）**：mod p、GF(2ⁿ)、XOR、查表**不是浮点 MAC**，吃不到 Tensor Core，但在 int/bitwise kernel 上高并行。结论：**适合放编码/哈希的前后处理，绝不放进训练主干 GEMM**。Galois/精确域算术要求 int、不可微，违反 D8。
-
-**判分结论**：群等变（小群、稠密表示）与频域结构 = 数学美 × GPU 友好，可进主干；半环、有限域、精确 Galois = 需先松弛/隔离，否则只能当辅助算子或离线工具。
-
-**范例对照（候选 × 八维裁决）**：
+**候选比较示例（结论须由基准确认）**：
 
 | 候选设计 | 代数来源（章） | 关键维度裁决 | 进主干？ |
 |---|---|---|---|
-| 群等变层（小群 Dₙ/Sₙ，置换+旋转矩阵）| 5, 6, 10 | 1[v] 2[v] 5[v]，群大时 3/4[x] | [v]（限小群/生成元）|
-| 热带门控（低维 min-plus 取代硬 Top-K）| 12–14 松弛 | 1[v] 2[v] 8 需松弛，主干仍 (×,+) | [v]（仅门控）|
-| 纯 min-plus 主干注意力 | 12–14 松弛 | 2[x] Tensor Core 不支持、3[x] O(n³) | [x]（先 log-sum-exp 软化）|
-| 有限域编码压缩 KV/梯度 | 22, 31 | 2[x] 非浮点 MAC，1/6[v] int 并行 | [x]主干 / [v]前后处理 |
-| 循环群表示（FFT/RoPE token mixing）| 4, 11 | 1[v] 2[v] 3[v]（n log n）| [v] |
+| 群等变层（有限群或低维表示）| 5, 6, 10 | 比较索引、稠密与稀疏实现；测等变误差 | 取决于群、表示与形状 |
+| 热带门控（低维 min/max-plus）| 12–14 | 需定义 tie 梯度、复杂度和专用 kernel | 探索性；先消融 |
+| 稠密 min-plus 矩阵乘 | 12–14 | 标准 Tensor Core 不原生支持；朴素 O(n³) | 仅在规模/语义需要时评测 |
+| 有限域编码压缩 KV/梯度 | 22, 31 | 非浮点 MAC；编码收益须覆盖搬运与解码成本 | 先做端到端基准 |
+| 循环卷积/FFT；RoPE | 4, 11 | FFT 可 O(n log n)；RoPE 是逐元素旋转，二者不是同一 kernel | 分别评测 |
 
 ## 该调用哪个思想透镜
 
@@ -96,13 +85,13 @@
 - **副：`duality`**——同态/同构作等价转换、FFT/频域变换简化问题。
 - **副：`algorithmic`**——有限群计数（Burnside, 29）、编码（31）、有限域枚举（22）。
 
-典型组合链：先 `symmetry` 识别问题里的群与不变量 → `categorical` 抽出公共代数结构 → `axiomatization` 核对公理是否真成立（防伪对称、防误用减法）→ `duality` 落成可学习线性映射 → 最后过 `../gpu-friendly-math.md` 八维门。
+典型组合链：先 `symmetry` 识别问题里的群与不变量 → `categorical` 抽出公共代数结构 → `axiomatization` 核对公理是否真成立（防伪对称、防误用减法）→ `duality` 落成可学习表示 → 若涉及实现，再检查相关 GPU 维度并做基准。
 
 ## 反模式
 
-- **把"群之美"硬塞进主干却吃不到 Tensor Core**：tropical / 有限域算术当 GEMM 用，实测全程 CUDA core 标量。
+- **把代数名称当硬件映射**：tropical 或有限域运算不能因写成“矩阵乘”就假定使用标准 Tensor Core GEMM；必须查看实际 kernel。
 - **枚举整群**而非用生成元（\|Sₙ\|=n! / \|GL\| 爆显存）。
-- **死磕精确 Galois / 有限域结构**：导致不可微、必须 int、阻断端到端梯度。
+- **未隔离精确有限域路径**：整数/位运算本身不可微；若它参与训练系统，应明确它是否位于梯度路径之外或使用了何种估计器。
 - **过度对称约束**：把"近似对称/伪对称"写成硬等变，扼杀表达力与模型探索（呼应 agentic-workflow 的"别把主观偏见写死"）。
 - **混淆环与半环**：默认有加法逆元做减法/求逆，到 min-plus 上不成立 → 正确性出错。
 - **为"群之美"造一堆模块**：能用现成等变库/FFT 时不要新造 skill；先用足模型已有能力，再补结构（呼应 agentic-workflow "不要一来就造一堆 skill"）。
@@ -120,5 +109,5 @@
 - **Ch 22 Finite Fields**——GF(pⁿ) 构造与算术：编码/哈希/安全聚合的底座。
 - **Ch 29 Symmetry and Counting**——Burnside 计数：估等价类数 / 参数节省。
 - **Ch 31 Introduction to Algebraic Coding Theory**——Hamming 码、有限域上的线性码（生成矩阵、Hamming 距离/权重）：压缩与容错。
-- **Ch 32 An Introduction to Galois Theory**——域扩张的对称群：结构化变换的范例（落地需先过 GPU 门）。
+- **Ch 32 An Introduction to Galois Theory**——域扩张的对称群；若用于算法设计，须另给可计算表示与任务相关的工程评估。
 - （半环松弛起点：Ch 12–14 环公理 → 去加法逆元 → 热带半环。）

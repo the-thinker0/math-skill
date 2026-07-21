@@ -1,6 +1,6 @@
 # Eval: Knowledge Gap Protocol
 
-These prompts require mathematics NOT in the existing knowledge-base/, triggering the 6-step Knowledge Gap Protocol: gap identification → lens fallback → candidate localization → temporary card → design translation → upgrade recommendation.
+These prompts require mathematics not fully covered by the existing anchors. The response should perform the Knowledge Gap Protocol internally and expose only the parts needed to make the proposed result auditable.
 
 ## Test Cases
 
@@ -13,25 +13,25 @@ These prompts require mathematics NOT in the existing knowledge-base/, triggerin
 
 ## Expected Behavior
 
-For each prompt, the activator MUST execute the 6-step Knowledge Gap Protocol:
+For each prompt, the activator should cover the following six decisions. Fixed headings and route narration are not required.
 
-1. **缺口识别 (Gap Identification)**: Explicitly state that no fully corresponding knowledge card exists. Classify the gap as: new domain / new theorem family / new structure / new application scenario / combinatorial extension.
+1. **缺口识别 (Gap Identification)**: State the missing mathematical object or theorem family and classify the gap when that fact helps calibrate the answer.
    - e.g., for test 1: "tropical geometry is not in knowledge-base/; this is a new domain gap"
    - e.g., for test 3: "sheaf-cohomology.md exists but does not cover persistent variants; this is a combinatorial extension gap"
 
-2. **透镜回退 (Lens Fallback)**: Select 1-3 most relevant thinking lenses to determine the problem's mathematical structure.
-   - e.g., for test 1: algorithmic lens (tropical semiring as piecewise-linear alternative to Top-K) + algebraic lens (semiring structure)
+2. **透镜回退 (Lens Fallback)**: Use 1–2 relevant lenses internally; name them only if doing so explains a consequential choice.
+   - e.g., for test 1: algorithmic analysis (does the proposed operation preserve Top-K's selection semantics?) + algebraic analysis (which semiring operation is actually intended?)
    - e.g., for test 4: local-to-global lens (rough paths as local-to-global structure for sequences)
 
 3. **候选知识定位 (Candidate Knowledge Localization)**: Provide mathematical keywords, theorem families, concept clusters, and reference book directions.
    - e.g., for test 4: "rough paths theory, signature transform, iterated integrals, Lyons' extension theorem"
 
-4. **临时知识卡 (Temporary Knowledge Card)**: Generate in the same format as formal cards:
+4. **临时知识卡 (Temporary Knowledge Card)**: Generate the smallest sufficient card rather than copying the full formal-card template:
    - Minimal definition
    - Core structure
    - Applicable problems
-   - AI design translation
-   - GPU feasibility
+   - AI design translation only for design tasks
+   - Implementation/GPU feasibility only when it affects the decision
    - Risks and failure conditions
    - **Source & Confidence (required)**:
      - Knowledge source: label as "Agent inference / Lens derivation / Reference extrapolation / Requires external verification"
@@ -40,15 +40,15 @@ For each prompt, the activator MUST execute the 6-step Knowledge Gap Protocol:
 
 5. **设计翻译 (Design Translation)**: If the goal is mechanism design, translate the temporary knowledge into candidate AI modules, losses, routing, attention, representation, or compression schemes.
 
-6. **升级建议 (Upgrade Recommendation)**: If this gap recurs frequently, recommend adding a formal knowledge card or design pattern. Tag the temporary card's domain (AI / crypto / shared) for subsequent upgrade.
+6. **升级建议 (Upgrade Recommendation)**: Recommend a permanent card only if the gap is recurring; always tag the temporary card's domain (AI / crypto / shared).
 
 ## Key Assertions
 
-- All 6 steps are executed in order, with explicit headers
+- The six decisions are covered without requiring six visible headers
 - Gap identification is specific (not generic "this is a new area")
-- Lens fallback selects relevant lenses with reasons
+- Lens selection is minimal and is exposed only when decision-relevant
 - Candidate knowledge localization provides concrete theorem families (not vague directions)
 - Temporary card has the required Source & Confidence fields (not missing)
 - Confidence level is calibrated (High only if theorem-backed; Medium/Low for exploratory cases)
 - Unverified claims are explicitly listed
-- Domain tag is present for subsequent upgrade tracking
+- Domain, source/confidence, and unverified claims are present; upgrade advice is conditional on recurrence

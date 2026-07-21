@@ -28,7 +28,7 @@
 
 1. **Diagnosis**: What is the algorithmic structure / bottleneck of the problem? (Do not start by piling on math tutorials.)
 2. **Cross-domain activation**: Scan `books/*.md` for transferable modern mathematical structures, **enumerate multiple candidates** (leveraging the model's large-context advantage).
-3. **Dual acceptance gate**: Each candidate passes two gates — (1) Mathematically correct (differentiable, self-consistent, with correctness guarantees); (2) GPU-feasible (the eight dimensions of `gpu-friendly-math.en.md`).
+3. **Dual acceptance gate**: Each candidate passes two gates — (1) mathematically correct, with theorems separated from assumptions and heuristics; (2) compatible with task-relevant engineering constraints. For GPU work, assess the applicable dimensions in `gpu-friendly-math.en.md` and mark the rest `N/A`.
 4. **Iterative tracking**: Record candidates, scores, and status in a markdown test plan, converging step by step.
 
 ## Markdown Test Plan Template / Tracking Template
@@ -36,7 +36,7 @@
 Record research tasks in a table that the Agent can continuously update:
 
 ```markdown
-| Candidate Structure | Math Correctness | GPU 8-Dim | Complexity | Status | Notes / Next Steps |
+| Candidate Structure | Math Correctness | Applicable GPU Dimensions | Complexity | Status | Notes / Next Steps |
 |--------------------|-----------------|-----------|------------|--------|-------------------|
 | Tropical gating replacing TopK | [v] Differentiable relaxation | 1[v]2[x]3[v]… | Sub-quadratic (per-token) | Verifying | Compare with SWA baseline |
 | …                  |                 |           |            | Todo   |                   |

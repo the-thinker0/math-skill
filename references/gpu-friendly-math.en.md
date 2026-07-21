@@ -18,7 +18,7 @@
 
 ## Quantitative Checklist
 
-When evaluating each dimension, provide concrete numbers rather than just labels:
+Evaluate only dimensions relevant to the candidate and deployment target; mark others `N/A`. For decision-changing dimensions, provide concrete numbers rather than labels:
 
 | Dimension | Quantitative Questions to Answer |
 |-----------|--------------------------------|
@@ -42,24 +42,24 @@ Many "beautiful on paper" modern mathematical structures cannot run at high perf
 
 ## The 8-Dimension Scorecard
 
-For any candidate structure (operator, attention variant, routing mechanism, regularization term, compression scheme…) rate each dimension as `Friendly / Retrofittable / Unfriendly` and provide adaptation recommendations.
+Rate candidate structures as `Friendly / Retrofittable / Unfriendly / N/A`. State shapes, baseline, and deployment constraints first, then select relevant dimensions. Do not force KV-cache, sparsity, or communication analysis onto an ordinary scalar loss merely to fill eight rows.
 
 | # | Dimension | Key Question | Friendly [v] | Unfriendly [x] |
 |---|-----------|-------------|------------|--------------|
 | 1 | **Tensorization** | Can it be expressed as dense tensor operations, avoiding element-wise irregular control flow? | Batched tensor algebra | Scalar loops, data-dependent branches |
-| 2 | **GEMM-mappability** | Can it be reduced to matrix multiplication / batched GEMM / convolution to fully utilize Tensor Cores? | Expressible as a GEMM chain | Irregular computations that cannot be expressed as matrix operations |
-| 3 | **Complexity** | Is the forward/backward pass sub-quadratic? How does it scale with sequence length / model size? | Linear / sub-quadratic, blockable | $O(n^2)$ or worse memory/compute blowup |
+| 2 | **GEMM-mappability** | Can it use matrix multiplication / batched GEMM / convolution, and are shapes large enough for efficient utilization? | Large regular GEMM or mature library kernel | Irregular work, or tiny launch-bound GEMMs |
+| 3 | **Complexity** | What are forward/backward FLOPs and scaling relative to the baseline? | Meets target-scale latency/throughput budgets | Exceeds deployment budgets or has an unacceptable scaling bottleneck |
 | 4 | **Memory & KV-Cache** | Peak memory usage; activation / state / KV footprint; can it be compressed? | Low-rank / quantized / block-summary compressible | Must materialize large intermediate tensors |
 | 5 | **Low-Precision Stability** | Is it stable under fp16/bf16/fp8 with deterministic reproducibility? | Controlled dynamic range, numerically robust | Catastrophic cancellation, ill-conditioned, requires fp64 |
 | 6 | **Parallelism & Communication** | Can it be parallelized across SMs / devices? Communication-to-compute ratio; can overlap be achieved? | Highly parallel, communication overlap-able | Long serial recurrences, communication bottleneck |
 | 7 | **Sparse structure** | Structured or unstructured sparsity? | Block / banded structured sparsity | Random gather/scatter |
 | 8 | **Operator Fusion** | Can kernels be fused to avoid materializing large intermediates (FlashAttention-style)? | Fusible, recomputable | Frequent small kernels, divergent control flow |
 
-**Scoring conclusion**: Retain only candidates that are **mathematically beautiful AND (all eight dimensions friendly or retrofittable)**; any dimension rated "unfriendly and non-retrofittable" means the candidate must be adapted or eliminated.
+**Scoring conclusion**: Separate hard constraints from optimization goals. Eliminate a candidate only when it violates a task-critical hard constraint and cannot be adapted; otherwise report the main bottleneck and validation plan. `N/A` is not a failure, and GEMM expressibility is not evidence of measured speed.
 
 ## Common "Beautiful but Non-Computable" Anti-Patterns
 
-- **Dense global $O(n^2)$ operators**: Naive softmax attention explodes with context length.
+- **Dense global operators without a target-scale analysis**: $O(n^2)$ is not automatically infeasible, but materializing $n\times n$ tensors often exceeds long-context budgets. Compare against the baseline, target $n$, and fused implementation.
 - **Unstructured sparsity / irregular graph traversal**: Random memory access destroys locality.
 - **High-precision dependency**: Ill-conditioned problems that require fp64 for correctness (most training runs only bf16/fp16/fp8).
 - **Serial recurrence**: Long-range dependencies that cannot be parallelized (naive RNN-style).
@@ -83,9 +83,9 @@ Drawn from the auto-research directions cited in `agentic-workflow.en.md`, demon
 
 | Component | Mathematical Source | GPU Friendliness |
 |-----------|-------------------|-----------------|
-| Tropical Gating | Tropical semiring, piecewise-linear | Replaces Top-K: element-wise max-plus — D1[v] / D2[x] Not a Tensor Core GEMM (runs on CUDA cores) / D3[v] Per-token gating only, sub-quadratic (min-plus matmul is APSP-hard, not sub-quadratic); sub-differentiable, kinks require LogSumExp smoothing (smoothing recovers standard softmax) |
+| Tropical Gating | Tropical semiring, piecewise-linear | Element-wise max-plus gating is tensorizable but is not a GEMM; full min-plus matrix multiplication is closely related to APSP-type complexity. Kinks admit subgradients, while LogSumExp is a smoothing approximation that changes the operator. |
 | Cellular Sheaf Diffusion | Algebraic geometry / topology (sheaves, restriction maps) | Each edge is a low-rank linear transform = small GEMM (D2/D4) |
-| Čech Cohomology Regularization | Algebraic topology (first cohomology $H^1$) | Local, inexpensive; serves as an algebraic criterion for hallucination (D3/D8) |
+| Candidate Čech Cohomology Regularizer | Algebraic topology (first cohomology $H^1$) | Unvalidated: complex construction and homology computation may be expensive. “Hallucination criterion” is a research hypothesis requiring a computable surrogate, complexity analysis, and effectiveness experiments. |
 | Low-Rank Basis KV Compression (Plücker/Grassmannian perspective) | Projective geometry | Store the basis rather than Plücker coordinates (the latter expands when low-rank); block-summary candidate — compression ratio / error / throughput must be benchmarked (D4) |
 
 Do not treat the table above as validated conclusions. The correct approach is to enter each component into the test plan: prove or estimate complexity, measure peak memory and throughput, check bf16/fp8 stability, and confirm whether it can be mapped to GEMM / batched GEMM / fused kernels. Only after both empirical benchmarks and theoretical derivations pass should a component be labeled "math beautiful × GPU friendly."

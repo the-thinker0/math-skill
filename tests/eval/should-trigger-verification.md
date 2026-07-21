@@ -1,6 +1,6 @@
 # Eval: Should Trigger — Verification (Scenario D)
 
-These prompts SHOULD trigger the verification pipeline: Knowledge anchors (or temporary cards) → Critic. Output is short conclusion first, then conditions/boundaries.
+These prompts SHOULD trigger the verification route: 1–2 knowledge anchors (or a temporary card) → compact conditions/boundaries check. Output is short and conclusion-first; load the full critic only for an explicitly comprehensive review.
 
 ## Test Cases
 
@@ -17,20 +17,15 @@ These prompts SHOULD trigger the verification pipeline: Knowledge anchors (or te
 
 - Activator diagnoses Scenario D (verification)
 - Loads relevant knowledge anchors (e.g., `matrix-analysis/spectral-decomposition`, `probability/kl-divergence`, `cryptography/prf-prg-owf`) or generates temporary cards if uncovered
-- Output structure:
-  1. 成立条件 (conditions under which it holds)
-  2. 不成立条件 (conditions under which it fails)
-  3. 最多能保证什么 (what it can guarantee at most)
-  4. 不能保证什么 (what it cannot guarantee)
-  5. 工程可行性 (engineering feasibility, only when implementation / GPU matters)
-- Short conclusion first, then conditions/boundaries
-- For AI domain: passes GPU gate if implementation is involved
+- Output is a short conclusion followed by the decisive conditions, failure boundary, and maximum justified guarantee; engineering feasibility appears only when implementation matters
+- For AI implementation questions, checks only relevant GPU dimensions and marks unrelated ones `N/A`
 - For crypto domain: passes reduction tightness + assumption dependency + implementation pitfall checks (GPU gate not required)
 - **Must identify common verification pitfalls**:
-  - Test 3: Eckart-Young bounds K/V matrix error, NOT attention output error — softmax Lipschitz and Q-bound needed
+  - Test 3: Weyl bounds eigenvalue/singular-value perturbation, not the full attention output; an output bound additionally needs the perturbation path, norm choices, and Lipschitz/boundedness assumptions
+  - Test 5: Eckart–Young bounds matrix approximation error, not attention output error; propagating it needs bounds on Q, softmax, and V as appropriate
   - Test 6: "loose reduction = secure" is an anti-pattern; Q large requires parameter compensation
   - Test 7: Plücker coordinates expand at low rank (anti-pattern warned in the low-rank-kv-cache design pattern)
-  - Test 8: "AES as PRF" is an assumption not a theorem; adversary capability depends on deployment
+  - Test 8: seeding a router with a secure PRF does not by itself make the router output pseudorandom; the construction, key secrecy, query interface, and post-processing all enter the claim
 
 ## Key Assertions
 

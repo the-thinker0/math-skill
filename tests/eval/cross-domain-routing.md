@@ -14,28 +14,28 @@ These prompts SHOULD trigger dual-domain loading + intersection annotation using
 ## Expected Behavior
 
 - Domain Router judges AI × Cryptography intersection (both domains' signal keywords present)
-- Explicitly lists both domains' loaded items:
-  - AI domain: knowledge-base/ relevant anchors + design-patterns/ relevant patterns + AI books (if needed)
-  - Cryptography domain: 3 crypto books + knowledge-base/cryptography/ anchors + shared math anchors (on demand)
-- Annotates intersection using the **4-tuple template** (feeds critic dimension 19 checkpoint 6):
+- Uses both domains' relevant items internally:
+  - AI domain: relevant shared anchors + at most the needed design patterns; books only if cards are insufficient
+  - Cryptography domain: relevant crypto anchors first; crypto books and shared math anchors only on demand
+- Annotates the intersection once using the **4-tuple template** for compact cryptographic review:
   1. **密码学原语 + 安全性质** (e.g., "PRF + pseudorandomness" or "commitment + binding")
   2. **AI 模块 + 功能需求** (e.g., "watermark + unforgeability" or "inference + verifiability")
   3. **迁移方向** (crypto→AI / AI→crypto)
   4. **迁移后假设可达性** (Is the original assumption still achievable in the AI scenario? e.g., "Is the PRF assumption satisfiable in ML deployment?")
-- Critic dimension 19 (cryptographic security review) is mandatory and reviews the intersection annotation
+- The compact cryptographic-security checks are mandatory; load the full critic only for a comprehensive review
 - Does NOT pollute: no unnecessary loading of unrelated domains (e.g., no loading of unrelated AI design-patterns for a pure crypto question, and vice versa)
 
 ## Example 4-Tuple for Test Case 1 (PRF watermarking)
 
-1. 密码学原语 + 安全性质: PRF + pseudorandomness (and EUF-CMA for unforgeability)
-2. AI 模块 + 功能需求: model watermark + unique traceability (unforgeability)
+1. 密码学原语 + 安全性质: PRF + pseudorandomness; watermark unforgeability still needs its own attack game
+2. AI 模块 + 功能需求: model watermark + traceability / resistance to forgery under a stated interface
 3. 迁移方向: crypto → AI
-4. 迁移后假设可达性: Is the PRF assumption satisfiable in ML deployment? Key management in distributed training is the typical failure point; the "PRF" assumption holds only if keys are truly random and independent across parties.
+4. 迁移后假设可达性: Is the PRF key sampled and protected as required, and does the watermark interface expose only the queries covered by the game? Key leakage or an undefined extraction/verification interface breaks the claimed transfer.
 
 ## Key Assertions
 
 - Domain Router identifies AI × crypto intersection (not just one domain)
-- Both domains' loaded items are explicitly listed (no silent loading)
+- The 4-tuple makes the intersection explicit; internal file manifests stay hidden unless the user asks to debug routing
 - 4-tuple annotation is complete and specific (not generic boilerplate)
-- Critic dimension 19 checkpoint 6 reviews the 4-tuple
+- Compact crypto checks review the four-tuple; the full critic is conditional
 - No cross-pollution: pure AI or pure crypto questions do not load the other domain's exclusive content

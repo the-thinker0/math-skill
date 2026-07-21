@@ -52,41 +52,30 @@ Actual chapter map (grouped by topic; chapter numbers taken from the book's tabl
 
 1. **G-equivariant layer** (source: 5, 6, 10): Implement the symmetry group G's action as permutation/rotation matrices rho(g), with weights shared along orbits, enforcing f(g x)=rho(g) f(x). In practice, for each g in G the input is transformed by rho(g) then passed through the same set of weights, and the results are aggregated -- equivalent to expanding the convolution kernel into a [\|G\|, C_out, C_in] batched GEMM, reducing independent parameters by a factor of \|G\|. Deployed models: CNN (translation), G-CNN (D_n steerable filters), DeepSets/Set Transformer (S_n), E(3)-equivariant GNN (point clouds/molecules).
 2. **Tropical / min-plus attention and routing** (source: 12-14 ring axiom relaxation): Replace softmax's (x,)+exp with (+, min/max) min-plus matmul: score(+) = min_k(Q_ik + K_kj). Hard Top-K routing -> tropical semiring **piecewise-linear gating** (sub-differentiable -- breakpoints need LogSumExp smoothing, which recovers standard softmax; an alternative to the non-differentiable argmax). Viterbi, DTW, and shortest paths are all instances of this min-plus matmul -- see the Tropical Gating example in `../gpu-friendly-math.en.md` (used only for low-dimensional gating and **not on Tensor Cores** -- max/min runs on CUDA cores, while the main trunk still uses standard (x,+) GEMM).
-3. **Permutation-invariant aggregation** (source: 9, 29): Quotienting by the S_n action yields sum/max/mean pooling -- naturally O(n) and parallel-friendly, the algebraic foundation for DeepSets rho(Sigma phi(x_i)) and GNN message passing. Burnside counting (Ch 29) can estimate "how many essentially distinct configurations exist" at design time, for predicting parameter savings and data deduplication benefits.
-4. **Finite-field coding for Infra** (source: 22, 31): Linear codes c=mG (generator matrix G over GF(q)) for fault-tolerant storage and gradient compression, with Hamming distance providing a lower bound on error-correcting capability; Shamir secret sharing (polynomial interpolation over GF(p), recoverable from t shards) for secure aggregation in federated learning; finite-field hashing/CRC for deduplication and consistency verification. Commonality: pure int/bitwise operations, placed in pre/post-processing on data flows.
+3. **Permutation-invariant aggregation** (sources 9, 29): sum/max/mean are permutation invariant. DeepSets' `rho(sum phi(x_i))` has representation results under stated conditions. Burnside's lemma counts orbits of finite group actions exactly; orbit counts become resource estimates only when the sharing or deduplication scheme identifies precisely those orbits.
+4. **Finite-field coding for infrastructure** (sources 22, 31): linear codes `c=mG` support fault-tolerant storage and coded computation, while Hamming distance determines error detection/correction capability. Shamir sharing can be one component of secure aggregation, but privacy also depends on thresholds, dropouts, authentication, and the threat model. CRC detects accidental errors; it is not cryptographic collision resistance.
 5. **Cyclic group representations -> Frequency-domain token mixing** (source: 4, 11): The irreducible representations of Z_n are the DFT basis, giving rise to FFT convolution (O(n log n) replacing O(n^2)), RoPE (encoding positions as SO(2) rotations, i.e., unitary representations of Z), and cyclic/relative positional encodings. The finite abelian group classification theorem (Ch 11) guarantees that any such periodic structure can be decomposed into cyclic components for FFT.
 6. **Fourier / spectral methods on groups** (source: 10 homomorphism + 4/11): Extending the irreducible decomposition of representation theory to general finite groups yields the group convolution theorem -- spectral GNNs and spherical CNNs (harmonic analysis on SO(3)) are special cases; the cost is that fast transforms for non-abelian groups may not exist and complexity must be assessed.
 
 ## GPU Friendliness Warning
 
-> The sole source for eight-dimension criteria and scoring rules: `../gpu-friendly-math.en.md` (Tensorization / GEMM-mappability / Complexity / Memory / Low-precision / Parallelism / Sparsity / Operator fusion). Here we give only per-dimension verdicts for the book's structures.
+> Only implementation questions should use the applicable dimensions in `../gpu-friendly-math.en.md`; an algebraic structure has no universal GPU-friendly/unfriendly label.
 
-**Focus A: Can semiring GEMM run on Tensor Cores? -- Not by default.**
+- **Min/max-plus matrix multiplication:** standard Tensor Core MAC does not natively implement the semiring operations; the naive dense algorithm is O(n^3). Faster possibilities depend on the model and value domain, so compare problem-specific kernels at the target scale.
+- **Numerics and gradients:** max/min avoids exponential overflow, but additions, infinity sentinels, ties, and low-precision comparisons still matter. Max/min is differentiable almost everywhere and admits subgradients; log-sum-exp is a smooth approximation that changes exact semiring semantics, not an equivalent ordinary GEMM.
+- **Group actions:** permutations may use indexing/gather, while larger representations may use dense or sparse operators. Performance depends on shape, reuse, and memory access. Low precision can also drift from exact orthogonal/unitary invariants.
+- **Finite-field arithmetic:** typically uses integer, bitwise, lookup, or dedicated kernels rather than floating-point Tensor Core MAC. It may appear in training-related protocols or coding, but non-differentiable paths must be separated explicitly from gradients.
+- **Avoid explicit enumeration of large groups:** for example, |S_n|=n!. Generators, orbits, or problem-specific parameterizations can help, but preservation of the required equivariance must be proved.
 
-- **D2 GEMM-mappability ([x] unfriendly)**: Tensor Core hardware only performs (x,+) MAC (fp16/bf16/fp8 accumulated into fp32). Min-plus / max-plus uses (+, min/max), which is **not natively supported**; naive tropical GEMM degenerates to CUDA core scalar comparisons and cannot leverage Tensor Cores.
-- **D3 Complexity ([x])**: Min-plus matrix multiplication has no Strassen-style sub-cubic speedup (equivalent to the APSP hard problem); naive O(n^3).
-- **D5 Low-precision ([v])**: Tropical uses max/min, no exp overflow risk; numerically robust.
-- **D8 Differentiability / Operator fusion ([~] adaptable)**: min/max is non-differentiable; requires relaxation.
-- **Adaptations (-> eight-dimension friendly)**: (1) log-sum-exp smoothing of min/max recovers (x,+) stable softmax, back on Tensor Cores; (2) confine tropical operations **to low-dimensional gating only**, keeping the main trunk on standard (x,+) GEMM (the Tropical Gating example in the reference file = D1 [v] Tensorization / D2 [x] not Tensor Core GEMM / D3 [v] per-token gating sub-quadratic, D8 needs LogSumExp smoothing); (3) blocking -- standard GEMM within blocks, min-plus reduction between blocks.
-
-**Focus B: Can group operations be tensorized? -- Small groups yes, large groups and exact arithmetic no.**
-
-- **Finite group actions (D1/D2 [v])**: Permutation matrices / dense representation matrices -> batched GEMM; G-CNN has been engineered. Orthogonal rotation/permutation matrices are numerically stable under bf16 (D5 [v]).
-- **Large group enumeration (D3/D4 [x])**: \|S_n\|=n! explodes; explicitly enumerating group elements -> memory and compute blow up. **Adaptation**: Use only generators (Ch 26 Generators and Relations) + Cayley graphs (Ch 30) for local propagation, without materializing the entire group.
-- **Permutation = gather/scatter (D7/D1/D8 [x])**: Implementation as irregular gather/scatter causes warp divergence. **Adaptation**: Pre-compile fixed permutation patterns into structured sparsity or dense indexing.
-- **Finite fields / modular arithmetic (D2 [x], D1/D6 [v])**: mod p, GF(2^n), XOR, table lookups **are not floating-point MAC** and cannot use Tensor Cores, but are highly parallel on int/bitwise kernels. Conclusion: **suitable for pre/post-processing in coding/hashing, never to be placed in the training main-trunk GEMM**. Galois / exact-field arithmetic requires int, is non-differentiable, violating D8.
-
-**Scoring conclusion**: Group equivariance (small groups, dense representations) and frequency-domain structures = mathematical beauty x GPU friendliness, can enter the main trunk; semirings, finite fields, exact Galois = require relaxation/isolation first, otherwise can only serve as auxiliary operators or offline tools.
-
-**Worked example comparison (candidate x eight-dimension verdict):**
+**Candidate comparison example (benchmark before accepting):**
 
 | Candidate design | Algebraic source (Ch) | Key dimension verdicts | Enter main trunk? |
 |---|---|---|---|
-| Equivariant layer (small groups D_n/S_n, permutation+rotation matrices) | 5, 6, 10 | 1[v] 2[v] 5[v], large groups 3/4[x] | [v] (limited to small groups/generators) |
-| Tropical gating (low-dim min-plus replacing hard Top-K) | 12-14 relaxation | 1[v] 2[v] 8 needs relaxation, main trunk still (x,+) | [v] (gating only) |
-| Pure min-plus main-trunk attention | 12-14 relaxation | 2[x] Tensor Core unsupported, 3[x] O(n^3) | [x] (needs log-sum-exp smoothing first) |
-| Finite-field coding for KV/gradient compression | 22, 31 | 2[x] not floating-point MAC, 1/6[v] int parallel | [x] main trunk / [v] pre/post-processing |
-| Cyclic group representations (FFT/RoPE token mixing) | 4, 11 | 1[v] 2[v] 3[v] (n log n) | [v] |
+| Equivariant layer (finite groups or low-dimensional representations) | 5, 6, 10 | Compare indexed, dense, and sparse implementations; measure equivariance error | Depends on group, representation, and shape |
+| Tropical gating (low-dimensional min/max-plus) | 12-14 | Define tie gradients, complexity, and a kernel | Exploratory; ablate first |
+| Dense min-plus matrix multiplication | 12-14 | Not native Tensor Core MAC; naive O(n^3) | Benchmark only if scale and semantics justify it |
+| Finite-field coding for KV/gradient compression | 22, 31 | Non-floating MAC; coding gain must exceed movement/decode cost | End-to-end benchmark first |
+| Cyclic convolution/FFT; RoPE | 4, 11 | FFT may be O(n log n); RoPE uses elementwise rotations, not the same kernel | Evaluate separately |
 
 ## Which Thinking Lens to Invoke
 
@@ -96,13 +85,13 @@ Actual chapter map (grouped by topic; chapter numbers taken from the book's tabl
 - **Secondary: `duality`** -- homomorphisms/isomorphisms as equivalence transformations, FFT/frequency-domain transforms to simplify problems.
 - **Secondary: `algorithmic`** -- finite group counting (Burnside, Ch 29), coding (Ch 31), finite field enumeration (Ch 22).
 
-Typical combination chain: First `symmetry` to identify the group and invariants in the problem -> `categorical` to extract the common algebraic structure -> `axiomatization` to verify axioms truly hold (guard against false symmetry, guard against misusing subtraction) -> `duality` to realize as a learnable linear map -> finally pass through the `../gpu-friendly-math.en.md` eight-dimension acceptance gate.
+Typical combination chain: use `symmetry` to identify groups and invariants -> `categorical` to extract common algebraic structure -> `axiomatization` to verify the axioms -> `duality` to obtain a learnable representation -> for implementation work, inspect the applicable GPU dimensions and benchmark.
 
 ## Anti-patterns
 
-- **Forcing "group elegance" into the main trunk without Tensor Core support**: tropical / finite-field arithmetic used as GEMM, actually runs as CUDA core scalar throughout.
+- **Treating an algebraic name as a hardware mapping:** tropical or finite-field operations do not become standard Tensor Core GEMM merely because they are written as matrix products; inspect the actual kernel.
 - **Enumerating the entire group** instead of using generators (\|S_n\|=n! / \|GL\| blows memory).
-- **Insisting on exact Galois / finite-field structures**: leads to non-differentiability, requires int, blocks end-to-end gradients.
+- **Failing to isolate exact finite-field paths:** integer/bit operations are not differentiable; a training system must state whether they are outside the gradient path or use an estimator.
 - **Over-constraining with symmetry**: writing "approximately symmetric / pseudo-symmetric" patterns as hard equivariance, stifling expressiveness and model exploration (echoing the agentic-workflow principle of "don't hardcode subjective biases").
 - **Confusing rings with semirings**: assuming additive inverses exist for subtraction/inversion, which fails under min-plus -> correctness errors.
 - **Building a pile of modules for "group elegance"**: when existing equivariant libraries/FFT suffice, don't create new skills; first exhaust existing model capabilities, then add structure (echoing the agentic-workflow principle of "don't create a bunch of skills right away").
@@ -120,5 +109,5 @@ Typical combination chain: First `symmetry` to identify the group and invariants
 - **Ch 22 Finite Fields** -- GF(p^n) construction and arithmetic: the foundation for coding/hashing/secure aggregation.
 - **Ch 29 Symmetry and Counting** -- Burnside counting: estimating equivalence class count / parameter savings.
 - **Ch 31 Introduction to Algebraic Coding Theory** -- Hamming codes, linear codes over finite fields (generator matrix, Hamming distance/weight): compression and fault tolerance.
-- **Ch 32 An Introduction to Galois Theory** -- The symmetry group of field extensions: an exemplar of structured transformations (deployment requires passing the GPU gate first).
+- **Ch 32 An Introduction to Galois Theory** -- symmetry groups of field extensions; an algorithmic use needs an explicit computable representation and task-relevant engineering evaluation.
 - (Semiring relaxation starting point: Ch 12-14 ring axioms -> drop additive inverse -> tropical semiring.)

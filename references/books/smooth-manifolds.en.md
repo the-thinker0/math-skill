@@ -53,7 +53,7 @@ Actual chapter map (2nd ed., chapter numbers match the book):
 
 ## GPU Friendliness Warning
 
-> The sole authority for the acceptance gate: the **eight dimensions** in `../gpu-friendly-math.en.md`. The success or failure of manifold methods almost entirely hinges on one point: **whether the retraction / exponential map can be tensorized and expressed as GEMM, or must be solved iteratively.**
+> For implementation reviews, select the applicable dimensions from `../gpu-friendly-math.en.md` and mark the rest `N/A`. Manifold methods usually require close attention to batched retractions/exponential maps, iteration cost, numerical stability, and memory; GEMM-mappability is not the sole success criterion.
 
 Dimension-by-dimension comparison:
 

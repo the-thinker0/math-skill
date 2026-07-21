@@ -21,8 +21,8 @@ Activate this domain when the problem involves:
 When core anchors are insufficient, these concepts may require temporary activation:
 - Zero-knowledge proofs: interactive/non-interactive (Fiat-Shamir), Sigma protocols, zk-SNARK/zk-STARK
 - Commitment schemes: hiding + binding, hash commitments, Pedersen commitments
-- Secret sharing: Shamir threshold, Baum-Waidner verifiable secret sharing
-- Homomorphic encryption: partially homomorphic (FHE/TFHE/CKKS), bootstrapping
+- Secret sharing: Shamir threshold and verifiable secret sharing
+- Homomorphic encryption: partial/leveled/fully homomorphic schemes; BFV/BGV/CKKS/TFHE and bootstrapping
 - Multi-party computation (MPC): Yao garbled circuits, GMW, BGW, SPDZ
 - Verifiable computation (VC): PCP, zk-SNARK, GKR, interactive proofs
 - Differential privacy × cryptography intersection: indistinguishability on adjacent datasets, relation to computational indistinguishability
@@ -37,16 +37,14 @@ When core anchors are insufficient, these concepts may require temporary activat
 - `../../references/books/foundations-of-cryptography.md`: Goldreich, definitional methodology + constructive reductions + meta-theorems
 - `../../references/books/introduction-to-modern-cryptography.md`: Katz & Lindell, formal security definitions + construction paradigms + implementation pitfalls
 
-## AI Translation Directions
-Cryptography does not directly produce GPU kernels, but its **design ideas** transfer to AI safety / verifiable computation:
-- PRF → verifiable pseudorandom source (routing seed, data partitioning, reproducible experiments)
-- OWF → hard-to-invert mapping design pattern (hash attention, verifiable watermarking)
-- Reduction paradigm → ML robustness certificates (break robustness ⇒ solve hard problem)
-- Attack games → ML adversarial modeling (adversary capability budget + win condition + unbreakability proof)
-- Commitment schemes → model watermarking and traceable distribution
-- Zero-knowledge → verifiable inference (inference produces SNARK-like proofs, verifier low-cost check)
-- Differential privacy → privacy-preserving training (gradient noise injection with formal guarantees)
-- Simulation paradigm → privacy certificates (model output independently generatable ⇒ training data not leaked)
+## AI×Crypto Boundary
+Load cross-domain material only when a task combines an AI object with a formal cryptographic property:
+- A PRF supplies keyed reproducible pseudorandomness; protection of routing or watermarking depends on the leakage and query game.
+- Commitments, signatures, or MACs can authenticate model artifacts; they do not prove semantic correctness of the model.
+- Zero knowledge/verifiable computation proves an encoded circuit relation; separately prove that the circuit faithfully represents the intended inference.
+- Differential privacy is a statistical privacy definition, not a hardness assumption. When combined with cryptographic protocols, track $(\varepsilon,\delta)$ separately from computational security parameters.
+- Attack-game discipline can specify an ML adversary and winning event, but CPA/CCA cannot simply be renamed as black-box/white-box access.
+- Ordinary hashing, robustness bounds, or simulator analogies do not create cryptographic security.
 
 ## Temporary Activation Rules
 When the required mathematics is not in core anchors:

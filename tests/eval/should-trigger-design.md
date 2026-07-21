@@ -1,6 +1,6 @@
 # Eval: Should Trigger — Design (Scenario B)
 
-These prompts SHOULD trigger the full design pipeline: Lenses → Knowledge → Design → Critic.
+These prompts SHOULD trigger the minimal design route: lenses → anchors → optional design prototypes → compact review. The full critic is reserved for an explicitly comprehensive or paper-grade review.
 
 ## Test Cases
 
@@ -13,8 +13,8 @@ These prompts SHOULD trigger the full design pipeline: Lenses → Knowledge → 
 ## Expected Behavior
 
 - Activator diagnoses Scenario B (mechanism design)
-- Selects 1-3 relevant lenses
+- Selects 1–2 relevant lenses
 - Loads relevant knowledge cards
-- Generates design pattern candidates
-- Runs GPU 8-dimension gate
-- Outputs structured design proposal with implementation sketch
+- Produces one primary design; alternatives only when a decisive tradeoff warrants them
+- For operator/training/inference implementation, evaluates only decision-relevant GPU dimensions and quantifies the main cost; unrelated dimensions are `N/A`
+- Outputs a conclusion-first proposal with an implementation sketch and falsification/ablation plan
