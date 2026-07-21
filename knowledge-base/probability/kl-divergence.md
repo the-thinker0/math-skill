@@ -1,7 +1,7 @@
 # KL 散度 / KL Divergence
 
 ## 最小定义
-Kullback-Leibler 散度度量一个概率分布 $q$ 相对于真实分布 $p$ 的**信息损失**——即用 $q$ 编码 $p$ 时多花的平均比特数。它不是度量（不对称、不满足三角不等式），但在概率单纯形上定义了自然的"方向性距离"。
+Kullback--Leibler 散度比较 $p$ 与 $q$ 的相对信息。满足编码解释的条件下，它等于用针对 $q$ 的码描述来自 $p$ 的样本所增加的期望码长；以 $\log_2$ 计单位为 bit，以自然对数计单位为 nat。它不对称且不满足三角不等式，因此不是距离度量。
 
 ## 核心公式
 
@@ -12,14 +12,14 @@ $$D_{KL}(p \| q) = \sum_x p(x) \log \frac{p(x)}{q(x)} = \mathbb{E}_{p}\left[\log
 $$D_{KL}(p \| q) = \int p(x) \log \frac{p(x)}{q(x)}\, dx$$
 
 **基本性质**：
-- $D_{KL}(p \| q) \geq 0$（Gibbs 不等式），等号当且仅当 $p = q$
+- $D_{KL}(p \| q) \geq 0$（Gibbs 不等式）；在 $p$ 对 $q$ 绝对连续时，等号当且仅当 $p=q$（几乎处处）
 - **不对称**：$D_{KL}(p \| q) \neq D_{KL}(q \| p)$，因此不是度量
 
 **与交叉熵/熵的关系**：
 $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 
 **两种方向的语义差异**：
-- **前向 KL** $D_{KL}(p \| q)$：$q$ 倾向于覆盖 $p$ 的所有模式（mean-seeking）
+- **前向 KL** $D_{KL}(p \| q)$：当 $p$ 是目标、$q$ 是受限近似族时，遗漏 $p$ 有质量的区域会受重罚，通常称 mass-covering；“mean-seeking”只是部分例子的现象
 - **反向 KL** $D_{KL}(q \| p)$：$q$ 倾向于锁定 $p$ 的某一个模式（mode-seeking）
 
 ## 适用问题
@@ -37,11 +37,11 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 - **D2[~]**：KL 本身不是 GEMM，但输入（logits）来自 GEMM 层
 - **D3[v]**：$O(|\mathcal{X}|)$ 线性
 - **D4[~]**：大 vocab 下需同时保留 $p$ 和 $q$ 的完整概率向量，可 chunk 计算
-- **D5[v]**：log-softmax 差值在 bf16 下稳定；注意 $q \to 0$ 时 $\log q$ 发散，需 clamp
+- **D5[~]**：从 logits 用 `log_softmax` 计算比先 softmax 再取 log 稳定；低精度累加宜用 fp32。任意 clamp 都会改变目标，不能当作无偏数值修复
 - **D8[v]**：可与 softmax 融合为 FusedKLDivLoss
 
 ## 风险与失效条件
-- **$q(x)=0$ 但 $p(x)>0$ 时 KL 发散为无穷**：实践中必须对 $q$ 做 label smoothing 或温度缩放，避免零概率。反向 KL 的 mode-seeking 行为可加剧此问题——学生模型"丢弃"教师分布的低概率区域。
+- **支持集不匹配**：若某处 $p(x)>0$ 而 $q(x)=0$，则 $D_{KL}(p\|q)=\infty$。softmax 的精确数学输出为正，但有限精度下可能下溢；可在 log-space 计算，是否使用 smoothing 取决于建模目标而非硬性要求。
 - **梯度方差大**：在 RL（PPO/RLHF）中，KL 估计依赖采样，高方差可导致训练不稳定。常用 clip + 线性近似 $\mathbb{E}[\log p - \log q]$ 替代精确 KL。
 
 ## 深入参考
@@ -53,7 +53,7 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 
 ## 路由扩展
 - 若用于 IB 目标函数 → `information-bottleneck.md`（IB 使用 KL 定义目标）
-- 若需要绝对版本 → `entropy.md`（KL 散度退化为熵）
+- 若需要交叉熵关系 → `entropy.md`（$D_{KL}(p\|q)=H(p,q)-H(p)$）
 - 若需要局部 KL 几何 → `fisher-information.md`（Fisher 信息是 KL 的局部曲率）
 
 ## 可扩展方向

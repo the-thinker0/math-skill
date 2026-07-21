@@ -1,7 +1,7 @@
 # KL Divergence
 
 ## Minimal Definition
-Kullback-Leibler divergence measures the **information loss** when a probability distribution $q$ is used to approximate the true distribution $p$ — that is, the average number of extra bits spent when encoding $p$ using $q$. It is not a metric (it is asymmetric and does not satisfy the triangle inequality), but it defines a natural "directional distance" on the probability simplex.
+Kullback--Leibler divergence compares the relative information in $p$ and $q$. Under the coding interpretation, it is the excess expected code length when data from $p$ are encoded with a code optimized for $q$: units are bits for $\log_2$ and nats for the natural logarithm. It is asymmetric and violates the triangle inequality, so it is not a metric.
 
 ## Core Formulas
 
@@ -12,14 +12,14 @@ $$D_{KL}(p \| q) = \sum_x p(x) \log \frac{p(x)}{q(x)} = \mathbb{E}_{p}\left[\log
 $$D_{KL}(p \| q) = \int p(x) \log \frac{p(x)}{q(x)}\, dx$$
 
 **Fundamental properties**:
-- $D_{KL}(p \| q) \geq 0$ (Gibbs' inequality), with equality if and only if $p = q$
+- $D_{KL}(p \| q) \geq 0$ (Gibbs' inequality); when $p$ is absolutely continuous with respect to $q$, equality holds iff $p=q$ almost everywhere
 - **Asymmetric**: $D_{KL}(p \| q) \neq D_{KL}(q \| p)$, hence it is not a metric
 
 **Relationship to cross-entropy and entropy**:
 $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 
 **Semantic difference between the two directions**:
-- **Forward KL** $D_{KL}(p \| q)$: $q$ tends to cover all modes of $p$ (mean-seeking)
+- **Forward KL** $D_{KL}(p \| q)$: when $p$ is the target and $q$ belongs to a restricted approximation family, missing regions with positive $p$ mass is heavily penalized; “mass-covering” is more precise than the context-dependent phrase “mean-seeking”
 - **Reverse KL** $D_{KL}(q \| p)$: $q$ tends to lock onto a single mode of $p$ (mode-seeking)
 
 ## Applicable Problems
@@ -37,11 +37,11 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 - **D2[~]**: KL itself is not a GEMM, but its inputs (logits) come from GEMM layers
 - **D3[v]**: $O(|\mathcal{X}|)$ linear
 - **D4[~]**: For large vocabularies, both $p$ and $q$ probability vectors must be held simultaneously; chunked computation is possible
-- **D5[v]**: Log-softmax differences are stable in bf16; note that $\log q$ diverges as $q \to 0$, requiring clamping
+- **D5[~]**: Compute from logits with `log_softmax` rather than softmax-then-log and accumulate in fp32. Arbitrary clamping changes the objective and is not an unbiased numerical fix.
 - **D8[v]**: Can be fused with softmax into FusedKLDivLoss
 
 ## Risks and Failure Conditions
-- **KL diverges to infinity when $q(x)=0$ but $p(x)>0$**: In practice, label smoothing or temperature scaling must be applied to $q$ to avoid zero probabilities. The mode-seeking behavior of reverse KL can exacerbate this issue — the student model "drops" low-probability regions of the teacher distribution.
+- **Support mismatch**: If $p(x)>0$ where $q(x)=0$, then $D_{KL}(p\|q)=\infty$. Exact softmax probabilities are positive, but finite precision can underflow; compute in log space. Smoothing is a modeling choice, not a universal requirement.
 - **High gradient variance**: In RL (PPO/RLHF), KL estimation relies on sampling; high variance can lead to training instability. A clipped + linear approximation $\mathbb{E}[\log p - \log q]$ is commonly used in place of the exact KL.
 
 ## Further References
@@ -53,7 +53,7 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 
 ## Routing Extensions
 - If used for IB objective -> `information-bottleneck.en.md` (IB defines objective using KL)
-- If the absolute version is needed -> `entropy.en.md` (KL divergence reduces to entropy)
+- For the cross-entropy identity -> `entropy.en.md` ($D_{KL}(p\|q)=H(p,q)-H(p)$)
 - If local KL geometry is needed -> `fisher-information.en.md` (Fisher information is local curvature of KL)
 
 ## Extensible Directions

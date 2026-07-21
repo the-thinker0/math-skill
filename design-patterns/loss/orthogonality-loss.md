@@ -48,14 +48,14 @@ MoE 专家差异化、多任务 head 去相关。核心诉求：**让不同模�
 - **分块计算**：当 K 很大时，对 (i,j) 对做 mini-batch 采样，每步只算 C(K,2) 中的 B 对
 
 ## GPU 可行性
-- **D1[v]**：核心操作为 matmul（W^T W）→ 标准 GEMM，完美映射 Tensor Core
+- **D1[~]**：核心操作可写成 GEMM；但 $Kr$ 很小时可能受 kernel launch 和低占用率限制，不能默认吃满 Tensor Core
 - **D2[v]**：方法3 只需 1 次 GEMM + 1 次 element-wise mask + Frobenius 范数
-- **D3[v]**：O(K·d·r) 存储 + O(d·r²·K) 或 O(K²·d·r²) 计算，K<16 时 negligible
-- **D4[v]**：中间矩阵 d×r·K 量级，不增加 KV-Cache 负担
-- **D5[v]**：Frobenius 范数为平方和，fp16 下 OK；Grassmann SVD 建议 fp32
-- **D6[v]**：K 对之间 embarrassingly parallel，可分 GPU 计算后 all-reduce
-- **D7[v]**：若 W_k 本身稀疏（如 MoE gate），mask 后稀疏度进一步提升
-- **D8[v]**：matmul → mask → square → sum 可融合为单个 CUDA kernel
+- **D3[~]**：方法3 的 GEMM 复杂度为 $O(d(Kr)^2)$，除输入 $O(dKr)$ 外还需 $O((Kr)^2)$ Gram 矩阵；只有 $Kr$ 相对较小时才可忽略
+- **D4[~]**：无需物化 $d\times d$ 投影，但会物化 $(Kr)\times(Kr)$ Gram；与 KV-Cache 无直接关系
+- **D5[~]**：平方和可能在 fp16 溢出或累积误差，建议 fp32 accumulation；QR/SVD 至少用 fp32，并对接近重根的梯度做稳定性测试
+- **D6[~]**：$\binom K2$ 个 pair 可并行；只有跨设备拆分该辅助损失时才需要归约，通常留在单卡更合算
+- **D7[N/A]**：该损失通常处理稠密小矩阵；mask 对角线不会产生值得利用的结构化稀疏，也不能由 $W_k$ 稀疏推出 Gram 稀疏
+- **D8[~]**：mask、平方和归约可做融合 epilogue 或单独 fused reduction，但不能默认与供应商 GEMM 合成一个 kernel；需以 profiler 验证 launch 与读写收益
 
 ## 论文表述方式
 "我们引入正交性正则项 L_orth = Σ_{i<j}‖Q_i^T Q_j‖_F²（其中 Q_i 为 W_i 的正交基），惩罚不同子模块特征子空间的重叠。该项可降低线性相关冗余，但冗余衰减速率需要随机子空间或数据分布假设支撑，应通过主角度、互信息估计或下游消融实测报告。"

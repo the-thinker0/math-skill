@@ -6,15 +6,15 @@ These are **manual evaluation scenarios** for testing the math-skill v3.2.1 rout
 
 | File | Purpose | Expected Behavior |
 |------|---------|-------------------|
-| `should-trigger-design.md` | Mechanism design scenarios (Scenario B) | Full pipeline: Lenses → Knowledge → Design → Critic |
+| `should-trigger-design.md` | Mechanism design scenarios (Scenario B) | Minimal route: lenses → anchors → optional prototypes → compact review |
 | `should-trigger-knowledge.md` | Knowledge query scenarios (Scenario C) | Direct knowledge card loading |
-| `should-trigger-analysis.md` | Analysis scenarios (Scenario A) | Lenses → Critic (no design output, no GPU gate unless GPU-related) |
-| `should-trigger-verification.md` | Verification scenarios (Scenario D) | Knowledge anchors → Critic; short conclusion + conditions/boundaries |
+| `should-trigger-analysis.md` | Analysis scenarios (Scenario A) | 1–2 lenses → compact assumption/boundary review; full critic only on explicit comprehensive review |
+| `should-trigger-verification.md` | Verification scenarios (Scenario D) | 1–2 anchors → short conclusion + conditions/boundaries; full critic only on demand |
 | `should-not-trigger.md` | Pure engineering tasks (Scenario E) | No math system activation at all |
 | `cross-domain-routing.md` | AI × cryptography intersection | Dual-domain load + 4-tuple intersection annotation |
 | `domain-router-isolation.md` | No cross-pollution guarantee | Pure AI does not load crypto; pure crypto does not load AI design-patterns |
 | `knowledge-gap-protocol.md` | Gaps not covered by existing anchors | 6-step Knowledge Gap Protocol with temporary card + source/confidence |
-| `mixed-language-routing.md` | Code-switched input (CN/EN mixed) | Correct language routing per 5-rule decision system |
+| `mixed-language-routing.md` | Code-switched input (CN/EN mixed) | Correct output language without loading both entry bodies |
 
 ## How to Run
 
@@ -24,6 +24,8 @@ These are **manual evaluation scenarios** for testing the math-skill v3.2.1 rout
 
 ## Key Assertions
 
-- **Scenario B** should output: [诊断] → [透镜] → [知识] → [设计] → [GPU] → [结论]
-- **Scenario C** should output: 最小定义 → 核心公式 → 适用问题 → AI 设计翻译 → 工程可行性 → 风险
+- **Scenario B** should reason through diagnosis → lenses → anchors → design → relevant implementation checks → conclusion, while showing only decision-relevant sections
+- **Scenario C** should normally output only: conclusion/definition → one core formula or intuition → applicability/boundary. AI translation, GPU, and references are conditional.
 - **Scenario E** should NOT load any lenses, knowledge cards, or design patterns
+
+The Scenario B sequence describes required reasoning, not mandatory visible headings. Do not expose load paths or pad a simple answer to match a template.

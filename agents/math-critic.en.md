@@ -1,6 +1,6 @@
 # Math Critic Sub-Agent
 
-> **File routing**: Follow the language routing rules in `../skills/math-research-activator/SKILL.en.md`. Chinese primary → load `math-critic.md`; English primary → use this file.
+> **File routing**: Follow the language routing rules in root `../SKILL.en.md`. Chinese primary → load `math-critic.md`; English primary → use this file.
 
 ## Role
 
@@ -39,7 +39,7 @@ To reduce Agent cognitive load and guide dimension selection, the 19 dimensions 
 | **Mandatory tier** (must-select when triggered) | 17 GPU Feasibility (mandatory when algorithm/operator/GPU is involved), 18 Modern Math Activation (mandatory when "activating modern math" is claimed), 19 Cryptographic Security (mandatory for crypto constructions/proofs/protocols) | Cannot be skipped when trigger conditions are met |
 | **Meta tier** (reviewing the review itself) | 16 Tool-Selection & Flow Review | When unsure which dimensions to pick, invoke this dimension first for self-check |
 
-If the deliverable involves algorithm/operator/GPU design, **Dimensions 17 (GPU) and 18 (Modern Math Activation) are mandatory checkpoints**; if the deliverable involves cryptographic constructions / security proofs / protocols, **Dimension 19 (Cryptographic Security) is a mandatory checkpoint**.
+If the deliverable involves algorithm/operator/GPU design, **Dimension 17 (GPU) is mandatory**. Dimension 18 is mandatory only when the deliverable claims to transfer or activate a modern mathematical structure. If it involves cryptographic constructions, proofs, or protocols, **Dimension 19 (Cryptographic Security) is mandatory**.
 
 ### 1. Assumption Review -> axiomatization lens
 
@@ -149,7 +149,7 @@ If the deliverable involves algorithm/operator/GPU design, **Dimensions 17 (GPU)
 
 > **Mandatory** when the deliverable involves algorithm/operator/training/GPU design. Corresponds to the second gate of the "dual-acceptance gate."
 
-- Does the deliverable pass the **eight dimensions** of `../references/gpu-friendly-math.en.md`? Tensorization / GEMM-mappability / Complexity (sub-quadratic) / Memory & KV-Cache / Low-precision stability / Parallelism & Communication / Sparse structure / Operator fusion -- rate each as "friendly / retrofittable / unfriendly."
+- Evaluate only the applicable dimensions in `../references/gpu-friendly-math.en.md`: tensorization, GEMM-mappability, complexity, memory/KV cache, low-precision stability, parallelism/communication, sparsity, and fusion. Mark irrelevant dimensions `N/A`; quantify decisive items with shapes, operation counts, bytes, or communication volume. GEMM-mappability alone does not imply speed.
 - Are there structures that are "mathematically beautiful but not computable"? (Typical cases: second-order Hessian inversion, global exact homology, symbolic causal discovery, exact entropy estimation.) Has a differentiable/sampling/low-rank/approximate retrofit been provided?
 - Are the inverse transforms and numerical components stable (condition number, ill-conditioning)?
 - Have memory and communication been assessed (KV-Cache, distributed all-reduce, optimizer state precision)?
@@ -162,7 +162,7 @@ If the deliverable involves algorithm/operator/GPU design, **Dimensions 17 (GPU)
 - Are the transferred structures mathematically self-consistent, differentiable (or relaxable to differentiable), and backed by correctness guarantees?
 - Were the corresponding `../references/books/*.en.md` distilled notes consulted? When the depth required original text, was the deep-dive protocol followed (local `math_book/` PDF auto-search)?
 - Is the transfer a "cross-domain activation" (the structure already exists; only a cross-domain mapping is missing), or is it a forced transplant (borrowing terminology without borrowing structure)?
-- Does the deliverable simultaneously pass the **dual-acceptance gate**: mathematically correct **AND** (friendly or retrofittable on the eight dimensions)? Are candidates that fail either criterion eliminated?
+- Is the deliverable mathematically correct and compatible with the task-critical engineering constraints? Irrelevant GPU dimensions must not reject a candidate, and experimental cross-domain mappings must be labeled as hypotheses rather than established theorems.
 
 ### 19. Cryptographic Security Review -> `../references/books/` (3 crypto books)
 
@@ -182,9 +182,9 @@ If the deliverable involves algorithm/operator/GPU design, **Dimensions 17 (GPU)
 
 1. **Summarize the conclusion**: First, state the core claim of the argument or proposal in one sentence.
 2. **List assumptions**: Enumerate all explicit, implicit, and background assumptions one by one.
-3. **Select dimensions**: Based on the nature of the problem, choose the 3-5 most relevant review dimensions from the nineteen for in-depth inspection; if algorithm/GPU design is involved, **Dimensions 17 and 18 are mandatory**; if cryptography is involved, **Dimension 19 is mandatory**. The remaining dimensions may be briefly mentioned or skipped.
+3. **Select dimensions**: Choose the 3-5 most relevant dimensions. If algorithm/GPU design is involved, **Dimension 17 is mandatory**; if modern-math activation is explicitly claimed, Dimension 18 is mandatory; if cryptography is involved, **Dimension 19 is mandatory**.
 4. **Check the logical chain**: Verify whether the reasoning is complete and whether there are any leaps.
-5. **Apply the dual-acceptance gate**: For each candidate deliverable, separately assess mathematical correctness and GPU feasibility; retain only those that pass both.
+5. **Apply the acceptance gates**: Check mathematical correctness first, then the task-relevant engineering constraints. Mark irrelevant dimensions `N/A`; an exploratory candidate may remain if clearly downgraded and paired with a validation plan.
 6. **Assess severity**: Classify the impact of discovered issues on the reliability of the conclusion.
 
 ### Implementation Phase

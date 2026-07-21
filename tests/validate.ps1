@@ -1,4 +1,4 @@
-﻿# Math Skill Validation Script (PowerShell, v3.1.1)
+﻿# Math Skill Validation Script (PowerShell, v3.2.1)
 # Validates the three-layer architecture: lenses + knowledge-base + design-patterns
 #
 # Usage (run from repo root):
@@ -76,7 +76,7 @@ function Check-Not-Contains {
 }
 
 Write-Host "========================================"
-Write-Host "  Math Skill Validation (v3.1.1 PS)"
+Write-Host "  Math Skill Validation (v3.2.1 PS)"
 Write-Host "========================================"
 
 # --- Infrastructure ---
@@ -85,17 +85,29 @@ Check-File "package.json"
 Check-Contains "package.json" "lenses/"
 Check-Contains "package.json" "design-patterns/"
 Check-Contains "package.json" "knowledge-base/"
+Check-Contains "package.json" '"version": "3.2.1"'
+Check-File "SKILL.md"
+Check-File "SKILL.en.md"
+if ((Get-Content "SKILL.md" -TotalCount 1) -eq "---" -and (Get-Content "SKILL.en.md" -TotalCount 1) -eq "---") {
+    Write-Host "[PASS] canonical entries start with YAML frontmatter" -ForegroundColor Green; $script:pass++
+} else {
+    Write-Host "[FAIL] canonical entry has text before YAML frontmatter" -ForegroundColor Red; $script:fail++
+}
 
 # --- Activator ---
 Write-Host "`n--- Activator ---"
 Check-File "skills\math-research-activator\SKILL.md"
 Check-File "skills\math-research-activator\SKILL.en.md"
+Check-Contains "SKILL.md" "渐进加载与 token 预算"
+Check-Contains "SKILL.en.md" "Progressive loading and token budget"
+Check-Contains "skills\math-research-activator\SKILL.md" "../../SKILL.md"
 
 # --- Commands ---
 Write-Host "`n--- Commands ---"
 Check-File "commands\ask.md"
 Check-File "commands\ask.en.md"
-Check-Contains "commands\ask.en.md" "SKILL.en.md"
+Check-Contains "commands\ask.md" "../SKILL.md"
+Check-Contains "commands\ask.en.md" "../SKILL.en.md"
 
 # --- Lenses ---
 Write-Host "`n--- Lenses ---"
@@ -109,7 +121,7 @@ foreach ($lens in $lenses) {
 # --- Knowledge Base ---
 Write-Host "`n--- Knowledge Base ---"
 Check-Dir "knowledge-base"
-$domains = @("matrix-analysis","optimization","differential-geometry","lie-theory","topology","probability","information-geometry")
+$domains = @("matrix-analysis","optimization","differential-geometry","lie-theory","topology","probability","information-geometry","algebraic-geometry","cryptography")
 foreach ($domain in $domains) {
     Check-Dir "knowledge-base\$domain"
 }
@@ -126,7 +138,7 @@ foreach ($type in $types) {
 Write-Host "`n--- References ---"
 Check-File "references\gpu-friendly-math.md"
 Check-Dir "references\books"
-$books = @("abstract-algebra","algebraic-geometry-rising-sea","differential-geometry","matrix-analysis","micro-lie-theory","optimization-ml","smooth-manifolds")
+$books = @("abstract-algebra","algebraic-geometry-rising-sea","differential-geometry","matrix-analysis","micro-lie-theory","optimization-ml","smooth-manifolds","applied-cryptography","foundations-of-cryptography","introduction-to-modern-cryptography")
 foreach ($book in $books) {
     Check-File "references\books\$book.md"
     Check-File "references\books\$book.en.md"
@@ -177,13 +189,13 @@ Check-File "tests\eval\mixed-language-routing.md"
 
 # --- v3.0.1 Additions ---
 Write-Host "`n--- v3.0.1 Additions ---"
-Check-Contains "skills\math-research-activator\SKILL.md" "混合输入"
-Check-Contains "skills\math-research-activator\SKILL.en.md" "Mixed-Input"
+Check-Contains "SKILL.md" "主语言"
+Check-Contains "SKILL.en.md" "primary language"
 
 # --- v3.1.0 Additions ---
 Write-Host "`n--- v3.1.0 Additions ---"
-Check-Contains "skills\math-research-activator\SKILL.md" "知识缺口协议"
-Check-Contains "skills\math-research-activator\SKILL.en.md" "Knowledge Gap Protocol"
+Check-Contains "SKILL.md" "Knowledge Gap Protocol"
+Check-Contains "SKILL.en.md" "Knowledge Gap Protocol"
 Check-File "references\skill-index.md"
 Check-File "references\skill-index.en.md"
 Check-Contains "knowledge-base\overview.md" "激活锚点"
@@ -243,6 +255,11 @@ Check-Not-Contains "design-patterns\loss\contrastive-loss.md" "O(1/√N)"
 Check-Not-Contains "design-patterns\loss\contrastive-loss.en.md" "O(1/√N)"
 Check-Contains "design-patterns\overview.md" "严谨性约定"
 Check-Contains "design-patterns\overview.en.md" "Rigor convention"
+Check-Contains "knowledge-base\matrix-analysis\projection.md" "Moore--Penrose"
+Check-Not-Contains "knowledge-base\matrix-analysis\projection.md" "ResNet 的正交残差"
+Check-Contains "knowledge-base\cryptography\prf-prg-owf.md" "3 轮给出选择明文意义下的 PRP"
+Check-Not-Contains "knowledge-base\cryptography\cca-cpa-ae-hierarchy.md" "训练数据量 ≥ 模型参数量"
+Check-Not-Contains "knowledge-base\cryptography\reduction-proof-template.md" "差分隐私假设"
 
 # --- npm Pack ---
 Write-Host "`n--- npm Pack Check ---"
@@ -251,7 +268,7 @@ if (-not $npmCmd) {
     Write-Host "[WARN] npm not found on PATH; skipping npm pack checks" -ForegroundColor Yellow
     $script:warn += 3
 } else {
-    $packOutput = npm pack --dry-run 2>&1 | Out-String
+    $packOutput = npm pack --dry-run --cache .npm-cache 2>&1 | Out-String
     if ($packOutput -match "total files") {
         Write-Host "[PASS] npm pack succeeded" -ForegroundColor Green; $script:pass++
     } else {
@@ -266,6 +283,11 @@ if (-not $npmCmd) {
         Write-Host "[PASS] npm pack includes design-patterns/" -ForegroundColor Green; $script:pass++
     } else {
         Write-Host "[FAIL] npm pack missing design-patterns/" -ForegroundColor Red; $script:fail++
+    }
+    if ($packOutput -match "SKILL.md") {
+        Write-Host "[PASS] npm pack includes canonical root SKILL.md" -ForegroundColor Green; $script:pass++
+    } else {
+        Write-Host "[FAIL] npm pack missing canonical root SKILL.md" -ForegroundColor Red; $script:fail++
     }
 }
 
@@ -288,7 +310,7 @@ foreach ($cn in $cnFiles) {
 Write-Host "`n--- Cross-Reference Integrity ---"
 $xrefFail = 0
 $xrefRoots = @("commands","skills","agents","lenses","knowledge-base","design-patterns","references","tests\eval")
-$mdFiles = Get-ChildItem -Path $xrefRoots -Recurse -Filter "*.md" -ErrorAction SilentlyContinue
+$mdFiles = @(Get-ChildItem -Path $xrefRoots -Recurse -Filter "*.md" -ErrorAction SilentlyContinue) + @(Get-Item "SKILL.md", "SKILL.en.md")
 foreach ($file in $mdFiles) {
     $content = Get-Content $file.FullName -Raw
     # NOTE: $matches is a PowerShell automatic variable; rename to $refMatches

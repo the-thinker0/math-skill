@@ -4,7 +4,7 @@
 
 ## Knowledge Base Structure
 
-The knowledge base is organized by mathematical domain, with 7 domains and 31 knowledge cards. Each card contains: minimal definition, core formulas, applicable problems, AI design translation, engineering feasibility, risks and failure conditions.
+The knowledge base has 9 domain directories and 37 cards: 33 shared-math anchors across 8 domains, plus 4 domain-specific cryptography anchors. Shared-math cards may include AI/engineering translations when relevant; cryptography cards preserve security-definition, construction, and reduction semantics without forcing AI or GPU sections.
 
 | Domain | Directory | Cards | Typical Applications |
 |--------|-----------|-------|---------------------|
@@ -15,6 +15,8 @@ The knowledge base is organized by mathematical domain, with 7 domains and 31 kn
 | Topology | `topology/` | persistent-homology, euler-characteristic, fundamental-group | Topological regularization, latent space monitoring |
 | Probability & Information | `probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information | VAE, knowledge distillation, generalization bounds |
 | Information Geometry | `information-geometry/` | natural-gradient, fisher-metric | Natural gradient descent, Fisher-Rao metric |
+| Algebraic Geometry | `algebraic-geometry/` | grassmannian-plucker, sheaf-cohomology | Subspace parameterization, local-to-global consistency |
+| Cryptography (domain-specific) | `cryptography/` | prf-prg-owf, attack-game-framework, cca-cpa-ae-hierarchy, reduction-proof-template | Security definitions, constructions, games, and reductions |
 
 ## From Problem to Knowledge Card
 
@@ -30,13 +32,13 @@ The knowledge base is organized by mathematical domain, with 7 domains and 31 kn
 
 ## When Anchors Are Not Enough
 
-The current 31 anchors cover the most commonly used mathematical structures in AI research. When a problem requires mathematical tools not among them:
+The current 33 shared-math anchors and 4 cryptography anchors cover high-frequency structures. When a problem requires a tool not among them:
 
 1. Check the corresponding domain's `*/index.en.md` (e.g., `topology/index.en.md`) for extended concepts and reference book directions
-2. Enter the **Knowledge Gap Protocol** defined in `../skills/math-research-activator/SKILL.en.md` to generate a temporary knowledge card
+2. Enter the **Knowledge Gap Protocol** in root `../SKILL.en.md` to generate a temporary knowledge card
 3. Never respond with "knowledge base does not cover this" or force-fit the closest card
 
-> **Domain Router note** (v3.2.0): This knowledge base primarily serves the **AI Research Layer** and **Shared Math Layer**. If Domain Router determines the problem belongs to the **Cryptography Layer**, first consult the three crypto books listed in `../references/skill-index.en.md`; shared math anchors (e.g., `probability/entropy`, `matrix-analysis/spectral-decomposition`) are loaded on demand without redundancy. Crypto-specific concepts (OWF/PRF/CCA/reduction proofs etc.) are not among these 31 anchors; activate them via temporary knowledge cards or the crypto books.
+> **Domain Router note**: For pure cryptography, load the smallest relevant card under `cryptography/` first; consult `../references/books/` only when the anchors are insufficient or literature-level depth is requested. Shared-math anchors are loaded on demand without duplicating cryptographic semantics. A pure AI request does not enter the crypto route merely because it contains words such as “hash,” “attack,” or “security.”
 
 ## Domain Extension Index
 
@@ -51,3 +53,5 @@ Each domain has an `*/index.en.md` that lists: domain trigger signals, core anch
 | Topology | `topology/index.en.md` |
 | Probability & Information | `probability/index.en.md` |
 | Information Geometry | `information-geometry/index.en.md` |
+| Algebraic Geometry | `algebraic-geometry/index.en.md` |
+| Cryptography | `cryptography/index.en.md` |

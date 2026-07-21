@@ -15,5 +15,6 @@ These prompts SHOULD trigger direct knowledge card loading without full design p
 
 - Activator diagnoses Scenario C (knowledge query)
 - Loads relevant knowledge card(s) directly
-- Outputs: minimal definition, core formulas, applicable problems, AI design translation, engineering feasibility, risks, references
+- Outputs a minimal definition, one core formula/intuition, and the key applicability boundary
+- Adds AI translation, engineering feasibility, risks, or references only when the prompt asks for them or they change the answer
 - Does NOT load design patterns unless user asks for implementation

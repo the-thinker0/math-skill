@@ -18,7 +18,7 @@
 
 > **This skill is under rapid iteration — your feedback and suggestions are warmly welcome!** Your input is the core driver of our continuous evolution. Feel free to reach out via GitHub Issues or Discussions.
 
-> **v3.2.0 is live**: The cryptography track is officially integrated — 3 distilled classics of modern cryptography (Boneh-Shoup / Goldreich / Katz-Lindell) plus a Domain Router layer. AI and cryptography share mathematical foundations but each has exclusive specialty layers, with no cross-domain pollution. See the changelog for details.
+> **v3.2.1**: Root `SKILL.md` is now the canonical Codex entry, with a thin plugin compatibility entry. Domain routing uses target objects and requested guarantees, with progressive loading/token budgets. Crypto anchors no longer rely on unsound AI analogies.
 
 ---
 
@@ -62,13 +62,13 @@ Critic: Mathematically sound? Engineering-feasible?
 | Layer | Role | Directory | Files |
 |-------|------|-----------|-------|
 | **Thinking Lenses** | Diagnose problem structure, recommend math perspectives | `lenses/*.md` | 15 |
-| **Activation Anchors** | Activate high-frequency math structures; trigger Knowledge Gap Protocol when insufficient | `knowledge-base/*/*.md` | 31 |
+| **Activation Anchors** | 33 shared-math anchors + 4 cryptography anchors; trigger Knowledge Gap Protocol when insufficient | `knowledge-base/*/*.md` | 37 |
 | **Design Translation** | Bridge math to AI modules/losses/operators | `design-patterns/*/*.md` | 22 |
 
 Supporting layers:
 - `references/books/*.md`: 10 book distillations (7 AI-direction + 3 cryptography-direction) for deep context
-- `references/gpu-friendly-math.en.md`: GPU 8-dimension acceptance gate
-- `agents/math-critic.en.md`: Math-engineering dual critic (19 dimensions, including cryptographic security review)
+- `references/gpu-friendly-math.en.md`: on-demand GPU checks with N/A for irrelevant dimensions
+- `agents/math-critic.en.md`: 19-dimension deep critic loaded only for comprehensive or paper-grade review
 
 ### Domain Router (new in v3.2.0)
 
@@ -76,9 +76,9 @@ AI research and cryptography **share** mathematical foundations (probability/inf
 
 | Domain | Loaded Content | Signal Keywords |
 |--------|----------------|------------------|
-| **AI Research** | `knowledge-base/` (7 domains, 31 anchors) + `design-patterns/` (5 types, 22 patterns) + 7 AI books | attention/loss/routing/representation/compression/MoE/transformer/KV-cache/LoRA/SSM/diffusion/RL |
-| **Cryptography** | 3 crypto books + shared math anchors (on demand) | encryption/signature/MAC/PRF/PRG/PRP/OWF/CCA/CPA/AE/ZK/reduction/DL/CDH/DDH/RSA/ECC/lattice |
-| **Pure Math** | `lenses/` + corresponding `knowledge-base/` anchors | probability/information/entropy/group/ring/field/matrix/spectrum/optimization/convexity/perturbation/complexity |
+| **Shared Mathematics** | 33 anchors across 8 domains plus relevant lenses | probability/information/algebra/geometry/matrix/spectral/optimization/topology/complexity |
+| **AI Research** | Shared math on demand + 0–2 relevant design prototypes; books only for deep checks | attention/loss/routing/representation/compression/MoE/transformer/KV-cache/LoRA/SSM/diffusion/RL |
+| **Cryptography** | 4 crypto anchors; then 3 crypto books only if needed; shared math on demand | encryption/signature/MAC/PRF/PRG/PRP/OWF/CCA/CPA/AE/ZK/reduction/DL/CDH/DDH/RSA/ECC/lattice |
 | **AI×Crypto** | dual-domain load + intersection annotation | "PRF for watermarking," "adversarial example reduction," "verifiable inference" |
 
 > Rules: domain judgment precedes lens invocation; shared math is not redundantly loaded; no pollution across non-cross domains; gap-protocol temporary cards are domain-tagged.
@@ -114,6 +114,8 @@ AI research and cryptography **share** mathematical foundations (probability/inf
 | Topology | persistent-homology, euler-characteristic, fundamental-group |
 | Probability & Information | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
 | Information Geometry | natural-gradient, fisher-metric |
+| Algebraic Geometry | sheaf-cohomology, grassmannian-plucker |
+| Cryptography (exclusive) | prf-prg-owf, reduction-proof-template, attack-game-framework, cca-cpa-ae-hierarchy |
 
 ### Design Patterns (by AI component)
 
@@ -135,11 +137,13 @@ AI research and cryptography **share** mathematical foundations (probability/inf
 Please help me install math-skill: https://github.com/the-thinker0/math-skill, and show me how to use it
 ```
 
-Manual install:
+Manual Codex install (install the whole repository as one self-contained skill; do not copy only the nested entry):
 
 ```bash
-git clone https://github.com/the-thinker0/math-skill.git
+git clone https://github.com/the-thinker0/math-skill.git ~/.codex/skills/math-research-activator
 ```
+
+Root `SKILL.md` is the canonical Codex entry. `skills/math-research-activator/SKILL.md` is only a Claude/plugin-style compatibility entry that forwards to the root. Copying the nested directory alone omits its anchors and design patterns.
 
 ### Usage
 
@@ -220,7 +224,7 @@ math-skill/
 │   └── compression/                # Compression (4 patterns)
 ├── references/                     # Reference layer
 │   ├── books/                      # 10 book distillations (7 AI + 3 crypto)
-│   ├── gpu-friendly-math.en.md     # GPU 8-dimension gate
+│   ├── gpu-friendly-math.en.md     # GPU checklist (applicable dimensions only)
 │   ├── agentic-workflow.en.md      # Collaboration style
 │   └── inspiration.en.md           # Inspiration
 ├── agents/math-critic.en.md           # Math-engineering dual critic (19 dims, with crypto security review)
@@ -249,11 +253,11 @@ math-skill/
 
 | # | Title | Author(s) | Publisher / Edition | Year | ISBN | Distillation |
 |---|-------|-----------|-------------------|------|------|-------------|
-| 8 | *A Graduate Course in Applied Cryptography* | Dan Boneh & Victor Shoup | v0.4 online | 2017 | — | `applied-cryptography.md` |
-| 9 | *Foundations of Cryptography, Volume 1: Basic Tools* | Oded Goldreich | Cambridge University Press | 2001 | 978-0-521-79235-9 | `foundations-of-cryptography.md` |
-| 10 | *Introduction to Modern Cryptography* | Jonathan Katz & Yehuda Lindell | CRC Press, 2nd ed. | 2015 | 978-1-4665-7026-1 | `introduction-to-modern-cryptography.md` |
+| 8 | *A Graduate Course in Applied Cryptography* | Dan Boneh & Victor Shoup | v0.4 online | 2017 | — | `applied-cryptography.en.md` |
+| 9 | *Foundations of Cryptography, Volume 1: Basic Tools* | Oded Goldreich | Cambridge University Press | 2001 | 978-0-521-79235-9 | `foundations-of-cryptography.en.md` |
+| 10 | *Introduction to Modern Cryptography* | Jonathan Katz & Yehuda Lindell | CRC Press, 2nd ed. | 2015 | 978-1-4665-7026-1 | `introduction-to-modern-cryptography.en.md` |
 
-> Crypto book contents are already in English, so they use the `.md` suffix (no CN/EN split). They are loaded when Domain Router determines the problem is cryptography or AI×crypto intersection.
+> All three cryptography distillations now have Chinese and English pairs. Select `.md` or `.en.md` by the user's primary language, and load them only when anchors are insufficient or book-level depth is needed.
 
 Distillation files ship with the npm package. For full-fidelity lookups, place PDFs in the `math_book/` folder.
 
@@ -263,11 +267,16 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 
 ### v3.2.1 — Design Philosophy Refinement & Reliability Enhancement
 
+- **Canonical entrypoint**: root `SKILL.md` / `SKILL.en.md` are now the only normative entries; `skills/math-research-activator/` contains compatibility forwarders, preventing two full copies from drifting while preserving Claude/plugin-style layout.
+- **Minimum-context budgets**: the entry body is roughly half its previous size; Scenarios A–D cap lenses, anchors, and prototypes. Concept questions, pure-crypto tasks, and ordinary verification no longer load the full critic, books, or GPU checklist by default.
+- **Routing and domain isolation**: domain selection now uses target object + requested guarantee; isolated words such as `hash`, `attack`, and `security` do not trigger crypto. Pure crypto starts from four dedicated anchors; only true AI×crypto work loads both sides.
+- **Technical corrections**: removed overclaims and incorrect engineering analogies around projections/QKV, KL, low-rank gradients, orthogonality losses, PRF/PRG/OWF, CPA/CCA/AE, reductions, and KEM/DEM.
 - **Design philosophy made explicit**: `SKILL.md` / `SKILL.en.md` add a "Design Philosophy: Activator, Not Encyclopedia" section, declaring the skill is a thinking activator and mathematical anchor; `knowledge-base/` returns to mathematical structures themselves (not concrete AI architectures); `design-patterns/` is positioned as translation-prototype demonstration rather than a template library. A new "Compatibility Principle" section declares that research problems with architectures the skill did not pre-specify are handled through the lens-routing + anchor-activation + temporary-knowledge-card pipeline.
 - **Cryptography anchors backfilled**: new `knowledge-base/cryptography/` directory, with `prf-prg-owf`, `reduction-proof-template`, `attack-game-framework`, `cca-cpa-ae-hierarchy` anchor cards (CN/EN paired), giving Domain Router's cryptography layer substantive anchors (fixes v3.2.0 inconsistency: it declared loading a cryptography layer but had no structured anchors).
+- **Bilingual cryptography references**: added `.en.md` counterparts for the Boneh–Shoup, Goldreich, and Katz–Lindell distillations; all 10 reference books are now paired in Chinese and English.
 - **Algebraic geometry anchors backfilled**: new `knowledge-base/algebraic-geometry/` directory, with `sheaf-cohomology`, `grassmannian-plucker` anchor cards (CN/EN paired), covering mathematical structures already used by `design-patterns/` but lacking anchors (sheaf cohomology, Grassmannian).
 - **Test coverage expanded**: new eval tests for Scenario A (analysis), Scenario D (verification), cross-domain routing (AI×crypto 4-tuple annotation), Knowledge Gap Protocol, and Domain Router isolation (no-pollution guarantee).
-- **validate.sh structural checks**: new checks for 6 required sections in knowledge cards, 8-dimension GPU assessment keywords in design patterns, Domain Router isolation consistency, and Knowledge Gap Protocol 6-step keywords.
+- **validate.sh structural checks**: verifies root entry/frontmatter/compatibility shims, 37 cards and language pairs, applicable GPU dimensions with quantitative signals, Domain Router isolation, the Knowledge Gap Protocol, cross-references, and high-risk semantic regressions.
 - **critic 19-dimension layering**: core / situational / mandatory / meta dimension layering annotations to reduce Agent cognitive load.
 - **inspiration.md split**: technical-inspiration part (the dragon-slaying blade story) retained; philosophical content (life-as-optimization, etc.) moved to `musings.md` to avoid clashing with the skill's rigorous technical style.
 

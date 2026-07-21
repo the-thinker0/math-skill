@@ -1,23 +1,23 @@
 # Skill 索引：透镜库、激活锚点、设计翻译原型、工作流范例
 
-> 本文件从 `../skills/math-research-activator/SKILL.md` 提取，供需要查阅完整目录时使用。SKILL.md 保留精简摘要和指向本文件的链接。
+> 本文件是 `../SKILL.md` 的按需目录。主入口只保留选择规则；不要为清晰问题默认加载本索引。
 
 ## Domain Router 总览（v3.2.0）
 
-> 完整定义见 `../skills/math-research-activator/SKILL.md` 的 Domain Router 小节。此处仅列摘要表：
+> 完整定义见 `../SKILL.md` 的 Domain Router 小节。此处仅列摘要表：
 
 | Domain | 加载内容 | 信号词 |
 |--------|---------|--------|
-| **AI 研究** | `../knowledge-base/`（7 领域 31 锚点）+ `../design-patterns/`（5 类 22 模式）+ AI 方向 7 本书 | attention/loss/routing/representation/compression/MoE/transformer/KV-cache/LoRA/SSM/扩散/RL |
-| **密码学** | 3 本密码学书稿 + 共用数学锚点（按需） | 加密/签名/MAC/PRF/PRG/PRP/OWF/CCA/CPA/AE/零知识/归约/DL/CDH/DDH/RSA/ECC/格密码 |
-| **纯数学** | `../lenses/` + `../knowledge-base/` 对应锚点 | 概率/信息/熵/群/环/域/矩阵/谱/优化/凸性/扰动/复杂度 |
+| **共用数学** | 8 域 33 锚点（排除 cryptography）+ 相关透镜 | 概率/信息/代数/几何/矩阵/谱/优化/拓扑/复杂度 |
+| **AI 研究** | 共用数学按需 + `../design-patterns/`（5 类 22 模式）；书稿仅深查 | attention/loss/routing/representation/compression/MoE/transformer/KV-cache/LoRA/SSM/扩散/RL |
+| **密码学** | 4 张密码锚点；不足时才加载 3 本密码学书稿；共用数学按需 | 加密/签名/MAC/PRF/PRG/PRP/OWF/CCA/CPA/AE/零知识/归约/DL/CDH/DDH/RSA/ECC/格密码 |
 | **AI×密码交叉** | 双 domain 加载 + 交叉点标注 | "PRF 做模型水印""对抗样本归约""可验证推理" |
 
 > 核心规则：domain 判定先于透镜调用；共用数学按问题结构（非 domain 标签）按需加载；不跨域时不污染；缺口协议临时卡标注 domain。
 
 ## v3.2.1 设计哲学修正
 
-> 完整定义见 `../skills/math-research-activator/SKILL.md` 的「设计哲学：activator 而非百科」小节。要点：
+> 完整定义见 `../SKILL.md` 的目标、Domain Router 与渐进加载小节。要点：
 >
 > 1. knowledge-base/ 锚点描述数学结构本身（流形、谱、层上同调、伪随机函数族等），不固化具体 AI 架构（diffusion、SSM、transformer 变体）。
 > 2. design-patterns/ 是"数学→AI 模块"的翻译范式示范，不是可复制的模板库；遇新问题应基于数学结构临时生成候选设计。
@@ -44,8 +44,8 @@
    - 若没有上下文，默认中文。
 
 5. **输出语言与主语言一致**
-   - 中文主语言 → 读取中文 `../skills/math-research-activator/SKILL.md`，用中文回答，保留必要英文术语。
-   - 英文主语言 → 读取 `../skills/math-research-activator/SKILL.en.md`，用英文回答。
+   - Codex 始终读取权威入口 `../SKILL.md`，按用户主语言回答，不为英文输入重复加载另一份正文。
+   - 显式英文命令入口可直接读取 `../SKILL.en.md`，但不得再加载中文入口。
    - 用户明确要求"用英文/用中文"时，以用户显式要求为准。
 
 ## 透镜库（15 个数学视角）
@@ -83,6 +83,7 @@
 | 拓扑 | `../knowledge-base/topology/` | persistent-homology, euler-characteristic, fundamental-group |
 | 概率与信息 | `../knowledge-base/probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
 | 信息几何 | `../knowledge-base/information-geometry/` | natural-gradient, fisher-metric |
+| 代数几何 | `../knowledge-base/algebraic-geometry/` | sheaf-cohomology, grassmannian-plucker |
 
 ## 设计模式库（按 AI 组件组织）
 
@@ -98,7 +99,7 @@
 
 ## 密码学参考书蒸馏稿（新增 3 本）
 
-参考层现共 10 本书。以下 3 本用于密码学安全定义、构造、归约证明与协议分析；正文为英文蒸馏稿，不分中英（与 AI 方向书稿的中英成对并列不同；密码学书稿正文已是英文，故无 .en.md 版本）。
+参考层现共 10 本书，全部中英配对。以下 3 本用于密码学安全定义、构造、归约证明与协议分析；按主语言选择 .md 或 .en.md，只有锚点不足时才按需读取。
 
 | 书目 | 文件 | 主要用途 | 激活家族 |
 |------|------|---------|---------|

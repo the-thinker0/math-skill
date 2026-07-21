@@ -1,70 +1,56 @@
-# 攻击游戏框架 / Attack Game Framework
+# 攻击游戏框架 / Attack-Game Framework
 
 ## 最小定义
-攻击游戏（attack game）是 challenger $\mathcal{C}$ 与 adversary $\mathcal{A}$ 之间的形式化交互过程，用于定义"安全"。安全 = 不存在 PPT 敌手 $\mathcal{A}$ 能以非忽略概率赢游戏。这是密码学把"直觉上安全"变成可证明性质的统一范式。
 
-典型游戏结构：
-1. **初始化**：挑战者生成密钥 / 系统参数
-2. **训练阶段（查询）**：敌手可向挑战者查询 oracle（加密 / 解密 / 签名等），受限于威胁模型（CPA / CCA1 / CCA2）
-3. **挑战**：敌手提交两个挑战消息 $m_0, m_1$；挑战者随机选 $b$，返回 $c=\mathsf{Enc}_k(m_b)$
-4. **后续查询阶段**（取决于威胁模型）：敌手可继续查询（除挑战密文本身）
-5. **输出猜测**：敌手输出 $b'$；赢当且仅当 $b'=b$
+攻击游戏是挑战者与敌手之间的概率交互实验，用来精确定义安全目标、敌手能力和胜利事件。方案安全通常表示：对所有给定资源界内的敌手，其优势可忽略（渐近安全）或小于明确数值（具体安全）。
+
+加密的 indistinguishability game 只是一个实例；签名、MAC、承诺和零知识各有不同 oracle、限制与胜利条件，不能统一套用“提交两条消息、猜 bit”的固定流程。
 
 ## 核心公式
-- **优势定义（双实验）**：$\mathsf{Adv}_{\mathcal{A}}=|\Pr[W_0]-\Pr[W_1]|$，其中 $W_i$ 是敌手在实验 $i$ 中输出 1 的事件
-- **优势定义（猜 bit）**：$\mathsf{Adv}^{*}_{\mathcal{A}}=2\cdot\Pr[b'=b]-1$，与双实验等价：$\mathsf{Adv}^{*}=2\cdot\mathsf{Adv}$
-- **归约闭合性**：$\mathsf{poly}\cdot\mathsf{neg}=\mathsf{neg}$；$\mathsf{neg}+\mathsf{neg}=\mathsf{neg}$；使 hybrid 论证可行
-- **Birthday 界**：$q$ 次随机查询碰撞概率 $\le q^{2}/2^{n}$，给出生日攻击的查询数下界
-- **安全 = 优势可忽略**：方案安全当且仅当对所有 PPT $\mathcal{A}$，$\mathsf{Adv}_{\mathcal{A}}\le\mathsf{negl}(n)$
+
+- 双实验优势：
+  $$\operatorname{Adv}_A=\left|\Pr[A\text{ 在实验 }0\text{ 输出 }1]-\Pr[A\text{ 在实验 }1\text{ 输出 }1]\right|.$$
+- 猜 bit 游戏常用 $\left|\Pr[b'=b]-\tfrac12\right|$ 或其两倍。比较论文时必须先对齐 convention。
+- 序列游戏/Difference Lemma：若两游戏只在事件 `bad` 后可能分歧，则
+  $$\left|\Pr[W_0]-\Pr[W_1]\right|\le \Pr[\mathsf{bad}].$$
+- $q$ 个均匀 $n$-bit 样本发生碰撞的 union bound 为 $q(q-1)/2^{n+1}$；“$q^2/2^n$”只是量级写法。
 
 ## 适用问题
-- 任何需要形式化威胁模型的 AI 场景：
-  - **白盒 vs 黑盒 vs 自适应对抗**：ML 鲁棒性威胁模型层级化建模
-  - **对抗样本**：敌手能力预算（扰动范数）+ 胜利条件（误分类）+ 不可破证明
-  - **模型窃取**：敌手查询次数受限 + 窃取成功率可忽略
-  - **数据投毒**：敌手可修改训练数据比例 + 性能下降可忽略
-  - **后门检测**：敌手植入后门但不可被检测器识别
-  - **水印可追踪性证明**：敌手移除水印 ⇒ 不可忽略概率失败
-  - **可验证推理**：敌手伪造推理输出 ⇒ 解某困难假设
 
-## AI 设计翻译
-- **把攻击游戏套到 ML 鲁棒性**：定义敌手能力预算（扰动 $\|\delta\|_p\le\epsilon$）→ 定义胜利条件（误分类或置信度偏移）→ 证不可破。这把"直觉上鲁棒"变成可证明性质。注意：ML 场景敌手能力难以严格形式化，往往需要假设敌手用某种攻击算法类。
-- **威胁模型层级化**：CPA / CCA / AE 对应 ML 中的"黑盒查询预算 / 白盒梯度访问 / 自适应对抗训练"。层级选择决定威胁强度。
-- **优势界作为鲁棒性证书**：给出 $\mathsf{Adv}_{\mathcal{A}}\le\mathsf{negl}(n)$ 类型的界，作为"相对安全"证书。
-- 对应设计模式见 `../../design-patterns/`（如 constraint-penalty）；无对应模式时标为"临时设计翻译"。
+- 为 IND-CPA/CCA、EUF-CMA、PRF、binding/hiding 等性质写正式游戏。
+- 比较敌手是否拥有加密、解密、签名、验证、随机预言机或状态泄露接口。
+- 检查挑战后的禁止查询、freshness、multi-user、adaptive corruption 等细节。
+- 将证明改写成游戏序列并跟踪每一步优势损失。
 
-## 工程可行性
-攻击游戏框架是纯方法论，不落 GPU：
-- 游戏定义是逻辑构造，不涉及张量运算
-- 优势界计算是数学推理，不产生 GPU kernel
-- 敌手能力建模是威胁建模，不涉及低精度数值
-GPU 八维评估不适用；密码学产出通过归约紧度 + 假设依赖 + 实现陷阱检查（不走 GPU 门）。详见 `../../references/gpu-friendly-math.md` 的"密码学 GPU 友好性警告"。
+## 密码学构造与跨域边界
+
+- 游戏框架可以迁移到 AI 安全定义，但只能迁移“显式写敌手、接口、预算和胜利事件”的方法，不能把 CPA/CCA 名称直接重命名为黑盒/白盒攻击。
+- ML 鲁棒性中的扰动集、数据分布和错误率一般不是可忽略函数；应使用与任务匹配的风险或认证半径，而非机械要求 $\operatorname{negl}(n)$。
+- 只有当 AI 方案实际调用密码学原语或声称密码学安全性质时，才加载本卡的密码学 oracle 细节。
+
+## 实现注意事项
+
+- 游戏是定义；测试代码只能发现实现偏差，不能以有限样本证明所有 PPT 敌手优势可忽略。
+- 具体安全报告应列出安全参数、查询数、时间/内存资源、多用户数和所有失败事件。
+- 随机数、状态重置、challenge freshness 和禁止查询条件必须在实现与证明中一致。
 
 ## 风险与失效条件
-- **敌手能力建模过弱**：游戏形式化时若敌手能力建模过弱（如只允许 $L_\infty$ 扰动而忽略 $L_2$、$L_0$ 等其他范数），会出现"游戏安全但实际不安全"——这是 ML 鲁棒性证明最常见的失效模式
-- **ML 场景敌手能力难以形式化**：真实攻击者可能用任意算法，形式化时往往限制敌手为某类（如 PGD 攻击类），但实际攻击可能超出该类
-- **忽略函数定义在多项式安全参数下**：$\mathsf{negl}(n)$ 要求 $n$ 是安全参数；ML 参数规模可能使界失效（如 $n$ 是输入维度，$n\to\infty$ 时 $\mathsf{negl}(n)$ 不可控）
-- **敌手查询预算与实际部署不符**：游戏可能限制敌手 $q$ 次查询，但实际部署中敌手查询数无界
-- **归约闭合性假设依赖**：$\mathsf{poly}\cdot\mathsf{neg}=\mathsf{neg}$ 要求敌手是 PPT；若敌手非多项式（如指数时间）则证明失效
-- **随机性假设**：游戏要求挑战者真随机，ML 场景的随机性（如 PRNG 种子）是否真随机需验证
+
+- **敌手模型过弱**：遗漏接口、泄露或自适应能力会得到“在错误游戏里安全”的结论。
+- **优势 convention 混用**：$|p-1/2|$ 与 $2|p-1/2|$ 相差 2，可能破坏具体参数计算。
+- **渐近与具体安全混淆**：可忽略函数并不自动说明固定参数下足够安全。
+- **挑战限制漏写**：允许直接查询挑战对象会使游戏平凡；限制过强又会人为抬高安全性。
+- **把经验攻击失败当证明**：未找到攻击只给出对已测试敌手的证据。
 
 ## 深入参考
-- 蒸馏稿：`../../references/books/applied-cryptography.md`（§2 攻击游戏框架、§2.2 优势定义、§2.3 PPT + 忽略函数）
-- 蒸馏稿：`../../references/books/foundations-of-cryptography.md`（§III 定义方法论）
-- 蒸馏稿：`../../references/books/introduction-to-modern-cryptography.md`（形式化安全定义）
-- 原书：Boneh & Shoup, *A Graduate Course in Applied Cryptography*, §2；Goldreich, *Foundations of Cryptography Vol. 1*, §III
+
+- `../../references/books/applied-cryptography.md`
+- `../../references/books/foundations-of-cryptography.md`
+- `../../references/books/introduction-to-modern-cryptography.md`
 
 ## 路由扩展
-- 若需要归约 → `reduction-proof-template.md`（黑盒归约、紧度分析）
-- 若需要威胁层级 → `cca-cpa-ae-hierarchy.md`（CPA/CCA/AE）
-- 若需要假设形式化 → `prf-prg-owf.md`（OWF/PRG/PRF）
-- 若需要博弈视角 → `../../lenses/game.md`（多方策略互动）
-- 若需要概率工具 → `../probability/concentration-inequality.md`（birthday 界、优势累加）
 
-## 可扩展方向
-- UC 框架（Universal Composability）：通用可组合安全定义
-- 模拟范式（simulation paradigm）：敌手视角 ↔ 模拟器视角的等价
-- 零知识游戏：完备/统计/计算零知识的三档定义
-- 多方游戏：多方协议的安全定义（BEKW 框架）
-- 细粒度安全游戏：参数化的具体安全界
-- 量子敌手游戏：量子计算能力下的安全定义
+- 归约：`reduction-proof-template.md`
+- CPA/CCA/AE：`cca-cpa-ae-hierarchy.md`
+- PRF：`prf-prg-owf.md`
+- 概率界：`../probability/concentration-inequality.md`

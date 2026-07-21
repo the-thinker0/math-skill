@@ -18,7 +18,7 @@ Given a matrix $A \in \mathbb{R}^{m \times n}$, find a matrix $B$ with rank at m
 - LoRA weight compression: $W \approx W_0 + BA$, $B \in \mathbb{R}^{d \times r}, A \in \mathbb{R}^{r \times d}$, $r \ll d$
 - KV-Cache compression: projecting Key/Value caches into a low-rank factor format, reducing memory from $O(Ld)$ to $O(Lk + kd)$; standard softmax still has sequence length $L$
 - PCA / whitening: the top $k$ principal components of the data covariance matrix correspond to the truncated SVD
-- Gradient compression: the effective rank of gradient matrices in large models is often much lower than the nominal rank, allowing safe truncation
+- Gradient compression: if measured singular values decay rapidly, truncate with error feedback to control bias. “Gradients are inherently low-rank and safe to truncate” is not a general theorem.
 - Recommender systems / matrix completion: low-rank factorization $R \approx UV^H$
 
 ## AI Design Translation
@@ -40,7 +40,7 @@ Given a matrix $A \in \mathbb{R}^{m \times n}$, find a matrix $B$ with rank at m
 
 - **Incorrect rank selection**: $k$ too small causes information loss ($\sigma_{k+1}$ is non-negligible); $k$ too large negates the compression benefit. Solution: monitor the singular value decay curve and select the elbow point where $\sum_{i>k}\sigma_i^2 / \sum\sigma_i^2 < \epsilon$.
 - **Insufficient randomized SVD accuracy**: When oversampling $p$ is too small (typically $p = 5 \sim 10$) or the number of power iteration steps is insufficient, low-order singular value estimates can be significantly biased. Solution: add $q = 1 \sim 2$ power iteration steps $Y = (AA^H)^q A\Omega$, at the cost of additional matmul operations.
-- **LoRA not applicable to all layers**: Q/K/V in attention is typically effectively low-rank, but the effective rank of FFN layers and embeddings may be close to full rank, and applying LoRA forcefully degrades accuracy. Layer-by-layer effective rank diagnosis is required.
+- **LoRA is not uniformly effective across layers**: Update spectra vary by layer and task; do not assume Q/K/V are low-rank while FFN/embeddings are full-rank. Compare per-layer spectra, validation loss, and equal-parameter baselines.
 - **SVD overhead of nuclear norm proximal**: Soft-thresholding $\text{prox}_{\lambda\|\cdot\|_*}(A) = U(\Sigma - \lambda I)_+ V^H$ requires SVD, which is prohibitively expensive for large matrices at every step. Solution: use factorization alternatives or randomized approximations.
 
 ## Further References

@@ -13,7 +13,7 @@ These prompts test the language routing decision system introduced in v3.0.1.
 
 - Primary language: **Chinese** (sentence frame, verbs, mood particles are Chinese)
 - English technical terms (attention, projection, loss, information bottleneck, manifold, routing, spectral decomposition, KV-cache) are domain terms and do NOT trigger English routing
-- Load: `../../skills/math-research-activator/SKILL.md` (Chinese activator)
+- Codex loads canonical root `../../SKILL.md`; explicit English command entry may instead load root `../../SKILL.en.md`, never both
 - Output language: Chinese, retaining necessary English technical terms
 - Diagnose intent normally (Scenario B: mechanism design)
 
@@ -26,7 +26,7 @@ These prompts test the language routing decision system introduced in v3.0.1.
 
 - Primary language: **Chinese**
 - Scenario: D (verification & review)
-- Load relevant knowledge cards (Chinese versions) and critic
+- Load 1–2 relevant Chinese anchors and use the compact review checklist; do not load the full critic by default
 - Output language: Chinese
 
 ## Should route to English (Scenario B)
@@ -37,7 +37,7 @@ These prompts test the language routing decision system introduced in v3.0.1.
 ## Expected Behavior
 
 - Primary language: **English** (English sentence frame, verbs, articles)
-- Load: `../../skills/math-research-activator/SKILL.en.md` (English activator)
+- Codex keeps canonical root `../../SKILL.md` and answers in English; explicit English command entry may load root `../../SKILL.en.md` directly, never both
 - Output language: English
 
 ## Edge case: Chinese sentence frame with Chinese math term (Scenario B)

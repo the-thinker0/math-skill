@@ -1,7 +1,7 @@
 {
   "name": "math-skill",
-  "version": "3.2.0",
-  "description": "面向 AI 架构创新与密码学研究的数学研究操作系统 v3.2：思想透镜 / 激活锚点 / 设计翻译原型 + Domain Router（AI/密码/纯数学/交叉），支持知识缺口协议与临时知识卡。Math Research OS for AI architecture & cryptography research: thinking lenses + activation anchors + design translation prototypes + Domain Router with Knowledge Gap Protocol.",
+  "version": "3.2.1",
+  "description": "面向 AI 架构创新与密码学研究的数学研究路由器：15 个思想透镜、33 个共用数学锚点、4 个密码学锚点、22 个 AI 设计原型，以及渐进加载、Domain Router 与 Knowledge Gap Protocol。Math research router for AI architecture and cryptography with progressive loading, domain isolation, and explicit token budgets.",
   "keywords": [
     "math",
     "mathematics",
@@ -67,6 +67,8 @@
   "files": [
     "README.md",
     "README.en-US.md",
+    "SKILL.md",
+    "SKILL.en.md",
     "LICENSE",
     "commands/",
     "skills/",
