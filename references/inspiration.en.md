@@ -1,6 +1,6 @@
-# Inspirational Musings
+# Inspiration
 
-> Mathematics is more than a computational tool — it is a way of thinking. Sometimes a mathematical concept resonates with life itself, and you suddenly realize that behind those cold formulas lies a warm perspective on understanding the world.
+> Mathematics is more than a computational tool — it is a way of thinking. This file records the technical inspiration of math-skill — the cross-domain activation value of mathematical tools far exceeding their original intent. For philosophical and life reflections (split in v3.2.1), see `musings.en.md`.
 
 ---
 
@@ -22,92 +22,16 @@ Mathematical thinking works the same way — you may learn it to review a paper 
 
 ---
 
-## 2. Life as an Optimization Problem
+## Connection to This Project
 
-If you treat a human being as a high-dimensional, nonlinear, dynamic optimization problem with a time-varying objective function, you will find that optimization theory and life paths share a striking philosophical resonance.
+The inspiration for this project stems precisely from this insight:
 
-### The Objective Function: What Do You Want to "Optimize"?
+**The value of mathematical tools far exceeds their original intent** — Sophus Lie's dragon-slaying blade story teaches us that a tool invented for solving differential equations ultimately became the universal language for describing symmetry. This is the core idea behind math-skill's "thinking lenses" and "activation anchors": every mathematical concept carries transferable value far beyond its original application domain. The skill's job is to guide the activation of such cross-domain transfer, not to fixate on specific application scenarios.
 
-In mathematics, the first step is to define the objective function $f(x)$. In life, this is the value you pursue: happiness, achievement, meaning, wealth, balance…
+> After the v3.2.1 design philosophy refinement, this idea is made explicit: knowledge-base/ anchors describe mathematical structures themselves (manifolds, spectra, sheaf cohomology, etc.), not specific AI architectures; design-patterns/ is translation-prototype demonstration, not a template library. This is exactly what the "dragon-slaying blade" story reflects in the skill's positioning — **the true value of a tool lies in cross-domain activation, not in being fixated on a single application**.
 
-The difficulty is that life goals are often **multi-objective, vague, and time-varying** — and may even conflict with one another.
-
-### Initial Point and Resource Constraints
-
-$x_0$ is your origin, talent, and starting point.
-
-Constraint conditions: time, money, health, social rules… These are like the constraints $g(x) \leq 0$ in an optimization problem, delineating the feasible region.
-
-### Step Size and Direction: Everyday Decisions
-
-**Direction**: The direction you choose to invest effort — career, relationships, fields of study.
-
-**Step size**: The intensity and time you devote to a given direction.
-
-Precision requirement: if every step only pursues immediate returns (e.g., short-term profit maximization), you may fall into a "local optimum" trap — for example, a high-paying but meaningless job, or a busy but stagnant life.
-
-### Local Optimum vs. Global Optimum
-
-This is the core dilemma of "life optimization":
-
-- **Local optimum**: The seemingly best choice within your city, industry, and social circle.
-- **Global optimum**: Perhaps in another country, another field, or another lifestyle, there exists a life that better aligns with your true nature. But you cannot foresee the global landscape, just as an optimization algorithm can only access local information at its current position.
-
-### Randomness and Noise
-
-Life is not a smooth numerical function — it is full of random noise:
-
-Luck, opportunities, unexpected events… These are equivalent to stochastic perturbations $f(x) + \epsilon$ on the objective function.
-
-Therefore, pursuing excessive precision is often uneconomical; what you need is **robustness and adaptability**.
-
-### The Exploration–Exploitation Trade-off
-
-This is the fundamental tension of life:
-
-- **Exploration**: Trying new fields, new relationships, new knowledge — risky, but potentially discovering an entirely new "basin of attraction."
-- **Exploitation**: Deepening your current domain to harvest stable returns.
-
-Explore more when young, exploit more in middle age? But the rule is not fixed.
-
-### Dynamic Objectives and Lifelong Learning
-
-Life goals change: passion at 20, meaning at 40, legacy at 60…
-
-This means the objective function $f(x)$ itself is constantly evolving. Therefore, "optimizing yourself" is more important than "optimizing a fixed target" — this is **meta-optimization** (learning how to learn, adapting how to adapt).
-
-### Algorithm Choice: Your Life Strategy
-
-| Algorithm | Life Strategy |
-|-----------|--------------|
-| Gradient Descent | Follow the most pressing direction at each step (salary, social pressure) |
-| Momentum | Maintain historical inertia (persist in long-term goals, resist short-term fluctuations) |
-| Stochastic Gradient Descent | Accept mini-batch random samples, adjust flexibly |
-| Evolutionary Algorithms | Try multiple life paths, discard ineffective strategies, retain effective patterns |
-
-No single algorithm is universally best; what matters is knowing which strategy you are using and adjusting it at the right time.
-
-### The Most Important Insight
-
-In mathematical optimization, we assume a global optimum $x^*$ exists. But in life, there may be no "absolutely optimal life" at all.
-
-We are merely "participants" in our own lives, searching for a satisfactory solution and striving to make the process full of learning, growth, and meaning.
-
-What matters is not finding the legendary "global optimum," but rather, at each iteration:
-
-- Keeping the general direction roughly correct
-- Balancing exploration and exploitation
-- Accepting noise and constraints
-- Allowing the objective function to evolve gracefully as experience grows
-
-**The process itself is the meaning; optimization is life.**
+> The philosophical and life reflection part ("Life as an Optimization Problem," etc.) has been moved to `musings.en.md`, separated from the skill's rigorous technical core.
 
 ---
 
-## How These Stories Connect to This Project
-
-The inspiration for this project stems precisely from these two insights:
-
-1. **The value of mathematical tools far exceeds their original intent** — Sophus Lie's dragon-slaying blade story teaches us that a tool invented for solving differential equations ultimately became the universal language for describing symmetry. This is the core idea behind "thinking lenses": every mathematical concept carries transferable value far beyond its original application domain.
-
-2. **Mathematics is a lens for understanding life** — Optimization theory is not just about algorithms; it is a framework for understanding the structure of life decisions. When you transfer the "exploration–exploitation trade-off" from reinforcement learning to career choices, or the "local optimum trap" from convex optimization to everyday decisions, mathematics steps off the blackboard and into daily life.
+> **The "Life as an Optimization Problem" section below has been moved to `musings.en.md`.** This file no longer retains it. For philosophical reflections, see `musings.en.md`.

@@ -53,6 +53,8 @@ Sophus Lie 打造"屠龙刀"的故事告诉我们：为解微分方程发明的�
 批判器：数学上站得住、工程上跑得动吗？
 ```
 
+> **v3.2.1 设计哲学修正**：本 skill 是数学思考的 activator 与锚点，不是知识百科。`knowledge-base/` 的锚点描述数学结构（流形、谱、层上同调、伪随机函数族等），而非具体 AI 架构（diffusion、SSM 等）；`design-patterns/` 是"数学→AI 模块"的翻译范式示范，不是可复制的模板库。这保证了 skill 对任意研究方向（扩散、SSM、MoE、对齐等）都有引导能力，而不会随具体架构过时。
+
 ---
 
 ## 三层正交架构
@@ -258,6 +260,16 @@ math-skill/
 ---
 
 ## 变更日志
+
+### v3.2.1 — 设计哲学修正与可靠性增强
+
+- **设计哲学明确化**：`SKILL.md` / `SKILL.en.md` 新增"设计哲学：activator 而非百科"小节，声明 skill 是思考的 activator 和数学锚点，`knowledge-base/` 回归数学结构本身（不固化具体 AI 架构），`design-patterns/` 定位为翻译范式示范而非模板库；新增"兼容性原则"小节，声明对未预置架构的研究问题通过透镜路由 + 锚点激活 + 临时知识卡完成引导
+- **密码学锚点补齐**：新增 `knowledge-base/cryptography/` 目录，含 `prf-prg-owf`、`reduction-proof-template`、`attack-game-framework`、`cca-cpa-ae-hierarchy` 四张锚点卡（中英成对），使 Domain Router 的密码学层加载有实质锚点（修复 v3.2.0 理念不一致：此前声明加载密码学层但无结构化锚点）
+- **代数几何锚点补齐**：新增 `knowledge-base/algebraic-geometry/` 目录，含 `sheaf-cohomology`、`grassmannian-plucker` 两张锚点卡（中英成对），覆盖 `design-patterns/` 已使用但无锚点的数学结构（层上同调、格拉斯曼流形）
+- **测试覆盖扩展**：新增场景 A（问题分析）、场景 D（验证审查）、交叉域路由（AI×密码四元组标注）、Knowledge Gap Protocol、Domain Router 隔离（不污染保证）五类 eval 测试
+- **validate.sh 结构化检查**：新增知识卡 6 必备小节检查、设计模式 8 维 GPU 评估关键词检查、Domain Router 隔离一致性检查、Knowledge Gap Protocol 6 步骤关键词检查
+- **critic 19 维分层**：核心维度 / 情境维度 / 强制维度 / 元维度分层标注，减少 Agent 的认知负担
+- **inspiration.md 拆分**：技术灵感部分（屠龙刀故事）保留；哲学内容（人生最优化等）移至 `musings.md`，避免与 skill 严谨技术风格冲突
 
 ### v3.2.0 — 密码学方向接入 + Domain Router
 

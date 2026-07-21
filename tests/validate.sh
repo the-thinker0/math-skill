@@ -52,7 +52,7 @@ check_not_contains() {
 }
 
 echo "========================================"
-echo "  Math Skill Validation (v3.1.1)"
+echo "  Math Skill Validation (v3.2.1)"
 echo "========================================"
 
 # --- Infrastructure ---
@@ -389,6 +389,164 @@ check_not_contains "design-patterns/loss/contrastive-loss.en.md" 'O(1/√N)'
 check_contains "design-patterns/overview.md" '严谨性约定'
 check_contains "design-patterns/overview.en.md" 'Rigor convention'
 
+# --- Knowledge Card Structure Check (v3.2.1) ---
+echo ""
+echo "--- Knowledge Card Structure Check ---"
+# Each knowledge card (excluding index/overview) must have 6 required sections.
+# Chinese cards check Chinese headers; English cards check English headers.
+KB_DOMAINS_STRUCT="matrix-analysis optimization differential-geometry lie-theory topology probability information-geometry cryptography algebraic-geometry"
+for domain in $KB_DOMAINS_STRUCT; do
+    for cn_file in $(find "knowledge-base/${domain}" -name '*.md' ! -name '*.en.md' ! -name 'index.md' 2>/dev/null | sort); do
+        missing=""
+        grep -q '## 最小定义' "$cn_file" 2>/dev/null || missing="${missing}最小定义 "
+        grep -q '## 核心公式' "$cn_file" 2>/dev/null || missing="${missing}核心公式 "
+        grep -q '## 适用问题' "$cn_file" 2>/dev/null || missing="${missing}适用问题 "
+        grep -q '## AI 设计翻译' "$cn_file" 2>/dev/null || missing="${missing}AI设计翻译 "
+        grep -q '## 工程可行性' "$cn_file" 2>/dev/null || missing="${missing}工程可行性 "
+        grep -q '## 风险与失效条件' "$cn_file" 2>/dev/null || missing="${missing}风险与失效条件 "
+        if [ -z "$missing" ]; then
+            echo -e "${GREEN}[PASS]${NC} $cn_file has all 6 required sections"
+            PASS=$((PASS + 1))
+        else
+            echo -e "${RED}[FAIL]${NC} $cn_file missing:$missing"
+            FAIL=$((FAIL + 1))
+        fi
+    done
+    for en_file in $(find "knowledge-base/${domain}" -name '*.en.md' ! -name 'index.en.md' 2>/dev/null | sort); do
+        missing=""
+        grep -q '## Minimal Definition' "$en_file" 2>/dev/null || missing="${missing}Minimal Definition "
+        grep -q '## Core Formulas' "$en_file" 2>/dev/null || missing="${missing}Core Formulas "
+        grep -q '## Applicable Problems' "$en_file" 2>/dev/null || missing="${missing}Applicable Problems "
+        grep -q '## AI Design Translation' "$en_file" 2>/dev/null || missing="${missing}AI Design Translation "
+        grep -q '## Engineering Feasibility' "$en_file" 2>/dev/null || missing="${missing}Engineering Feasibility "
+        grep -q '## Risks and Failure Conditions' "$en_file" 2>/dev/null || missing="${missing}Risks and Failure Conditions "
+        if [ -z "$missing" ]; then
+            echo -e "${GREEN}[PASS]${NC} $en_file has all 6 required sections"
+            PASS=$((PASS + 1))
+        else
+            echo -e "${RED}[FAIL]${NC} $en_file missing:$missing"
+            FAIL=$((FAIL + 1))
+        fi
+    done
+done
+
+# --- Design Pattern GPU 8-Dimension Check (v3.2.1) ---
+echo ""
+echo "--- Design Pattern GPU 8-Dimension Check ---"
+# Each design pattern (excluding overview) must mention at least 6/8 GPU dimensions.
+# Design patterns use D1-D8 markers (e.g., D1[v], D2[~]); accept either D1-D8 markers OR the Chinese/English keywords.
+# Chinese keywords: 张量化 GEMM 复杂度 显存 低精度 并行 稀疏 融合
+# English keywords: Tensorization GEMM Complexity Memory Low-precision Parallelism Sparsity Fusion
+GPU_DIMS_CN="张量化 GEMM 复杂度 显存 低精度 并行 稀疏 融合"
+GPU_DIMS_EN="Tensorization GEMM Complexity Memory Low Parallelism Sparsity Fusion"
+# D1-D8 markers (universally recognized in design patterns)
+GPU_DIMS_D="D1 D2 D3 D4 D5 D6 D7 D8"
+for dp_file in $(find design-patterns -name '*.md' ! -name '*.en.md' ! -name 'overview.md' 2>/dev/null | sort); do
+    found=0
+    for kw in $GPU_DIMS_CN; do
+        if grep -q "$kw" "$dp_file" 2>/dev/null; then
+            found=$((found + 1))
+        fi
+    done
+    # Also count D1-D8 markers
+    d_found=0
+    for d in $GPU_DIMS_D; do
+        if grep -qE "\\b${d}\\b" "$dp_file" 2>/dev/null; then
+            d_found=$((d_found + 1))
+        fi
+    done
+    # Take the max of keyword count and D-marker count
+    if [ "$d_found" -gt "$found" ]; then
+        found=$d_found
+    fi
+    if [ "$found" -ge 6 ]; then
+        echo -e "${GREEN}[PASS]${NC} $dp_file covers $found/8 GPU dimensions"
+        PASS=$((PASS + 1))
+    else
+        echo -e "${RED}[FAIL]${NC} $dp_file only covers $found/8 GPU dimensions (need >=6): $GPU_DIMS_CN or D1-D8"
+        FAIL=$((FAIL + 1))
+    fi
+done
+for dp_file in $(find design-patterns -name '*.en.md' ! -name 'overview.en.md' 2>/dev/null | sort); do
+    found=0
+    for kw in $GPU_DIMS_EN; do
+        if grep -q "$kw" "$dp_file" 2>/dev/null; then
+            found=$((found + 1))
+        fi
+    done
+    # Also count D1-D8 markers
+    d_found=0
+    for d in $GPU_DIMS_D; do
+        if grep -qE "\\b${d}\\b" "$dp_file" 2>/dev/null; then
+            d_found=$((d_found + 1))
+        fi
+    done
+    if [ "$d_found" -gt "$found" ]; then
+        found=$d_found
+    fi
+    if [ "$found" -ge 6 ]; then
+        echo -e "${GREEN}[PASS]${NC} $dp_file covers $found/8 GPU dimensions"
+        PASS=$((PASS + 1))
+    else
+        echo -e "${RED}[FAIL]${NC} $dp_file only covers $found/8 GPU dimensions (need >=6): $GPU_DIMS_EN or D1-D8"
+        FAIL=$((FAIL + 1))
+    fi
+done
+
+# --- Domain Router Isolation Check (v3.2.1) ---
+echo ""
+echo "--- Domain Router Isolation Check ---"
+check_contains "skills/math-research-activator/SKILL.md" '纯 AI 问题不加载密码学书稿'
+check_contains "skills/math-research-activator/SKILL.md" '纯密码学问题不加载 AI 设计模式'
+check_contains "skills/math-research-activator/SKILL.en.md" 'Pure AI problems do not load cryptography books'
+check_contains "skills/math-research-activator/SKILL.en.md" 'pure crypto problems do not load AI design patterns'
+# Verify cryptography layer has structured anchors (not just books)
+CRYPTO_ANCHOR_COUNT=$(find "knowledge-base/cryptography" -name '*.md' ! -name '*.en.md' ! -name 'index.md' 2>/dev/null | wc -l)
+if [ "$CRYPTO_ANCHOR_COUNT" -ge 4 ]; then
+    echo -e "${GREEN}[PASS]${NC} knowledge-base/cryptography/ has $CRYPTO_ANCHOR_COUNT anchor cards (>=4)"
+    PASS=$((PASS + 1))
+else
+    echo -e "${RED}[FAIL]${NC} knowledge-base/cryptography/ has only $CRYPTO_ANCHOR_COUNT anchor cards (need >=4)"
+    FAIL=$((FAIL + 1))
+fi
+# Verify algebraic-geometry layer has anchors
+ALGEO_ANCHOR_COUNT=$(find "knowledge-base/algebraic-geometry" -name '*.md' ! -name '*.en.md' ! -name 'index.md' 2>/dev/null | wc -l)
+if [ "$ALGEO_ANCHOR_COUNT" -ge 2 ]; then
+    echo -e "${GREEN}[PASS]${NC} knowledge-base/algebraic-geometry/ has $ALGEO_ANCHOR_COUNT anchor cards (>=2)"
+    PASS=$((PASS + 1))
+else
+    echo -e "${RED}[FAIL]${NC} knowledge-base/algebraic-geometry/ has only $ALGEO_ANCHOR_COUNT anchor cards (need >=2)"
+    FAIL=$((FAIL + 1))
+fi
+
+# --- Knowledge Gap Protocol Check (v3.2.1) ---
+echo ""
+echo "--- Knowledge Gap Protocol Check ---"
+check_contains "skills/math-research-activator/SKILL.md" '缺口识别'
+check_contains "skills/math-research-activator/SKILL.md" '透镜回退'
+check_contains "skills/math-research-activator/SKILL.md" '候选知识定位'
+check_contains "skills/math-research-activator/SKILL.md" '临时知识卡'
+check_contains "skills/math-research-activator/SKILL.md" '设计翻译'
+check_contains "skills/math-research-activator/SKILL.md" '升级建议'
+check_contains "skills/math-research-activator/SKILL.en.md" 'Gap Identification'
+check_contains "skills/math-research-activator/SKILL.en.md" 'Lens Fallback'
+check_contains "skills/math-research-activator/SKILL.en.md" 'Candidate Knowledge Localization'
+check_contains "skills/math-research-activator/SKILL.en.md" 'Temporary Knowledge Card'
+check_contains "skills/math-research-activator/SKILL.en.md" 'Design Translation'
+check_contains "skills/math-research-activator/SKILL.en.md" 'Upgrade Recommendation'
+
+# --- Design Philosophy Check (v3.2.1) ---
+echo ""
+echo "--- Design Philosophy Check ---"
+check_contains "skills/math-research-activator/SKILL.md" 'activator 而非百科'
+check_contains "skills/math-research-activator/SKILL.md" '回归数学本身'
+check_contains "skills/math-research-activator/SKILL.md" '引导思考而非替代思考'
+check_contains "skills/math-research-activator/SKILL.en.md" 'Activator, Not Encyclopedia'
+check_contains "skills/math-research-activator/SKILL.en.md" 'Return to mathematics itself'
+check_contains "skills/math-research-activator/SKILL.en.md" 'Guide thinking'
+check_contains "README.md" 'v3.2.1 设计哲学修正'
+check_contains "README.en-US.md" 'v3.2.1 Design Philosophy Refinement'
+
 # --- Count Verification ---
 echo ""
 echo "--- Count Verification ---"
@@ -413,6 +571,16 @@ if [ "$KB_CN" -eq "$KB_EN" ]; then
 else
     echo -e "${RED}[FAIL]${NC} Knowledge cards: $KB_CN CN ≠ $KB_EN EN"
     FAIL=$((FAIL + 1))
+fi
+
+# v3.2.1 expected count: 31 (original) + 4 (cryptography) + 2 (algebraic-geometry) = 37
+EXPECTED_KB=37
+if [ "$KB_CN" -eq "$EXPECTED_KB" ]; then
+    echo -e "${GREEN}[PASS]${NC} Knowledge cards count = $EXPECTED_KB (expected for v3.2.1)"
+    PASS=$((PASS + 1))
+else
+    echo -e "${YELLOW}[WARN]${NC} Knowledge cards count = $KB_CN (expected $EXPECTED_KB for v3.2.1)"
+    WARN=$((WARN + 1))
 fi
 
 if [ "$DP_CN" -eq "$DP_EN" ]; then

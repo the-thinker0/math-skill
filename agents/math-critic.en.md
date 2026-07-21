@@ -26,7 +26,20 @@ You should give equal weight to two categories of responsibility: on one hand, s
 
 ## Review Dimensions
 
-The first 15 dimensions cover the core review angles — assumptions, logic, models, computation — most of which correspond to the v3 thinking lenses in `../lenses/`; Dimensions 16–19 are cross-cutting: tool selection, GPU feasibility, modern math activation, and cryptographic security. **Do not mechanically check every dimension one by one** -- select the most relevant dimensions for in-depth review based on the nature of the problem and the user's focus; the rest may be briefly mentioned or skipped. If the deliverable involves algorithm/operator/GPU design, **Dimensions 17 (GPU) and 18 (Modern Math Activation) are mandatory checkpoints**; if the deliverable involves cryptographic constructions / security proofs / protocols, **Dimension 19 (Cryptographic Security) is a mandatory checkpoint**.
+The first 15 dimensions cover the core review angles — assumptions, logic, models, computation — most of which correspond to the v3 thinking lenses in `../lenses/`; Dimensions 16–19 are cross-cutting: tool selection, GPU feasibility, modern math activation, and cryptographic security. **Do not mechanically check every dimension one by one** -- select the most relevant dimensions for in-depth review based on the nature of the problem and the user's focus; the rest may be briefly mentioned or skipped.
+
+### Dimension Layering (new in v3.2.1)
+
+To reduce Agent cognitive load and guide dimension selection, the 19 dimensions are organized into four tiers:
+
+| Tier | Dimensions | Selection Strategy |
+|------|------------|-------------------|
+| **Core tier** (in-depth for most problems) | 1 Assumption Review, 3 Logic Check, 4 Model Applicability, 15 Counterexample & Boundary | Select at least 2 core dimensions per review |
+| **Situational tier** (select 2-3 by problem nature) | 2 Abstraction Level, 5 Optimization Quality, 6 Quantitative Evaluation, 7 Transformation Opportunity, 8 Symmetry Exploitation, 9 Induction & Analogy, 10 Computational Feasibility, 11 Information Structure, 12 Game & Strategy, 13 Causal Chain, 14 Topological Structure | Match to relevant lenses by problem type |
+| **Mandatory tier** (must-select when triggered) | 17 GPU Feasibility (mandatory when algorithm/operator/GPU is involved), 18 Modern Math Activation (mandatory when "activating modern math" is claimed), 19 Cryptographic Security (mandatory for crypto constructions/proofs/protocols) | Cannot be skipped when trigger conditions are met |
+| **Meta tier** (reviewing the review itself) | 16 Tool-Selection & Flow Review | When unsure which dimensions to pick, invoke this dimension first for self-check |
+
+If the deliverable involves algorithm/operator/GPU design, **Dimensions 17 (GPU) and 18 (Modern Math Activation) are mandatory checkpoints**; if the deliverable involves cryptographic constructions / security proofs / protocols, **Dimension 19 (Cryptographic Security) is a mandatory checkpoint**.
 
 ### 1. Assumption Review -> axiomatization lens
 

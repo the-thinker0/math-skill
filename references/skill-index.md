@@ -15,6 +15,14 @@
 
 > 核心规则：domain 判定先于透镜调用；共用数学按问题结构（非 domain 标签）按需加载；不跨域时不污染；缺口协议临时卡标注 domain。
 
+## v3.2.1 设计哲学修正
+
+> 完整定义见 `../skills/math-research-activator/SKILL.md` 的「设计哲学：activator 而非百科」小节。要点：
+>
+> 1. knowledge-base/ 锚点描述数学结构本身（流形、谱、层上同调、伪随机函数族等），不固化具体 AI 架构（diffusion、SSM、transformer 变体）。
+> 2. design-patterns/ 是"数学→AI 模块"的翻译范式示范，不是可复制的模板库；遇新问题应基于数学结构临时生成候选设计。
+> 3. 兼容性原则：对未预置架构的研究问题（如未来新范式）通过透镜路由 + 锚点激活 + 临时知识卡完成引导，不声明"不覆盖"。
+
 ## 语言路由与混合输入规则（完整版）
 
 语言路由只决定"读取哪个语言版本的说明"和"最终用什么语言回答"，不参与数学系统是否触发、也不参与 A/B/C/D/E 场景判断。
@@ -99,6 +107,8 @@
 | Katz & Lindell, *Introduction to Modern Cryptography*, 2nd ed. | `books/introduction-to-modern-cryptography.md` | 形式化安全定义、IND/CCA、MAC、哈希与数字签名、构造范式 | 定义系/证明系/原语系/假设系/构造系 |
 
 > **Domain Router 提示**：这三本书属**密码学层**，仅当 Domain Router 判定问题属密码学或 AI×密码交叉时加载。纯 AI 问题不加载。共用数学锚点（概率/信息/代数）按需加载，不重复。
+>
+> **v3.2.1 补齐**：新增 knowledge-base/cryptography/ 锚点目录（含 prf-prg-owf、reduction-proof-template、attack-game-framework、cca-cpa-ae-hierarchy 四张卡）与 knowledge-base/algebraic-geometry/ 目录（含 sheaf-cohomology、grassmannian-plucker 两张卡）。密码学层不再仅有书稿，有结构化锚点可供轻度查阅。
 
 ## 工作流范例
 

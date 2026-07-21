@@ -15,6 +15,14 @@
 
 > Core rules: domain judgment precedes lens invocation; shared math loads on demand by problem structure (not by domain tag); no pollution across non-cross domains; gap-protocol temporary cards are domain-tagged.
 
+## v3.2.1 Design Philosophy Refinement
+
+> Full definition: see the "Design Philosophy: Activator, Not Encyclopedia" section in `../skills/math-research-activator/SKILL.en.md`. Key points:
+>
+> 1. knowledge-base/ anchors describe mathematical structures themselves (manifolds, spectra, sheaf cohomology, pseudorandom function families, etc.), not specific AI architectures (diffusion, SSM, transformer variants).
+> 2. design-patterns/ is a paradigmatic demonstration of "math→AI module" translation, not a copy-paste template library; for new problems, generate temporary design candidates from the mathematical structure.
+> 3. Compatibility principle: research problems with architectures the skill did not pre-specify (e.g., future paradigms) are handled through lens-routing + anchor-activation + temporary-knowledge-card pipeline, not declared "not covered."
+
 ## Language Routing & Mixed-Input Rules (Full Version)
 
 Language routing only determines "which language version to read" and "what language to respond in." It does NOT affect whether the math system triggers or the A/B/C/D/E scenario classification.
@@ -99,6 +107,8 @@ The reference layer now covers 10 books. The following three support cryptograph
 | Katz & Lindell, *Introduction to Modern Cryptography*, 2nd ed. | `books/introduction-to-modern-cryptography.md` | Formal security definitions, IND/CCA, MACs, hashing, and digital signatures | Definitions/Proofs/Primitives/Assumptions/Constructions |
 
 > **Domain Router note**: These three books belong to the **Cryptography Layer** and are loaded only when Domain Router determines the problem is cryptography or AI×crypto intersection. Pure AI problems do not load them. Shared math anchors (probability/information/algebra) are loaded on demand without redundancy.
+>
+> **v3.2.1 backfill**: new knowledge-base/cryptography/ anchor directory (with prf-prg-owf, reduction-proof-template, attack-game-framework, cca-cpa-ae-hierarchy cards) and knowledge-base/algebraic-geometry/ directory (with sheaf-cohomology, grassmannian-plucker cards). The cryptography layer no longer has only books — it has structured anchors for light consultation.
 
 ## Workflow Example
 

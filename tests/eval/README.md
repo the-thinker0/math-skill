@@ -1,6 +1,6 @@
 # Eval Test Suite
 
-These are **manual evaluation scenarios** for testing the math-skill v3.0.0 routing and output quality. They are not automated tests — they require a human to invoke the skill with each prompt and evaluate the response.
+These are **manual evaluation scenarios** for testing the math-skill v3.2.1 routing and output quality. They are not automated tests — they require a human to invoke the skill with each prompt and evaluate the response.
 
 ## Test Categories
 
@@ -8,7 +8,12 @@ These are **manual evaluation scenarios** for testing the math-skill v3.0.0 rout
 |------|---------|-------------------|
 | `should-trigger-design.md` | Mechanism design scenarios (Scenario B) | Full pipeline: Lenses → Knowledge → Design → Critic |
 | `should-trigger-knowledge.md` | Knowledge query scenarios (Scenario C) | Direct knowledge card loading |
+| `should-trigger-analysis.md` | Analysis scenarios (Scenario A) | Lenses → Critic (no design output, no GPU gate unless GPU-related) |
+| `should-trigger-verification.md` | Verification scenarios (Scenario D) | Knowledge anchors → Critic; short conclusion + conditions/boundaries |
 | `should-not-trigger.md` | Pure engineering tasks (Scenario E) | No math system activation at all |
+| `cross-domain-routing.md` | AI × cryptography intersection | Dual-domain load + 4-tuple intersection annotation |
+| `domain-router-isolation.md` | No cross-pollution guarantee | Pure AI does not load crypto; pure crypto does not load AI design-patterns |
+| `knowledge-gap-protocol.md` | Gaps not covered by existing anchors | 6-step Knowledge Gap Protocol with temporary card + source/confidence |
 | `mixed-language-routing.md` | Code-switched input (CN/EN mixed) | Correct language routing per 5-rule decision system |
 
 ## How to Run

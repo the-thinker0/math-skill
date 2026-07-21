@@ -53,6 +53,8 @@ Design Translation: How do these tools become model structures / losses / operat
 Critic: Mathematically sound? Engineering-feasible?
 ```
 
+> **v3.2.1 Design Philosophy Refinement**: This skill is a mathematical-thinking activator and anchor, not a knowledge encyclopedia. `knowledge-base/` anchors describe mathematical structures (manifolds, spectra, sheaf cohomology, pseudorandom function families, etc.), not specific AI architectures (diffusion, SSM, etc.); `design-patterns/` is a paradigmatic demonstration of "math→AI module" translation, not a copy-paste template library. This ensures the skill retains guiding capacity for any research direction (diffusion, SSM, MoE, alignment, etc.) and does not become outdated as concrete architectures evolve.
+
 ---
 
 ## Three-Layer Orthogonal Architecture
@@ -258,6 +260,16 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 ---
 
 ## Changelog
+
+### v3.2.1 — Design Philosophy Refinement & Reliability Enhancement
+
+- **Design philosophy made explicit**: `SKILL.md` / `SKILL.en.md` add a "Design Philosophy: Activator, Not Encyclopedia" section, declaring the skill is a thinking activator and mathematical anchor; `knowledge-base/` returns to mathematical structures themselves (not concrete AI architectures); `design-patterns/` is positioned as translation-prototype demonstration rather than a template library. A new "Compatibility Principle" section declares that research problems with architectures the skill did not pre-specify are handled through the lens-routing + anchor-activation + temporary-knowledge-card pipeline.
+- **Cryptography anchors backfilled**: new `knowledge-base/cryptography/` directory, with `prf-prg-owf`, `reduction-proof-template`, `attack-game-framework`, `cca-cpa-ae-hierarchy` anchor cards (CN/EN paired), giving Domain Router's cryptography layer substantive anchors (fixes v3.2.0 inconsistency: it declared loading a cryptography layer but had no structured anchors).
+- **Algebraic geometry anchors backfilled**: new `knowledge-base/algebraic-geometry/` directory, with `sheaf-cohomology`, `grassmannian-plucker` anchor cards (CN/EN paired), covering mathematical structures already used by `design-patterns/` but lacking anchors (sheaf cohomology, Grassmannian).
+- **Test coverage expanded**: new eval tests for Scenario A (analysis), Scenario D (verification), cross-domain routing (AI×crypto 4-tuple annotation), Knowledge Gap Protocol, and Domain Router isolation (no-pollution guarantee).
+- **validate.sh structural checks**: new checks for 6 required sections in knowledge cards, 8-dimension GPU assessment keywords in design patterns, Domain Router isolation consistency, and Knowledge Gap Protocol 6-step keywords.
+- **critic 19-dimension layering**: core / situational / mandatory / meta dimension layering annotations to reduce Agent cognitive load.
+- **inspiration.md split**: technical-inspiration part (the dragon-slaying blade story) retained; philosophical content (life-as-optimization, etc.) moved to `musings.md` to avoid clashing with the skill's rigorous technical style.
 
 ### v3.2.0 — Cryptography Track + Domain Router
 

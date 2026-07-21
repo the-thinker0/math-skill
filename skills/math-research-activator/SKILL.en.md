@@ -21,6 +21,16 @@ This system is a mathematical staff office for AI architecture innovation and cr
 - When existing cards cannot cover a problem, the agent must NOT stop or force-fit; instead, generate a "temporary knowledge card" based on lenses, reference layers, and the agent's own mathematical knowledge, then continue with design translation
 - **design-patterns/** is a collection of math→AI translation prototypes, not a complete model repository; when no matching pattern exists, generate a temporary design candidate from the mathematical structure and label it as a temporary design pattern
 
+## Design Philosophy: Activator, Not Encyclopedia
+
+> Math Skill is a thinking activator and a mathematical anchor, not a knowledge encyclopedia. Its value lies in guiding the model to activate the correct mathematical perspective, not in exhaustively cataloging every concrete AI architecture.
+
+**Three Principles**:
+
+1. **Return to mathematics itself**: knowledge-base/ anchors describe mathematical structures themselves (manifolds, spectra, entropy, sheaf cohomology, Lie algebras, pseudorandom function families, Grassmannians), not specific AI modules (diffusion, SSM, transformer variants, specific attention variants). Concrete AI architectures become outdated quickly as research evolves, while mathematical structures are stable—anchoring on mathematics keeps the skill relevant for any future research direction.
+2. **Design patterns are translation prototypes, not a template library**: design-patterns/ provides paradigmatic demonstrations of "math→AI module" translation, showing how to turn mathematical structures into attention/loss/routing/representation/compression. Users should treat these patterns as exemplars of translation methodology, not a copy-paste model repository. For new problems, generate temporary design candidates from the mathematical structure rather than force-fitting existing patterns.
+3. **Guide thinking, don't replace it**: Outputs should help the user understand "why this mathematical perspective fits this problem," not hand over a ready-made answer. The Knowledge Gap Protocol is the skill's core capability that distinguishes it from a static encyclopedia—when existing anchors don't cover the problem, generate a temporary knowledge card to continue guiding, rather than stopping or force-fitting. This ensures the skill retains guiding capacity for research problems involving architectures it didn't pre-specify (e.g., future model paradigms).
+
 ## Three-Layer Orthogonal Architecture
 
 | Layer | Responsibility | Directory | Core Question |
@@ -193,6 +203,10 @@ When the mathematical tools required by the user's problem are not in the existi
 5. **Design Translation**: If the user's goal is mechanism design, translate the temporary knowledge into candidate AI modules, losses, routing, attention, representation, or compression schemes.
 
 6. **Upgrade Recommendation**: If this gap recurs frequently, recommend adding a formal knowledge card or design pattern.
+
+## Compatibility Principle
+
+> This skill does not attempt to cover every concrete architecture across all AI research scenarios. Instead, it provides sufficiently general mathematical activation perspectives so that it can guide any research direction—diffusion models, state-space models, MoE, retrieval-augmented generation, alignment fine-tuning, or future paradigms. When encountering a research problem whose concrete architecture the skill did not pre-specify, complete the guidance through the lens-routing + anchor-activation + temporary-knowledge-card pipeline, rather than declaring "not covered."
 
 ## Workflow Example
 
