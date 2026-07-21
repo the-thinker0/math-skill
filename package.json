@@ -1,6 +1,6 @@
 {
   "name": "math-skill",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "面向 AI 架构创新与密码学研究的数学研究路由器：15 个思想透镜、33 个共用数学锚点、4 个密码学锚点、22 个 AI 设计原型，以及渐进加载、Domain Router 与 Knowledge Gap Protocol。Math research router for AI architecture and cryptography with progressive loading, domain isolation, and explicit token budgets.",
   "keywords": [
     "math",

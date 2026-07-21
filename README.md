@@ -18,7 +18,7 @@
 
 > **本 Skill 正在快速迭代中，欢迎各位使用者提出宝贵的使用感受和改进建议！** 你的反馈是我们持续进化的核心动力。欢迎通过 GitHub Issues 或 Discussions 与我们交流。
 
-> **v3.2.1**：根 `SKILL.md` 成为 Codex 权威入口，插件目录保留薄兼容层；Domain Router 改为按目标与保证判域，并加入渐进加载/token 预算。密码学锚点已去除不严谨的 AI 类比。
+> **v3.3.0**：完成入口结构、最小上下文路由、AI/密码学领域隔离、数学与密码学准确性、GPU 审查和全量中英配对升级。根 `SKILL.md` 是权威入口，三份密码学书稿已提供独立英文版。详见变更日志。
 
 ---
 
@@ -265,18 +265,27 @@ math-skill/
 
 ## 变更日志
 
+### v3.3.0 — 路由收敛、双语补全与专业性校正
+
+- **权威入口与兼容结构**：新增根 `SKILL.md` / `SKILL.en.md` 作为完整、自足的规范入口；`skills/math-research-activator/SKILL*.md` 缩为薄转发层，继续兼容 Claude/plugin 目录布局，同时避免两份完整正文长期漂移。`commands/ask*`、critic、索引和 overview 的引用均改到根入口。
+- **渐进加载与 token 最小化**：按 A 分析、B 设计、C 查询、D 验证、E 纯工程五类场景设置最小路径；默认限制为 1–2 个透镜、1–3 个锚点和 0–2 个设计原型。概念查询、纯密码任务和普通验证不再默认加载完整 critic、书稿、GPU 清单或目录索引，也不向用户复述内部加载过程。
+- **Domain Router 重写**：从关键词投票改为按“目标对象 + 所求保证”判域；`hashing`、`attack`、`security` 等孤立词不再误触发密码学。纯 AI、纯密码、共用数学和 AI×密码交叉路径明确隔离；交叉四元组只在真正涉及原语/安全性质向 AI 对象迁移时输出。
+- **密码学知识去污染**：四张密码学锚点改用安全定义、攻击游戏、归约损失、构造边界和实现注意事项组织，不再强塞 AI 设计翻译或 GPU 验收；明确标准模型定理、基于原语的归约与 AES 等具体算法经验假设的层级差异，并校正 PRF/PRG/OWF、Feistel、CPA/CCA/AE、KEM/DEM、nonce/IV、密钥分离与组合顺序等表述。
+- **数学概念与工程断言校正**：修正一般投影的 Moore–Penrose 伪逆条件、attention/QKV 与线性投影的边界、KL 散度方向、低秩近似的梯度表述、正交损失的形状/归一化条件，以及抽象代数与几何书稿中的若干过度类比；所有保证、等价、稳定和最优性表述强调成立条件或降级为待验证假设。
+- **密码学书稿完整双语化**：新增 `applied-cryptography.en.md`、`foundations-of-cryptography.en.md`、`introduction-to-modern-cryptography.en.md`。commands、agents、lenses、knowledge-base、design-patterns 与 references 现均保持中英文件配对；按用户主语言只加载一侧，避免双份上下文。
+- **GPU 审查改为相关性驱动**：不再要求每个候选机械覆盖八个维度；先声明 shape、baseline 与部署约束，只评会影响决策的维度，无关项标 `N/A`。要求用 FLOPs、峰值中间张量/状态、字节量、通信量或低精度风险等可核查信号支持判断，并明确“可写成 GEMM”不等于实际更快。
+- **critic 与输出质量收敛**：普通任务使用入口内的紧凑检查，只有论文级或显式全面审查才加载 19 维 critic；现代数学激活维度只在确有迁移声称时强制，密码学使用专属安全审查，探索性候选必须标注假设、边界和证伪方法。
+- **索引、路由样例与语言规则同步**：更新 `skill-index`、`knowledge-base/overview`、agentic workflow 和 A/B/C/D/E eval 场景，补充假阳性、交叉域、知识缺口与主语言判断边界；代码、路径、公式和英文技术词不参与主语言投票。
+- **测试职责边界清理**：移除仅服务本次审计的六维输出评分和 token/cost 回归规范，保留与 skill 行为直接相关的路由、隔离、双语、引用与语义回归场景。
+- **验证与发布完整性**：Bash/PowerShell 验证覆盖根入口 frontmatter、兼容转发、37 张锚点、中英配对、交叉引用、Domain Router 隔离、Knowledge Gap Protocol、GPU 量化信号和高风险语义回归；npm 包显式包含根 `SKILL*.md`，排除 PDF、`math_book/`、测试与本地 npm 缓存。
+
 ### v3.2.1 — 设计哲学修正与可靠性增强
 
-- **入口结构收敛**：根 `SKILL.md` / `SKILL.en.md` 成为唯一规范入口；`skills/math-research-activator/` 仅保留兼容转发层，避免双份正文漂移，同时保留 Claude/plugin 布局兼容性
-- **最小上下文预算**：入口正文约减半，场景 A–D 分别限制透镜、锚点与设计原型数量；概念查询、纯密码问题和普通验证不再默认加载完整 critic、书稿或 GPU 清单
-- **路由与领域隔离修正**：按“目标对象 + 所求保证”判域，单个 `hash/attack/security` 词不触发密码路由；纯密码先走 4 张专属锚点，AI×密码才加载交叉两侧
-- **数学与密码学准确性修正**：清理 projection/QKV、KL、低秩梯度、正交损失，以及 PRF/PRG/OWF、CPA/CCA/AE、归约、KEM/DEM 等卡片和书稿中的过度类比或错误工程断言
 - **设计哲学明确化**：`SKILL.md` / `SKILL.en.md` 新增"设计哲学：activator 而非百科"小节，声明 skill 是思考的 activator 和数学锚点，`knowledge-base/` 回归数学结构本身（不固化具体 AI 架构），`design-patterns/` 定位为翻译范式示范而非模板库；新增"兼容性原则"小节，声明对未预置架构的研究问题通过透镜路由 + 锚点激活 + 临时知识卡完成引导
 - **密码学锚点补齐**：新增 `knowledge-base/cryptography/` 目录，含 `prf-prg-owf`、`reduction-proof-template`、`attack-game-framework`、`cca-cpa-ae-hierarchy` 四张锚点卡（中英成对），使 Domain Router 的密码学层加载有实质锚点（修复 v3.2.0 理念不一致：此前声明加载密码学层但无结构化锚点）
-- **密码学书稿双语补齐**：Boneh–Shoup、Goldreich、Katz–Lindell 三份蒸馏稿新增 `.en.md`，参考层 10 本书现全部中英配对
 - **代数几何锚点补齐**：新增 `knowledge-base/algebraic-geometry/` 目录，含 `sheaf-cohomology`、`grassmannian-plucker` 两张锚点卡（中英成对），覆盖 `design-patterns/` 已使用但无锚点的数学结构（层上同调、格拉斯曼流形）
 - **测试覆盖扩展**：新增场景 A（问题分析）、场景 D（验证审查）、交叉域路由（AI×密码四元组标注）、Knowledge Gap Protocol、Domain Router 隔离（不污染保证）五类 eval 测试
-- **validate.sh 结构化检查**：检查根入口/frontmatter/兼容层、37 张卡片与双语配对、适用 GPU 维度及量化信号、Domain Router 隔离、Knowledge Gap Protocol、跨引用和高风险语义回归
+- **validate.sh 结构化检查**：新增知识卡六段结构、设计模式 GPU 八维覆盖、Domain Router 隔离与 Knowledge Gap Protocol 关键字段检查
 - **critic 19 维分层**：核心维度 / 情境维度 / 强制维度 / 元维度分层标注，减少 Agent 的认知负担
 - **inspiration.md 拆分**：技术灵感部分（屠龙刀故事）保留；哲学内容（人生最优化等）移至 `musings.md`，避免与 skill 严谨技术风格冲突
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Math Skill Validation Script (v3.2.1)
+# Math Skill Validation Script (v3.3.0)
 # Validates the three-layer architecture: lenses + knowledge-base + design-patterns
 
 RED='\033[0;31m'
@@ -52,7 +52,7 @@ check_not_contains() {
 }
 
 echo "========================================"
-echo "  Math Skill Validation (v3.2.1)"
+echo "  Math Skill Validation (v3.3.0)"
 echo "========================================"
 
 # --- Infrastructure ---
@@ -393,7 +393,7 @@ check_not_contains "design-patterns/loss/contrastive-loss.en.md" 'O(1/√N)'
 check_contains "design-patterns/overview.md" '严谨性约定'
 check_contains "design-patterns/overview.en.md" 'Rigor convention'
 
-# --- Knowledge Card Structure Check (v3.2.1) ---
+# --- Knowledge Card Structure Check (v3.3.0) ---
 echo ""
 echo "--- Knowledge Card Structure Check ---"
 # Each knowledge card (excluding index/overview) must have 6 required sections.
@@ -444,7 +444,7 @@ for domain in $KB_DOMAINS_STRUCT; do
     done
 done
 
-# --- Design Pattern GPU Relevance Check (v3.2.1) ---
+# --- Design Pattern GPU Relevance Check (v3.3.0) ---
 echo ""
 echo "--- Design Pattern GPU Relevance Check ---"
 # Require an explicit GPU section and at least one quantitative complexity/memory signal.
@@ -462,7 +462,7 @@ for dp_file in $(find design-patterns -name '*.md' ! -name 'overview.md' ! -name
     fi
 done
 
-# --- Domain Router Isolation Check (v3.2.1) ---
+# --- Domain Router Isolation Check (v3.3.0) ---
 echo ""
 echo "--- Domain Router Isolation Check ---"
 check_contains "SKILL.md" '不加载密码学锚点/书稿'
@@ -492,7 +492,7 @@ else
     FAIL=$((FAIL + 1))
 fi
 
-# --- Knowledge Gap Protocol Check (v3.2.1) ---
+# --- Knowledge Gap Protocol Check (v3.3.0) ---
 echo ""
 echo "--- Knowledge Gap Protocol Check ---"
 check_contains "SKILL.md" 'Knowledge Gap Protocol'
@@ -501,7 +501,7 @@ check_contains "SKILL.md" '临时卡必须标注 domain'
 check_contains "SKILL.en.md" 'Knowledge Gap Protocol'
 check_contains "SKILL.en.md" 'temporary card must state its domain'
 
-# --- Design Philosophy Check (v3.2.1) ---
+# --- Progressive Loading Check (v3.3.0) ---
 echo ""
 echo "--- Progressive Loading Check ---"
 check_contains "SKILL.md" '最少但足够'
@@ -510,8 +510,8 @@ check_contains "SKILL.md" '普通 A/B/D 场景使用上述检查即可'
 check_contains "SKILL.en.md" 'smallest sufficient'
 check_contains "SKILL.en.md" 'Do not repeat cards or expose internal load paths'
 check_contains "SKILL.en.md" 'ordinary A/B/D tasks'
-check_contains "README.md" 'v3.2.1 设计哲学修正'
-check_contains "README.en-US.md" 'v3.2.1 Design Philosophy Refinement'
+check_contains "README.md" 'v3.3.0 — 路由收敛'
+check_contains "README.en-US.md" 'v3.3.0 — Routing Convergence'
 
 # --- High-Risk Semantic Regression Checks ---
 echo ""
@@ -524,7 +524,7 @@ check_not_contains "knowledge-base/cryptography/prf-prg-owf.md" '通常是 small
 check_contains "knowledge-base/cryptography/cca-cpa-ae-hierarchy.md" '不能映射成“训练数据量 ≥ 模型参数量”'
 check_not_contains "knowledge-base/cryptography/reduction-proof-template.md" '差分隐私假设'
 check_contains "references/gpu-friendly-math.md" '`N/A` 不计分'
-check_contains "package.json" '"version": "3.2.1"'
+check_contains "package.json" '"version": "3.3.0"'
 
 # --- Count Verification ---
 echo ""
@@ -552,13 +552,13 @@ else
     FAIL=$((FAIL + 1))
 fi
 
-# v3.2.1 expected count: 31 (original) + 4 (cryptography) + 2 (algebraic-geometry) = 37
+# v3.3.0 expected count: 31 (original) + 4 (cryptography) + 2 (algebraic-geometry) = 37
 EXPECTED_KB=37
 if [ "$KB_CN" -eq "$EXPECTED_KB" ]; then
-    echo -e "${GREEN}[PASS]${NC} Knowledge cards count = $EXPECTED_KB (expected for v3.2.1)"
+    echo -e "${GREEN}[PASS]${NC} Knowledge cards count = $EXPECTED_KB (expected for v3.3.0)"
     PASS=$((PASS + 1))
 else
-    echo -e "${YELLOW}[WARN]${NC} Knowledge cards count = $KB_CN (expected $EXPECTED_KB for v3.2.1)"
+    echo -e "${YELLOW}[WARN]${NC} Knowledge cards count = $KB_CN (expected $EXPECTED_KB for v3.3.0)"
     WARN=$((WARN + 1))
 fi
 

@@ -1,4 +1,4 @@
-﻿# Math Skill Validation Script (PowerShell, v3.2.1)
+﻿# Math Skill Validation Script (PowerShell, v3.3.0)
 # Validates the three-layer architecture: lenses + knowledge-base + design-patterns
 #
 # Usage (run from repo root):
@@ -76,7 +76,7 @@ function Check-Not-Contains {
 }
 
 Write-Host "========================================"
-Write-Host "  Math Skill Validation (v3.2.1 PS)"
+Write-Host "  Math Skill Validation (v3.3.0 PS)"
 Write-Host "========================================"
 
 # --- Infrastructure ---
@@ -85,7 +85,7 @@ Check-File "package.json"
 Check-Contains "package.json" "lenses/"
 Check-Contains "package.json" "design-patterns/"
 Check-Contains "package.json" "knowledge-base/"
-Check-Contains "package.json" '"version": "3.2.1"'
+Check-Contains "package.json" '"version": "3.3.0"'
 Check-File "SKILL.md"
 Check-File "SKILL.en.md"
 if ((Get-Content "SKILL.md" -TotalCount 1) -eq "---" -and (Get-Content "SKILL.en.md" -TotalCount 1) -eq "---") {
