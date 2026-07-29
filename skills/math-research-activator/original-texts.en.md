@@ -99,8 +99,8 @@ Our activator integrates all of the above intellectual traditions:
 
 | Intellectual Source | Manifestation in the Math Research OS |
 |---------|-------------------|
-| Pólya's Heuristics | 11 characteristic branches in the decision tree — each branch corresponds to a class of heuristic strategies |
-| Newell & Simon's Problem Space | Problem characteristic dimensions — interactivity, uncertainty, constraint, structure, dynamism |
+| Pólya's Heuristics | 5 scenario branches in intent diagnosis — each scenario corresponds to a class of problem-solving strategies |
+| Newell & Simon's Problem Space | Domain Router's domain judgment — by target object and requested guarantee, not keywords |
 | Schoenfeld's Strategic Selection | The core principle that "choosing the right tool matters more than brute-force analysis" |
 | Wicked Problems Theory | Multi-tool combination recommendations — wicked problems require cross-domain tool combinations |
 | Kahneman's Dual System | "Inapplicable scenarios" — simple problems do not need tools; avoid over-analysis |

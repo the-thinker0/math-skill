@@ -42,7 +42,19 @@ check_contains() {
 }
 
 check_not_contains() {
-    if grep -q "$2" "$1" 2>/dev/null; then
+    # Fixed-string matching (consistent with check_contains)
+    if grep -Fq -- "$2" "$1" 2>/dev/null; then
+        echo -e "${RED}[FAIL]${NC} $1 still contains '$2'"
+        FAIL=$((FAIL + 1))
+    else
+        echo -e "${GREEN}[PASS]${NC} $1 does not contain '$2'"
+        PASS=$((PASS + 1))
+    fi
+}
+
+check_not_contains_regex() {
+    # Regex matching (for patterns with ^, .*, etc.)
+    if grep -q -- "$2" "$1" 2>/dev/null; then
         echo -e "${RED}[FAIL]${NC} $1 still contains '$2'"
         FAIL=$((FAIL + 1))
     else
@@ -353,8 +365,8 @@ echo ""
 echo "--- Semantic Regression Checks ---"
 check_contains "design-patterns/compression/low-rank-kv-cache.md" 'O(Lk + kd)'
 check_contains "design-patterns/compression/low-rank-kv-cache.en.md" 'O(Lk + kd)'
-check_not_contains "design-patterns/compression/low-rank-kv-cache.md" '压缩到.*O(kd)'
-check_not_contains "design-patterns/compression/low-rank-kv-cache.en.md" 'to .*O(kd)'
+check_not_contains_regex "design-patterns/compression/low-rank-kv-cache.md" '压缩到.*O(kd)'
+check_not_contains_regex "design-patterns/compression/low-rank-kv-cache.en.md" 'to .*O(kd)'
 check_not_contains "design-patterns/compression/low-rank-kv-cache.md" 'softmax attention 需从因子重构完整'
 check_not_contains "design-patterns/compression/low-rank-kv-cache.en.md" 'must be reconstructed from the factored form'
 check_contains "design-patterns/compression/low-rank-kv-cache.md" '因子化 GEMM'
@@ -469,10 +481,10 @@ check_contains "SKILL.md" '不加载密码学锚点/书稿'
 check_contains "SKILL.md" '不加载 AI 设计模式'
 check_contains "SKILL.en.md" 'Do not load crypto anchors/books'
 check_contains "SKILL.en.md" 'Do not load AI design patterns'
-check_not_contains "knowledge-base/cryptography/attack-game-framework.md" '^## AI 设计翻译'
-check_not_contains "knowledge-base/cryptography/cca-cpa-ae-hierarchy.md" '^## AI 设计翻译'
-check_not_contains "knowledge-base/cryptography/reduction-proof-template.md" '^## AI 设计翻译'
-check_not_contains "knowledge-base/cryptography/prf-prg-owf.md" '^## AI 设计翻译'
+check_not_contains_regex "knowledge-base/cryptography/attack-game-framework.md" '^## AI 设计翻译'
+check_not_contains_regex "knowledge-base/cryptography/cca-cpa-ae-hierarchy.md" '^## AI 设计翻译'
+check_not_contains_regex "knowledge-base/cryptography/reduction-proof-template.md" '^## AI 设计翻译'
+check_not_contains_regex "knowledge-base/cryptography/prf-prg-owf.md" '^## AI 设计翻译'
 # Verify cryptography layer has structured anchors (not just books)
 CRYPTO_ANCHOR_COUNT=$(find "knowledge-base/cryptography" -name '*.md' ! -name '*.en.md' ! -name 'index.md' 2>/dev/null | wc -l)
 if [ "$CRYPTO_ANCHOR_COUNT" -ge 4 ]; then

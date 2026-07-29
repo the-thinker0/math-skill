@@ -2,7 +2,7 @@
 
 > This is the on-demand catalog for `../SKILL.md`. The main entry keeps only selection rules; do not load this index by default for a clear request.
 
-## Domain Router Overview (v3.2.0+; routing rules follow root `../SKILL.md`)
+## Domain Router Overview
 
 > Full definition: see the Domain Router section in `../SKILL.md`. Only a summary table appears here:
 
@@ -15,7 +15,7 @@
 
 > Core rules: domain judgment precedes lens invocation; shared math loads on demand by problem structure (not by domain tag); no pollution across non-cross domains; gap-protocol temporary cards are domain-tagged.
 
-## v3.2.1 Design Philosophy Refinement
+## Design Philosophy
 
 > Full definition: see the objective, Domain Router, and progressive-loading sections in `../SKILL.md`. Key points:
 >
@@ -109,7 +109,7 @@ The reference layer covers 10 books, all paired in Chinese and English. The thre
 
 > **Domain Router note**: These three books belong to the **Cryptography Layer** and are loaded only when Domain Router determines the problem is cryptography or AI×crypto intersection. Pure AI problems do not load them. Shared math anchors (probability/information/algebra) are loaded on demand without redundancy.
 >
-> **v3.2.1 backfill**: new knowledge-base/cryptography/ anchor directory (with prf-prg-owf, reduction-proof-template, attack-game-framework, cca-cpa-ae-hierarchy cards) and knowledge-base/algebraic-geometry/ directory (with sheaf-cohomology, grassmannian-plucker cards). The cryptography layer no longer has only books — it has structured anchors for light consultation.
+> **Backfill note**: the knowledge-base/cryptography/ anchor directory (with prf-prg-owf, reduction-proof-template, attack-game-framework, cca-cpa-ae-hierarchy cards) and knowledge-base/algebraic-geometry/ directory (with sheaf-cohomology, grassmannian-plucker cards) give the cryptography and algebraic-geometry layers structured anchors for light consultation, not just books.
 
 ## Workflow Example
 

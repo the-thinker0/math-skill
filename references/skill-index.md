@@ -2,7 +2,7 @@
 
 > 本文件是 `../SKILL.md` 的按需目录。主入口只保留选择规则；不要为清晰问题默认加载本索引。
 
-## Domain Router 总览（v3.2.0+；路由规则以根 `../SKILL.md` 为准）
+## Domain Router 总览
 
 > 完整定义见 `../SKILL.md` 的 Domain Router 小节。此处仅列摘要表：
 
@@ -15,7 +15,7 @@
 
 > 核心规则：domain 判定先于透镜调用；共用数学按问题结构（非 domain 标签）按需加载；不跨域时不污染；缺口协议临时卡标注 domain。
 
-## v3.2.1 设计哲学修正
+## 设计哲学
 
 > 完整定义见 `../SKILL.md` 的目标、Domain Router 与渐进加载小节。要点：
 >
@@ -109,7 +109,7 @@
 
 > **Domain Router 提示**：这三本书属**密码学层**，仅当 Domain Router 判定问题属密码学或 AI×密码交叉时加载。纯 AI 问题不加载。共用数学锚点（概率/信息/代数）按需加载，不重复。
 >
-> **v3.2.1 补齐**：新增 knowledge-base/cryptography/ 锚点目录（含 prf-prg-owf、reduction-proof-template、attack-game-framework、cca-cpa-ae-hierarchy 四张卡）与 knowledge-base/algebraic-geometry/ 目录（含 sheaf-cohomology、grassmannian-plucker 两张卡）。密码学层不再仅有书稿，有结构化锚点可供轻度查阅。
+> **补齐说明**：knowledge-base/cryptography/ 锚点目录（含 prf-prg-owf、reduction-proof-template、attack-game-framework、cca-cpa-ae-hierarchy 四张卡）与 knowledge-base/algebraic-geometry/ 目录（含 sheaf-cohomology、grassmannian-plucker 两张卡）使密码学层与代数几何层不再仅有书稿，有结构化锚点可供轻度查阅。
 
 ## 工作流范例
 
