@@ -7,4 +7,4 @@ description: |
 
 # Compatibility Entry
 
-This is the Claude/plugin-style compatibility entry. Read and follow `../../SKILL.en.md` completely; the root file is the single authoritative English body and all resource paths resolve from the repository root. Do not also load `SKILL.md`.
+This is the Claude/plugin-style compatibility entry. Read and follow `../../SKILL.en.md` completely; the root file is the single authoritative body and all resource paths resolve from the repository root. Do not load both the Chinese and English entries simultaneously.

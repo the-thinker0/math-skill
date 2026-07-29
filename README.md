@@ -16,9 +16,7 @@
 
 ## 📢 社区公告
 
-> **本 Skill 正在快速迭代中，欢迎各位使用者提出宝贵的使用感受和改进建议！** 你的反馈是我们持续进化的核心动力。欢迎通过 GitHub Issues 或 Discussions 与我们交流。
-
-> **v3.3.0**：完成入口结构、最小上下文路由、AI/密码学领域隔离、数学与密码学准确性、GPU 审查和全量中英配对升级。根 `SKILL.md` 是权威入口，三份密码学书稿已提供独立英文版。详见变更日志。
+> **v3.3.1 已发布**：文档纪律修复版——补全 README 目录树遗漏域、纠正工作流范例、瘦身 changelog、统一入口话术与计数口径。v3.3.0 完成路由收敛与专业性校正；本版修复其遗留的文档一致性问题。详见变更日志。欢迎通过 GitHub Issues 或 Discussions 反馈使用体验与边界场景。
 
 ---
 
@@ -53,8 +51,6 @@ Sophus Lie 打造"屠龙刀"的故事告诉我们：为解微分方程发明的�
 批判器：数学上站得住、工程上跑得动吗？
 ```
 
-> **v3.2.1 设计哲学修正**：本 skill 是数学思考的 activator 与锚点，不是知识百科。`knowledge-base/` 的锚点描述数学结构（流形、谱、层上同调、伪随机函数族等），而非具体 AI 架构（diffusion、SSM 等）；`design-patterns/` 是"数学→AI 模块"的翻译范式示范，不是可复制的模板库。这保证了 skill 对任意研究方向（扩散、SSM、MoE、对齐等）都有引导能力，而不会随具体架构过时。
-
 ---
 
 ## 三层正交架构
@@ -70,7 +66,7 @@ Sophus Lie 打造"屠龙刀"的故事告诉我们：为解微分方程发明的�
 - `references/gpu-friendly-math.md`：按需 GPU 检查；不适用维度标 N/A
 - `agents/math-critic.md`：仅全面/论文级审查按需加载的 19 维深度批判器
 
-### Domain Router（v3.2.0 新增）
+### Domain Router
 
 AI 研究与密码学**共享**数学根基（概率/信息/代数/矩阵/谱/优化），但**独有**各自专业层。Domain Router 在意图诊断后、调用透镜前，先判定问题归属，决定加载哪些锚点/书稿/设计模式，避免跨域污染与 token 浪费。
 
@@ -178,25 +174,24 @@ git clone https://github.com/the-thinker0/math-skill.git ~/.codex/skills/math-re
   问题类型：序列记忆压缩 + 信息保留 + 长程结构
   核心张力：压缩 token 数量 vs 不破坏长期依赖
 
-第二步 透镜选择：
+第二步 透镜选择（默认 ≤2）：
   1. 谱分解（保留主导子空间）
-  2. 信息论（保留最大互信息状态）
-  3. 拓扑（保留序列结构关键连接点）
+  2. 概率/信息（保留互信息敏感状态）
+  （拓扑仅在用户强调连通/桥接结构时再加，不计入默认预算）
 
 第三步 激活锚点：
   → low-rank-approximation（矩阵分析锚点）
-  → leverage-score-selection（压缩设计模式）
   → information-bottleneck（概率与信息锚点）
+  → leverage-score-selection 或 low-rank-kv-cache（0–2 个压缩设计模式）
   若现有锚点不足，进入 Knowledge Gap Protocol 生成临时知识卡。
 
 第四步 设计翻译：
-  候选 A：Spectral KV Compression（低秩 + leverage score）
-  候选 B：Information-Preserving Cache（query sensitivity）
-  候选 C：Topology-Preserving Cache（图桥接节点保留）
+  主方案：Spectral KV Compression（低秩 + leverage score）
+  备选仅写关键差异：Information-Preserving Cache（依赖未来 query 估计）
 
-第五步 Critic 审查：
-  A 最 GPU 友好，B 需估计未来 query 有不确定性，C 图构建成本过高
-  建议：优先 A，B 作轻量 gate
+第五步 紧凑审查（普通任务不加载完整 critic）：
+  主方案最 GPU 友好；备选需估计未来 query，不确定性更高
+  结论：优先主方案；需要 query 敏感保留时再加轻量 gate
 ```
 
 ---
@@ -208,14 +203,16 @@ math-skill/
 ├── skills/
 │   └── math-research-activator/    # 总控：意图诊断 + 路由
 ├── lenses/                         # 15 个思想透镜（推理方法论）
-├── knowledge-base/                 # 激活锚点（按数学领域组织，非封闭百科）
+├── knowledge-base/                 # 激活锚点（按数学领域组织，非封闭百科；共 37 卡）
 │   ├── matrix-analysis/            # 矩阵分析（5 卡片）
 │   ├── optimization/               # 最优化（5 卡片）
 │   ├── differential-geometry/      # 微分几何（6 卡片）
 │   ├── lie-theory/                 # 李理论（5 卡片）
 │   ├── topology/                   # 拓扑（3 卡片）
 │   ├── probability/                # 概率与信息（5 卡片）
-│   └── information-geometry/       # 信息几何（2 卡片）
+│   ├── information-geometry/       # 信息几何（2 卡片）
+│   ├── algebraic-geometry/         # 代数几何（2 卡片）
+│   └── cryptography/               # 密码学（4 卡片，域独有）
 ├── design-patterns/                # 设计翻译层（按 AI 组件组织）
 │   ├── attention/                  # 注意力机制（5 模式）
 │   ├── loss/                       # 损失函数（5 模式）
@@ -226,7 +223,9 @@ math-skill/
 │   ├── books/                      # 10 本书蒸馏稿（7 AI + 3 密码学）
 │   ├── gpu-friendly-math.md        # GPU 维度清单（仅评相关项）
 │   ├── agentic-workflow.md         # 协作方式
-│   └── inspiration.md              # 灵感来源
+│   ├── inspiration.md              # 灵感来源
+│   ├── musings.md                  # 杂谈（哲学感悟，不自动加载）
+│   └── skill-index.md              # 索引（按需目录，不默认加载）
 ├── agents/math-critic.md           # 数学-工程双重批判器（19 维，含密码学安全审视）
 ├── commands/ask.md                 # /ask 手动入口
 ├── math_book/                      # 本地 PDF（不发布）
@@ -241,15 +240,15 @@ math-skill/
 
 | # | 书名 | 作者 | 出版社 / 版次 | 年份 | ISBN | 蒸馏文件 |
 |---|------|------|-------------|------|------|---------|
-| 1 | *Contemporary Abstract Algebra* | Joseph A. Gallian | Brooks/Cole, Cengage, 8th ed. | 2013 | 978-1-133-59971-5 | `abstract-algebra.md` |
-| 2 | *The Rising Sea: Foundations of Algebraic Geometry* | Ravi Vakil | Princeton University Press | 2025 | 978-0-691-26866-8 | `algebraic-geometry-rising-sea.md` |
-| 3 | *Manifolds and Differential Geometry* | Jeffrey M. Lee | AMS, Graduate Studies in Math Vol. 107 | 2009 | 978-0-8218-4815-9 | `differential-geometry.md` |
-| 4 | *Matrix Analysis* | Roger A. Horn, Charles R. Johnson | Cambridge University Press, 2nd ed. | 2013 | 978-0-521-83940-2 | `matrix-analysis.md` |
-| 5 | *A micro Lie theory for state estimation in robotics* | Joan Solà et al. | arXiv:1812.01537v9 | 2021 | — | `micro-lie-theory.md` |
-| 6 | *An Introduction to Optimization, With Applications to ML* | Chong, Lu, Żak | John Wiley & Sons, 5th ed. | 2024 | 978-1-119-87763-9 | `optimization-ml.md` |
-| 7 | *Introduction to Smooth Manifolds* | John M. Lee | Springer, GTM 218, 2nd ed. | 2013 | 978-1-4419-9981-8 | `smooth-manifolds.md` |
+| 1 | *Contemporary Abstract Algebra* | Joseph A. Gallian | Brooks/Cole, Cengage, 8th ed. | 2013 | 978-1-133-59971-5 | `abstract-algebra.md` / `.en.md` |
+| 2 | *The Rising Sea: Foundations of Algebraic Geometry* | Ravi Vakil | Princeton University Press | 2025 | 978-0-691-26866-8 | `algebraic-geometry-rising-sea.md` / `.en.md` |
+| 3 | *Manifolds and Differential Geometry* | Jeffrey M. Lee | AMS, Graduate Studies in Math Vol. 107 | 2009 | 978-0-8218-4815-9 | `differential-geometry.md` / `.en.md` |
+| 4 | *Matrix Analysis* | Roger A. Horn, Charles R. Johnson | Cambridge University Press, 2nd ed. | 2013 | 978-0-521-83940-2 | `matrix-analysis.md` / `.en.md` |
+| 5 | *A micro Lie theory for state estimation in robotics* | Joan Solà et al. | arXiv:1812.01537v9 | 2021 | — | `micro-lie-theory.md` / `.en.md` |
+| 6 | *An Introduction to Optimization, With Applications to ML* | Chong, Lu, Żak | John Wiley & Sons, 5th ed. | 2024 | 978-1-119-87763-9 | `optimization-ml.md` / `.en.md` |
+| 7 | *Introduction to Smooth Manifolds* | John M. Lee | Springer, GTM 218, 2nd ed. | 2013 | 978-1-4419-9981-8 | `smooth-manifolds.md` / `.en.md` |
 
-### 密码学方向（3 本，v3.2.0 新增）
+### 密码学方向（3 本）
 
 | # | 书名 | 作者 | 出版社 / 版次 | 年份 | ISBN | 蒸馏文件 |
 |---|------|------|-------------|------|------|---------|
@@ -264,6 +263,14 @@ math-skill/
 ---
 
 ## 变更日志
+
+### v3.3.1 — 文档纪律修复版
+
+- **README 目录树补全**：补入 `algebraic-geometry/`、`cryptography/`、`musings.md`、`skill-index.md`，卡片总数标注对齐 37
+- **README 工作流范例纠正**：透镜默认 ≤2、设计模式与锚点分离、第五步改为紧凑审查，与 `SKILL.md` 预算一致
+- **changelog 瘦身**：v1/v2 压缩为一行摘要，移除"37 个 .en.md""16 思想武器"等失真数字
+- **入口话术与计数口径统一**：三处入口对"何时读 `.en` 版"措辞统一；全仓计数统一为 33 共用 + 4 密码 = 37
+- **元数据与工程卫生**：`package.json` description/keywords 瘦身；`CLAUDE.md` 目录树与 Node.js 依赖表述修正；`validate.sh` 新增 20 条文档纪律结构性检查；`original-texts` 加用途标注并修正 v2 旧术语
 
 ### v3.3.0 — 路由收敛、双语补全与专业性校正
 
@@ -341,22 +348,19 @@ math-skill/
 **架构重构**：从"思想武器库"升级为"数学参谋部"——三层正交架构：
 
 - **思想透镜**（15 个）：从 v2 的"思想武器"瘦身而来，只保留推理方法论，不再混入具体数学知识
-- **知识库**（31 张卡片）：按数学领域组织的具体工具卡片，含定义/公式/AI 设计翻译/GPU 可行性
+- **知识库**（31 张卡片，v3.2 起扩展至 37）：按数学领域组织的具体工具卡片，含定义/公式/AI 设计翻译/GPU 可行性
 - **设计翻译层**（新增）：数学→AI 模块的桥梁，按 AI 组件（attention/loss/routing/representation/compression）组织
 - **Activator 重写**：从环境信号匹配改为意图诊断（5 场景：分析/设计/查询/验证/工程）
 - **知识激活协议**：知识卡片固定输出格式（最小定义→公式→适用问题→AI 翻译→工程可行性→风险）
 
 ### v2.1.0 — 完整双语支持
-- 全面双语（37 个 .en.md 文件）、自动语言路由、命令一致、token 保障
+- 全面双语、自动语言路由、命令一致、token 保障
 
-### v2.0.1
-- 收紧自动触发条件、新增排除门、环境信号收窄
-
-### v2.0.0
-- 16 思想武器、现代数学激活层、GPU 八维横切
+### v2.0.0–v2.0.1
+- 16 思想武器（v2 旧名，v3 起改为 15 透镜）、现代数学激活层、GPU 八维横切；收紧自动触发条件与排除门
 
 ### v1.0.0
-- 初始发布：十五思想武器 + 科研与生活双路径
+- 初始发布：早期"思想武器库 + 科研与生活双路径"形态（已在 v3.0.0 重构为三层架构）
 
 ---
 

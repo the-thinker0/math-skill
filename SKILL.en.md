@@ -7,7 +7,7 @@ description: |
 
 # Mathematical Research Router
 
-Answer in the user's primary language. Technical terms, code, paths, and formulas do not determine language. `SKILL.md` is the canonical Codex entry. This English file exists only for explicit English command-entry compatibility; do not load both files.
+This is the English compatibility entry, loaded only via explicit English command paths (e.g. `/ask` English routing). `SKILL.md` is the canonical Codex entry and can answer in either language. Answer in the user's primary language; technical terms, code, paths, and formulas do not determine language. Do not load both entries simultaneously.
 
 ## Objective and hard constraints
 

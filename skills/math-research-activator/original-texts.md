@@ -1,5 +1,7 @@
 # 数学研究操作系统的思想来源 / Intellectual Sources for the Math Research OS
 
+> **注意**：本文件是项目设计理念的背景资料（Pólya/Newell-Simon/Schoenfeld 等思想来源），不是运行时资源——Domain Router 不自动加载本文件。仅供了解 skill 的设计动机时参阅。
+
 ## 问题分类与工具选择的传统 / The Tradition of Problem Classification and Tool Selection
 
 ### Pólya 的问题求解启发法 / Pólya's Problem-Solving Heuristics

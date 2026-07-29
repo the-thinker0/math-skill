@@ -34,4 +34,4 @@ The inspiration for this project stems precisely from this insight:
 
 ---
 
-> **The "Life as an Optimization Problem" section below has been moved to `musings.en.md`.** This file no longer retains it. For philosophical reflections, see `musings.en.md`.
+> **The "Life as an Optimization Problem" section below has been moved to `musings.en.md`.** For philosophical reflections, see `musings.en.md`.

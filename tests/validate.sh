@@ -1,5 +1,5 @@
 #!/bin/bash
-# Math Skill Validation Script (v3.3.0)
+# Math Skill Validation Script (v3.3.1)
 # Validates the three-layer architecture: lenses + knowledge-base + design-patterns
 
 RED='\033[0;31m'
@@ -52,7 +52,7 @@ check_not_contains() {
 }
 
 echo "========================================"
-echo "  Math Skill Validation (v3.3.0)"
+echo "  Math Skill Validation (v3.3.1)"
 echo "========================================"
 
 # --- Infrastructure ---
@@ -393,7 +393,7 @@ check_not_contains "design-patterns/loss/contrastive-loss.en.md" 'O(1/√N)'
 check_contains "design-patterns/overview.md" '严谨性约定'
 check_contains "design-patterns/overview.en.md" 'Rigor convention'
 
-# --- Knowledge Card Structure Check (v3.3.0) ---
+# --- Knowledge Card Structure Check (v3.3.1) ---
 echo ""
 echo "--- Knowledge Card Structure Check ---"
 # Each knowledge card (excluding index/overview) must have 6 required sections.
@@ -444,7 +444,7 @@ for domain in $KB_DOMAINS_STRUCT; do
     done
 done
 
-# --- Design Pattern GPU Relevance Check (v3.3.0) ---
+# --- Design Pattern GPU Relevance Check (v3.3.1) ---
 echo ""
 echo "--- Design Pattern GPU Relevance Check ---"
 # Require an explicit GPU section and at least one quantitative complexity/memory signal.
@@ -462,7 +462,7 @@ for dp_file in $(find design-patterns -name '*.md' ! -name 'overview.md' ! -name
     fi
 done
 
-# --- Domain Router Isolation Check (v3.3.0) ---
+# --- Domain Router Isolation Check (v3.3.1) ---
 echo ""
 echo "--- Domain Router Isolation Check ---"
 check_contains "SKILL.md" '不加载密码学锚点/书稿'
@@ -492,7 +492,7 @@ else
     FAIL=$((FAIL + 1))
 fi
 
-# --- Knowledge Gap Protocol Check (v3.3.0) ---
+# --- Knowledge Gap Protocol Check (v3.3.1) ---
 echo ""
 echo "--- Knowledge Gap Protocol Check ---"
 check_contains "SKILL.md" 'Knowledge Gap Protocol'
@@ -501,7 +501,7 @@ check_contains "SKILL.md" '临时卡必须标注 domain'
 check_contains "SKILL.en.md" 'Knowledge Gap Protocol'
 check_contains "SKILL.en.md" 'temporary card must state its domain'
 
-# --- Progressive Loading Check (v3.3.0) ---
+# --- Progressive Loading Check (v3.3.1) ---
 echo ""
 echo "--- Progressive Loading Check ---"
 check_contains "SKILL.md" '最少但足够'
@@ -510,10 +510,10 @@ check_contains "SKILL.md" '普通 A/B/D 场景使用上述检查即可'
 check_contains "SKILL.en.md" 'smallest sufficient'
 check_contains "SKILL.en.md" 'Do not repeat cards or expose internal load paths'
 check_contains "SKILL.en.md" 'ordinary A/B/D tasks'
-check_contains "README.md" 'v3.3.0 — 路由收敛'
-check_contains "README.en-US.md" 'v3.3.0 — Routing Convergence'
+check_contains "README.md" 'v3.3.1 — 文档纪律修复版'
+check_contains "README.en-US.md" 'v3.3.1 — Documentation-Discipline Patch'
 
-# --- Pre-release Consistency Check (v3.3.0) ---
+# --- Pre-release Consistency Check (v3.3.1) ---
 echo ""
 echo "--- Pre-release Consistency Check ---"
 check_contains "skills/math-research-activator/SKILL.md" '也用于与 AI 研究有关的数学查询'
@@ -539,7 +539,34 @@ check_not_contains "knowledge-base/cryptography/prf-prg-owf.md" '通常是 small
 check_contains "knowledge-base/cryptography/cca-cpa-ae-hierarchy.md" '不能映射成“训练数据量 ≥ 模型参数量”'
 check_not_contains "knowledge-base/cryptography/reduction-proof-template.md" '差分隐私假设'
 check_contains "references/gpu-friendly-math.md" '`N/A` 不计分'
-check_contains "package.json" '"version": "3.3.0"'
+check_contains "package.json" '"version": "3.3.1"'
+
+# --- v3.3.1 Documentation Discipline Checks ---
+echo ""
+echo "--- v3.3.1 Documentation Discipline Checks ---"
+check_contains "README.md" 'algebraic-geometry/'
+check_contains "README.md" 'cryptography/'
+check_contains "README.md" 'musings.md'
+check_contains "README.md" 'skill-index.md'
+check_contains "README.en-US.md" 'algebraic-geometry/'
+check_contains "README.en-US.md" 'cryptography/'
+check_contains "README.en-US.md" 'musings.en.md'
+check_contains "README.en-US.md" 'skill-index.en.md'
+check_contains "README.md" '默认 ≤2'
+check_contains "README.md" '紧凑审查'
+check_contains "README.en-US.md" 'default ≤2'
+check_contains "README.en-US.md" 'Compact Review'
+check_contains "README.md" 'v3 起改为 15 透镜'
+check_contains "README.en-US.md" 'replaced by 15 lenses in v3'
+check_contains "README.md" '扩展至 37'
+check_contains "README.en-US.md" 'expanded to 37 in v3.2'
+check_contains "README.md" 'v3.3.1'
+check_contains "README.en-US.md" 'v3.3.1'
+# CLAUDE.md is gitignored (machine-local); only check when present
+if [ -f "CLAUDE.md" ]; then
+    check_contains "CLAUDE.md" 'musings'
+    check_contains "CLAUDE.md" 'skill-index'
+fi
 
 # --- Count Verification ---
 echo ""
@@ -567,13 +594,13 @@ else
     FAIL=$((FAIL + 1))
 fi
 
-# v3.3.0 expected count: 31 (original) + 4 (cryptography) + 2 (algebraic-geometry) = 37
+# v3.3.1 expected count: 33 shared (8 domains) + 4 crypto = 37
 EXPECTED_KB=37
 if [ "$KB_CN" -eq "$EXPECTED_KB" ]; then
-    echo -e "${GREEN}[PASS]${NC} Knowledge cards count = $EXPECTED_KB (expected for v3.3.0)"
+    echo -e "${GREEN}[PASS]${NC} Knowledge cards count = $EXPECTED_KB (expected for v3.3.1)"
     PASS=$((PASS + 1))
 else
-    echo -e "${YELLOW}[WARN]${NC} Knowledge cards count = $KB_CN (expected $EXPECTED_KB for v3.3.0)"
+    echo -e "${YELLOW}[WARN]${NC} Knowledge cards count = $KB_CN (expected $EXPECTED_KB for v3.3.1)"
     WARN=$((WARN + 1))
 fi
 

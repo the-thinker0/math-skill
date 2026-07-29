@@ -1,6 +1,6 @@
 # Eval Test Suite
 
-These are **manual evaluation scenarios** for testing the math-skill v3.3.0 routing behavior. They are not automated tests — they require a human to invoke the skill with each prompt and inspect whether routing and domain boundaries are correct.
+These are **manual evaluation scenarios** for testing the math-skill v3.3.1 routing behavior. They are not automated tests — they require a human to invoke the skill with each prompt and inspect whether routing and domain boundaries are correct.
 
 ## Test Categories
 

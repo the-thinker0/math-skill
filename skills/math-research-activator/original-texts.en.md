@@ -1,5 +1,7 @@
 # Intellectual Sources for the Math Research OS
 
+> **Note**: This file is design-rationale background (Pólya/Newell-Simon/Schoenfeld intellectual sources), not a runtime resource — the Domain Router does not auto-load it. Consult it only to understand the skill's design motivation.
+
 ## The Tradition of Problem Classification and Tool Selection
 
 ### Pólya's Problem-Solving Heuristics
@@ -40,8 +42,8 @@ Core insight: **the nature of the problem space determines the choice of search 
 
 Alan H. Schoenfeld, in *Mathematical Problem Solving* (1985), analyzed why students fail to solve problems even when they possess the necessary tools — the critical deficiency is not a lack of tools but a lack of **strategic decision-making ability**:
 
-- **Resources**: Knowledge, skills, tools — corresponding to our 15 intellectual weapons
-- **Heuristics**: How to use resources — corresponding to the methodological workflow for each intellectual weapon
+- **Resources**: Knowledge, skills, tools — corresponding to our 15 thinking lenses
+- **Heuristics**: How to use resources — corresponding to the methodological workflow for each thinking lens
 - **Control**: When to use which resource — corresponding to the function of the activator
 - **Belief Systems**: Beliefs about mathematics and about oneself — affecting whether the appropriate tool is selected
 
@@ -65,7 +67,7 @@ Characteristics of wicked problems:
 - Solutions are not right or wrong, only better or worse
 - Span multiple domains
 
-Core insight: **wicked problems require combinations of cross-domain intellectual weapons, whereas tame problems can be solved with a single tool**. The activator recommends multi-tool combinations when facing wicked problems and single-tool focus when facing tame problems.
+Core insight: **wicked problems require combinations of cross-domain thinking lenses, whereas tame problems can be solved with a single tool**. The activator recommends multi-tool combinations when facing wicked problems and single-tool focus when facing tame problems.
 
 > "Wicked problems have no right or wrong answers, only better or worse ways of dealing with them." — Rittel & Webber
 
@@ -76,7 +78,7 @@ Daniel Kahneman, in *Thinking, Fast and Slow* (2011), proposed the dual-system t
 - **System 1**: Fast, intuitive, automatic — responsible for the majority of everyday decisions
 - **System 2**: Slow, rational, deliberate — required for decisions demanding careful thought
 
-Core insight: **not all problems require System 2-level rational analysis**. Many everyday decisions require only intuition (System 1), and forcibly deploying intellectual weapons constitutes over-analysis. The activator's "inapplicable scenarios" list is grounded in this insight — simple problems do not need tools; wicked problems do.
+Core insight: **not all problems require System 2-level rational analysis**. Many everyday decisions require only intuition (System 1), and forcibly deploying thinking lenses constitutes over-analysis. The activator's "inapplicable scenarios" list is grounded in this insight — simple problems do not need tools; wicked problems do.
 
 > "Overthinking is the enemy of decision-making — some decisions are best left to intuition." — Kahneman
 

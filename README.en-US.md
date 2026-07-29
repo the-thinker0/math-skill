@@ -16,9 +16,7 @@
 
 ## 📢 Community Announcements
 
-> **This skill is under rapid iteration — your feedback and suggestions are warmly welcome!** Your input is the core driver of our continuous evolution. Feel free to reach out via GitHub Issues or Discussions.
-
-> **v3.3.0**: canonical entry structure, minimum-context routing, AI/cryptography isolation, mathematical and cryptographic corrections, relevance-driven GPU review, and complete bilingual pairing. Root `SKILL.md` is authoritative, and all three cryptography distillations now have dedicated English versions. See the changelog.
+> **v3.3.1 released**: documentation-discipline patch — completed the README directory tree, corrected the workflow example, slimmed the changelog, and unified entry phrasing and counting caliber. v3.3.0 delivered routing convergence and technical corrections; this release fixes the documentation-consistency issues it left behind. See the changelog. Feedback and edge-case reports are welcome via GitHub Issues or Discussions.
 
 ---
 
@@ -53,8 +51,6 @@ Design Translation: How do these tools become model structures / losses / operat
 Critic: Mathematically sound? Engineering-feasible?
 ```
 
-> **v3.2.1 Design Philosophy Refinement**: This skill is a mathematical-thinking activator and anchor, not a knowledge encyclopedia. `knowledge-base/` anchors describe mathematical structures (manifolds, spectra, sheaf cohomology, pseudorandom function families, etc.), not specific AI architectures (diffusion, SSM, etc.); `design-patterns/` is a paradigmatic demonstration of "math→AI module" translation, not a copy-paste template library. This ensures the skill retains guiding capacity for any research direction (diffusion, SSM, MoE, alignment, etc.) and does not become outdated as concrete architectures evolve.
-
 ---
 
 ## Three-Layer Orthogonal Architecture
@@ -70,7 +66,7 @@ Supporting layers:
 - `references/gpu-friendly-math.en.md`: on-demand GPU checks with N/A for irrelevant dimensions
 - `agents/math-critic.en.md`: 19-dimension deep critic loaded only for comprehensive or paper-grade review
 
-### Domain Router (new in v3.2.0)
+### Domain Router
 
 AI research and cryptography **share** mathematical foundations (probability/information/algebra/matrix/spectrum/optimization) but each has **exclusive** specialty layers. After intent diagnosis and before lens invocation, Domain Router determines the problem's domain and decides which anchors/books/design patterns to load, avoiding cross-domain pollution and token waste.
 
@@ -178,25 +174,24 @@ Step 1  Diagnosis: Scenario B (Mechanism Design)
   Problem type: sequence memory compression + information preservation + long-range structure
   Core tension: compress token count vs. preserve long-range dependencies
 
-Step 2  Lens Selection:
+Step 2  Lens Selection (default ≤2):
   1. Spectral (preserve dominant subspace)
-  2. Information-theoretic (preserve max mutual information states)
-  3. Topological (preserve key connection points in sequence structure)
+  2. Probabilistic/Information (preserve mutual-information-sensitive states)
+  (Add Topological only when the user stresses connectivity/bridge structure; not in default budget)
 
 Step 3  Activation Anchors:
   → low-rank-approximation (Matrix Analysis anchor)
-  → leverage-score-selection (Design Pattern: compression)
   → information-bottleneck (Probability & Information anchor)
+  → leverage-score-selection or low-rank-kv-cache (0–2 compression design patterns)
   If existing anchors are insufficient, enter Knowledge Gap Protocol to generate a temporary knowledge card.
 
 Step 4  Design Translation:
-  Candidate A: Spectral KV Compression (low-rank + leverage score)
-  Candidate B: Information-Preserving Cache (query sensitivity)
-  Candidate C: Topology-Preserving Cache (graph bridge node retention)
+  Primary: Spectral KV Compression (low-rank + leverage score)
+  Alternative (key difference only): Information-Preserving Cache (relies on future query estimation)
 
-Step 5  Critic Review:
-  A is most GPU-friendly, B needs future query estimation (uncertainty), C graph construction too expensive
-  Recommendation: prioritize A, use B as a lightweight gate
+Step 5  Compact Review (ordinary tasks do not load the full critic):
+  Primary is most GPU-friendly; alternative needs future query estimation, higher uncertainty
+  Conclusion: prioritize primary; add a lightweight gate only if query-sensitive retention is needed
 ```
 
 ---
@@ -208,14 +203,16 @@ math-skill/
 ├── skills/
 │   └── math-research-activator/    # Orchestrator: intent diagnosis + routing
 ├── lenses/                         # 15 thinking lenses (reasoning methodology)
-├── knowledge-base/                 # Activation anchors by math domain, not a closed encyclopedia
+├── knowledge-base/                 # Activation anchors by math domain, not a closed encyclopedia (37 cards total)
 │   ├── matrix-analysis/            # Matrix analysis (5 cards)
 │   ├── optimization/               # Optimization (5 cards)
 │   ├── differential-geometry/      # Differential geometry (6 cards)
 │   ├── lie-theory/                 # Lie theory (5 cards)
 │   ├── topology/                   # Topology (3 cards)
 │   ├── probability/                # Probability & information (5 cards)
-│   └── information-geometry/       # Information geometry (2 cards)
+│   ├── information-geometry/       # Information geometry (2 cards)
+│   ├── algebraic-geometry/         # Algebraic geometry (2 cards)
+│   └── cryptography/               # Cryptography (4 cards, domain-exclusive)
 ├── design-patterns/                # Design translation (by AI component)
 │   ├── attention/                  # Attention mechanisms (5 patterns)
 │   ├── loss/                       # Loss functions (5 patterns)
@@ -226,7 +223,9 @@ math-skill/
 │   ├── books/                      # 10 book distillations (7 AI + 3 crypto)
 │   ├── gpu-friendly-math.en.md     # GPU checklist (applicable dimensions only)
 │   ├── agentic-workflow.en.md      # Collaboration style
-│   └── inspiration.en.md           # Inspiration
+│   ├── inspiration.en.md           # Inspiration
+│   ├── musings.en.md               # Musings (philosophical reflections, not auto-loaded)
+│   └── skill-index.en.md           # Index (on-demand directory, not loaded by default)
 ├── agents/math-critic.en.md           # Math-engineering dual critic (19 dims, with crypto security review)
 ├── commands/ask.en.md                 # /ask manual entry
 ├── math_book/                      # Local PDFs (not published)
@@ -249,7 +248,7 @@ math-skill/
 | 6 | *An Introduction to Optimization, With Applications to ML* | Chong, Lu, Żak | John Wiley & Sons, 5th ed. | 2024 | 978-1-119-87763-9 | `optimization-ml.en.md` |
 | 7 | *Introduction to Smooth Manifolds* | John M. Lee | Springer, GTM 218, 2nd ed. | 2013 | 978-1-4419-9981-8 | `smooth-manifolds.en.md` |
 
-### Cryptography Direction (3 books, new in v3.2.0)
+### Cryptography Direction (3 books)
 
 | # | Title | Author(s) | Publisher / Edition | Year | ISBN | Distillation |
 |---|-------|-----------|-------------------|------|------|-------------|
@@ -264,6 +263,14 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 ---
 
 ## Changelog
+
+### v3.3.1 — Documentation-Discipline Patch
+
+- **README directory tree completed**: added `algebraic-geometry/`, `cryptography/`, `musings.md`, `skill-index.md`; card total aligned to 37
+- **README workflow example corrected**: lenses default ≤2, design patterns separated from anchors, Step 5 changed to compact review — consistent with `SKILL.md` budgets
+- **Changelog slimmed**: v1/v2 compressed to one-line summaries; removed stale "37 .en.md" / "16 thinking weapons" numbers
+- **Entry phrasing & counting caliber unified**: three entries use consistent "when to load .en" wording; repo-wide count standardized as 33 shared + 4 crypto = 37
+- **Metadata & hygiene**: `package.json` description/keywords trimmed; `CLAUDE.md` dir tree and Node.js note fixed; `validate.sh` gained 20 documentation-discipline checks; `original-texts` gained purpose note and v2 terminology fix
 
 ### v3.3.0 — Routing Convergence, Bilingual Completion & Technical Corrections
 
@@ -341,22 +348,19 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 **Architecture overhaul**: from "thinking weapon arsenal" to "math general staff" — three-layer orthogonal architecture:
 
 - **Thinking Lenses** (15): slimmed down from v2's "thinking weapons" — reasoning methodology only, no concrete math knowledge mixed in
-- **Knowledge Base** (31 cards): concrete math tools organized by domain, with definitions/formulas/AI design translation/GPU feasibility
+- **Knowledge Base** (31 cards, expanded to 37 in v3.2): concrete math tools organized by domain, with definitions/formulas/AI design translation/GPU feasibility
 - **Design Translation Layer** (new): the bridge from math to AI modules, organized by AI component (attention/loss/routing/representation/compression)
 - **Activator rewrite**: from environment-signal matching to intent diagnosis (5 scenarios: analysis/design/query/verification/engineering)
 - **Knowledge activation protocol**: fixed output format for knowledge cards (minimal definition → formula → applicable problems → AI translation → engineering feasibility → risks)
 
 ### v2.1.0 — Full Bilingual Support
-- 37 .en.md files, auto language routing, same commands for both languages, no double token cost
+- Full bilingual support, auto language routing, same commands for both languages, no double token cost
 
-### v2.0.1
-- Tightened auto-trigger conditions, added exclusion gate, narrowed environment signals
-
-### v2.0.0
-- 16 thinking weapons, modern math activation layer, GPU 8-D cross-cut
+### v2.0.0–v2.0.1
+- 16 thinking weapons (v2 naming, replaced by 15 lenses in v3), modern math activation layer, GPU 8-D cross-cut; tightened auto-trigger conditions and exclusion gate
 
 ### v1.0.0
-- Initial release: fifteen thinking weapons + dual research/life paths
+- Initial release: early "thinking-weapon arsenal + dual research/life paths" form (restructured into three-layer architecture in v3.0.0)
 
 ---
 

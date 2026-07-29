@@ -1,4 +1,4 @@
-﻿# Math Skill Validation Script (PowerShell, v3.3.0)
+﻿# Math Skill Validation Script (PowerShell, v3.3.1)
 # Validates the three-layer architecture: lenses + knowledge-base + design-patterns
 #
 # Usage (run from repo root):
@@ -76,7 +76,7 @@ function Check-Not-Contains {
 }
 
 Write-Host "========================================"
-Write-Host "  Math Skill Validation (v3.3.0 PS)"
+Write-Host "  Math Skill Validation (v3.3.1 PS)"
 Write-Host "========================================"
 
 # --- Infrastructure ---
