@@ -22,7 +22,7 @@ If this skill inspires you, please consider leaving a Star⭐. Your support keep
 
 ## How is this different from just asking the AI?
 
-### Case 1: Analysis — "KAN's mathematical foundations and risks"
+### [AI] Case 1: Analysis — "KAN's mathematical foundations and risks"
 
 **User**: "KAN uses learnable B-splines instead of ReLU, claiming better accuracy and interpretability than MLPs. I want to analyze its mathematical foundations and potential risks."
 
@@ -38,7 +38,7 @@ If this skill inspires you, please consider leaving a Star⭐. Your support keep
 > - **Fisher curvature**: Spline's second-order differentiability makes the Hessian more regular, but the Fisher information matrix's condition number may be far larger than in ReLU networks; natural gradient has theoretical advantages but higher estimation cost
 > - **Falsifiable experiment**: Compare KAN vs. same-parameter-budget MLP on spline basis effective rank decay; if rank growth stalls while parameters keep growing, the "interpretability" advantage is offset by redundancy
 
-### Case 2: Verification — "Is this PRF watermarking reduction tight?"
+### [Crypto] Case 2: Verification — "Is this PRF watermarking reduction tight?"
 
 **User**: "I use a PRF to watermark model weights. The reduction proof says 'removing watermark ≥ breaking PRF'. Is this reduction tight?"
 
@@ -272,8 +272,6 @@ math-skill/
 | 8 | *A Graduate Course in Applied Cryptography* | Dan Boneh & Victor Shoup | v0.4 online | 2017 | — | `applied-cryptography.en.md` |
 | 9 | *Foundations of Cryptography, Volume 1: Basic Tools* | Oded Goldreich | Cambridge University Press | 2001 | 978-0-521-79235-9 | `foundations-of-cryptography.en.md` |
 | 10 | *Introduction to Modern Cryptography* | Jonathan Katz & Yehuda Lindell | CRC Press, 2nd ed. | 2015 | 978-1-4665-7026-1 | `introduction-to-modern-cryptography.en.md` |
-
-> All three cryptography distillations now have Chinese and English pairs. Select `.md` or `.en.md` by the user's primary language, and load them only when anchors are insufficient or book-level depth is needed.
 
 Distillation files ship with the npm package. For full-fidelity lookups, place PDFs in the `math_book/` folder.
 

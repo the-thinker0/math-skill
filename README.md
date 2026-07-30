@@ -22,7 +22,7 @@
 
 ## 它和直接问 AI 有什么区别？
 
-### 案例 1：分析——"KAN 的数学基础和风险"
+### 【AI】案例 1：分析——"KAN 的数学基础和风险"
 
 **用户**："KAN 用可学习 B-spline 替代 ReLU，声称比 MLP 更准确且可解释。我想分析它的数学基础和潜在风险。"
 
@@ -38,7 +38,7 @@
 > - **Fisher 曲率**：spline 的二阶可导使 Hessian 更规则，但 Fisher 信息矩阵的 condition number 可能远大于 ReLU 网络；natural gradient 有理论优势但估计成本更高
 > - **可证伪实验**：比较 KAN 与同参数预算 MLP 的 spline 基有效秩衰减；若 rank 增长停滞而参数持续增长，则"可解释"优势被冗余抵消
 
-### 案例 2：验证——"PRF 水印归约的紧度"
+### 【密码学】案例 2：验证——"PRF 水印归约的紧度"
 
 **用户**："我用 PRF 给模型权重加水印，归约证明说'去水印 ≥ 破 PRF'。这个归约 tight 吗？"
 
@@ -272,8 +272,6 @@ math-skill/
 | 8 | *A Graduate Course in Applied Cryptography* | Dan Boneh & Victor Shoup | v0.4 在线版 | 2017 | — | `applied-cryptography.md` / `.en.md` |
 | 9 | *Foundations of Cryptography, Volume 1: Basic Tools* | Oded Goldreich | Cambridge University Press | 2001 | 978-0-521-79235-9 | `foundations-of-cryptography.md` / `.en.md` |
 | 10 | *Introduction to Modern Cryptography* | Jonathan Katz & Yehuda Lindell | CRC Press, 2nd ed. | 2015 | 978-1-4665-7026-1 | `introduction-to-modern-cryptography.md` / `.en.md` |
-
-> 三份密码学蒸馏稿均已中英配对；按用户主语言选择 `.md` 或 `.en.md`，且仍只在锚点不足或需要书稿深度时加载。
 
 蒸馏文件已随 npm 包发布。如需全保真原文，将 PDF 放入 `math_book/` 文件夹即可。
 
