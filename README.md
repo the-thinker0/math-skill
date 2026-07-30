@@ -12,7 +12,7 @@
 
 </div>
 
-> Math Skill 不存储数学，它激活数学、路由数学，并把数学翻译成 AI 研究设计。
+> Math Skill 不存储数学，它激活数学、路由数学，并把数学翻译成 AI 与密码学研究设计。
 
 面向 **Claude Code / Codex / Cursor 等** 的数学推理技能——在 AI 架构设计、数学结构迁移和密码学证明审查中，自动激活正确的数学透镜、知识锚点和设计原型，给出带条件、带反例、可证伪的结论。
 
@@ -278,6 +278,13 @@ math-skill/
 ---
 
 ## 变更日志
+
+### v3.3.2 — 产品化与 npx 安装器
+
+- **npx CLI 安装器**：新增 `bin/math-skill.cjs`，支持 `npx -y math-skill@latest install/update/doctor/uninstall`；原子替换旧版、排除内层 `skills/` 防双入口、`doctor` 检查重复入口
+- **README 产品化重构**：标题居中 + 副标题；首屏放案例和 Quick Start（原埋在 L128）；Star 求赞移至开头；npm 安装升级为 npx 首选；平台加"等"不限制框架
+- **案例更新**：KAN 分析（AI）+ PRF 水印归约验证（密码学）替换旧 FFT/正交损失案例；"不调用 Skill"回答改为真实合理输出；案例标题加 `【AI】`/`【密码学】` 域标签
+- **changelog 浓缩**：v3.3.0–v3.1.1 各版本从 7-13 点压缩至 5 点（~62% 篇幅缩减）；恢复 Sophus Lie 灵感小节和四步流程图
 
 ### v3.3.1 — 文档纪律修复版
 

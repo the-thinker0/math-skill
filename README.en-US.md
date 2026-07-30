@@ -12,7 +12,7 @@
 
 </div>
 
-> Math Skill does not store mathematics. It activates, routes, and translates mathematics for AI research.
+> Math Skill does not store mathematics. It activates, routes, and translates mathematics for AI and cryptography research.
 
 A math reasoning skill for **Claude Code / Codex / Cursor and more** — automatically activates the right mathematical lenses, knowledge anchors, and design prototypes for AI architecture design, math-to-AI transfer, and cryptographic proof review, delivering conditional, falsifiable conclusions with counterexamples.
 
@@ -278,6 +278,13 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 ---
 
 ## Changelog
+
+### v3.3.2 — Productization & npx Installer
+
+- **npx CLI installer**: Added `bin/math-skill.cjs` supporting `npx -y math-skill@latest install/update/doctor/uninstall`; atomic version replacement, excludes nested `skills/` to prevent double entries, `doctor` checks for duplicates
+- **README product-first restructure**: Centered title + subtitle; demos and Quick Start on first screen (was buried at L128); Star plea moved to top; npm upgraded to npx; platforms tagged with "and more" (not framework-limited)
+- **Case updates**: KAN analysis (AI) + PRF watermark reduction verification (Crypto) replace old FFT/orthogonality-loss cases; "without Skill" answers made realistic; case headers tagged `[AI]`/`[Crypto]`
+- **Changelog compression**: v3.3.0–v3.1.1 compressed from 7-13 points to 5 each (~62% reduction); restored Sophus Lie inspiration section and 4-step flow diagram
 
 ### v3.3.1 — Documentation-Discipline Patch
 
