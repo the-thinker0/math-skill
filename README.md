@@ -1,16 +1,22 @@
-<p align="right">
-  <a href="README.md">中文</a> | <a href="README.en-US.md">English</a>
-</p>
+<div align="center">
 
 # 📐 Math Skill
+
+### 面向 AI 与密码学创新的数学研究操作系统
+
+<a href="README.md">中文</a> | <a href="README.en-US.md">English</a>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![npm version](https://img.shields.io/npm/v/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 [![npm downloads](https://img.shields.io/npm/dt/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 
+</div>
+
 > Math Skill 不存储数学，它激活数学、路由数学，并把数学翻译成 AI 研究设计。
 
-面向 **Claude Code / Codex / Cursor** 的数学推理技能——在 AI 架构设计、数学结构迁移和密码学证明审查中，自动激活正确的数学透镜、知识锚点和设计原型，给出带条件、带反例、可证伪的结论。
+面向 **Claude Code / Codex / Cursor 等** 的数学推理技能——在 AI 架构设计、数学结构迁移和密码学证明审查中，自动激活正确的数学透镜、知识锚点和设计原型，给出带条件、带反例、可证伪的结论。
+
+如果这个 skill 对你有启发，欢迎点亮一颗 Star⭐。你的支持是项目持续打磨的动力。
 
 ---
 
@@ -51,25 +57,23 @@
 
 ---
 
-> 如果这些案例对你有启发，欢迎点亮一颗 Star⭐。你的支持是项目持续打磨的动力。
-
----
-
 ## 快速开始
 
 ### 安装
 
-```bash
-# Codex
-git clone https://github.com/the-thinker0/math-skill.git ~/.codex/skills/math-research-activator
+**npm**（推荐）：
 
-# Claude Code
-git clone https://github.com/the-thinker0/math-skill.git ~/.claude/skills/math-research-activator
+```bash
+npm install math-skill
 ```
 
-> **npm 用户**：`npm install math-skill` 获取内容文件到 `node_modules/`，但不自动注册为 skill。需手动复制到上述 skills 目录。`npx math-skill install` CLI 安装器规划中。
+**或把项目地址丢给 AI，让它自行安装**：
 
-根 `SKILL.md` 是 Codex 权威入口。`skills/math-research-activator/SKILL.md` 是 Claude/plugin 兼容入口并转发到根文件。不要单独复制内层目录——它引用的知识库与设计模式在仓库根。
+```
+请帮我安装 math-skill：https://github.com/the-thinker0/math-skill，并教我如何使用
+```
+
+根 `SKILL.md` 是权威入口。`skills/math-research-activator/SKILL.md` 是 Claude/plugin 兼容入口并转发到根文件。
 
 ### 使用
 
@@ -286,56 +290,35 @@ math-skill/
 
 ### v3.3.0 — 路由收敛、双语补全与专业性校正
 
-- **权威入口与兼容结构**：新增根 `SKILL.md` / `SKILL.en.md` 作为完整、自足的规范入口；`skills/math-research-activator/SKILL*.md` 缩为薄转发层，继续兼容 Claude/plugin 目录布局，同时避免两份完整正文长期漂移。`commands/ask*`、critic、索引和 overview 的引用均改到根入口。
-- **渐进加载与 token 最小化**：按 A 分析、B 设计、C 查询、D 验证、E 纯工程五类场景设置最小路径；默认限制为 1–2 个透镜、1–3 个锚点和 0–2 个设计原型。概念查询、纯密码任务和普通验证不再默认加载完整 critic、书稿、GPU 清单或目录索引，也不向用户复述内部加载过程。
-- **Domain Router 重写**：从关键词投票改为按“目标对象 + 所求保证”判域；`hashing`、`attack`、`security` 等孤立词不再误触发密码学。纯 AI、纯密码、共用数学和 AI×密码交叉路径明确隔离；交叉四元组只在真正涉及原语/安全性质向 AI 对象迁移时输出。
-- **密码学知识去污染**：四张密码学锚点改用安全定义、攻击游戏、归约损失、构造边界和实现注意事项组织，不再强塞 AI 设计翻译或 GPU 验收；明确标准模型定理、基于原语的归约与 AES 等具体算法经验假设的层级差异，并校正 PRF/PRG/OWF、Feistel、CPA/CCA/AE、KEM/DEM、nonce/IV、密钥分离与组合顺序等表述。
-- **数学概念与工程断言校正**：修正一般投影的 Moore–Penrose 伪逆条件、attention/QKV 与线性投影的边界、KL 散度方向、低秩近似的梯度表述、正交损失的形状/归一化条件，以及抽象代数与几何书稿中的若干过度类比；所有保证、等价、稳定和最优性表述强调成立条件或降级为待验证假设。
-- **密码学书稿完整双语化**：新增 `applied-cryptography.en.md`、`foundations-of-cryptography.en.md`、`introduction-to-modern-cryptography.en.md`。commands、agents、lenses、knowledge-base、design-patterns 与 references 现均保持中英文件配对；按用户主语言只加载一侧，避免双份上下文。
-- **GPU 审查改为相关性驱动**：不再要求每个候选机械覆盖八个维度；先声明 shape、baseline 与部署约束，只评会影响决策的维度，无关项标 `N/A`。要求用 FLOPs、峰值中间张量/状态、字节量、通信量或低精度风险等可核查信号支持判断，并明确“可写成 GEMM”不等于实际更快。
-- **critic 与输出质量收敛**：普通任务使用入口内的紧凑检查，只有论文级或显式全面审查才加载 19 维 critic；现代数学激活维度只在确有迁移声称时强制，密码学优先加载 `knowledge-base/cryptography/` 锚点再按需读书稿，不以 GPU 清单作安全门；探索性候选必须标注假设、边界和证伪方法。
-- **审查后残余一致性修补（发布前）**：兼容入口 description 与根 `SKILL.md` 对齐（补回数学查询触发）；索引工作流范例改回默认 ≤2 透镜；CLAUDE/eval 去除过时 Gate 术语并更正 books 双语事实；层上同调 $H^1$ 措辞收紧，避免与层公理混淆。
-- **索引、路由样例与语言规则同步**：更新 `skill-index`、`knowledge-base/overview`、agentic workflow 和 A/B/C/D/E eval 场景，补充假阳性、交叉域、知识缺口与主语言判断边界；代码、路径、公式和英文技术词不参与主语言投票。
-- **测试职责边界清理**：移除仅服务本次审计的六维输出评分和 token/cost 回归规范，保留与 skill 行为直接相关的路由、隔离、双语、引用与语义回归场景。
-- **验证与发布完整性**：Bash/PowerShell 验证覆盖根入口 frontmatter、兼容转发、37 张锚点、中英配对、交叉引用、Domain Router 隔离、Knowledge Gap Protocol、GPU 量化信号和高风险语义回归；npm 包显式包含根 `SKILL*.md`，排除 PDF、`math_book/`、测试与本地 npm 缓存。
+- **权威入口与渐进加载**：根 `SKILL.md`/`SKILL.en.md` 成为自足规范入口；五类场景设最小加载路径（默认 1-2 透镜、1-3 锚点、0-2 模式），概念查询与纯密码任务不再默认加载完整 critic/书稿/GPU 清单
+- **Domain Router 重写**：从关键词投票改为按"目标对象 + 所求保证"判域；`hashing`/`attack`/`security` 等孤立词不再误触发密码学；纯 AI、纯密码、共用数学和 AI×密码交叉路径明确隔离
+- **密码学去污染与数学校正**：四张密码学锚点改用安全定义/攻击游戏/归约损失组织，不再强塞 AI 翻译或 GPU 验收；修正投影伪逆条件、KL 方向、低秩梯度表述、正交损失公式等过度类比；所有保证/等价/最优表述强调成立条件
+- **双语与 GPU 审查收敛**：密码学书稿完整中英配对；GPU 审查改为相关性驱动（只评决策相关维度，无关项标 N/A）；普通任务用紧凑检查，19 维 critic 仅论文级审查加载
+- **索引、eval 与验证同步**：更新 skill-index/overview/agentic-workflow 和 A/B/C/D/E eval 场景；Bash/PowerShell 验证覆盖 frontmatter、37 锚点配对、交叉引用、Domain Router 隔离等
 
 ### v3.2.1 — 设计哲学修正与可靠性增强
 
-- **设计哲学明确化**：`SKILL.md` / `SKILL.en.md` 新增"设计哲学：activator 而非百科"小节，声明 skill 是思考的 activator 和数学锚点，`knowledge-base/` 回归数学结构本身（不固化具体 AI 架构），`design-patterns/` 定位为翻译范式示范而非模板库；新增"兼容性原则"小节，声明对未预置架构的研究问题通过透镜路由 + 锚点激活 + 临时知识卡完成引导
-- **密码学锚点补齐**：新增 `knowledge-base/cryptography/` 目录，含 `prf-prg-owf`、`reduction-proof-template`、`attack-game-framework`、`cca-cpa-ae-hierarchy` 四张锚点卡（中英成对），使 Domain Router 的密码学层加载有实质锚点（修复 v3.2.0 理念不一致：此前声明加载密码学层但无结构化锚点）
-- **代数几何锚点补齐**：新增 `knowledge-base/algebraic-geometry/` 目录，含 `sheaf-cohomology`、`grassmannian-plucker` 两张锚点卡（中英成对），覆盖 `design-patterns/` 已使用但无锚点的数学结构（层上同调、格拉斯曼流形）
-- **测试覆盖扩展**：新增场景 A（问题分析）、场景 D（验证审查）、交叉域路由（AI×密码四元组标注）、Knowledge Gap Protocol、Domain Router 隔离（不污染保证）五类 eval 测试
-- **validate.sh 结构化检查**：新增知识卡六段结构、设计模式 GPU 八维覆盖、Domain Router 隔离与 Knowledge Gap Protocol 关键字段检查
-- **critic 19 维分层**：核心维度 / 情境维度 / 强制维度 / 元维度分层标注，减少 Agent 的认知负担
-- **inspiration.md 拆分**：技术灵感部分（屠龙刀故事）保留；哲学内容（人生最优化等）移至 `musings.md`，避免与 skill 严谨技术风格冲突
+- **设计哲学明确化**：声明 skill 是思考的 activator 而非百科；`knowledge-base/` 回归数学结构本身（不固化 AI 架构），`design-patterns/` 定位为翻译范式示范而非模板库
+- **密码学与代数几何锚点补齐**：新增 `knowledge-base/cryptography/`（4 卡）与 `knowledge-base/algebraic-geometry/`（2 卡），使 Domain Router 密码学层有实质锚点
+- **测试与验证扩展**：新增场景 A/D eval、交叉域路由、Knowledge Gap Protocol、Domain Router 隔离测试；validate.sh 增加知识卡六段结构与 GPU 八维覆盖检查
+- **critic 19 维分层**：核心/情境/强制/元四层标注，减少 Agent 认知负担
+- **inspiration.md 拆分**：技术灵感保留，哲学内容移至 `musings.md`
 
 ### v3.2.0 — 密码学方向接入 + Domain Router
 
-**密码学方向正式落地**：参考层从 7 本扩到 10 本，新增 3 本现代密码学经典蒸馏稿，精简为与 AI 方向书稿一致的激活索引格式（约 125-155 行/本，保留核心思想与关键桥接事实）。
-
-- **新增 3 本密码学书稿**：
-  - `references/books/applied-cryptography.md`（Boneh & Shoup）：攻击游戏/归约证明/构造/协议
-  - `references/books/foundations-of-cryptography.md`（Goldreich）：计算不可区分/OWF-PRG-PRF 等价链/模拟范式/元定理
-  - `references/books/introduction-to-modern-cryptography.md`（Katz & Lindell）：形式化定义/CPA-CCA-AE/构造范式/实现陷阱
-- **Domain Router 路由层**（核心创新）：在意图诊断后、透镜调用前判定问题 domain（AI/密码/纯数学/交叉），按 domain 加载专属内容，共用数学不重复加载，避免跨域污染与 token 浪费
-- **SKILL.md / SKILL.en.md**：新增 Domain Router 小节 + 路由规则 + 判定流程图；主流程整合 domain 标注与 domain-specific 路由（AI 走 design-patterns + GPU 门，密码走归约模板 + 假设/陷阱检查）
-- **math-critic 升级为 19 维**：新增第 19 维「密码学安全审视」（安全定义/归约紧度/假设依赖/合成陷阱/反模式/跨域迁移合理性/Domain Router 一致性）
-- **skill-index / overview**：补 Domain Router 总览表与密码学书稿激活家族标注；overview 增 Domain Router 加载提示
-- **Token 优化**：密码学书稿从 2084 行精简到 404 行（压缩 ~80%）；Domain Router 按 domain 裁剪输出，避免全量加载；输出格式强调"domain 判定后只展开该 domain 专属小节"。量化估算：纯 AI 问题完全不加载 3 本密码学书稿（省约 400 行/次），纯密码学问题完全不加载 22 个 AI design-patterns（省约 2200-3300 行/次）；密码学书稿本身的精简再省约 872 行/次
-- **文件清理**：删除朋友误放在根目录的重复 `SKILL.md/SKILL.en.md/original-texts.md/original-texts.en.md`（权威版本在 `skills/math-research-activator/`）；修正 `agents/math-critic.{en,}.md` 与 `knowledge-base/overview.en.md` 中的 SKILL 相对路径
-- **AI 与密码学隔离保证**：Domain Router 规则 4 明确"纯 AI 问题不加载密码学书稿；纯密码学问题不加载 AI 设计模式"，从加载层防止概念混淆
+- **新增 3 本密码学书稿**：Boneh & Shoup、Goldreich、Katz & Lindell 蒸馏稿（中英成对），精简为 ~125-155 行/本的激活索引格式
+- **Domain Router 路由层**：意图诊断后、透镜前判定问题 domain（AI/密码/纯数学/交叉），按 domain 加载专属内容，共用数学不重复加载，避免跨域污染
+- **math-critic 升级 19 维**：新增密码学安全审视维度（安全定义/归约紧度/假设依赖/合成陷阱/反模式/跨域迁移）
+- **Token 优化**：密码学书稿从 2084 行精简到 404 行（~80%）；纯 AI 问题不加载密码书稿（省 ~400 行/次），纯密码不加载 AI 设计模式（省 ~2200 行/次）
+- **AI 与密码学隔离**：Domain Router 明确"纯 AI 不加载密码学书稿；纯密码不加载 AI 设计模式"
 
 ### v3.1.1 — 术语闭环清洁
 
-- **skill-index 口径统一**：标题、知识库小节、工作流范例从"知识库/知识查询"改为"激活锚点"
-- **package.json description**：更新为新定位描述
-- **README 使用表**：机制设计、知识查询、验证审查路径从"知识"改为"激活锚点/临时知识卡"
-- **README 工作流范例**：第三步从"知识查询"改为"激活锚点"，`leverage-score-selection` 标签从"矩阵分析"改为"压缩设计模式"
-- **README 目录结构**：`knowledge-base/` 注释从"数学知识库"改为"激活锚点"
-- **README 激活锚点表头**：列名从"知识卡片"改为"锚点"
-- **SKILL.md / SKILL.en.md**：三层架构表和意图诊断表从"数学知识/Math Knowledge"改为"激活锚点/Activation Anchors"
+- **"激活锚点"口径统一**：skill-index、README、SKILL.md 中"数学知识/知识卡片"统一改为"激活锚点"
+- **README 纠正**：工作流范例第三步从"知识查询"改为"激活锚点"；`leverage-score-selection` 标签修正
+- **SKILL.md 架构表更新**：三层架构表和意图诊断表术语对齐
 - **英文 README 书目链接**：蒸馏文件从 `.md` 改为 `.en.md`
-- **validate 关键词**：从检查"数学知识/Math Knowledge"改为"激活锚点/Activation Anchors"
+- **validate 关键词**：从"数学知识"改为"激活锚点"
 
 ### v3.1.0 — 激活锚点与知识缺口协议
 

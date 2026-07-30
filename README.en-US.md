@@ -1,16 +1,22 @@
-<p align="right">
-  <a href="README.md">中文</a> | <a href="README.en-US.md">English</a>
-</p>
+<div align="center">
 
 # 📐 Math Skill
+
+### A Mathematical Research Operating System for AI and Cryptography Innovation
+
+<a href="README.md">中文</a> | <a href="README.en-US.md">English</a>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![npm version](https://img.shields.io/npm/v/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 [![npm downloads](https://img.shields.io/npm/dt/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 
+</div>
+
 > Math Skill does not store mathematics. It activates, routes, and translates mathematics for AI research.
 
-A math reasoning skill for **Claude Code / Codex / Cursor** — automatically activates the right mathematical lenses, knowledge anchors, and design prototypes for AI architecture design, math-to-AI transfer, and cryptographic proof review, delivering conditional, falsifiable conclusions with counterexamples.
+A math reasoning skill for **Claude Code / Codex / Cursor and more** — automatically activates the right mathematical lenses, knowledge anchors, and design prototypes for AI architecture design, math-to-AI transfer, and cryptographic proof review, delivering conditional, falsifiable conclusions with counterexamples.
+
+If this skill inspires you, please consider leaving a Star⭐. Your support keeps the project evolving.
 
 ---
 
@@ -51,25 +57,23 @@ A math reasoning skill for **Claude Code / Codex / Cursor** — automatically ac
 
 ---
 
-> If these cases inspire you, consider leaving a Star⭐. Your support keeps the project evolving.
-
----
-
 ## Quick Start
 
 ### Installation
 
-```bash
-# Codex
-git clone https://github.com/the-thinker0/math-skill.git ~/.codex/skills/math-research-activator
+**npm** (recommended):
 
-# Claude Code
-git clone https://github.com/the-thinker0/math-skill.git ~/.claude/skills/math-research-activator
+```bash
+npm install math-skill
 ```
 
-> **npm users**: `npm install math-skill` fetches content files to `node_modules/` but does not auto-register as a skill. Manually copy to the skills directories above. An `npx math-skill install` CLI installer is planned.
+**Or give the project URL to your AI and let it install itself**:
 
-Root `SKILL.md` is the canonical Codex entry. `skills/math-research-activator/SKILL.md` is a Claude/plugin compatibility entry that forwards to the root. Do not copy only the nested directory — it references knowledge-base and design-pattern files at the repo root.
+```
+Please help me install math-skill: https://github.com/the-thinker0/math-skill, and show me how to use it
+```
+
+Root `SKILL.md` is the canonical entry. `skills/math-research-activator/SKILL.md` is a Claude/plugin compatibility entry that forwards to the root.
 
 ### Usage
 
@@ -286,56 +290,35 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 
 ### v3.3.0 — Routing Convergence, Bilingual Completion & Technical Corrections
 
-- **Canonical entry and compatibility structure**: root `SKILL.md` / `SKILL.en.md` are now complete, self-contained normative entries. `skills/math-research-activator/SKILL*.md` are thin forwarders that preserve Claude/plugin layouts without allowing two full instruction copies to drift. `commands/ask*`, the critic, indexes, and overview now reference the root entries.
-- **Progressive loading and minimum token use**: Scenarios A analysis, B design, C knowledge, D verification, and E engineering receive explicit minimal paths, normally capped at 1–2 lenses, 1–3 anchors, and 0–2 prototypes. Concept questions, pure-crypto tasks, and ordinary verification no longer load the full critic, books, GPU checklist, or directory index by default, and internal loading traces are not repeated to users.
-- **Domain Router rewrite**: routing now uses target object + requested guarantee instead of keyword voting. Isolated terms such as `hashing`, `attack`, and `security` no longer cause crypto false positives. Shared math, pure AI, pure crypto, and AI×crypto paths are isolated; the cross-domain four-tuple appears only for genuine transfers between a cryptographic primitive/security property and an AI object.
-- **Cryptography decontamination**: the four crypto anchors are organized around security definitions, attack games, reduction loss, construction boundaries, and implementation considerations rather than forced AI translations or GPU gates. They distinguish standard-model theorems, primitive-based reductions, and empirical assumptions about concrete algorithms such as AES, and correct wording around PRF/PRG/OWF, Feistel, CPA/CCA/AE, KEM/DEM, nonces/IVs, key separation, and composition order.
-- **Mathematical and engineering corrections**: corrected the Moore–Penrose conditions for general projections, the boundary between attention/QKV and linear projection, KL directionality, low-rank-gradient claims, orthogonality-loss shape/normalization assumptions, and overextended analogies in algebra and geometry notes. Claims of guarantees, equivalence, stability, or optimality now state their conditions or are downgraded to testable hypotheses.
-- **Complete bilingual cryptography references**: added `applied-cryptography.en.md`, `foundations-of-cryptography.en.md`, and `introduction-to-modern-cryptography.en.md`. Commands, agents, lenses, knowledge-base, design-patterns, and references now all maintain Chinese/English pairs; only the user's primary-language side is loaded.
-- **Relevance-driven GPU review**: candidates no longer mechanically fill all eight dimensions. Reviews first state shape, baseline, and deployment constraints, assess only decision-relevant dimensions, and mark others `N/A`. Judgments require checkable FLOPs, peak intermediate/state memory, byte or communication counts, or low-precision risks; “expressible as GEMM” is explicitly not equivalent to “faster.”
-- **Critic and output-quality convergence**: ordinary tasks use the compact checks in the root entry, while the 19-dimension critic is reserved for paper-grade or explicitly comprehensive review. The modern-math dimension is mandatory only when a transfer claim exists; crypto prefers `knowledge-base/cryptography/` anchors before books and never uses the GPU checklist as a security gate; exploratory candidates must state assumptions, boundaries, and falsification methods.
-- **Pre-release consistency fixes**: compatibility-entry descriptions re-synced with root `SKILL.md` (including math-query triggers); index workflow examples restored to the default ≤2-lens budget; CLAUDE/eval Gate terminology removed and the bilingual books fact corrected; sheaf-cohomology $H^1$ wording tightened so it is not confused with the sheaf axiom.
-- **Synchronized indexes, routing examples, and language rules**: updated `skill-index`, `knowledge-base/overview`, the agentic workflow, and A/B/C/D/E eval scenarios with false-positive, intersection, knowledge-gap, and primary-language boundaries. Code, paths, formulas, and English technical terms do not vote on response language.
-- **Evaluation-scope cleanup**: removed the six-dimension output score and token/cost regression specification created only for this audit, while retaining routing, isolation, bilingual, reference-integrity, and semantic-regression scenarios that directly test skill behavior.
-- **Validation and package integrity**: Bash/PowerShell validation covers root frontmatter, compatibility forwarders, 37 anchors, bilingual pairing, cross-references, Domain Router isolation, the Knowledge Gap Protocol, GPU quantitative signals, and high-risk semantic regressions. The npm package explicitly includes root `SKILL*.md` and excludes PDFs, `math_book/`, tests, and the local npm cache.
+- **Canonical entry & progressive loading**: Root `SKILL.md`/`SKILL.en.md` become self-contained normative entries; five scenarios (A/B/C/D/E) get minimal load paths (default 1-2 lenses, 1-3 anchors, 0-2 prototypes); concept queries and pure-crypto tasks no longer load full critic/books/GPU checklist by default
+- **Domain Router rewrite**: Switched from keyword voting to "target object + requested guarantee" domain judgment; isolated terms like `hashing`/`attack`/`security` no longer trigger crypto false positives; pure-AI, pure-crypto, shared-math, and AI×crypto paths explicitly isolated
+- **Crypto decontamination & math corrections**: Four crypto anchors reorganized around security definitions/attack games/reduction loss, no forced AI translations or GPU gates; corrected projection pseudoinverse conditions, KL directionality, low-rank gradient claims, orthogonality-loss formula; all guarantees/equivalence/optimality claims now state conditions
+- **Bilingual & GPU review convergence**: Crypto books completed in Chinese-English pairs; GPU review switched to relevance-driven (assess only decision-relevant dimensions, mark others N/A); ordinary tasks use compact checks, 19-dim critic reserved for paper-grade review
+- **Index, eval & validation sync**: Updated skill-index/overview/agentic-workflow and A/B/C/D/E eval scenarios; Bash/PowerShell validation covers frontmatter, 37 anchor pairs, cross-references, Domain Router isolation
 
 ### v3.2.1 — Design Philosophy Refinement & Reliability Enhancement
 
-- **Design philosophy made explicit**: `SKILL.md` / `SKILL.en.md` add a "Design Philosophy: Activator, Not Encyclopedia" section, declaring the skill is a thinking activator and mathematical anchor; `knowledge-base/` returns to mathematical structures themselves (not concrete AI architectures); `design-patterns/` is positioned as translation-prototype demonstration rather than a template library. A new "Compatibility Principle" section declares that research problems with architectures the skill did not pre-specify are handled through the lens-routing + anchor-activation + temporary-knowledge-card pipeline.
-- **Cryptography anchors backfilled**: new `knowledge-base/cryptography/` directory, with `prf-prg-owf`, `reduction-proof-template`, `attack-game-framework`, `cca-cpa-ae-hierarchy` anchor cards (CN/EN paired), giving Domain Router's cryptography layer substantive anchors (fixes v3.2.0 inconsistency: it declared loading a cryptography layer but had no structured anchors).
-- **Algebraic geometry anchors backfilled**: new `knowledge-base/algebraic-geometry/` directory, with `sheaf-cohomology`, `grassmannian-plucker` anchor cards (CN/EN paired), covering mathematical structures already used by `design-patterns/` but lacking anchors (sheaf cohomology, Grassmannian).
-- **Test coverage expanded**: new eval tests for Scenario A (analysis), Scenario D (verification), cross-domain routing (AI×crypto 4-tuple annotation), Knowledge Gap Protocol, and Domain Router isolation (no-pollution guarantee).
-- **validate.sh structural checks**: added checks for the six required knowledge-card sections, eight GPU dimensions in design patterns, Domain Router isolation, and Knowledge Gap Protocol fields.
-- **critic 19-dimension layering**: core / situational / mandatory / meta dimension layering annotations to reduce Agent cognitive load.
-- **inspiration.md split**: technical-inspiration part (the dragon-slaying blade story) retained; philosophical content (life-as-optimization, etc.) moved to `musings.md` to avoid clashing with the skill's rigorous technical style.
+- **Design philosophy clarified**: Skill declared as a thinking activator, not an encyclopedia; `knowledge-base/` returns to mathematical structures (not fixed AI architectures); `design-patterns/` positioned as translation-paradigm demos, not template library
+- **Crypto & algebraic-geometry anchors backfilled**: Added `knowledge-base/cryptography/` (4 cards) and `knowledge-base/algebraic-geometry/` (2 cards), giving Domain Router substantive crypto anchors
+- **Testing & validation expanded**: Added scenario A/D eval, cross-domain routing, Knowledge Gap Protocol, Domain Router isolation tests; validate.sh checks card six-section structure and GPU eight-dimension coverage
+- **Critic 19-dim layering**: Core/contextual/mandatory/meta four-tier labeling, reducing agent cognitive burden
+- **inspiration.md split**: Technical inspiration retained; philosophical content moved to `musings.md`
 
-### v3.2.0 — Cryptography Track + Domain Router
+### v3.2.0 — Cryptography Direction + Domain Router
 
-**Cryptography track officially landed**: reference layer expanded from 7 to 10 books, with 3 modern cryptography classics distilled into the same activation-index format as AI-direction books (~125-155 lines each, preserving core ideas and key bridging facts).
-
-- **3 new crypto books**:
-  - `references/books/applied-cryptography.md` (Boneh & Shoup): attack games / reduction proofs / constructions / protocols
-  - `references/books/foundations-of-cryptography.md` (Goldreich): computational indistinguishability / OWF-PRG-PRF equivalence chain / simulation paradigm / meta-theorems
-  - `references/books/introduction-to-modern-cryptography.md` (Katz & Lindell): formal definitions / CPA-CCA-AE / construction paradigms / implementation pitfalls
-- **Domain Router** (core innovation): after intent diagnosis and before lens invocation, judges problem domain (AI/Crypto/pure-math/intersection), loads domain-specific content, shared math not redundantly loaded, avoids cross-domain pollution and token waste
-- **SKILL.md / SKILL.en.md**: new Domain Router section + routing rules + decision flow diagram; main workflow integrates domain tags and domain-specific routing (AI uses design-patterns + GPU gate; crypto uses reduction templates + assumption/pitfall checks)
-- **math-critic upgraded to 19 dimensions**: new dim 19 "Cryptographic Security Review" (security definitions / reduction tightness / assumption dependency / composition pitfalls / anti-patterns / cross-domain transfer validity / Domain Router consistency)
-- **skill-index / overview**: added Domain Router overview table and crypto book activation-family tags; overview gained Domain Router loading note
-- **Token optimization**: crypto books compressed from 2084 to 404 lines (~80% reduction); Domain Router trims output by domain, avoiding full-load; output format emphasizes "after domain judgment, only expand the domain-specific subsection". Quantified estimate: pure AI problems skip the 3 crypto books entirely (saving ~400 lines/call), pure crypto problems skip all 22 AI design-patterns (saving ~2200-3300 lines/call); the crypto books' own compression saves another ~872 lines/call
-- **File cleanup**: removed duplicate `SKILL.md/SKILL.en.md/original-texts.md/original-texts.en.md` mistakenly placed in repo root by the contributor (canonical versions live in `skills/math-research-activator/`); fixed SKILL relative paths in `agents/math-critic.{en,}.md` and `knowledge-base/overview.en.md`
-- **AI/Cryptography isolation guarantee**: Domain Router rule 4 explicitly states "pure AI problems do not load crypto books; pure crypto problems do not load AI design patterns," preventing conceptual confusion at the loading layer
+- **3 crypto books added**: Boneh & Shoup, Goldreich, Katz & Lindell distillations (bilingual pairs), compressed to ~125-155 lines/book activation-index format
+- **Domain Router routing layer**: After intent diagnosis, before lens invocation, judges problem domain (AI/crypto/pure-math/intersection), loads domain-specific content, shared math not redundantly loaded
+- **math-critic upgraded to 19 dims**: New crypto security review dimension (security definitions/reduction tightness/assumption dependency/composition pitfalls/anti-patterns/cross-domain transfer)
+- **Token optimization**: Crypto books compressed from 2084 to 404 lines (~80%); pure-AI problems skip crypto books (saving ~400 lines/call), pure-crypto problems skip AI design-patterns (saving ~2200 lines/call)
+- **AI & cryptography isolation**: Domain Router explicitly states "pure-AI problems do not load crypto books; pure-crypto problems do not load AI design patterns"
 
 ### v3.1.1 — Terminology Consistency Cleanup
 
-- **skill-index alignment**: title, knowledge base section, and workflow example updated from "knowledge base / knowledge query" to "activation anchors"
-- **package.json description**: updated to new positioning
-- **README usage table**: mechanism design, knowledge query, and verification paths updated from "Knowledge" to "Anchors / Temporary Card"
-- **README workflow example**: Step 3 changed from "Knowledge Query" to "Activation Anchors"; `leverage-score-selection` label corrected from "matrix analysis" to "Design Pattern: compression"
-- **README directory structure**: `knowledge-base/` comment updated from "Math knowledge" to "Activation anchors"
-- **README activation anchors table**: column header changed from "Cards" to "Anchors"
-- **SKILL.md / SKILL.en.md**: three-layer architecture table and intent diagnosis table updated from "Math Knowledge" to "Activation Anchors"
-- **English README book links**: distillation files changed from `.md` to `.en.md`
-- **validate keywords**: checks updated from "Math Knowledge" to "Activation Anchors"
+- **"Activation anchors" caliber unified**: skill-index, README, SKILL.md "math knowledge/knowledge cards" uniformly changed to "activation anchors"
+- **README corrections**: Workflow example step 3 from "knowledge query" to "activation anchors"; `leverage-score-selection` label corrected
+- **SKILL.md architecture table update**: Three-layer architecture table and intent diagnosis table terminology aligned
+- **English README book links**: Distillation files changed from `.md` to `.en.md`
+- **validate keywords**: Changed from "math knowledge" to "activation anchors"
 
 ### v3.1.0 — Activation Anchors & Knowledge Gap Protocol
 
