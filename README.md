@@ -61,10 +61,10 @@
 
 ### 安装
 
-**npm**（推荐）：
+**npx**（推荐）：
 
 ```bash
-npm install math-skill
+npx -y math-skill@latest install --all
 ```
 
 **或把项目地址丢给 AI，让它自行安装**：
@@ -73,7 +73,8 @@ npm install math-skill
 请帮我安装 math-skill：https://github.com/the-thinker0/math-skill，并教我如何使用
 ```
 
-根 `SKILL.md` 是权威入口。`skills/math-research-activator/SKILL.md` 是 Claude/plugin 兼容入口并转发到根文件。
+> 也支持：`install --codex` / `--claude`（单独）、`update --all`（更新）、`doctor --all`（检查重复入口）
+> 安装器自动排除内层 `skills/` 目录，保证每个平台只有一个入口。
 
 ### 使用
 

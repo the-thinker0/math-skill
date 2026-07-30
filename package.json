@@ -35,7 +35,14 @@
   "bugs": {
     "url": "https://github.com/the-thinker0/math-skill/issues"
   },
+  "bin": {
+    "math-skill": "bin/math-skill.cjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "files": [
+    "bin/",
     "README.md",
     "README.en-US.md",
     "SKILL.md",

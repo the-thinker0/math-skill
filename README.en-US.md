@@ -61,10 +61,10 @@ If this skill inspires you, please consider leaving a Star⭐. Your support keep
 
 ### Installation
 
-**npm** (recommended):
+**npx** (recommended):
 
 ```bash
-npm install math-skill
+npx -y math-skill@latest install --all
 ```
 
 **Or give the project URL to your AI and let it install itself**:
@@ -73,7 +73,8 @@ npm install math-skill
 Please help me install math-skill: https://github.com/the-thinker0/math-skill, and show me how to use it
 ```
 
-Root `SKILL.md` is the canonical entry. `skills/math-research-activator/SKILL.md` is a Claude/plugin compatibility entry that forwards to the root.
+> Also supports: `install --codex` / `--claude` (individual), `update --all` (upgrade), `doctor --all` (check for duplicates)
+> The installer automatically excludes the nested `skills/` directory, ensuring only one entry per platform.
 
 ### Usage
 
