@@ -16,39 +16,38 @@
 
 ## 它和直接问 AI 有什么区别？
 
-### 案例 1：分析——"我的 FFT attention 声称 O(n log n)"
+### 案例 1：分析——"KAN 的数学基础和风险"
 
-**用户**："我的 attention 用 FFT 加速到了 O(n log n)，但审稿人质疑这个复杂度，合理吗？"
+**用户**："KAN 用可学习 B-spline 替代 ReLU，声称比 MLP 更准确且可解释。我想分析它的数学基础和潜在风险。"
 
-**普通 AI 回答**：
-> FFT 的复杂度是 O(n log n)，用它替代 softmax(QK^T) 的 O(n²) 是合理的加速。建议在论文中强调 cuFFT 的优化。
+**不调用 Skill**：
+> KAN 基于 Kolmogorov-Arnold 表示定理，用 B-spline 作为可学习激活函数放在边上。优点是参数效率高、激活函数可解释。风险主要是 spline 计算比 ReLU 慢、grid 过细可能过拟合。建议在具体任务上做消融实验。
 
-**Math Skill 回答**（激活：谱分解透镜 → `spectral-attention` 设计模式）：
+**调用 Skill 后**（激活：扰动 + 谱分解透镜 → `low-rank-approximation` 锚点）：
 
-> **结论**：O(n log n) 加速仅在注意力矩阵为循环或 Toeplitz 结构时成立。标准 content-dependent softmax 注意力不满足此条件。
+> **结论**：KA 定理保证表达能力的**存在性**，不保证**可学习性**。决定 KAN 实际性能的两个被忽视的数学量是 spline 基的有效秩和参数空间的 Fisher 曲率。
 >
-> - **关键区分**：FFT 逐元素频域乘法等价于循环卷积定理，要求 a_{ij} = f(i−j)（仅依赖相对位置），而非 token 内容
-> - **反例**：NLP 中 softmax(QK^T/√d) 的权重由 query/key 内容决定，注意力矩阵一般不是循环矩阵
-> - **正确表述**：方案对位置依赖的卷积式注意力有效（如 RoPE 频率分量）；对通用 content-dependent 注意力，仍为 O(n²)
-> - **论文修改建议**：明确声明位置依赖假设，或改用图谱注意力方案（在图 Laplacian 特征基上投影，不依赖循环卷积定理）
+> - **存在性 ≠ 可学习性**：KA 定理保证 ∑φ_q(∑ψ_{q,p}(x_p)) 可表示任意连续函数，但与 MLP 的万能逼近定理一样，不保证梯度下降能找到该表示
+> - **Spline 基有效秩**：B-spline 基函数的支撑重叠导致 effective rank 远低于参数增长；若 grid 细化但基函数高度相关，实际表达能力增长停滞——需监控奇异值衰减曲线而非只看参数量
+> - **Fisher 曲率**：spline 的二阶可导使 Hessian 更规则，但 Fisher 信息矩阵的 condition number 可能远大于 ReLU 网络；natural gradient 有理论优势但估计成本更高
+> - **可证伪实验**：比较 KAN 与同参数预算 MLP 的 spline 基有效秩衰减；若 rank 增长停滞而参数持续增长，则"可解释"优势被冗余抵消
 
-### 案例 2：设计——"正交性 loss 让 MoE 专家不重叠"
+### 案例 2：验证——"PRF 水印归约的紧度"
 
-**用户**："设计一个正交性 loss，让 MoE 各专家的表示不重叠"
+**用户**："我用 PRF 给模型权重加水印，归约证明说'去水印 ≥ 破 PRF'。这个归约 tight 吗？"
 
-**普通 AI 回答**：
-> 可以用 Frobenius 正交正则 L = Σ‖W_i^T W_j‖_F²，或用 σ²(1-σ²) 形式鼓励奇异值远离 0 和 1。
+**不调用 Skill**：
+> 如果去水印的难度等价于区分 PRF 输出和真随机，那么在水印方案依赖的 PRF 安全假设成立时，归约是紧的。建议选择 AES-based PRF 以确保假设强度。
 
-**Math Skill 回答**（激活：投影透镜 → `orthogonality-loss` 设计模式）：
+**调用 Skill 后**（激活：`reduction-proof-template` + `prf-prg-owf` 锚点）：
 
-> **主方案**：Frobenius 正交正则 + 归一化 Gram 去相关
+> **结论**：归约方向正确，但紧度取决于查询数 Q 和模拟质量，不能仅凭"假设 PRF 安全"就声称紧归约。
 >
-> **⚠ 公式修正**：σ²(1-σ²) 在 σ=0（正交）和 σ=1（完全重叠）时惩罚均为 0——完全重叠的子空间获得零惩罚，违背正交性目标。正确公式为对数障碍：
-> L = −Σ_{i<j} Σ_k log(1 − σ_k² + ε)
->
-> - **前置条件**：需先对 W_i 做 QR 分解取正交基 Q_i，否则奇异值可能 >1 导致 log 未定义
-> - **GPU 可行性**：D2[v] 核心仅 1 次 GEMM + mask；D5[~] SVD 反向需 fp32 累积 + ε 正则化
-> - **边界**：当 K·r > d 时正交性不可能严格满足，需降维或接受近似正交
+> - **归约损失**：Adv^scheme ≤ Q · Adv^PRF + δ，其中 Q 是敌手查询数。若 Q 随模型参数量线性增长，具体安全参数显著退化——必须报告 Q 的量级，不能只写"多项式损失"
+> - **模拟质量**：归约须构造模拟器 B 回答敌手 oracle 查询；若 B 的模拟分布与真实游戏统计距离不可忽略，整个归约失效
+> - **假设层级**：AES 当 PRF 是广泛采用的经验假设，不是从规范无条件证明的定理——标准模型、ROM、具体安全三个层级不能混用
+> - **多用户退化**：模型部署后多用户独立查询，birthday bound 和 hybrid 步数放大优势损失
+> - **可证伪检查**：写出 B 的完整模拟（参数生成、查询回答、挑战嵌入、abort 处理），代入具体参数估计 Q 和 δ
 
 ---
 
@@ -60,19 +59,15 @@
 
 ### 安装
 
-**Codex / Claude Code**（推荐：完整安装，含知识库与设计模式）：
-
 ```bash
+# Codex
 git clone https://github.com/the-thinker0/math-skill.git ~/.codex/skills/math-research-activator
+
+# Claude Code
+git clone https://github.com/the-thinker0/math-skill.git ~/.claude/skills/math-research-activator
 ```
 
-**npm**（获取内容包）：
-
-```bash
-npm install math-skill
-```
-
-> npm 包包含全部 Markdown 内容文件，但不自动注册为 skill。完整安装请用 `git clone` 到 `~/.codex/skills/` 或 `~/.claude/skills/` 目录。
+> **npm 用户**：`npm install math-skill` 获取内容文件到 `node_modules/`，但不自动注册为 skill。需手动复制到上述 skills 目录。`npx math-skill install` CLI 安装器规划中。
 
 根 `SKILL.md` 是 Codex 权威入口。`skills/math-research-activator/SKILL.md` 是 Claude/plugin 兼容入口并转发到根文件。不要单独复制内层目录——它引用的知识库与设计模式在仓库根。
 
@@ -85,7 +80,7 @@ npm install math-skill
 | 问题分析 | "这个设计合理吗？" | 透镜 → 紧凑审查 |
 | 机制设计 | "设计新 attention" | 透镜 → 锚点 → 设计翻译 → 紧凑审查 |
 | 知识查询 | "切空间和梯度优化有什么关系？" | 激活锚点 |
-| 验证审查 | "这个公式/归约成立吗？" | 锚点 → 条件/边界 |
+| 验证审查 | "这个归约的 tightness 够吗？" | 锚点 → 条件/边界 |
 | 纯工程 | debug、重构、调参 | **不触发** |
 
 **手动触发**：
@@ -101,6 +96,10 @@ npm install math-skill
 ---
 
 ## 三层正交架构
+
+```
+问题 → 透镜（用什么视角看？）→ 锚点（激活哪些数学结构？）→ 设计翻译（变成什么模块？）→ 审查（站得住吗？）
+```
 
 | 层 | 职责 | 目录 | 文件数 |
 |----|------|------|--------|
@@ -169,6 +168,12 @@ AI 研究与密码学**共享**数学根基（概率/信息/代数/矩阵/谱/�
 | 路由 | optimal-transport-routing, graph-routing, moe-routing, spectral-clustering-routing |
 | 表示 | shared-private-decomposition, manifold-representation, equivariant-split, subspace-alignment |
 | 压缩 | low-rank-kv-cache, spectral-token-pruning, topology-preserving-compression, leverage-score-selection |
+
+---
+
+## 灵感
+
+为解微分方程发明的李群-李代数，最终成为描述对称性和机器人状态估计的通用语言——数学工具的价值远超初衷，这正是「跨领域激活」的原型。详见 [`references/inspiration.md`](references/inspiration.md)。
 
 ---
 

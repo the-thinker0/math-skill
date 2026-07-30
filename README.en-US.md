@@ -16,39 +16,38 @@ A math reasoning skill for **Claude Code / Codex / Cursor** — automatically ac
 
 ## How is this different from just asking the AI?
 
-### Case 1: Analysis — "My FFT attention claims O(n log n)"
+### Case 1: Analysis — "KAN's mathematical foundations and risks"
 
-**User**: "My attention uses FFT to accelerate to O(n log n), but the reviewer questions this complexity. Is it valid?"
+**User**: "KAN uses learnable B-splines instead of ReLU, claiming better accuracy and interpretability than MLPs. I want to analyze its mathematical foundations and potential risks."
 
-**Regular AI answer**:
-> FFT has O(n log n) complexity. Using it to replace softmax(QK^T)'s O(n²) is a reasonable acceleration. Recommend emphasizing cuFFT optimizations in the paper.
+**Without Skill**:
+> KAN is based on the Kolmogorov-Arnold representation theorem, using B-splines as learnable activation functions on edges. Advantages include parameter efficiency and interpretable activations. Risks are mainly that spline computation is slower than ReLU and fine grids may overfit. Suggest running ablation experiments on specific tasks.
 
-**Math Skill answer** (activated: Spectral lens → `spectral-attention` design pattern):
+**With Skill** (activated: Perturbation + Spectral lenses → `low-rank-approximation` anchor):
 
-> **Conclusion**: O(n log n) acceleration holds only when the attention matrix is circulant or Toeplitz. Standard content-dependent softmax attention does not satisfy this condition.
+> **Conclusion**: The KA theorem guarantees **existence** of a representation, not **learnability**. Two overlooked mathematical quantities determine KAN's actual performance: the effective rank of the spline basis and the Fisher curvature of the parameter space.
 >
-> - **Key distinction**: FFT element-wise frequency-domain multiplication is equivalent to the circular convolution theorem, requiring a_{ij} = f(i−j) (position-dependent only), not token content
-> - **Counterexample**: In NLP, softmax(QK^T/√d) weights are determined by query/key content; the attention matrix is generally not circulant
-> - **Correct statement**: The scheme works for position-dependent convolutive attention (e.g., RoPE frequency components); for general content-dependent attention, it remains O(n²)
-> - **Paper fix**: Explicitly state the position-dependence assumption, or switch to graph-spectral attention (project onto graph Laplacian eigenbasis, no circular convolution theorem needed)
+> - **Existence ≠ Learnability**: The KA theorem guarantees ∑φ_q(∑ψ_{q,p}(x_p)) can represent any continuous function, but—like the universal approximation theorem for MLPs—it does not guarantee that gradient descent finds the representation
+> - **Spline basis effective rank**: B-spline basis functions' support overlap causes effective rank to lag far behind parameter growth; if grids refine but bases remain highly correlated, actual expressive capacity stalls—monitor singular value decay curves, not just parameter counts
+> - **Fisher curvature**: Spline's second-order differentiability makes the Hessian more regular, but the Fisher information matrix's condition number may be far larger than in ReLU networks; natural gradient has theoretical advantages but higher estimation cost
+> - **Falsifiable experiment**: Compare KAN vs. same-parameter-budget MLP on spline basis effective rank decay; if rank growth stalls while parameters keep growing, the "interpretability" advantage is offset by redundancy
 
-### Case 2: Design — "Orthogonality loss for non-overlapping MoE experts"
+### Case 2: Verification — "Is this PRF watermarking reduction tight?"
 
-**User**: "Design an orthogonality loss to make MoE expert representations non-overlapping"
+**User**: "I use a PRF to watermark model weights. The reduction proof says 'removing watermark ≥ breaking PRF'. Is this reduction tight?"
 
-**Regular AI answer**:
-> Use Frobenius orthogonality regularization L = Σ‖W_i^T W_j‖_F², or the σ²(1-σ²) form to push singular values away from 0 and 1.
+**Without Skill**:
+> If removing the watermark is equivalent to distinguishing PRF output from truly random, then the reduction is tight when the PRF security assumption holds. Suggest choosing an AES-based PRF for stronger assumptions.
 
-**Math Skill answer** (activated: Projection lens → `orthogonality-loss` design pattern):
+**With Skill** (activated: `reduction-proof-template` + `prf-prg-owf` anchors):
 
-> **Primary scheme**: Frobenius orthogonality regularization + normalized Gram decorrelation
+> **Conclusion**: The reduction direction is correct, but tightness depends on query count Q and simulation quality—cannot claim "tight" just from "PRF assumption holds."
 >
-> **⚠ Formula correction**: σ²(1-σ²) gives zero penalty at both σ=0 (orthogonal) and σ=1 (fully overlapping) — fully overlapping subspaces get zero penalty, violating the orthogonality goal. The correct formula is the log-barrier:
-> L = −Σ_{i<j} Σ_k log(1 − σ_k² + ε)
->
-> - **Prerequisite**: Must first QR-decompose W_i to get orthonormal basis Q_i, otherwise singular values may exceed 1, making log undefined
-> - **GPU feasibility**: D2[v] core is 1 GEMM + mask; D5[~] SVD backward needs fp32 accumulation + ε regularization
-> - **Boundary**: When K·r > d, strict orthogonality is impossible; need dimensionality reduction or approximate orthogonality
+> - **Reduction loss**: Adv^scheme ≤ Q · Adv^PRF + δ, where Q is the adversary's query count. If Q grows linearly with model parameters, concrete security degrades significantly—must report Q's magnitude, not just write "polynomial loss"
+> - **Simulation quality**: The reduction must construct simulator B to answer adversary oracle queries; if B's simulation distribution has non-negligible statistical distance from the real game, the entire reduction fails
+> - **Assumption hierarchy**: AES-as-PRF is a widely adopted empirical assumption, not a theorem unconditionally proven from the spec—standard model, ROM, and concrete security are three levels that must not be conflated
+> - **Multi-user degradation**: After deployment, multiple users query independently; birthday bound and hybrid steps amplify advantage loss
+> - **Falsifiable check**: Write out B's complete simulation (parameter generation, query answering, challenge embedding, abort handling), plug in concrete parameters to estimate Q and δ
 
 ---
 
@@ -60,19 +59,15 @@ A math reasoning skill for **Claude Code / Codex / Cursor** — automatically ac
 
 ### Installation
 
-**Codex / Claude Code** (recommended: full install with knowledge base and design patterns):
-
 ```bash
+# Codex
 git clone https://github.com/the-thinker0/math-skill.git ~/.codex/skills/math-research-activator
+
+# Claude Code
+git clone https://github.com/the-thinker0/math-skill.git ~/.claude/skills/math-research-activator
 ```
 
-**npm** (get the content package):
-
-```bash
-npm install math-skill
-```
-
-> The npm package contains all Markdown content files but does not auto-register as a skill. For full installation, use `git clone` into `~/.codex/skills/` or `~/.claude/skills/`.
+> **npm users**: `npm install math-skill` fetches content files to `node_modules/` but does not auto-register as a skill. Manually copy to the skills directories above. An `npx math-skill install` CLI installer is planned.
 
 Root `SKILL.md` is the canonical Codex entry. `skills/math-research-activator/SKILL.md` is a Claude/plugin compatibility entry that forwards to the root. Do not copy only the nested directory — it references knowledge-base and design-pattern files at the repo root.
 
@@ -85,7 +80,7 @@ Root `SKILL.md` is the canonical Codex entry. `skills/math-research-activator/SK
 | Analysis | "Is this design sound?" | Lenses → compact review |
 | Design | "Design a new attention" | Lenses → anchors → design translation → compact review |
 | Knowledge query | "How does tangent space relate to gradient optimization?" | Activate anchor |
-| Verification | "Does this formula/reduction hold?" | Anchors → conditions/boundaries |
+| Verification | "Is this reduction tight enough?" | Anchors → conditions/boundaries |
 | Pure engineering | debug, refactoring, tuning | **Not triggered** |
 
 **Manual trigger**:
@@ -101,6 +96,10 @@ Auto-detects Chinese/English: Chinese messages get Chinese output, English messa
 ---
 
 ## Three-Layer Orthogonal Architecture
+
+```
+Problem → Lenses (what perspective?) → Anchors (which math structures?) → Design Translation (what module?) → Review (does it hold?)
+```
 
 | Layer | Role | Directory | Files |
 |-------|------|-----------|-------|
@@ -169,6 +168,12 @@ AI research and cryptography **share** mathematical foundations (probability/inf
 | Routing | optimal-transport-routing, graph-routing, moe-routing, spectral-clustering-routing |
 | Representation | shared-private-decomposition, manifold-representation, equivariant-split, subspace-alignment |
 | Compression | low-rank-kv-cache, spectral-token-pruning, topology-preserving-compression, leverage-score-selection |
+
+---
+
+## Inspiration
+
+The Lie group–Lie algebra machinery invented to solve differential equations ultimately became the universal language for describing symmetry and robot state estimation—the value of mathematical tools far exceeds their original intent. This is the prototype of "cross-domain activation." See [`references/inspiration.en.md`](references/inspiration.en.md).
 
 ---
 
