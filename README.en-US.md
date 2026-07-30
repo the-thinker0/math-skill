@@ -2,54 +2,101 @@
   <a href="README.md">中文</a> | <a href="README.en-US.md">English</a>
 </p>
 
-# 📐 Math Skill: A Mathematical Research Operating System for AI and Cryptography Innovation
+# 📐 Math Skill
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![npm version](https://img.shields.io/npm/v/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 [![npm downloads](https://img.shields.io/npm/dt/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 
----
-
-> **If this project inspires you, please consider leaving a Star⭐.** Every Star is a resonance with the beauty of mathematics — and the fuel that keeps this project alive. Welcome, every fellow traveler who loves math and sails its vast ocean.
-
----
-
-## 📢 Community Announcements
-
-> **v3.3.1 released**: documentation-discipline patch — completed the README directory tree, corrected the workflow example, slimmed the changelog, and unified entry phrasing and counting caliber. v3.3.0 delivered routing convergence and technical corrections; this release fixes the documentation-consistency issues it left behind. See the changelog. Feedback and edge-case reports are welcome via GitHub Issues or Discussions.
-
----
-
-## Inspiration
-
-The story of Sophus Lie forging a "dragon-slaying blade" tells us this: the Lie group–Lie algebra machinery invented to solve differential equations ended up becoming the lingua franca for describing symmetry and robot state estimation — the value of a mathematical tool far outlives its original intent, which is exactly the prototype of "cross-domain activation." See [`references/inspiration.en.md`](references/inspiration.en.md).
-
-> The most fascinating thing about mathematics: a tool invented for one problem reveals unforeseen power in an entirely different domain.
-
----
-
 > Math Skill does not store mathematics. It activates, routes, and translates mathematics for AI research.
 
-## Philosophy
+A math reasoning skill for **Claude Code / Codex / Cursor** — automatically activates the right mathematical lenses, knowledge anchors, and design prototypes for AI architecture design, math-to-AI transfer, and cryptographic proof review, delivering conditional, falsifiable conclusions with counterexamples.
 
-When you face an AI research problem, this system helps you answer four questions:
+---
 
-1. **What mathematical perspective should I use?** → Thinking Lenses
-2. **Which mathematical structures to activate?** → Activation Anchors / Temporary Knowledge Cards
-3. **How do I turn math into model design?** → Design Translation Prototypes
-4. **Is it mathematically sound and engineering-feasible?** → Critic
+## How is this different from just asking the AI?
+
+### Case 1: Analysis — "My FFT attention claims O(n log n)"
+
+**User**: "My attention uses FFT to accelerate to O(n log n), but the reviewer questions this complexity. Is it valid?"
+
+**Regular AI answer**:
+> FFT has O(n log n) complexity. Using it to replace softmax(QK^T)'s O(n²) is a reasonable acceleration. Recommend emphasizing cuFFT optimizations in the paper.
+
+**Math Skill answer** (activated: Spectral lens → `spectral-attention` design pattern):
+
+> **Conclusion**: O(n log n) acceleration holds only when the attention matrix is circulant or Toeplitz. Standard content-dependent softmax attention does not satisfy this condition.
+>
+> - **Key distinction**: FFT element-wise frequency-domain multiplication is equivalent to the circular convolution theorem, requiring a_{ij} = f(i−j) (position-dependent only), not token content
+> - **Counterexample**: In NLP, softmax(QK^T/√d) weights are determined by query/key content; the attention matrix is generally not circulant
+> - **Correct statement**: The scheme works for position-dependent convolutive attention (e.g., RoPE frequency components); for general content-dependent attention, it remains O(n²)
+> - **Paper fix**: Explicitly state the position-dependence assumption, or switch to graph-spectral attention (project onto graph Laplacian eigenbasis, no circular convolution theorem needed)
+
+### Case 2: Design — "Orthogonality loss for non-overlapping MoE experts"
+
+**User**: "Design an orthogonality loss to make MoE expert representations non-overlapping"
+
+**Regular AI answer**:
+> Use Frobenius orthogonality regularization L = Σ‖W_i^T W_j‖_F², or the σ²(1-σ²) form to push singular values away from 0 and 1.
+
+**Math Skill answer** (activated: Projection lens → `orthogonality-loss` design pattern):
+
+> **Primary scheme**: Frobenius orthogonality regularization + normalized Gram decorrelation
+>
+> **⚠ Formula correction**: σ²(1-σ²) gives zero penalty at both σ=0 (orthogonal) and σ=1 (fully overlapping) — fully overlapping subspaces get zero penalty, violating the orthogonality goal. The correct formula is the log-barrier:
+> L = −Σ_{i<j} Σ_k log(1 − σ_k² + ε)
+>
+> - **Prerequisite**: Must first QR-decompose W_i to get orthonormal basis Q_i, otherwise singular values may exceed 1, making log undefined
+> - **GPU feasibility**: D2[v] core is 1 GEMM + mask; D5[~] SVD backward needs fp32 accumulation + ε regularization
+> - **Boundary**: When K·r > d, strict orthogonality is impossible; need dimensionality reduction or approximate orthogonality
+
+---
+
+> If these cases inspire you, consider leaving a Star⭐. Your support keeps the project evolving.
+
+---
+
+## Quick Start
+
+### Installation
+
+**Codex / Claude Code** (recommended: full install with knowledge base and design patterns):
+
+```bash
+git clone https://github.com/the-thinker0/math-skill.git ~/.codex/skills/math-research-activator
+```
+
+**npm** (get the content package):
+
+```bash
+npm install math-skill
+```
+
+> The npm package contains all Markdown content files but does not auto-register as a skill. For full installation, use `git clone` into `~/.codex/skills/` or `~/.claude/skills/`.
+
+Root `SKILL.md` is the canonical Codex entry. `skills/math-research-activator/SKILL.md` is a Claude/plugin compatibility entry that forwards to the root. Do not copy only the nested directory — it references knowledge-base and design-pattern files at the repo root.
+
+### Usage
+
+**Auto-trigger**: The system auto-diagnoses user intent and routes to the appropriate layer:
+
+| Scenario | Signal | Path |
+|----------|--------|------|
+| Analysis | "Is this design sound?" | Lenses → compact review |
+| Design | "Design a new attention" | Lenses → anchors → design translation → compact review |
+| Knowledge query | "How does tangent space relate to gradient optimization?" | Activate anchor |
+| Verification | "Does this formula/reduction hold?" | Anchors → conditions/boundaries |
+| Pure engineering | debug, refactoring, tuning | **Not triggered** |
+
+**Manual trigger**:
 
 ```
-Problem
- ↓
-Thinking Lenses: What perspective fits this problem?
- ↓
-Activation Anchors: Which math structures to activate? Enter Knowledge Gap Protocol if insufficient
- ↓
-Design Translation: How do these tools become model structures / losses / operators?
- ↓
-Critic: Mathematically sound? Engineering-feasible?
+/ask <your question>     # Smart diagnosis: auto-detect scenario and route
 ```
+
+### Language
+
+Auto-detects Chinese/English: Chinese messages get Chinese output, English messages get English output. Technical terms, code, and formulas do not determine language.
 
 ---
 
@@ -125,47 +172,7 @@ AI research and cryptography **share** mathematical foundations (probability/inf
 
 ---
 
-## Quick Start
-
-### Installation
-
-```
-Please help me install math-skill: https://github.com/the-thinker0/math-skill, and show me how to use it
-```
-
-Manual Codex install (install the whole repository as one self-contained skill; do not copy only the nested entry):
-
-```bash
-git clone https://github.com/the-thinker0/math-skill.git ~/.codex/skills/math-research-activator
-```
-
-Root `SKILL.md` is the canonical Codex entry. `skills/math-research-activator/SKILL.md` is only a Claude/plugin-style compatibility entry that forwards to the root. Copying the nested directory alone omits its anchors and design patterns.
-
-### Usage
-
-**Auto-trigger**: The system auto-diagnoses user intent and routes to the appropriate layer:
-
-| Scenario | Signal | Path |
-|----------|--------|------|
-| Problem Analysis | "Is this design sound?" | Lenses → Critic |
-| Mechanism Design | "Design a new attention" | Lenses → Anchors / Temporary Card → Design → Critic |
-| Knowledge Query | "What is tangent space and how does it relate to gradient optimization?" | Anchors; Knowledge Gap Protocol if insufficient |
-| Verification | "Does this formula hold?" | Anchors / Temporary Card → Critic |
-| Pure Engineering | debug, refactoring, tuning | **Not triggered** |
-
-**Manual trigger**:
-
-```
-/ask <your question>     # Smart diagnosis: auto-detect scenario and route
-```
-
-### Language Switching
-
-Auto-detects user language: Chinese messages get Chinese output, English messages get English output.
-
----
-
-## Workflow Example
+## Routing Example
 
 **User**: "Design a new KV Cache compression method that preserves long-range dependencies without just doing top-k"
 

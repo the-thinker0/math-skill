@@ -2,54 +2,101 @@
   <a href="README.md">中文</a> | <a href="README.en-US.md">English</a>
 </p>
 
-# 📐 Math Skill: 面向 AI 与密码学创新的数学研究操作系统
+# 📐 Math Skill
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![npm version](https://img.shields.io/npm/v/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 [![npm downloads](https://img.shields.io/npm/dt/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 
----
-
-> **如果这个项目对你有所启发，请不吝点亮一颗 Star⭐。** 每一个 Star 都是对数学之美的共鸣，也是支撑这个项目继续前行的力量。欢迎每一位热爱数学、在数学海洋中遨游的同行者。
-
----
-
-## 📢 社区公告
-
-> **v3.3.1 已发布**：文档纪律修复版——补全 README 目录树遗漏域、纠正工作流范例、瘦身 changelog、统一入口话术与计数口径。v3.3.0 完成路由收敛与专业性校正；本版修复其遗留的文档一致性问题。详见变更日志。欢迎通过 GitHub Issues 或 Discussions 反馈使用体验与边界场景。
-
----
-
-## 灵感来源
-
-Sophus Lie 打造"屠龙刀"的故事告诉我们：为解微分方程发明的李群-李代数，最终成为描述对称性、机器人状态估计的通用语言——数学工具的价值远超初衷，这正是「跨领域激活」的原型。详见 [`references/inspiration.md`](references/inspiration.md)。
-
-> 数学最迷人的地方：为特定问题发明的工具，在完全不同的领域展现出远超初衷的价值。
-
----
-
 > Math Skill 不存储数学，它激活数学、路由数学，并把数学翻译成 AI 研究设计。
 
-## 核心理念
+面向 **Claude Code / Codex / Cursor** 的数学推理技能——在 AI 架构设计、数学结构迁移和密码学证明审查中，自动激活正确的数学透镜、知识锚点和设计原型，给出带条件、带反例、可证伪的结论。
 
-当你面对一个 AI 研究问题时，这个系统帮你回答四个问题：
+---
 
-1. **该用什么数学思想看？** → 思想透镜
-2. **应该激活哪些数学结构？** → 激活锚点 / 临时知识卡
-3. **怎么把数学变成模型设计？** → 设计翻译原型
-4. **这个设计是否数学上靠谱、工程上可行？** → 批判器
+## 它和直接问 AI 有什么区别？
+
+### 案例 1：分析——"我的 FFT attention 声称 O(n log n)"
+
+**用户**："我的 attention 用 FFT 加速到了 O(n log n)，但审稿人质疑这个复杂度，合理吗？"
+
+**普通 AI 回答**：
+> FFT 的复杂度是 O(n log n)，用它替代 softmax(QK^T) 的 O(n²) 是合理的加速。建议在论文中强调 cuFFT 的优化。
+
+**Math Skill 回答**（激活：谱分解透镜 → `spectral-attention` 设计模式）：
+
+> **结论**：O(n log n) 加速仅在注意力矩阵为循环或 Toeplitz 结构时成立。标准 content-dependent softmax 注意力不满足此条件。
+>
+> - **关键区分**：FFT 逐元素频域乘法等价于循环卷积定理，要求 a_{ij} = f(i−j)（仅依赖相对位置），而非 token 内容
+> - **反例**：NLP 中 softmax(QK^T/√d) 的权重由 query/key 内容决定，注意力矩阵一般不是循环矩阵
+> - **正确表述**：方案对位置依赖的卷积式注意力有效（如 RoPE 频率分量）；对通用 content-dependent 注意力，仍为 O(n²)
+> - **论文修改建议**：明确声明位置依赖假设，或改用图谱注意力方案（在图 Laplacian 特征基上投影，不依赖循环卷积定理）
+
+### 案例 2：设计——"正交性 loss 让 MoE 专家不重叠"
+
+**用户**："设计一个正交性 loss，让 MoE 各专家的表示不重叠"
+
+**普通 AI 回答**：
+> 可以用 Frobenius 正交正则 L = Σ‖W_i^T W_j‖_F²，或用 σ²(1-σ²) 形式鼓励奇异值远离 0 和 1。
+
+**Math Skill 回答**（激活：投影透镜 → `orthogonality-loss` 设计模式）：
+
+> **主方案**：Frobenius 正交正则 + 归一化 Gram 去相关
+>
+> **⚠ 公式修正**：σ²(1-σ²) 在 σ=0（正交）和 σ=1（完全重叠）时惩罚均为 0——完全重叠的子空间获得零惩罚，违背正交性目标。正确公式为对数障碍：
+> L = −Σ_{i<j} Σ_k log(1 − σ_k² + ε)
+>
+> - **前置条件**：需先对 W_i 做 QR 分解取正交基 Q_i，否则奇异值可能 >1 导致 log 未定义
+> - **GPU 可行性**：D2[v] 核心仅 1 次 GEMM + mask；D5[~] SVD 反向需 fp32 累积 + ε 正则化
+> - **边界**：当 K·r > d 时正交性不可能严格满足，需降维或接受近似正交
+
+---
+
+> 如果这些案例对你有启发，欢迎点亮一颗 Star⭐。你的支持是项目持续打磨的动力。
+
+---
+
+## 快速开始
+
+### 安装
+
+**Codex / Claude Code**（推荐：完整安装，含知识库与设计模式）：
+
+```bash
+git clone https://github.com/the-thinker0/math-skill.git ~/.codex/skills/math-research-activator
+```
+
+**npm**（获取内容包）：
+
+```bash
+npm install math-skill
+```
+
+> npm 包包含全部 Markdown 内容文件，但不自动注册为 skill。完整安装请用 `git clone` 到 `~/.codex/skills/` 或 `~/.claude/skills/` 目录。
+
+根 `SKILL.md` 是 Codex 权威入口。`skills/math-research-activator/SKILL.md` 是 Claude/plugin 兼容入口并转发到根文件。不要单独复制内层目录——它引用的知识库与设计模式在仓库根。
+
+### 使用
+
+**自动触发**：系统自动诊断用户意图，路由到合适的层：
+
+| 场景 | 诊断信号 | 调用路径 |
+|------|---------|---------|
+| 问题分析 | "这个设计合理吗？" | 透镜 → 紧凑审查 |
+| 机制设计 | "设计新 attention" | 透镜 → 锚点 → 设计翻译 → 紧凑审查 |
+| 知识查询 | "切空间和梯度优化有什么关系？" | 激活锚点 |
+| 验证审查 | "这个公式/归约成立吗？" | 锚点 → 条件/边界 |
+| 纯工程 | debug、重构、调参 | **不触发** |
+
+**手动触发**：
 
 ```
-问题
- ↓
-思想透镜：这个问题该用什么视角看？
- ↓
-激活锚点：应该激活哪些数学结构？不足时进入知识缺口协议
- ↓
-设计翻译：这些工具怎么变成模型结构 / loss / 算子？
- ↓
-批判器：数学上站得住、工程上跑得动吗？
+/ask <你的问题>          # 智能诊断：自动判断场景并路由
 ```
+
+### 语言
+
+自动检测中英文：中文消息返回中文输出，英文消息返回英文输出。技术词、代码、公式不决定语言。
 
 ---
 
@@ -125,47 +172,7 @@ AI 研究与密码学**共享**数学根基（概率/信息/代数/矩阵/谱/�
 
 ---
 
-## 快速开始
-
-### 安装
-
-```
-请帮我安装 math-skill：https://github.com/the-thinker0/math-skill，并教我如何使用
-```
-
-Codex 手动安装（把整个仓库作为一个自足 skill，而不是只复制内层目录）：
-
-```bash
-git clone https://github.com/the-thinker0/math-skill.git ~/.codex/skills/math-research-activator
-```
-
-根 `SKILL.md` 是 Codex 权威入口；`skills/math-research-activator/SKILL.md` 只是 Claude/plugin 风格兼容入口并转发到根文件。不要单独复制内层目录，否则它引用的知识库与设计模式不完整。
-
-### 使用
-
-**自动触发**：系统自动诊断用户意图，路由到合适的层：
-
-| 场景 | 诊断信号 | 调用路径 |
-|------|---------|---------|
-| 问题分析 | "这个设计合理吗？" | 透镜 → critic |
-| 机制设计 | "设计新 attention" | 透镜 → 激活锚点/临时知识卡 → 设计翻译 → critic |
-| 知识查询 | "切空间和梯度优化有什么关系？" | 激活锚点；不足则 Knowledge Gap Protocol |
-| 验证审查 | "这个公式成立吗？" | 激活锚点/临时知识卡 → critic |
-| 纯工程 | debug、重构、调参 | **不调用** |
-
-**手动触发**：
-
-```
-/ask <你的问题>          # 智能诊断：自动判断场景并路由
-```
-
-### 语言切换
-
-自动检测用户语言：中文消息返回中文输出，英文消息返回英文输出。
-
----
-
-## 工作流范例
+## 路由范例
 
 **用户**："设计新的 KV Cache 压缩方法，保留长期依赖，不想只做 top-k"
 
