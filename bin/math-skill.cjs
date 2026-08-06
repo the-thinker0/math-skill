@@ -64,6 +64,14 @@ async function exists(filePath) {
   }
 }
 
+async function isDir(p) {
+  try {
+    return (await fsp.stat(p)).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
 async function readSkillName(skillFile) {
   try {
     const content = await fsp.readFile(skillFile, 'utf8');
@@ -203,9 +211,18 @@ async function installPlatform(platform) {
   await copyRuntime(tempDir);
   await validateInstall(tempDir);
   const movedDuplicates = await moveLegacyDuplicates(platform, target, backupRoot);
-  const hadOldVersion = await exists(target);
+  // Defensive: a stale NON-directory at `target` (e.g. a leftover file/symlink
+  // from a broken prior install) would make the swap rename fail with ENOTDIR.
+  // Detect it via stat and relocate it like an old version so it is never lost
+  // and the swap can always proceed.
+  let targetStat = null;
+  try { targetStat = await fsp.stat(target); } catch { targetStat = null; }
+  const hadOldVersion = targetStat !== null;
+  if (hadOldVersion && !targetStat.isDirectory()) {
+    await movePath(target, oldVersionBackup);
+  }
   try {
-    if (hadOldVersion) await movePath(target, oldVersionBackup);
+    if (hadOldVersion && (await isDir(target))) await movePath(target, oldVersionBackup);
     await movePath(tempDir, target);
     await validateInstall(target);
     if (hadOldVersion) await fsp.rm(oldVersionBackup, { recursive: true, force: true });
