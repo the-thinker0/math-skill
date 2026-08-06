@@ -279,6 +279,10 @@ math-skill/
 
 ## 变更日志
 
+### v3.3.4 — v3.3.3 热修复
+
+- **安装器热修复**：修复 `update --all` 在 skill 目标位残留非目录文件（如损坏旧安装的残留）时触发 `ENOTDIR`、导致 claude 侧升级失败的问题；现在安装器会先安全转移该残留再替换，升级不再中断
+
 ### v3.3.3 — 知识纠错·精益加载
 
 - **知识内容纠错（双语）**：修正两本书稿与 README 的错误 ISBN（Goldreich、Katz & Lindell，经校验位验证）；修正拓扑透镜"同 χ 同曲面、同 π₁ 同同伦"的错误断言与孤儿路由 `tda`；local-to-global 中文把 monodromy 误译为"单值化定理"；categorical 透镜路由改正；VIB 目标补回 β 乘子

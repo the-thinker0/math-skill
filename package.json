@@ -1,6 +1,6 @@
 {
   "name": "math-skill",
-  "version": "3.3.3",
+  "version": "3.3.4",
   "description": "面向 AI 架构创新与密码学研究的数学研究路由器：三层正交架构（15 透镜 / 37 锚点 / 22 设计原型）+ Domain Router + Knowledge Gap Protocol。Math research router for AI and cryptography: three-layer architecture with progressive loading and domain isolation.",
   "keywords": [
     "math",

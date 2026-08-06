@@ -279,6 +279,10 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 
 ## Changelog
 
+### v3.3.4 — Hotfix for v3.3.3
+
+- **Installer hotfix**: fixed `update --all` failing with `ENOTDIR` on Claude when a stale non-directory (e.g. a leftover from a broken install) occupied the skill target; the installer now relocates the artifact safely before swapping, so upgrades no longer abort
+
 ### v3.3.3 — Knowledge Fixes · Lean Loading
 
 - **Knowledge content corrections (bilingual)**: fixed two invalid ISBNs in book distillations & README (Goldreich, Katz & Lindell — check-digit verified); fixed the topological lens's false claims ("same χ ⇒ same surface", "same π₁ ⇒ same homotopy type") and the orphan `tda` route; fixed the CN mistranslation of monodromy as "单值化定理" in local-to-global; corrected categorical-lens routing; restored the missing β in the VIB objective

@@ -571,7 +571,7 @@ check_not_contains "knowledge-base/cryptography/prf-prg-owf.md" '通常是 small
 check_contains "knowledge-base/cryptography/cca-cpa-ae-hierarchy.md" '不能映射成“训练数据量 ≥ 模型参数量”'
 check_not_contains "knowledge-base/cryptography/reduction-proof-template.md" '差分隐私假设'
 check_contains "references/gpu-friendly-math.md" '`N/A` 不计分'
-check_contains "package.json" '"version": "3.3.3"'
+check_contains "package.json" '"version": "3.3.4"'
 
 # --- v3.3.2 Documentation Discipline Checks ---
 echo ""
