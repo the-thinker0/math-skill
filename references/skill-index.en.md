@@ -28,7 +28,7 @@
 - **Read by section, not whole file:** read an anchor's `Minimal Definition + Core Formulas + Applicable Problems` first; for a design pattern whose anchor is already loaded, skip `Mathematical Origins / Required Math` and read `AI Module Form / GPU Feasibility / Risks` directly.
 - **Size tiers** (per file, approximate): books **L** (~4k tokens); design patterns **M** (~1.7–2.1k); knowledge anchors **M** (~1.3–1.7k); lenses **S** (~0.7–1.0k).
 - **Path preference:** prefer S over M over L; prefer one card over a book; do not re-read math already covered by a loaded anchor (Eckart-Young, randomized SVD, spectral clustering, etc.).
-- Read the `Routing / Extension / Deep References` tail only for citation or routing; use the ≤5-item insight contract for output (see `../SKILL.md`).
+- Read the `Routing / Extension / Deep References` tail only for citation or routing; output structure follows the task (see `../SKILL.md` output quality check).
 
 ## Language Routing & Mixed-Input Rules (Full Version)
 

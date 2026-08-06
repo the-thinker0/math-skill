@@ -279,6 +279,13 @@ math-skill/
 
 ## 变更日志
 
+### v3.3.3 — 知识纠错·精益加载
+
+- **知识内容纠错（双语）**：修正两本书稿与 README 的错误 ISBN（Goldreich、Katz & Lindell，经校验位验证）；修正拓扑透镜"同 χ 同曲面、同 π₁ 同同伦"的错误断言与孤儿路由 `tda`；local-to-global 中文把 monodromy 误译为"单值化定理"；categorical 透镜路由改正；VIB 目标补回 β 乘子
+- **精益加载协议（省 token，不设输出模板）**：锚点按节读取、默认跳过尾部节，原型跳过与已读锚点重复的数学段，最小路径优先；输出结构由研究/设计任务决定，不套固定格式
+- **工程修复**：validate.ps1 版本与 sh 对齐并补齐校验缺口；npx 安装器加内容完整性校验、拒绝残缺安装；发布包剔除 repo-only 的 `skills/` 死重与重复 name 声明
+- **验证**：`validate.sh` 检查 529 → 537 全绿，新增内容与精益加载守护防回潮
+
 ### v3.3.2 — 产品化与 npx 安装器
 
 - **npx CLI 安装器**：新增 `bin/math-skill.cjs`，支持 `npx -y math-skill@latest install/update/doctor/uninstall`；原子替换旧版、排除内层 `skills/` 防双入口、`doctor` 检查重复入口

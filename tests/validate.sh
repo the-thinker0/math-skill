@@ -533,17 +533,15 @@ check_contains "SKILL.en.md" 'ordinary A/B/D tasks'
 check_contains "README.md" 'v3.3.2 — 产品化与 npx 安装器'
 check_contains "README.en-US.md" 'v3.3.2 — Productization & npx Installer'
 
-# --- Lean Loading & Insight Contract Check (v3.4) ---
+# --- Lean Loading Check (v3.3.3) ---
 echo ""
-echo "--- Lean Loading & Insight Contract Check ---"
-check_contains "SKILL.md" '精益加载与结论契约'
+echo "--- Lean Loading Check ---"
+check_contains "SKILL.md" '精益加载'
 check_contains "SKILL.md" '按节读取'
-check_contains "SKILL.md" '非显然洞察'
-check_contains "SKILL.md" '可证伪探针'
-check_contains "SKILL.en.md" 'Lean loading and the insight contract'
+check_contains "SKILL.md" '不设固定输出格式'
+check_contains "SKILL.en.md" 'Lean loading'
 check_contains "SKILL.en.md" 'Read by section'
-check_contains "SKILL.en.md" 'non-obvious insight'
-check_contains "SKILL.en.md" 'falsifiable probe'
+check_contains "SKILL.en.md" 'no fixed output format'
 check_contains "references/skill-index.md" '精益加载与尺寸提示'
 check_contains "references/skill-index.en.md" 'Lean loading and size tiers'
 
@@ -573,7 +571,7 @@ check_not_contains "knowledge-base/cryptography/prf-prg-owf.md" '通常是 small
 check_contains "knowledge-base/cryptography/cca-cpa-ae-hierarchy.md" '不能映射成“训练数据量 ≥ 模型参数量”'
 check_not_contains "knowledge-base/cryptography/reduction-proof-template.md" '差分隐私假设'
 check_contains "references/gpu-friendly-math.md" '`N/A` 不计分'
-check_contains "package.json" '"version": "3.3.2"'
+check_contains "package.json" '"version": "3.3.3"'
 
 # --- v3.3.2 Documentation Discipline Checks ---
 echo ""

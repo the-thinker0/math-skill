@@ -279,6 +279,13 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 
 ## Changelog
 
+### v3.3.3 — Knowledge Fixes · Lean Loading
+
+- **Knowledge content corrections (bilingual)**: fixed two invalid ISBNs in book distillations & README (Goldreich, Katz & Lindell — check-digit verified); fixed the topological lens's false claims ("same χ ⇒ same surface", "same π₁ ⇒ same homotopy type") and the orphan `tda` route; fixed the CN mistranslation of monodromy as "单值化定理" in local-to-global; corrected categorical-lens routing; restored the missing β in the VIB objective
+- **Lean-loading protocol (saves tokens, no output template)**: read anchors by section (skip the tail by default), skip a pattern's math that duplicates an already-loaded anchor, prefer the smallest-sufficient path; output structure follows the task — no fixed format imposed
+- **Engineering fixes**: validate.ps1 version + parity aligned with validate.sh; the npx installer now rejects incomplete installs (content-integrity check); removed repo-only `skills/` dead weight (and duplicate `name` declaration) from the published package
+- **Validation**: `validate.sh` 529 → 537 all green; new content and lean-loading guards prevent regression
+
 ### v3.3.2 — Productization & npx Installer
 
 - **npx CLI installer**: Added `bin/math-skill.cjs` supporting `npx -y math-skill@latest install/update/doctor/uninstall`; atomic version replacement, excludes nested `skills/` to prevent double entries, `doctor` checks for duplicates

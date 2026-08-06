@@ -85,7 +85,7 @@ Check-File "package.json"
 Check-Contains "package.json" "lenses/"
 Check-Contains "package.json" "design-patterns/"
 Check-Contains "package.json" "knowledge-base/"
-Check-Contains "package.json" '"version": "3.3.2"'
+Check-Contains "package.json" '"version": "3.3.3"'
 Check-File "SKILL.md"
 Check-File "SKILL.en.md"
 if ((Get-Content "SKILL.md" -TotalCount 1) -eq "---" -and (Get-Content "SKILL.en.md" -TotalCount 1) -eq "---") {
@@ -470,16 +470,14 @@ Check-Contains "SKILL.en.md" 'ordinary A/B/D tasks'
 Check-Contains "README.md" 'v3.3.2 — 产品化与 npx 安装器'
 Check-Contains "README.en-US.md" 'v3.3.2 — Productization & npx Installer'
 
-# --- Lean Loading & Insight Contract Check (synced with validate.sh) ---
-Write-Host "`n--- Lean Loading & Insight Contract Check ---"
-Check-Contains "SKILL.md" '精益加载与结论契约'
+# --- Lean Loading Check (synced with validate.sh) ---
+Write-Host "`n--- Lean Loading Check ---"
+Check-Contains "SKILL.md" '精益加载'
 Check-Contains "SKILL.md" '按节读取'
-Check-Contains "SKILL.md" '非显然洞察'
-Check-Contains "SKILL.md" '可证伪探针'
-Check-Contains "SKILL.en.md" 'Lean loading and the insight contract'
+Check-Contains "SKILL.md" '不设固定输出格式'
+Check-Contains "SKILL.en.md" 'Lean loading'
 Check-Contains "SKILL.en.md" 'Read by section'
-Check-Contains "SKILL.en.md" 'non-obvious insight'
-Check-Contains "SKILL.en.md" 'falsifiable probe'
+Check-Contains "SKILL.en.md" 'no fixed output format'
 Check-Contains "references\skill-index.md" '精益加载与尺寸提示'
 Check-Contains "references\skill-index.en.md" 'Lean loading and size tiers'
 
