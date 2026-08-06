@@ -129,7 +129,7 @@
 
 ## 深挖入口
 
-> **书目信息**：Jonathan Katz & Yehuda Lindell, *Introduction to Modern Cryptography*, 2nd Edition, CRC Press, 2015. ISBN 978-1-4665-7026-1.
+> **书目信息**：Jonathan Katz & Yehuda Lindell, *Introduction to Modern Cryptography*, 2nd Edition, CRC Press, 2015. ISBN 978-1-4665-7026-9.
 >
 > **启用方式**：将 `Introduction to Modern Cryptography.pdf` 放入 `math_book/`，Agent 自动 `pdftotext` + grep 定位原文页。
 

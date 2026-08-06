@@ -13,7 +13,7 @@ where $\beta > 0$ is a Lagrange multiplier controlling the **compression-predict
 - $I(Z; Y)$: the amount of information about target $Y$ contained in representation $Z$ (larger = better prediction)
 
 **Variational Lower Bound** (practically computable version):
-$$\mathcal{L}_{VIB} = \mathbb{E}_{p(x,y)}[-\log q_\phi(y|z)] + D_{KL}(p_\theta(z|x) \| r(z))$$
+$$\mathcal{L}_{VIB} = \mathbb{E}_{p(x,y)}[-\log q_\phi(y|z)] + \beta \, D_{KL}(p_\theta(z|x) \| r(z))$$
 
 where $q_\phi(y|z)$ is the classifier/decoder, $r(z)$ is the prior distribution (typically $\mathcal{N}(0,I)$), and $p_\theta(z|x)$ is the encoder.
 

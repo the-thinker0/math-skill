@@ -113,7 +113,7 @@ Avoid treating AES/SHA as GEMM, repeatedly invoking non-measured cryptographic k
 
 ## Deep-Dive Entry
 
-> Jonathan Katz and Yehuda Lindell, *Introduction to Modern Cryptography*, 2nd Edition, CRC Press, 2015. ISBN 978-1-4665-7026-1.
+> Jonathan Katz and Yehuda Lindell, *Introduction to Modern Cryptography*, 2nd Edition, CRC Press, 2015. ISBN 978-1-4665-7026-9.
 >
 > Place `Introduction to Modern Cryptography.pdf` under `math_book/` for targeted local full-text lookup.
 

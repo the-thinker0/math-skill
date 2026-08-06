@@ -21,7 +21,7 @@
 
 ## 会路由到哪些知识域
 
-- `lie-theory/equivariance`：对象/态射/函子/自然变换/Yoneda 引理——跨域迁移的核心语言
+- `algebraic-geometry`：函子、自然变换、Yoneda 引理等范畴论结构（该知识库由此域承载）——跨域迁移的核心语言
 - `lie-theory/representation`：群/环/域/模/格——识别运算结构的公理匹配
 - **topology**：开集/连续/连通——当问题涉及空间结构与连续变形时
 

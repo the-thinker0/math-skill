@@ -21,8 +21,7 @@ Topology is a way of "ignoring precise measurements and focusing only on qualita
 
 ## Which Knowledge Domains It Routes To
 
-- `topology/persistent-homology`: Fundamental group, homology groups, Betti numbers, and cohomology — computational tools for topological invariants
-- **tda**: Persistent homology, filtrations, and simplicial complexes — extracting topological features from data
+- `topology/persistent-homology`: Persistent homology, filtrations, simplicial complexes, and persistence barcodes — extracting scale-dependent topological features from data (TDA methodology)
 - `topology/fundamental-group`: Fundamental group, loop homotopy classes, covering spaces — detecting non-contractible loops and path-connectivity structure
 
 ## What AI Designs It May Inspire
@@ -35,7 +34,7 @@ Topology is a way of "ignoring precise measurements and focusing only on qualita
 
 1. **Specify the Equivalence Standard**: Determine whether the relevant notion is homeomorphism, homotopy equivalence, or diffeomorphism; distinguish what may vary (distance) from what must remain invariant (number of holes)
 2. **Compute Topological Invariants**: Euler characteristic, connected components, fundamental group, homology groups, and Betti numbers
-3. **Classify Using Invariants**: Same χ implies same surface type; same π₁ implies same homotopy type
+3. **Classify Using Invariants**: Equal χ alone does not determine the surface type (it must be combined with orientability); equal π₁ is necessary but far from sufficient for homotopy equivalence (higher homology/homotopy groups are also needed)
 4. **Construct a Topological Model**: Build a filtration from a point cloud, a graph from a network, or a phase space from a dynamical system
 5. **Verify Equivalence**: Attempt to construct an explicit homeomorphism or homotopy; check whether all invariants match
 

@@ -13,7 +13,7 @@ $$\min_{p(z|x)} \; I(X; Z) - \beta \cdot I(Z; Y)$$
 - $I(Z; Y)$：表示 $Z$ 中关于目标 $Y$ 的信息量（越大 = 预测越好）
 
 **变分下界**（实际可计算版本）：
-$$\mathcal{L}_{VIB} = \mathbb{E}_{p(x,y)}[-\log q_\phi(y|z)] + D_{KL}(p_\theta(z|x) \| r(z))$$
+$$\mathcal{L}_{VIB} = \mathbb{E}_{p(x,y)}[-\log q_\phi(y|z)] + \beta \, D_{KL}(p_\theta(z|x) \| r(z))$$
 
 其中 $q_\phi(y|z)$ 为分类器/解码器，$r(z)$ 为先验分布（通常为 $\mathcal{N}(0,I)$），$p_\theta(z|x)$ 为编码器。
 

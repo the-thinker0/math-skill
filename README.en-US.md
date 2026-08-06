@@ -270,8 +270,8 @@ math-skill/
 | # | Title | Author(s) | Publisher / Edition | Year | ISBN | Distillation |
 |---|-------|-----------|-------------------|------|------|-------------|
 | 8 | *A Graduate Course in Applied Cryptography* | Dan Boneh & Victor Shoup | v0.4 online | 2017 | — | `applied-cryptography.en.md` |
-| 9 | *Foundations of Cryptography, Volume 1: Basic Tools* | Oded Goldreich | Cambridge University Press | 2001 | 978-0-521-79235-9 | `foundations-of-cryptography.en.md` |
-| 10 | *Introduction to Modern Cryptography* | Jonathan Katz & Yehuda Lindell | CRC Press, 2nd ed. | 2015 | 978-1-4665-7026-1 | `introduction-to-modern-cryptography.en.md` |
+| 9 | *Foundations of Cryptography, Volume 1: Basic Tools* | Oded Goldreich | Cambridge University Press | 2001 | 978-0-521-79172-4 | `foundations-of-cryptography.en.md` |
+| 10 | *Introduction to Modern Cryptography* | Jonathan Katz & Yehuda Lindell | CRC Press, 2nd ed. | 2015 | 978-1-4665-7026-9 | `introduction-to-modern-cryptography.en.md` |
 
 Distillation files ship with the npm package. For full-fidelity lookups, place PDFs in the `math_book/` folder.
 

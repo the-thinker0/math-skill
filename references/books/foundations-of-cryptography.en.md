@@ -96,7 +96,7 @@ Avoid implementing a generic existence construction as a production primitive, t
 
 ## Deep-Dive Entry
 
-> Oded Goldreich, *Foundations of Cryptography, Volume 1: Basic Tools*, Cambridge University Press, 2001. ISBN 978-0-521-79235-9.
+> Oded Goldreich, *Foundations of Cryptography, Volume 1: Basic Tools*, Cambridge University Press, 2001. ISBN 978-0-521-79172-4.
 >
 > Place `Foundations of Cryptography.pdf` under `math_book/` for targeted local full-text lookup.
 

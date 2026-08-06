@@ -108,7 +108,7 @@
 
 ## 深挖入口
 
-> **书目信息**：Oded Goldreich, *Foundations of Cryptography, Volume 1: Basic Tools*, Cambridge University Press, 2001. ISBN 978-0-521-79235-9.
+> **书目信息**：Oded Goldreich, *Foundations of Cryptography, Volume 1: Basic Tools*, Cambridge University Press, 2001. ISBN 978-0-521-79172-4.
 >
 > **启用方式**：将 `Foundations of Cryptography.pdf` 放入 `math_book/`，Agent 自动 `pdftotext` + grep 定位原文页。
 
