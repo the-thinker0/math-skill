@@ -1,11 +1,19 @@
 # Note: The "files" field in package.json acts as a whitelist for npm publish.
 # This .npmignore file only applies within those whitelisted directories
-# (e.g., excluding .DS_Store inside skills/ or commands/).
+# (e.g., excluding .DS_Store inside commands/).
 # Top-level exclusions below are redundant with "files" but kept for clarity.
 
 # Development-only files (already excluded by "files" whitelist)
 TODO.md
 context.md
+
+# skills/ is a repo-only layout: the nested skill/math-research-activator is a
+# compatibility stub that resolves paths against the repo root (../../SKILL.md)
+# and is NOT installed by bin/math-skill.cjs (INSTALL_ENTRIES excludes it to
+# guarantee exactly one SKILL.md entry per platform). Shipping it would be dead
+# weight plus a duplicate `name: math-research-activator` declaration, so it is
+# kept out of the published package. (Excluded from "files" whitelist too.)
+skills/
 
 # Local configuration (already excluded by "files" whitelist)
 .claude/

@@ -92,12 +92,22 @@ async function selectPlatforms(args) {
 
 async function copyRuntime(tempDir) {
   await fsp.mkdir(tempDir, { recursive: true });
+  const missing = [];
   for (const entry of INSTALL_ENTRIES) {
     const source = path.join(PACKAGE_ROOT, entry);
-    if (!(await exists(source))) continue;
+    if (!(await exists(source))) {
+      missing.push(entry);
+      continue;
+    }
     await fsp.cp(source, path.join(tempDir, entry), {
       recursive: true, force: true, errorOnExist: false,
     });
+  }
+  if (missing.length > 0) {
+    throw new Error(
+      `Package incomplete: missing required install entries (${missing.join(', ')}). ` +
+      'Refusing to install a partial Math Skill.'
+    );
   }
   const marker = {
     package: PACKAGE_JSON.name,
@@ -133,7 +143,16 @@ async function validateInstall(installDir) {
   if (skillName !== SKILL_NAME) throw new Error(`SKILL.md name should be ${SKILL_NAME}, got ${skillName || 'unreadable'}.`);
   const skillFiles = await findSkillFiles(installDir);
   if (skillFiles.length !== 1) throw new Error(`Found ${skillFiles.length} SKILL.md files; must have exactly one entry.`);
+  // Verify the runtime content is complete, so a partial/trimmed package cannot
+  // silently install. These mirror copyRuntime's expected directory layout.
+  for (const entry of REQUIRED_DIRS) {
+    if (!(await exists(path.join(installDir, entry)))) {
+      throw new Error(`Install content missing required directory: ${entry}/`);
+    }
+  }
 }
+
+const REQUIRED_DIRS = ['commands', 'lenses', 'design-patterns', 'agents', 'knowledge-base', 'references'];
 
 async function ensureStateDirs() {
   const stateRoot = path.join(HOME, '.math-skill');

@@ -259,6 +259,14 @@ else
     PASS=$((PASS + 1))
 fi
 
+if echo "$PACK_OUTPUT" | grep -q "skills/math-research-activator"; then
+    echo -e "${RED}[FAIL]${NC} npm pack includes repo-only skills/ (must be excluded: compat stub, never installed)"
+    FAIL=$((FAIL + 1))
+else
+    echo -e "${GREEN}[PASS]${NC} npm pack excludes skills/ (repo-only compat entry)"
+    PASS=$((PASS + 1))
+fi
+
 # --- CN/EN Pairing ---
 echo ""
 echo "--- CN/EN File Pairing ---"
@@ -574,7 +582,8 @@ check_contains "README.md" '扩展至 37'
 check_contains "README.en-US.md" 'expanded to 37 in v3.2'
 check_contains "README.md" 'v3.3.2'
 check_contains "README.en-US.md" 'v3.3.2'
-# CLAUDE.md is gitignored (machine-local); only check when present
+# CLAUDE.md holds project editing conventions; optional for validation (changed
+# only when it exists locally), so keep this conditional.
 if [ -f "CLAUDE.md" ]; then
     check_contains "CLAUDE.md" 'musings'
     check_contains "CLAUDE.md" 'skill-index'

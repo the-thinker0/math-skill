@@ -9,7 +9,6 @@ Thumbs.db
 
 # Claude Code local settings (machine-specific, not shareable)
 .claude/
-CLAUDE.md
 
 # Local agent/subagent state (machine-specific, may contain absolute paths)
 .deepseek/

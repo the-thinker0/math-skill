@@ -85,7 +85,7 @@ Check-File "package.json"
 Check-Contains "package.json" "lenses/"
 Check-Contains "package.json" "design-patterns/"
 Check-Contains "package.json" "knowledge-base/"
-Check-Contains "package.json" '"version": "3.3.0"'
+Check-Contains "package.json" '"version": "3.3.2"'
 Check-File "SKILL.md"
 Check-File "SKILL.en.md"
 if ((Get-Content "SKILL.md" -TotalCount 1) -eq "---" -and (Get-Content "SKILL.en.md" -TotalCount 1) -eq "---") {
@@ -261,10 +261,15 @@ Check-Not-Contains "design-patterns\loss\contrastive-loss.en.md" "O(1/√N)"
 Check-Contains "design-patterns\overview.md" "严谨性约定"
 Check-Contains "design-patterns\overview.en.md" "Rigor convention"
 Check-Contains "knowledge-base\matrix-analysis\projection.md" "Moore--Penrose"
+Check-Contains "knowledge-base\matrix-analysis\projection.md" "不是线性投影"
 Check-Not-Contains "knowledge-base\matrix-analysis\projection.md" "ResNet 的正交残差"
-Check-Contains "knowledge-base\cryptography\prf-prg-owf.md" "3 轮给出选择明文意义下的 PRP"
-Check-Not-Contains "knowledge-base\cryptography\cca-cpa-ae-hierarchy.md" "训练数据量 ≥ 模型参数量"
+Check-Contains "knowledge-base\cryptography\prf-prg-owf.md" "3 轮给出选择明文意义下的 PRP，4 轮给出"
+Check-Not-Contains "knowledge-base\cryptography\prf-prg-owf.md" "通常是 small GEMM"
+Check-Contains "knowledge-base\cryptography\cca-cpa-ae-hierarchy.md" '不能映射成“训练数据量 ≥ 模型参数量”'
 Check-Not-Contains "knowledge-base\cryptography\reduction-proof-template.md" "差分隐私假设"
+Check-Contains "knowledge-base\algebraic-geometry\sheaf-cohomology.md" '不能把 $H^1=0$ 笼统写成'
+Check-Contains "knowledge-base\algebraic-geometry\sheaf-cohomology.en.md" 'must not be stated as a blanket'
+Check-Contains "references\gpu-friendly-math.md" '`N/A` 不计分'
 
 # --- npm Pack ---
 Write-Host "`n--- npm Pack Check ---"
@@ -357,6 +362,113 @@ if ($xrefFail -eq 0) {
     Write-Host "[PASS] All backtick path references resolve" -ForegroundColor Green
     $script:pass++
 }
+
+# --- Knowledge Card Structure Check (synced with validate.sh) ---
+Write-Host "`n--- Knowledge Card Structure Check ---"
+function Check-CardSections {
+    param(
+        [string]$file,
+        [string[]]$required
+    )
+    if (-not (Test-Path $file)) {
+        Write-Host "[FAIL] $file not found" -ForegroundColor Red
+        $script:fail++
+        return
+    }
+    $content = Get-Content $file -Raw
+    $missing = @()
+    foreach ($sec in $required) {
+        if (-not [regex]::IsMatch($content, [regex]::Escape($sec))) { $missing += $sec }
+    }
+    if ($missing.Count -eq 0) {
+        Write-Host "[PASS] $file has all required sections" -ForegroundColor Green
+        $script:pass++
+    } else {
+        Write-Host "[FAIL] $file missing: $($missing -join ', ')" -ForegroundColor Red
+        $script:fail++
+    }
+}
+$cardDomains = @("matrix-analysis","optimization","differential-geometry","lie-theory","topology","probability","information-geometry","algebraic-geometry","cryptography")
+foreach ($cd in $cardDomains) {
+    $cnCards = @(Get-ChildItem -Path "knowledge-base\$cd" -Filter "*.md" -File | Where-Object { $_.Name -notlike "*.en.md" -and $_.Name -notlike "index*" })
+    foreach ($card in $cnCards) {
+        if ($cd -eq "cryptography") {
+            Check-CardSections $card.FullName @('## 最小定义','## 核心公式','## 适用问题','## 密码学构造与跨域边界','## 实现注意事项','## 风险与失效条件')
+        } else {
+            Check-CardSections $card.FullName @('## 最小定义','## 核心公式','## 适用问题','## AI 设计翻译','## 工程可行性','## 风险与失效条件')
+        }
+    }
+    $enCards = @(Get-ChildItem -Path "knowledge-base\$cd" -Filter "*.en.md" -File | Where-Object { $_.Name -notlike "index.en.md" })
+    foreach ($card in $enCards) {
+        if ($cd -eq "cryptography") {
+            Check-CardSections $card.FullName @('## Minimal Definition','## Core Formulas','## Applicable Problems','## Cryptographic Construction and Cross-Domain Boundary','## Implementation Considerations','## Risks and Failure Conditions')
+        } else {
+            Check-CardSections $card.FullName @('## Minimal Definition','## Core Formulas','## Applicable Problems','## AI Design Translation','## Engineering Feasibility','## Risks and Failure Conditions')
+        }
+    }
+}
+
+# --- Design Pattern GPU Relevance Check (synced with validate.sh) ---
+Write-Host "`n--- Design Pattern GPU Relevance Check ---"
+$dpDirs = @("attention","loss","routing","representation","compression")
+$dpFiles = @(Get-ChildItem -Path ($dpDirs | ForEach-Object { "design-patterns\$_" }) -Recurse -File -Filter "*.md" -ErrorAction SilentlyContinue | Where-Object { $_.Name -notlike "overview*" })
+foreach ($dp in $dpFiles) {
+    $content = Get-Content $dp.FullName -Raw
+    $hasGpuHeader = $content -match '(?m)^## (GPU 可行性|GPU Feasibility)'
+    $hasQuant = $content -match 'O\(|FLOPs|[Bb]ytes|显存|[Mm]emory|复杂度|[Cc]omplexity'
+    if ($hasGpuHeader -and $hasQuant) {
+        Write-Host "[PASS] $($dp.Name) has relevant GPU analysis" -ForegroundColor Green
+        $script:pass++
+    } else {
+        $miss = ""
+        if (-not $hasGpuHeader) { $miss += "GPU-section " }
+        if (-not $hasQuant) { $miss += "quantitative-signal " }
+        Write-Host "[FAIL] $($dp.Name) missing: $miss" -ForegroundColor Red
+        $script:fail++
+    }
+}
+
+# --- Domain Router Isolation Check (synced with validate.sh) ---
+Write-Host "`n--- Domain Router Isolation Check ---"
+Check-Contains "SKILL.md" '不加载密码学锚点/书稿'
+Check-Contains "SKILL.md" '不加载 AI 设计模式'
+Check-Contains "SKILL.en.md" 'Do not load crypto anchors/books'
+Check-Contains "SKILL.en.md" 'Do not load AI design patterns'
+Check-Not-Contains "knowledge-base\cryptography\attack-game-framework.md" '## AI 设计翻译'
+Check-Not-Contains "knowledge-base\cryptography\cca-cpa-ae-hierarchy.md" '## AI 设计翻译'
+Check-Not-Contains "knowledge-base\cryptography\reduction-proof-template.md" '## AI 设计翻译'
+Check-Not-Contains "knowledge-base\cryptography\prf-prg-owf.md" '## AI 设计翻译'
+$cryptoCount = @(Get-ChildItem -Path "knowledge-base\cryptography" -Filter "*.md" -File | Where-Object { $_.Name -notlike "*.en.md" -and $_.Name -notlike "index*" }).Count
+if ($cryptoCount -ge 4) {
+    Write-Host "[PASS] cryptography has $cryptoCount anchor cards (>=4)" -ForegroundColor Green; $script:pass++
+} else {
+    Write-Host "[FAIL] cryptography has only $cryptoCount anchor cards (need >=4)" -ForegroundColor Red; $script:fail++
+}
+$algeoCount = @(Get-ChildItem -Path "knowledge-base\algebraic-geometry" -Filter "*.md" -File | Where-Object { $_.Name -notlike "*.en.md" -and $_.Name -notlike "index*" }).Count
+if ($algeoCount -ge 2) {
+    Write-Host "[PASS] algebraic-geometry has $algeoCount anchor cards (>=2)" -ForegroundColor Green; $script:pass++
+} else {
+    Write-Host "[FAIL] algebraic-geometry has only $algeoCount anchor cards (need >=2)" -ForegroundColor Red; $script:fail++
+}
+
+# --- Knowledge Gap Protocol Check (synced with validate.sh) ---
+Write-Host "`n--- Knowledge Gap Protocol Check ---"
+Check-Contains "SKILL.md" 'Knowledge Gap Protocol'
+Check-Contains "SKILL.md" '缺口类型'
+Check-Contains "SKILL.md" '临时卡必须标注 domain'
+Check-Contains "SKILL.en.md" 'Knowledge Gap Protocol'
+Check-Contains "SKILL.en.md" 'temporary card must state its domain'
+
+# --- Progressive Loading Check (synced with validate.sh) ---
+Write-Host "`n--- Progressive Loading Check ---"
+Check-Contains "SKILL.md" '最少但足够'
+Check-Contains "SKILL.md" '不展示内部加载路径'
+Check-Contains "SKILL.md" '普通 A/B/D 场景使用上述检查即可'
+Check-Contains "SKILL.en.md" 'smallest sufficient'
+Check-Contains "SKILL.en.md" 'Do not repeat cards or expose internal load paths'
+Check-Contains "SKILL.en.md" 'ordinary A/B/D tasks'
+Check-Contains "README.md" 'v3.3.2 — 产品化与 npx 安装器'
+Check-Contains "README.en-US.md" 'v3.3.2 — Productization & npx Installer'
 
 # --- Count Verification (synced with validate.sh) ---
 Write-Host "`n--- Count Verification ---"
