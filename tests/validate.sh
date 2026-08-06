@@ -582,8 +582,7 @@ check_contains "README.md" '扩展至 37'
 check_contains "README.en-US.md" 'expanded to 37 in v3.2'
 check_contains "README.md" 'v3.3.2'
 check_contains "README.en-US.md" 'v3.3.2'
-# CLAUDE.md holds project editing conventions; optional for validation (changed
-# only when it exists locally), so keep this conditional.
+# CLAUDE.md is gitignored (machine-local); only check when present
 if [ -f "CLAUDE.md" ]; then
     check_contains "CLAUDE.md" 'musings'
     check_contains "CLAUDE.md" 'skill-index'
