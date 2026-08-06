@@ -533,6 +533,20 @@ check_contains "SKILL.en.md" 'ordinary A/B/D tasks'
 check_contains "README.md" 'v3.3.2 — 产品化与 npx 安装器'
 check_contains "README.en-US.md" 'v3.3.2 — Productization & npx Installer'
 
+# --- Lean Loading & Insight Contract Check (v3.4) ---
+echo ""
+echo "--- Lean Loading & Insight Contract Check ---"
+check_contains "SKILL.md" '精益加载与结论契约'
+check_contains "SKILL.md" '按节读取'
+check_contains "SKILL.md" '非显然洞察'
+check_contains "SKILL.md" '可证伪探针'
+check_contains "SKILL.en.md" 'Lean loading and the insight contract'
+check_contains "SKILL.en.md" 'Read by section'
+check_contains "SKILL.en.md" 'non-obvious insight'
+check_contains "SKILL.en.md" 'falsifiable probe'
+check_contains "references/skill-index.md" '精益加载与尺寸提示'
+check_contains "references/skill-index.en.md" 'Lean loading and size tiers'
+
 # --- Pre-release Consistency Check (v3.3.2) ---
 echo ""
 echo "--- Pre-release Consistency Check ---"

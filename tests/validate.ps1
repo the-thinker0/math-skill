@@ -470,6 +470,19 @@ Check-Contains "SKILL.en.md" 'ordinary A/B/D tasks'
 Check-Contains "README.md" 'v3.3.2 — 产品化与 npx 安装器'
 Check-Contains "README.en-US.md" 'v3.3.2 — Productization & npx Installer'
 
+# --- Lean Loading & Insight Contract Check (synced with validate.sh) ---
+Write-Host "`n--- Lean Loading & Insight Contract Check ---"
+Check-Contains "SKILL.md" '精益加载与结论契约'
+Check-Contains "SKILL.md" '按节读取'
+Check-Contains "SKILL.md" '非显然洞察'
+Check-Contains "SKILL.md" '可证伪探针'
+Check-Contains "SKILL.en.md" 'Lean loading and the insight contract'
+Check-Contains "SKILL.en.md" 'Read by section'
+Check-Contains "SKILL.en.md" 'non-obvious insight'
+Check-Contains "SKILL.en.md" 'falsifiable probe'
+Check-Contains "references\skill-index.md" '精益加载与尺寸提示'
+Check-Contains "references\skill-index.en.md" 'Lean loading and size tiers'
+
 # --- Count Verification (synced with validate.sh) ---
 Write-Host "`n--- Count Verification ---"
 $cnLenses = (Get-ChildItem -Path "lenses" -Filter "*.md" | Where-Object { $_.Name -notlike "*.en.md" }).Count

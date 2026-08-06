@@ -23,6 +23,13 @@
 > 2. design-patterns/ is a paradigmatic demonstration of "math→AI module" translation, not a copy-paste template library; for new problems, generate temporary design candidates from the mathematical structure.
 > 3. Compatibility principle: research problems with architectures the skill did not pre-specify (e.g., future paradigms) are handled through lens-routing + anchor-activation + temporary-knowledge-card pipeline, not declared "not covered."
 
+## Lean loading and size tiers (save tokens)
+
+- **Read by section, not whole file:** read an anchor's `Minimal Definition + Core Formulas + Applicable Problems` first; for a design pattern whose anchor is already loaded, skip `Mathematical Origins / Required Math` and read `AI Module Form / GPU Feasibility / Risks` directly.
+- **Size tiers** (per file, approximate): books **L** (~4k tokens); design patterns **M** (~1.7–2.1k); knowledge anchors **M** (~1.3–1.7k); lenses **S** (~0.7–1.0k).
+- **Path preference:** prefer S over M over L; prefer one card over a book; do not re-read math already covered by a loaded anchor (Eckart-Young, randomized SVD, spectral clustering, etc.).
+- Read the `Routing / Extension / Deep References` tail only for citation or routing; use the ≤5-item insight contract for output (see `../SKILL.md`).
+
 ## Language Routing & Mixed-Input Rules (Full Version)
 
 Language routing only determines "which language version to read" and "what language to respond in." It does NOT affect whether the math system triggers or the A/B/C/D/E scenario classification.

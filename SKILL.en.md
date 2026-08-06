@@ -70,6 +70,26 @@ Use these defaults unless the user requests a comprehensive review, multiple can
 - Do not expand AI translation, the GPU scorecard, or long bibliographies for a concept-only query.
 - If one anchor is sufficient, do not load the matching book. If the card plus reliable existing knowledge is sufficient, do not inspect PDFs.
 
+## Lean loading and the insight contract
+
+This section optimizes two things at once: **fewer tokens to load** and **more insight in the conclusion**.
+
+### Lean loading (save tokens)
+- **Read by section, not whole file:** for an anchor, first read only `Minimal Definition + Core Formulas + Applicable Problems`; for AI-design (B) or analysis (A), read `AI Design Translation / Engineering Feasibility / Risks` only as needed; **do not read** `Deep References / Routing / Extension Directions` by default (that tail is ~15% of a card's tokens) unless citing a source or debugging routing.
+- **Skip duplicate math sections:** a design pattern's `Mathematical Origins / Required Math` often duplicates an already-read anchor (e.g., Eckart-Young, randomized SVD). If the anchor was read, skip these and read `AI Module Form / GPU Feasibility / Risks` directly.
+- **Smallest sufficient path first:** prefer one small card over a book or a large file (books are ~4k tokens; read them only on deep need).
+- **Drop material that does not change the conclusion:** if a lens, anchor, or pattern does not affect the conclusion, say "considered, does not change the conclusion" and do not elaborate — this saves output tokens and proves convergence.
+
+### Insight contract (more insight)
+Frame any conclusive answer with this compact ≤5-item contract so it converges to a decision rather than listing perspectives or jargon:
+1. **One-line conclusion:** does it hold / what to choose / what next.
+2. **One non-obvious insight:** a point the reader will not see and that **changes the decision** (not a restatement).
+3. **Condition of validity:** which assumption/boundary the conclusion rests on.
+4. **One counterexample or boundary:** when this breaks.
+5. **One falsifiable probe:** a concrete experiment/check that could refute the conclusion.
+
+When ≥2 lenses/anchors/patterns are loaded, additionally force one step: **state where they disagree** (which contradictions, what each cannot see), then drop the non-decisive one.
+
 ## Procedure
 
 1. **Classify scenario and domain:** extract the target, constraints, properties to preserve/suppress, and requested guarantee.
