@@ -51,7 +51,7 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 ## Routing Extensions
 - If a geometric perspective is needed -> `../information-geometry/fisher-metric.en.md` (Fisher information as Riemannian metric)
 - If Fisher-based optimization is needed -> `../information-geometry/natural-gradient.en.md` (natural gradient driven by Fisher information)
-- If Cramer-Rao bounds are needed -> `concentration-inequality.en.md` (Fisher information and estimation accuracy bounds)
+- For Cramer-Rao bounds see this card's "Core Formulas" section (derived via score function + Cauchy-Schwarz, not via concentration inequalities); if deviation probability bounds are needed -> `concentration-inequality.en.md` (Hoeffding/McDiarmid etc.)
 
 ## Extensible Directions
 - Observed vs expected Fisher: two types of Fisher information matrices

@@ -12,7 +12,7 @@ Plücker 嵌入 $\mathsf{Gr}(k,n)\hookrightarrow\mathbb{P}(\Lambda^k\mathbb{C}^n
 - **Plücker 坐标**：$p_{i_1\cdots i_k}=\det(v_{i_j}^{(i)})$（基底向量在 $i_1,\ldots,i_k$ 行上的子行列式），共 $\binom{n}{k}$ 个
 - **Plücker 关系**（Plücker 坐标满足的二次关系）：$\sum_{j=1}^{k+1}(-1)^j p_{i_1\cdots\hat{i_j}\cdots i_{k+1}}\cdot p_{j_1\cdots j_{k-1}i_j}=0$
 - **Schubert 胞腔分解**：$\mathsf{Gr}(k,n)=\bigsqcup_\lambda\Omega_\lambda$（按子空间与固定 flag 的相对位置分层）
-- **Plücker 坐标在低秩时反扩张**：当 $k$ 接近 $n/2$ 时 $\binom{n}{k}$ 急剧膨胀；存基底 $O(Lk)$ 远小于存 Plücker $O(\binom{L}{k})$——这是"低秩时存基底而非 Plücker 坐标"的根本原因
+- **Plücker 坐标在低秩时反扩张**：当 $k$ 接近 $n/2$ 时 $\binom{n}{k}$ 急剧膨胀；存基底 $O(nk)$ 远小于存 Plücker $O(\binom{n}{k})$——这是"低秩时存基底而非 Plücker 坐标"的根本原因
 - **度量**：$\mathsf{Gr}(k,n)$ 上有自然 Riemannian 度量（投影度量），子空间距离 $d(V,W)=\|\sin\Theta\|_F$（$\Theta$ 为主角度对角矩阵）
 
 ## 适用问题

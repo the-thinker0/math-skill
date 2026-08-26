@@ -25,7 +25,7 @@ The Euler characteristic $\chi$ is the most fundamental integer invariant of a t
 - **Topological diagnostic metric**: Monitor the $\chi$ of the latent/feature space during training; sudden changes in $\chi$ indicate topological phase transitions (e.g., mode collapse)
 - **Gauss-Bonnet regularization**: $\int K \, dA$ can be approximated by the trace of the Hessian, using curvature integrals as a regularization term to constrain loss landscape topology
 - **Mesh quality loss**: For 3D generative models, penalize $\chi \neq \chi_{\text{target}}$ to ensure topological correctness of generated meshes
-- **Morse-theoretic critical point analysis**: $\chi = \sum (-1)^{\text{index}} (\text{number of critical points})$, using critical point indices to diagnose optimization landscape
+- **Morse-theoretic critical point analysis**: $\chi(M) = \sum_k (-1)^k c_k$, where $c_k$ is the number of critical points of Morse index $k$ ($(-1)^k$ is a sign factor, not the index value), using critical point indices to diagnose optimization landscape
 - **Euler characteristic curve**: $\chi(\epsilon) = \chi(VR_\epsilon)$ as a function of scale $\epsilon$, providing richer information than a single $\chi$ value
 
 ## Engineering Feasibility

@@ -16,6 +16,8 @@
 | D7 | Sparse structure |
 | D8 | Operator fusion |
 
+Rating marks: `[v]` friendly (tensorizable/negligible cost), `[~]` partially feasible (requires approximation; approximation quality decides the outcome), `[x]` unfriendly (serial/cannot be materialized/memory-infeasible).
+
 ## Quantitative Checklist
 
 Evaluate only dimensions relevant to the candidate and deployment target; mark others `N/A`. For decision-changing dimensions, provide concrete numbers rather than labels:

@@ -10,7 +10,7 @@
 - 指数映射：$\exp_p(v) = \gamma_v(1)$，其中 $\gamma_v$ 是 $\gamma(0)=p, \dot\gamma(0)=v$ 的测地线
 - 对数映射：$\log_p(q) = v \in T_pM$ 使得 $\exp_p(v) = q$（指数映射的逆）
 - Retraction（工程近似）：$R_p(v) \approx \exp_p(v)$，只需一阶近似即可用于优化
-- 球面闭式：$\exp_p(v) = \cos(\|v\|) p + \sin(\|v\|) \frac{v}{\|v\|}$
+- 单位球面闭式：$\exp_p(v) = \cos(\|v\|)\, p + \sin(\|v\|)\, \frac{v}{\|v\|}$（要求 $\|p\|=1$ 且 $v \perp p$；半径 $r$ 的球面把 $\|v\|$ 换成 $\|v\|/r$）
 
 ## 适用问题
 

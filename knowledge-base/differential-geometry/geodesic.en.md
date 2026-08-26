@@ -10,7 +10,7 @@ A geodesic is a locally length-minimizing (or extremal-length) path $\gamma: [0,
 - Exponential map: $\exp_p(v) = \gamma_v(1)$, where $\gamma_v$ is the geodesic with $\gamma(0)=p, \dot\gamma(0)=v$
 - Logarithmic map: $\log_p(q) = v \in T_pM$ such that $\exp_p(v) = q$ (the inverse of the exponential map)
 - Retraction (engineering approximation): $R_p(v) \approx \exp_p(v)$, requiring only a first-order approximation for optimization
-- Closed-form on the sphere: $\exp_p(v) = \cos(\|v\|) p + \sin(\|v\|) \frac{v}{\|v\|}$
+- Closed-form on the unit sphere: $\exp_p(v) = \cos(\|v\|)\, p + \sin(\|v\|)\, \frac{v}{\|v\|}$ (requires $\|p\|=1$ and $v \perp p$; for a sphere of radius $r$, replace $\|v\|$ with $\|v\|/r$)
 
 ## Applicable Problems
 

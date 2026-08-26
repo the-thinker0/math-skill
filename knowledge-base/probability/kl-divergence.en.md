@@ -20,7 +20,7 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 
 **Semantic difference between the two directions**:
 - **Forward KL** $D_{KL}(p \| q)$: when $p$ is the target and $q$ belongs to a restricted approximation family, missing regions with positive $p$ mass is heavily penalized; “mass-covering” is more precise than the context-dependent phrase “mean-seeking”
-- **Reverse KL** $D_{KL}(q \| p)$: $q$ tends to lock onto a single mode of $p$ (mode-seeking)
+- **Reverse KL** $D_{KL}(q \| p)$: $q$ tends to lock onto a single mode of $p$ (mode-seeking); likewise a typical phenomenon under restricted approximation families, not a universal theorem
 
 ## Applicable Problems
 - **Variational inference**: Minimize the reverse KL $D_{KL}(q \| p)$ to find an approximate posterior distribution

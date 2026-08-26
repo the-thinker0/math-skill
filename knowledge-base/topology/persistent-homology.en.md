@@ -34,14 +34,14 @@ Limited GPU friendliness, which is the main bottleneck for deploying persistent 
 - **Vietoris-Rips construction**: Combinatorial explosion; the VR complex on $n$ points has up to $2^n$ simplices; in practice, truncated to 2-skeleton, $O(n^3)$ worst case
 - **Boundary matrix reduction (core algorithm)**: Column reduction analogous to Gaussian elimination, **highly serial**, standard algorithm cannot be parallelized
 - **GPU-accelerated reduction algorithms**: e.g., Ripser's clearing optimization + GPU-based reduction (Emerald, etc.) can achieve 10--100x speedup, but still far from GEMM-level parallelism
-- **Differentiable alternatives**: Persistence images are differentiable (gradients with respect to point positions can be computed), but the barcode itself is non-differentiable at birth/death events
+- **Differentiable alternatives**: The persistence map is differentiable almost everywhere with respect to point positions (non-differentiable points form a measure-zero exceptional set of filtration-value degeneracies/reorderings); persistence images/landscapes give smooth vectorizations, while the barcode's discrete matching structure (bottleneck matching) is not smooth
 - Complexity: exact computation is worst-case $O(n^3)$ (2-skeleton VR); large point clouds ($n > 10^4$) require subsampling
 
 ## Risks and Failure Conditions
 
 - **Seriality of boundary matrix reduction**: The core algorithm is inherently serial, with GPU parallelism far below that of GEMM, making it infeasible for large-scale data
 - **Combinatorial explosion**: The number of simplices in the VR complex grows exponentially with dimension; truncation to 2--3 dimensions is mandatory
-- **Non-differentiability**: The discrete combinatorial structure of the barcode is non-differentiable with respect to input point positions (at birth/death events); differentiable proxies such as landscapes/images are required
+- **Correct statement of differentiability**: The persistence map is differentiable almost everywhere, so differentiable topological layers (differentiable TopoLoss-style) are valid; non-differentiability occurs at filtration-value degeneracies/reorderings and in the discrete structure of bottleneck matchings. Use smooth proxies such as landscapes/images when end-to-end gradients are needed
 - **Subjectivity of scale selection**: The scale range and truncation threshold for the filtration must be chosen manually
 - **Topology is not geometry**: Persistent homology captures only topological invariants, losing metric information (distances, angles), which may be insufficient to distinguish different datasets
 - **Subsampling bias**: Large datasets must be subsampled, and persistence diagrams from different subsamples may differ significantly

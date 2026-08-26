@@ -18,6 +18,7 @@ This is an "interventionist's" perspective — unsatisfied with observed associa
 - Pure prediction tasks with no causal question — only P(y|x) is needed; association suffices, and causation is superfluous
 - Problems where no causal assumptions can be encoded — if a plausible DAG cannot be drawn, no causal conclusions can be reached
 - Deterministic systems with no variation — causation is already fully described by the mechanism
+- Tasks that merely contain words like "cause/effect/impact" but actually ask for correlation, attribution scores, or feature importance — those are statistical/interpretability questions; do not force the causal framework
 
 ## Which Knowledge Domains It Routes To
 

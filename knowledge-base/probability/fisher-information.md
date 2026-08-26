@@ -51,7 +51,7 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 ## 路由扩展
 - 若需要几何视角 → `../information-geometry/fisher-metric.md`（Fisher 信息作为黎曼度量）
 - 若需要基于 Fisher 的优化 → `../information-geometry/natural-gradient.md`（Fisher 信息驱动的自然梯度）
-- 若需要 Cramer-Rao 界 → `concentration-inequality.md`（Fisher 信息与估计精度界）
+- Cramer-Rao 界见本卡「核心公式」段（由 score 函数 + Cauchy-Schwarz 推出，不经浓度不等式）；若需要偏差概率界 → `concentration-inequality.md`（Hoeffding/McDiarmid 等）
 
 ## 可扩展方向
 - 观测 vs 期望 Fisher（observed vs expected Fisher）：两种 Fisher 信息矩阵

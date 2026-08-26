@@ -19,6 +19,7 @@ This is a "stress-tester's" perspective — for any mathematical object or syste
 - Problems where the perturbation itself is the object of study (e.g., butterfly effect in chaotic systems is a feature, not a defect)
 - Large-deformation or global structural analysis — perturbation theory only concerns local neighborhoods
 - Discrete combinatorial problems — perturbation theory relies on continuity assumptions
+- Adversarial-example or cryptographic security questions that demand attack games, security certificates, or reduction proofs — those belong to the cryptography domain (Domain Router decides); this lens only handles AI-domain robustness/sensitivity analysis
 
 ## Knowledge Domains It Routes To
 

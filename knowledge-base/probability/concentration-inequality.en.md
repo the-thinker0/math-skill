@@ -11,7 +11,7 @@ $$P(X \geq a) \leq \frac{\mathbb{E}[X]}{a}, \quad X \geq 0$$
 **Hoeffding's Inequality** (sum of bounded independent variables):
 $$P\left(\left|\frac{1}{n}\sum_{i=1}^n X_i - \mathbb{E}\left[\frac{1}{n}\sum X_i\right]\right| \geq t\right) \leq 2\exp\left(-\frac{2n^2 t^2}{\sum(b_i - a_i)^2}\right)$$
 
-**Bernstein's Inequality** (exploits variance information, tighter tails):
+**Bernstein's Inequality** (exploits variance information, tighter tails): Let $X_i$ be independent, zero-mean, with $|X_i| \leq M$, and write $\sigma^2 = \sum_i \mathrm{Var}(X_i)$. Then
 $$P\left(\sum X_i \geq t\right) \leq \exp\left(-\frac{t^2/2}{\sigma^2 + Mt/3}\right)$$
 
 **McDiarmid's Inequality** (bounded-difference functions): If $f$ has sensitivity $c_i$ to changes in the $i$-th variable, then

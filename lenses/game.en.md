@@ -19,6 +19,7 @@ This is a "player's" perspective — in environments where multiple decision-mak
 - Purely cooperative problems where all participants share identical objectives — strategic analysis is unnecessary
 - Deterministic problems where outcomes are uniquely determined by one's own actions — no others' responses are involved
 - Outcomes determined purely by luck, with no strategic choices available to any party
+- Cryptographic "attack games" — same word, different thing: those are challenger–adversary experiments for formalizing security definitions, not game theory; see `../knowledge-base/cryptography/attack-game-framework.en.md`
 
 ## Which Knowledge Domains It Routes To
 

@@ -1,7 +1,7 @@
 # Natural Gradient
 
 ## Minimal Definition
-The natural gradient is the steepest descent direction with respect to the **Fisher information metric** on the parameter space. Unlike the naive gradient defined under the Euclidean metric, the natural gradient is defined under the Riemannian metric of the statistical manifold, making it invariant to the choice of parameterization (reparameterization invariant) and automatically adaptive to the curvature structure of the loss surface.
+The natural gradient is the steepest descent direction with respect to the **Fisher information metric** on the parameter space. Unlike the naive gradient defined under the Euclidean metric, the natural gradient is defined under the Riemannian metric of the statistical manifold, making it covariant under reparameterization (the direction as a geometric object does not change with coordinate choice) and automatically adaptive to the curvature structure of the loss surface.
 
 ## Core Formulas
 
@@ -31,7 +31,7 @@ where $A_l = \mathbb{E}[a_l a_l^T]$ (activation covariance) and $B_l = \mathbb{E
 ## AI Design Translation
 - **K-FAC Optimizer**: Uses Kronecker decomposition to approximate the FIM, enabling approximate second-order optimization. Each layer maintains $(A_l, B_l)$, with inverse $A_l^{-1} \otimes B_l^{-1}$, reducing matrix inversion complexity from $O(d^3)$ to $O(d_A^3 + d_B^3)$
 - **TRPO Trust-Region Policy Gradient**: Policy updates under the constraint $D_{KL}(\pi_{\theta_{\text{old}}} \| \pi_\theta) \leq \delta$, essentially natural gradient + line search
-- **Natural Gradient in Variational Inference**: For exponential family parameters, the natural gradient equals the difference in expected sufficient statistics, avoiding Fisher matrix inversion
+- **Natural Gradient in Variational Inference**: For an exponential family's **natural parameter** $\eta$, the natural gradient equals the difference of expected sufficient statistics $\mathbb{E}_q[T(X)] - \mathbb{E}_{\text{prior}}[T(X)]$ (Hoffman et al. 2013), avoiding Fisher matrix inversion
 
 ## Engineering Feasibility
 - **D1[~]**: The Kronecker factors of the FIM are dense matrices and can be tensorized; the full FIM cannot

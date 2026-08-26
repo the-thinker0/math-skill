@@ -11,7 +11,7 @@ $$P(X \geq a) \leq \frac{\mathbb{E}[X]}{a}, \quad X \geq 0$$
 **Hoeffding 不等式**（有界独立变量之和）：
 $$P\left(\left|\frac{1}{n}\sum_{i=1}^n X_i - \mathbb{E}\left[\frac{1}{n}\sum X_i\right]\right| \geq t\right) \leq 2\exp\left(-\frac{2n^2 t^2}{\sum(b_i - a_i)^2}\right)$$
 
-**Bernstein 不等式**（利用方差信息，尾部更紧）：
+**Bernstein 不等式**（利用方差信息，尾部更紧）：设 $X_i$ 独立、零均值且 $|X_i| \leq M$，记 $\sigma^2 = \sum_i \mathrm{Var}(X_i)$，则
 $$P\left(\sum X_i \geq t\right) \leq \exp\left(-\frac{t^2/2}{\sigma^2 + Mt/3}\right)$$
 
 **McDiarmid 不等式**（有界差分函数）：若 $f$ 对第 $i$ 个变量的变化敏感度为 $c_i$，则

@@ -22,7 +22,9 @@ $$I(X; Y) = H(X) - H(X|Y) = H(Y) - H(Y|X) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}
 ## Applicable Problems
 - **Feature selection**: Use mutual information $I(X; Y)$ to select the most informative features with respect to the target variable
 - **Model compression and quantization**: Entropy provides the theoretical lower bound for lossless compression (Shannon's coding theorem)
-- **Regularization design**: Maximum entropy regularization encourages the model to output "uncertain yet fair" distributions, preventing overconfidence
+- **Generative model evaluation and training**: Cross-entropy/perplexity is the intrinsic metric of language models; entropy regularization encourages exploration (in RL, $\mathcal{L} = \mathcal{L}_{\text{policy}} - \beta H(\pi)$)
+- **Uncertainty quantification**: Predictive entropy $H(p(y|x))$ as a confidence signal for active learning, OOD detection, and selective prediction
+- **Regularization design**: Maximum entropy regularization encourages the model to output "uncertain yet fair" distributions, preventing overconfidence; label smoothing is equivalent to entropy regularization on the output distribution
 
 ## AI Design Translation
 - **Cross-Entropy Loss**: $H(p, q) = -\sum p(x)\log q(x)$, the default loss function for classification tasks; it is essentially the "coding redundancy" between the true distribution $p$ and the model distribution $q$

@@ -25,7 +25,7 @@
 - **拓扑诊断指标**：训练过程中监控隐空间/特征空间的 $\chi$，$\chi$ 突变指示拓扑相变（如模式坍塌）
 - **Gauss-Bonnet 正则化**：$\int K \, dA$ 可用 Hessian 的迹近似，将曲率积分作为正则项约束 loss landscape 拓扑
 - **网格质量损失**：对 3D 生成模型，惩罚 $\chi \neq \chi_{\text{target}}$ 确保生成网格的拓扑正确
-- **Morse 理论的临界点分析**：$\chi = \sum (-1)^{\text{index}} (\text{临界点数})$，用临界点指标诊断优化地形
+- **Morse 理论的临界点分析**：$\chi(M) = \sum_k (-1)^k c_k$，其中 $c_k$ 是 Morse 指数为 $k$ 的临界点数（$(-1)^k$ 是符号因子，不是指数取值），用临界点指标诊断优化地形
 - **Euler characteristic curve**：$\chi(\epsilon) = \chi(VR_\epsilon)$ 作为尺度 $\epsilon$ 的函数，比单一 $\chi$ 信息更丰富
 
 ## 工程可行性

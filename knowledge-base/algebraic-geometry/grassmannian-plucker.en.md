@@ -12,7 +12,7 @@ The Plücker embedding $\mathsf{Gr}(k,n)\hookrightarrow\mathbb{P}(\Lambda^k\math
 - **Plücker coordinates**: $p_{i_1\cdots i_k}=\det(v_{i_j}^{(i)})$ (the minor of basis vectors at rows $i_1,\ldots,i_k$), totaling $\binom{n}{k}$
 - **Plücker relations** (quadratic relations satisfied by Plücker coordinates): $\sum_{j=1}^{k+1}(-1)^j p_{i_1\cdots\hat{i_j}\cdots i_{k+1}}\cdot p_{j_1\cdots j_{k-1}i_j}=0$
 - **Schubert cell decomposition**: $\mathsf{Gr}(k,n)=\bigsqcup_\lambda\Omega_\lambda$ (stratified by the subspace's relative position to a fixed flag)
-- **Plücker coordinates expand at low rank**: when $k$ approaches $n/2$, $\binom{n}{k}$ explodes; storing the basis $O(Lk)$ is far smaller than storing Plücker coordinates $O(\binom{L}{k})$ — the fundamental reason for "store basis, not Plücker coordinates, at low rank"
+- **Plücker coordinates expand at low rank**: when $k$ approaches $n/2$, $\binom{n}{k}$ explodes; storing the basis $O(nk)$ is far smaller than storing Plücker coordinates $O(\binom{n}{k})$ — the fundamental reason for "store basis, not Plücker coordinates, at low rank"
 - **Metric**: $\mathsf{Gr}(k,n)$ carries a natural Riemannian metric (projection metric); subspace distance $d(V,W)=\|\sin\Theta\|_F$ ($\Theta$ is the diagonal matrix of principal angles)
 
 ## Applicable Problems

@@ -4,6 +4,8 @@
 
 An attack game is a probabilistic interaction between a challenger and an adversary that specifies a security goal, adversarial capabilities, and a winning event. Security usually means that every adversary within the stated resource class has negligible asymptotic advantage or an explicitly small concrete advantage.
 
+**Do not confuse with the game lens (`../../lenses/game.en.md`)**: an attack game is not game theory — there is no payoff matrix, Nash equilibrium, or mechanism design; "game" is merely the naming tradition for "interactive experiment." Do not load this card for equilibrium/mechanism-design questions.
+
 An encryption indistinguishability game is only one instance. Signatures, MACs, commitments, and zero knowledge use different oracles, restrictions, and winning conditions; they cannot all be forced into one “submit two messages and guess a bit” script.
 
 ## Core Formulas

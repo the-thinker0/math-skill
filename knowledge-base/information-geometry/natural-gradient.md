@@ -1,7 +1,7 @@
 # 自然梯度 / Natural Gradient
 
 ## 最小定义
-自然梯度是参数空间上关于**Fisher 信息度量**的最速下降方向。与朴素梯度在欧氏度量下定义不同，自然梯度在统计流形的黎曼度量下定义，因此对参数化方式的选择不敏感（reparameterization invariant），且能自动适应损失面的曲率结构。
+自然梯度是参数空间上关于**Fisher 信息度量**的最速下降方向。与朴素梯度在欧氏度量下定义不同，自然梯度在统计流形的黎曼度量下定义，因此在重参数化下协变（reparameterization covariant：方向作为几何对象不随坐标选择改变），且能自动适应损失面的曲率结构。
 
 ## 核心公式
 
@@ -31,7 +31,7 @@ $$\mathcal{I}_l \approx A_l \otimes B_l$$
 ## AI 设计翻译
 - **K-FAC 优化器**：用 Kronecker 分解近似 FIM，实现近似二阶优化。每层维护 $(A_l, B_l)$，逆为 $A_l^{-1} \otimes B_l^{-1}$，矩阵逆复杂度从 $O(d^3)$ 降至 $O(d_A^3 + d_B^3)$
 - **TRPO 信任域策略梯度**：$D_{KL}(\pi_{\theta_{\text{old}}} \| \pi_\theta) \leq \delta$ 约束下的策略更新，本质是自然梯度 + 线搜索
-- **变分推断中的自然梯度**：指数族参数的自然梯度 = 充分统计量的期望差，避免 Fisher 矩阵求逆
+- **变分推断中的自然梯度**：对指数族的**自然参数** $\eta$，自然梯度 = 期望充分统计量之差 $\mathbb{E}_q[T(X)] - \mathbb{E}_{\text{prior}}[T(X)]$（Hoffman et al. 2013），避免 Fisher 矩阵求逆
 
 ## 工程可行性
 - **D1[~]**：FIM 的 Kronecker 因子为稠密矩阵，可张量化；完整 FIM 不可

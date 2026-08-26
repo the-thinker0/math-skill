@@ -21,7 +21,7 @@ Categorification (formerly "Abstraction") is a way of "recognizing isomorphisms 
 
 ## Which Knowledge Domains It Routes To
 
-- `algebraic-geometry`: Functors, natural transformations, the Yoneda lemma, and related category-theoretic structures (housed in this domain in this knowledge base) — the core language for cross-domain transfer
+- `algebraic-geometry`: Functors, natural transformations, the Yoneda lemma, and related category-theoretic structures (housed in this domain in this knowledge base) — the core language for cross-domain transfer. **Note**: this domain currently has only two anchors (sheaf-cohomology and grassmannian-plucker) and no dedicated category-theory anchor; when Yoneda/limits/adjunctions are needed, expect to generate a temporary card via the Knowledge Gap Protocol
 - `lie-theory/representation`: Groups, rings, fields, modules, and lattices — axiom-matching to identify algebraic structure
 - **topology**: Open sets, continuity, and connectedness — when the problem involves spatial structure and continuous deformation
 
