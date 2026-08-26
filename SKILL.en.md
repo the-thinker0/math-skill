@@ -7,7 +7,7 @@ description: |
 
 # Mathematical Research Router
 
-This is the English compatibility entry, loaded only via explicit English command paths (e.g. `/ask` English routing). `SKILL.md` is the canonical Codex entry and can answer in either language. Answer in the user's primary language; technical terms, code, paths, and formulas do not determine language. Do not load both entries simultaneously.
+This is the English compatibility entry, loaded only via explicit English command paths (e.g. `/ask` English routing). `SKILL.md` is the canonical entry (Claude Code / Codex / Cursor / DeepSeek Harness all load it) and can answer in either language. Answer in the user's primary language; technical terms, code, paths, and formulas do not determine language. Do not load both entries simultaneously.
 
 ## Objective and hard constraints
 
@@ -25,7 +25,7 @@ Classify by the requested **object and guarantee**, not by keyword voting.
 1. Classify import/shape/OOM fixes, refactoring, configuration changes, tuning, deployment, and general code-quality reviews as **E engineering** when no mathematical or security claim is at issue.
 2. Activate even when code is present if the user asks about mathematical correctness, complexity, convergence, numerical stability, or cryptographic security.
 3. A direct request to design, analyze, verify, or explain relevant mathematics is sufficient. Workspace files only disambiguate terse requests; they are not a mandatory gate.
-4. `/ask` or an explicit skill mention bypasses automatic-trigger selection, while implementation-only work still remains outside scope.
+4. `/ask`, `/math-research-activator`, or an explicit skill mention bypasses automatic-trigger selection, while implementation-only work still remains outside scope.
 
 | Scenario | Goal | Minimal path |
 |---|---|---|
@@ -121,6 +121,8 @@ Before answering, verify:
 Load `agents/math-critic.en.md` only for paper-grade or explicitly comprehensive review. For ordinary A/B/D tasks, use the compact checks above instead of the full 19-dimension template.
 
 ## Direct resources
+
+Paths below are relative to this skill's install directory (DeepSeek Harness: the `resourceBase` returned by the skill tool). Do not look for them at the user's project root.
 
 - Lenses: `lenses/`
 - Shared anchors: `knowledge-base/` except `knowledge-base/cryptography/`

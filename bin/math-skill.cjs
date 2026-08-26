@@ -35,6 +35,17 @@ const PLATFORMS = {
     baseDir: path.join(HOME, '.claude'),
     skillsDir: path.join(HOME, '.claude', 'skills'),
   },
+  // DeepSeek Harness filesystem provider (rank 400 user-dsh).
+  // $DSH_HOME overrides the default ~/.dsh. Do not also write ~/.agents/skills
+  // here: Codex may scan that shared root and would then see a duplicate.
+  dsh: {
+    get baseDir() {
+      return process.env.DSH_HOME || path.join(HOME, '.dsh');
+    },
+    get skillsDir() {
+      return path.join(this.baseDir, 'skills');
+    },
+  },
 };
 
 function printUsage() {
@@ -42,10 +53,10 @@ function printUsage() {
 Math Skill ${PACKAGE_JSON.version}
 
 Usage:
-  math-skill install [--codex|--claude|--all]
-  math-skill update [--codex|--claude|--all]
-  math-skill doctor [--codex|--claude|--all]
-  math-skill uninstall [--codex|--claude|--all]
+  math-skill install [--codex|--claude|--dsh|--all]
+  math-skill update [--codex|--claude|--dsh|--all]
+  math-skill doctor [--codex|--claude|--dsh|--all]
+  math-skill uninstall [--codex|--claude|--dsh|--all]
 
 Recommended install:
   npx -y math-skill@latest install --all
@@ -85,17 +96,18 @@ async function readSkillName(skillFile) {
 }
 
 async function selectPlatforms(args) {
-  if (args.includes('--all')) return ['codex', 'claude'];
-  const selected = [];
-  if (args.includes('--codex')) selected.push('codex');
-  if (args.includes('--claude')) selected.push('claude');
+  const names = Object.keys(PLATFORMS);
+  if (args.includes('--all')) return names;
+  const selected = names.filter((name) => args.includes(`--${name}`));
   if (selected.length > 0) return selected;
   const detected = [];
   for (const [name, config] of Object.entries(PLATFORMS)) {
     if (await exists(config.baseDir)) detected.push(name);
   }
   if (detected.length > 0) return detected;
-  throw new Error('No Codex or Claude Code detected. Use --codex, --claude, or --all.');
+  throw new Error(
+    'No Codex, Claude Code, or DeepSeek Harness detected. Use --codex, --claude, --dsh, or --all.'
+  );
 }
 
 async function copyRuntime(tempDir) {

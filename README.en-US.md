@@ -1,5 +1,7 @@
 <div align="center">
 
+**🎉 NEWS: We now support dsh harness 🚀**
+
 # 📐 Math Skill
 
 ### A Mathematical Research Operating System for AI and Cryptography Innovation
@@ -14,7 +16,7 @@
 
 > Math Skill does not store mathematics. It activates, routes, and translates mathematics for AI and cryptography research.
 
-A math reasoning skill for **Claude Code / Codex / Cursor and more** — automatically activates the right mathematical lenses, knowledge anchors, and design prototypes for AI architecture design, math-to-AI transfer, and cryptographic proof review, delivering conditional, falsifiable conclusions with counterexamples.
+A math reasoning skill for **Claude Code / Codex / Cursor / DeepSeek Harness (dsh) and more** — automatically activates the right mathematical lenses, knowledge anchors, and design prototypes for AI architecture design, math-to-AI transfer, and cryptographic proof review, delivering conditional, falsifiable conclusions with counterexamples.
 
 If this skill inspires you, please consider leaving a Star⭐. Your support keeps the project evolving.
 
@@ -73,8 +75,10 @@ npx -y math-skill@latest install --all
 Please help me install math-skill: https://github.com/the-thinker0/math-skill, and show me how to use it
 ```
 
-> Also supports: `install --codex` / `--claude` (individual), `update --all` (upgrade), `doctor --all` (check for duplicates)
+> Also supports: `install --codex` / `--claude` / `--dsh` (individual), `update --all` (upgrade), `doctor --all` (check for duplicates)
 > The installer automatically excludes the nested `skills/` directory, ensuring only one entry per platform.
+>
+> **DeepSeek Harness (dsh)**: `--dsh` writes to `~/.dsh/skills/math-research-activator/` (honors `$DSH_HOME`). Restart dsh after install, then invoke `/math-research-activator` from the command palette. You can also copy the same directory to `~/.agents/skills/math-research-activator/` (dsh scans that root too).
 
 ### Usage
 
@@ -91,7 +95,8 @@ Please help me install math-skill: https://github.com/the-thinker0/math-skill, a
 **Manual trigger**:
 
 ```
-/ask <your question>     # Smart diagnosis: auto-detect scenario and route
+/ask <your question>                       # Claude Code / Codex: diagnose and route
+/math-research-activator <your question>   # DeepSeek Harness (dsh) command palette
 ```
 
 ### Language
@@ -278,6 +283,12 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 ---
 
 ## Changelog
+
+### v3.3.6 — DeepSeek Harness (dsh) support
+
+- **dsh skill install**: npx installer adds `--dsh`, writing the standard Agent Skills bundle to `~/.dsh/skills/math-research-activator` (honors `$DSH_HOME`); `--all` and auto-detect now include dsh
+- **Invocation**: `/math-research-activator` in the dsh command palette; lens/anchor paths are relative to the skill install directory (dsh `resourceBase`)
+- **Docs**: README NEWS banner plus dsh install/usage notes (CN/EN)
 
 ### v3.3.5 — Knowledge Corrections & Anchor Expansion
 

@@ -1,5 +1,7 @@
 <div align="center">
 
+**🎉 NEWS: We now support dsh harness 🚀**
+
 # 📐 Math Skill
 
 ### 面向 AI 与密码学创新的数学研究操作系统
@@ -14,7 +16,7 @@
 
 > Math Skill 不存储数学，它激活数学、路由数学，并把数学翻译成 AI 与密码学研究设计。
 
-面向 **Claude Code / Codex / Cursor 等** 的数学推理技能——在 AI 架构设计、数学结构迁移和密码学证明审查中，自动激活正确的数学透镜、知识锚点和设计原型，给出带条件、带反例、可证伪的结论。
+面向 **Claude Code / Codex / Cursor / DeepSeek Harness (dsh) 等** 的数学推理技能——在 AI 架构设计、数学结构迁移和密码学证明审查中，自动激活正确的数学透镜、知识锚点和设计原型，给出带条件、带反例、可证伪的结论。
 
 如果这个 skill 对你有启发，欢迎点亮一颗 Star⭐。你的支持是项目持续打磨的动力。
 
@@ -73,8 +75,10 @@ npx -y math-skill@latest install --all
 请帮我安装 math-skill：https://github.com/the-thinker0/math-skill，并教我如何使用
 ```
 
-> 也支持：`install --codex` / `--claude`（单独）、`update --all`（更新）、`doctor --all`（检查重复入口）
+> 也支持：`install --codex` / `--claude` / `--dsh`（单独）、`update --all`（更新）、`doctor --all`（检查重复入口）
 > 安装器自动排除内层 `skills/` 目录，保证每个平台只有一个入口。
+>
+> **DeepSeek Harness (dsh)**：`--dsh` 写入 `~/.dsh/skills/math-research-activator/`（可用 `$DSH_HOME` 覆盖）。安装后重启 dsh，命令面板输入 `/math-research-activator` 即可调用。也可手动把该目录放到项目级 `.dsh/skills/` 或共享的 `~/.agents/skills/`。
 
 ### 使用
 
@@ -91,7 +95,8 @@ npx -y math-skill@latest install --all
 **手动触发**：
 
 ```
-/ask <你的问题>          # 智能诊断：自动判断场景并路由
+/ask <你的问题>                       # Claude Code / Codex：智能诊断并路由
+/math-research-activator <你的问题>   # DeepSeek Harness (dsh) 命令面板
 ```
 
 ### 语言
@@ -278,6 +283,12 @@ math-skill/
 ---
 
 ## 变更日志
+
+### v3.3.6 — DeepSeek Harness (dsh) 适配
+
+- **dsh skill 安装**：npx 安装器新增 `--dsh`，将标准 Agent Skills 包写入 `~/.dsh/skills/math-research-activator`（尊重 `$DSH_HOME`）；`--all` 与自动检测覆盖 dsh
+- **调用方式**：dsh 命令面板 `/math-research-activator`；透镜/锚点等资源路径相对 skill 安装目录（dsh 的 `resourceBase`）
+- **文档**：README 增加 NEWS 横幅与 dsh 安装/使用说明（中英同步）
 
 ### v3.3.5 — 知识勘误与锚点扩展
 
