@@ -1,7 +1,5 @@
 <div align="center">
 
-**🎉 NEWS: We now support dsh harness 🚀**
-
 # 📐 Math Skill
 
 ### 面向 AI 与密码学创新的数学研究操作系统
@@ -11,6 +9,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![npm version](https://img.shields.io/npm/v/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 [![npm downloads](https://img.shields.io/npm/dt/math-skill.svg)](https://www.npmjs.com/package/math-skill)
+
+**🎉 NEWS: We now support dsh harness 🚀**
 
 </div>
 
