@@ -1,5 +1,5 @@
 #!/bin/bash
-# Math Skill Validation Script (v3.3.2)
+# Math Skill Validation Script (v3.3.7)
 # Validates the three-layer architecture: lenses + knowledge-base + design-patterns
 
 RED='\033[0;31m'
@@ -64,7 +64,7 @@ check_not_contains_regex() {
 }
 
 echo "========================================"
-echo "  Math Skill Validation (v3.3.2)"
+echo "  Math Skill Validation (v3.3.7)"
 echo "========================================"
 
 # --- Infrastructure ---
@@ -571,10 +571,56 @@ check_not_contains "knowledge-base/cryptography/prf-prg-owf.md" '通常是 small
 check_contains "knowledge-base/cryptography/cca-cpa-ae-hierarchy.md" '不能映射成“训练数据量 ≥ 模型参数量”'
 check_not_contains "knowledge-base/cryptography/reduction-proof-template.md" '差分隐私假设'
 check_contains "references/gpu-friendly-math.md" '`N/A` 不计分'
-check_contains "package.json" '"version": "3.3.6"'
+check_contains "package.json" '"version": "3.3.7"'
 check_contains "bin/math-skill.cjs" '--dsh'
 check_contains "README.md" 'We now support dsh harness'
 check_contains "README.en-US.md" 'We now support dsh harness'
+
+# --- v3.3.7 Math Corrections Regression ---
+echo ""
+echo "--- v3.3.7 Math Corrections Regression ---"
+# PRG advantage: the extra closing paren in \Pr[D(U_{\ell(n)}))=1] must stay fixed.
+check_not_contains "knowledge-base/cryptography/prf-prg-owf.md" 'U_{\ell(n)}))'
+check_not_contains "knowledge-base/cryptography/prf-prg-owf.en.md" 'U_{\ell(n)}))'
+check_contains "knowledge-base/cryptography/prf-prg-owf.md" '\Pr[D(U_{\ell(n)})=1]'
+check_contains "knowledge-base/cryptography/prf-prg-owf.en.md" '\Pr[D(U_{\ell(n)})=1]'
+# SVI natural gradient must state the Hoffman et al. 2013 form:
+# gap against the CURRENT natural parameter, not E_q[T] minus a prior expectation.
+check_contains "knowledge-base/information-geometry/natural-gradient.md" '(1-\rho)\lambda + \rho'
+check_contains "knowledge-base/information-geometry/natural-gradient.en.md" '(1-\rho)\lambda + \rho'
+check_contains "knowledge-base/information-geometry/natural-gradient.md" '当前自然参数'
+check_contains "knowledge-base/information-geometry/natural-gradient.en.md" 'current natural parameter'
+check_not_contains "knowledge-base/information-geometry/natural-gradient.md" '\mathbb{E}_{\text{prior}}[T(X)]'
+check_not_contains "knowledge-base/information-geometry/natural-gradient.en.md" '\mathbb{E}_{\text{prior}}[T(X)]'
+
+# --- Frontmatter Trigger-Clause Guards ---
+echo ""
+echo "--- Frontmatter Trigger-Clause Guards ---"
+# Auto-trigger quality depends on description wording; pin the negative-scope
+# clauses so they cannot silently disappear from any of the four entries.
+check_contains "skills/math-research-activator/SKILL.md" '纯实现型 debug、重构、调参和一般代码审查不触发'
+check_contains "skills/math-research-activator/SKILL.en.md" 'Do not use for implementation-only debugging'
+check_contains "SKILL.md" '纯实现型 debug、重构、调参和一般代码审查不触发'
+check_contains "SKILL.en.md" 'Do not use for implementation-only debugging'
+
+# --- Eval Automation (v3.3.7) ---
+echo ""
+echo "--- Eval Automation ---"
+check_file "tests/eval/cases.jsonl"
+check_file "tests/eval/run_eval.mjs"
+check_file "tests/eval/behavioral_eval.mjs"
+EVAL_OUTPUT=$(node tests/eval/run_eval.mjs 2>&1)
+if [ $? -eq 0 ]; then
+    echo "$EVAL_OUTPUT" | sed 's/^/  /'
+    echo -e "${GREEN}[PASS]${NC} eval suite: schema + paper parity + isolation policy"
+    PASS=$((PASS + 1))
+else
+    echo "$EVAL_OUTPUT"
+    echo -e "${RED}[FAIL]${NC} eval suite failed (manifest/paper drift or isolation violation)"
+    FAIL=$((FAIL + 1))
+fi
+check_contains "README.md" 'v3.3.7'
+check_contains "README.en-US.md" 'v3.3.7'
 
 # --- v3.3.2 Documentation Discipline Checks ---
 echo ""

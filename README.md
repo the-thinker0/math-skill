@@ -284,6 +284,13 @@ math-skill/
 
 ## 变更日志
 
+### v3.3.7 — 数学勘误回归与评测自动化闭环
+
+- **数学勘误（双语同步 + 回归锁定）**：`prf-prg-owf` PRG 优势公式多余右括号修正；`natural-gradient` SVI 自然梯度改为 Hoffman et al. 2013 实际形式（差值对当前自然参数取：$\hat\lambda = \eta_0 + N\,\mathbb{E}_q[T]$，更新 $\lambda \leftarrow (1-\rho)\lambda + \rho\hat\lambda$）
+- **Tier 1 评测自动化（CI 必跑）**：新增 `tests/eval/cases.jsonl`（68 例结构化断言）与零依赖 runner `run_eval.mjs`——schema 校验、纸面清单 ↔ manifest 双向 parity（防漂移）、Domain Router 隔离策略静态断言、may_load 存在性检查；已接入 `validate.sh`
+- **Tier 2 行为级评测槽**：新增 `behavioral_eval.mjs`——配置 `MATH_SKILL_EVAL_CMD` 即对真实 agent 输出做确定性判定（E 场景零引用、纯 AI 不引密码材料、纯密码不引设计模式、中文 CJK 占比）；未配置时安全跳过，不阻塞 CI
+- **frontmatter 触发条款守护**：四个入口 description 的负面范围条款（"纯实现型 debug…不触发"/"Do not use…implementation-only debugging"）纳入语义回归，防止静默删除导致误触发
+
 ### v3.3.6 — DeepSeek Harness (dsh) 适配
 
 - **dsh skill 安装**：npx 安装器新增 `--dsh`，将标准 Agent Skills 包写入 `~/.dsh/skills/math-research-activator`（尊重 `$DSH_HOME`）；`--all` 与自动检测覆盖 dsh

@@ -31,7 +31,7 @@ $$\mathcal{I}_l \approx A_l \otimes B_l$$
 ## AI 设计翻译
 - **K-FAC 优化器**：用 Kronecker 分解近似 FIM，实现近似二阶优化。每层维护 $(A_l, B_l)$，逆为 $A_l^{-1} \otimes B_l^{-1}$，矩阵逆复杂度从 $O(d^3)$ 降至 $O(d_A^3 + d_B^3)$
 - **TRPO 信任域策略梯度**：$D_{KL}(\pi_{\theta_{\text{old}}} \| \pi_\theta) \leq \delta$ 约束下的策略更新，本质是自然梯度 + 线搜索
-- **变分推断中的自然梯度**：对指数族的**自然参数** $\eta$，自然梯度 = 期望充分统计量之差 $\mathbb{E}_q[T(X)] - \mathbb{E}_{\text{prior}}[T(X)]$（Hoffman et al. 2013），避免 Fisher 矩阵求逆
+- **变分推断中的自然梯度（SVI）**：对指数族全局变分分布的自然参数 $\lambda$，SVI 自然梯度是坐标最优自然参数与当前值之差 $\hat\lambda - \lambda$，其中 $\hat\lambda = \eta_0 + N\,\mathbb{E}_q[T(X)]$（$\eta_0$ 为先验超参数、$N$ 为样本数；勿与前文学习率 $\eta$ 混淆），更新为 $\lambda \leftarrow (1-\rho)\lambda + \rho\,\hat\lambda$（Hoffman et al. 2013），避免显式 Fisher 求逆。差值相对**当前自然参数**取，不是“$\mathbb{E}_q[T]$ 减去先验的期望充分统计量”
 
 ## 工程可行性
 - **D1[~]**：FIM 的 Kronecker 因子为稠密矩阵，可张量化；完整 FIM 不可

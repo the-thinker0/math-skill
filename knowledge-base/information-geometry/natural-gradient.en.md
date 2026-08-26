@@ -31,7 +31,7 @@ where $A_l = \mathbb{E}[a_l a_l^T]$ (activation covariance) and $B_l = \mathbb{E
 ## AI Design Translation
 - **K-FAC Optimizer**: Uses Kronecker decomposition to approximate the FIM, enabling approximate second-order optimization. Each layer maintains $(A_l, B_l)$, with inverse $A_l^{-1} \otimes B_l^{-1}$, reducing matrix inversion complexity from $O(d^3)$ to $O(d_A^3 + d_B^3)$
 - **TRPO Trust-Region Policy Gradient**: Policy updates under the constraint $D_{KL}(\pi_{\theta_{\text{old}}} \| \pi_\theta) \leq \delta$, essentially natural gradient + line search
-- **Natural Gradient in Variational Inference**: For an exponential family's **natural parameter** $\eta$, the natural gradient equals the difference of expected sufficient statistics $\mathbb{E}_q[T(X)] - \mathbb{E}_{\text{prior}}[T(X)]$ (Hoffman et al. 2013), avoiding Fisher matrix inversion
+- **Natural Gradient in Variational Inference (SVI)**: For the natural parameter $\lambda$ of an exponential-family global variational distribution, the SVI natural gradient is the gap between the coordinate-optimal and the current natural parameter, $\hat\lambda - \lambda$, where $\hat\lambda = \eta_0 + N\,\mathbb{E}_q[T(X)]$ ($\eta_0$: prior hyperparameter; $N$: number of samples; not the learning rate $\eta$ above), updated as $\lambda \leftarrow (1-\rho)\lambda + \rho\,\hat\lambda$ (Hoffman et al. 2013), avoiding explicit Fisher inversion. The gap is taken relative to the **current natural parameter**, not as "$\mathbb{E}_q[T]$ minus a prior expectation of sufficient statistics"
 
 ## Engineering Feasibility
 - **D1[~]**: The Kronecker factors of the FIM are dense matrices and can be tensorized; the full FIM cannot

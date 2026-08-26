@@ -1,4 +1,4 @@
-﻿# Math Skill Validation Script (PowerShell, v3.3.2)
+# Math Skill Validation Script (PowerShell, v3.3.7)
 # Validates the three-layer architecture: lenses + knowledge-base + design-patterns
 #
 # Usage (run from repo root):
@@ -85,7 +85,7 @@ Check-File "package.json"
 Check-Contains "package.json" "lenses/"
 Check-Contains "package.json" "design-patterns/"
 Check-Contains "package.json" "knowledge-base/"
-Check-Contains "package.json" '"version": "3.3.6"'
+Check-Contains "package.json" '"version": "3.3.7"'
 Check-Contains "bin/math-skill.cjs" "--dsh"
 Check-Contains "README.md" "We now support dsh harness"
 Check-Contains "README.en-US.md" "We now support dsh harness"
@@ -483,6 +483,42 @@ Check-Contains "SKILL.en.md" 'Read by section'
 Check-Contains "SKILL.en.md" 'no fixed output format'
 Check-Contains "references\skill-index.md" '精益加载与尺寸提示'
 Check-Contains "references\skill-index.en.md" 'Lean loading and size tiers'
+
+# --- v3.3.7 Math Corrections Regression (synced with validate.sh) ---
+Write-Host "`n--- v3.3.7 Math Corrections Regression ---"
+Check-Not-Contains "knowledge-base/cryptography/prf-prg-owf.md" 'U_{\ell(n)}))'
+Check-Not-Contains "knowledge-base/cryptography/prf-prg-owf.en.md" 'U_{\ell(n)}))'
+Check-Contains "knowledge-base/cryptography/prf-prg-owf.md" '\Pr[D(U_{\ell(n)})=1]'
+Check-Contains "knowledge-base/cryptography/prf-prg-owf.en.md" '\Pr[D(U_{\ell(n)})=1]'
+Check-Contains "knowledge-base/information-geometry/natural-gradient.md" '(1-\rho)\lambda + \rho'
+Check-Contains "knowledge-base/information-geometry/natural-gradient.en.md" '(1-\rho)\lambda + \rho'
+Check-Contains "knowledge-base/information-geometry/natural-gradient.md" '当前自然参数'
+Check-Contains "knowledge-base/information-geometry/natural-gradient.en.md" 'current natural parameter'
+Check-Not-Contains "knowledge-base/information-geometry/natural-gradient.md" '\mathbb{E}_{\text{prior}}[T(X)]'
+Check-Not-Contains "knowledge-base/information-geometry/natural-gradient.en.md" '\mathbb{E}_{\text{prior}}[T(X)]'
+
+# --- Frontmatter Trigger-Clause Guards (synced with validate.sh) ---
+Write-Host "`n--- Frontmatter Trigger-Clause Guards ---"
+Check-Contains "skills/math-research-activator/SKILL.md" '纯实现型 debug、重构、调参和一般代码审查不触发'
+Check-Contains "skills/math-research-activator/SKILL.en.md" 'Do not use for implementation-only debugging'
+Check-Contains "SKILL.md" '纯实现型 debug、重构、调参和一般代码审查不触发'
+Check-Contains "SKILL.en.md" 'Do not use for implementation-only debugging'
+
+# --- Eval Automation (v3.3.7, synced with validate.sh) ---
+Write-Host "`n--- Eval Automation ---"
+Check-File "tests/eval/cases.jsonl"
+Check-File "tests/eval/run_eval.mjs"
+Check-File "tests/eval/behavioral_eval.mjs"
+node tests/eval/run_eval.mjs
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "[PASS] eval suite: schema + paper parity + isolation policy" -ForegroundColor Green
+    $script:pass++
+} else {
+    Write-Host "[FAIL] eval suite failed (manifest/paper drift or isolation violation)" -ForegroundColor Red
+    $script:fail++
+}
+Check-Contains "README.md" 'v3.3.7'
+Check-Contains "README.en-US.md" 'v3.3.7'
 
 # --- Count Verification (synced with validate.sh) ---
 Write-Host "`n--- Count Verification ---"

@@ -13,7 +13,7 @@ These are asymptotic definitions for families indexed by a growing security para
 - OWF: for every PPT $A$,
   $$\Pr_{x\leftarrow U_n}\left[f(A(1^n,f(x)))=f(x)\right]\le \operatorname{negl}(n).$$
 - PRG advantage:
-  $$\operatorname{Adv}^{\rm prg}_{G}(D)=\left|\Pr[D(G(U_n))=1]-\Pr[D(U_{\ell(n)}))=1]\right|.$$
+  $$\operatorname{Adv}^{\rm prg}_{G}(D)=\left|\Pr[D(G(U_n))=1]-\Pr[D(U_{\ell(n)})=1]\right|.$$
 - PRF advantage:
   $$\operatorname{Adv}^{\rm prf}_{F}(A)=\left|\Pr_{k}[A^{F_k}=1]-\Pr_{R}[A^{R}=1]\right|.$$
 - Existence relations: OWFs exist iff PRGs exist; GGM constructs a PRF from a PRG. A PRF yields a PRP through Feistel: the classical Luby--Rackoff results give a PRP against forward queries with three rounds and a strong PRP against forward and inverse queries with four rounds, with concrete bounds depending on query count and block length.

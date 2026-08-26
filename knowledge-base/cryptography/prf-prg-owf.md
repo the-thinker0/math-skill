@@ -13,7 +13,7 @@
 - OWF：对所有 PPT $A$，
   $$\Pr_{x\leftarrow U_n}\left[f(A(1^n,f(x)))=f(x)\right]\le \operatorname{negl}(n).$$
 - PRG 优势：
-  $$\operatorname{Adv}^{\rm prg}_{G}(D)=\left|\Pr[D(G(U_n))=1]-\Pr[D(U_{\ell(n)}))=1]\right|.$$
+  $$\operatorname{Adv}^{\rm prg}_{G}(D)=\left|\Pr[D(G(U_n))=1]-\Pr[D(U_{\ell(n)})=1]\right|.$$
 - PRF 优势：
   $$\operatorname{Adv}^{\rm prf}_{F}(A)=\left|\Pr_{k}[A^{F_k}=1]-\Pr_{R}[A^{R}=1]\right|.$$
 - 存在性关系：OWF 存在当且仅当 PRG 存在；PRG 可经 GGM 构造 PRF。由 PRF 经 Feistel 可构造 PRP：经典 Luby--Rackoff 结论是 3 轮给出选择明文意义下的 PRP，4 轮给出允许正反向查询的强 PRP（具体界依赖查询数与分组长度）。

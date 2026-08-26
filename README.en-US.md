@@ -284,6 +284,13 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 
 ## Changelog
 
+### v3.3.7 — Math corrections regression & eval automation loop
+
+- **Math corrections (bilingual + regression-locked)**: `prf-prg-owf` extra closing paren in the PRG advantage formula fixed; `natural-gradient` SVI natural gradient restated in the actual Hoffman et al. 2013 form (gap taken against the current natural parameter: $\hat\lambda = \eta_0 + N\,\mathbb{E}_q[T]$, update $\lambda \leftarrow (1-\rho)\lambda + \rho\hat\lambda$)
+- **Tier 1 eval automation (always-on CI)**: new `tests/eval/cases.jsonl` (68 structured cases) plus zero-dependency runner `run_eval.mjs` — schema validation, bidirectional paper ↔ manifest parity (drift-proof), Domain Router isolation policy assertions, and may_load existence checks; wired into `validate.sh`
+- **Tier 2 behavioral eval slot**: new `behavioral_eval.mjs` — set `MATH_SKILL_EVAL_CMD` to apply deterministic judges to a real agent's outputs (scenario E cites nothing, pure AI cites no crypto material, pure crypto cites no design patterns, zh CJK ratio); safely skips when unset, never blocking CI
+- **Frontmatter trigger-clause guards**: the negative-scope clauses in all four entry descriptions ("implementation-only debugging … do not use" / "纯实现型 debug…不触发") are now pinned by semantic regression so they cannot silently disappear
+
 ### v3.3.6 — DeepSeek Harness (dsh) support
 
 - **dsh skill install**: npx installer adds `--dsh`, writing the standard Agent Skills bundle to `~/.dsh/skills/math-research-activator` (honors `$DSH_HOME`); `--all` and auto-detect now include dsh
