@@ -15,6 +15,8 @@ Activate this domain direction when the problem involves:
 - `low-rank-approximation.en.md` — Low-rank approximation and truncated SVD
 - `positive-semidefinite.en.md` — Positive semidefinite matrices and PSD cone
 - `matrix-perturbation.en.md` — Matrix perturbation theory and error bounds
+- `random-matrix.en.md` — Random matrix theory and spectral statistics (MP law, BBP transition)
+- `hankel-state-space.en.md` — Hankel operators and state-space models (HiPPO/S4)
 
 ## Extended Concepts
 When core anchors are insufficient, the following concepts may need temporary activation:
@@ -30,7 +32,8 @@ When core anchors are insufficient, the following concepts may need temporary ac
 - randomized linear algebra: randomized linear algebra methods
 - CUR decomposition: column/row sampling-based matrix approximation
 - Nystrom approximation: low-rank approximation of kernel matrices
-- matrix concentration inequalities: concentration inequalities for random matrices
+- free probability: spectra of sums/products of independent random matrices
+- balanced truncation: controllability/observability Gramian-guided model reduction
 
 ## Reference Book Directions
 - `../../references/books/matrix-analysis.en.md`: comprehensive coverage of matrix analysis, especially spectral decomposition, perturbation theory, and matrix function chapters
@@ -41,6 +44,8 @@ When core anchors are insufficient, the following concepts may need temporary ac
 - low-rank approximation → LoRA / adapter modules / memory-efficient attention
 - positive-semidefinite → covariance-aware regularization / PSD-constrained loss
 - matrix perturbation → condition number monitoring / robustness-aware training
+- random matrix → spectral health monitor / random projection / overparameterization analysis
+- hankel state-space → S4-style long-sequence layers / selective SSM / Hankel low-rank distillation
 
 ## Temporary Activation Rules
 When the problem requires mathematics not in the core anchors:

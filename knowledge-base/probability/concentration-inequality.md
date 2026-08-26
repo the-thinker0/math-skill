@@ -48,7 +48,7 @@ $$P(|f(X_1,\ldots,X_n) - \mathbb{E}[f]| \geq t) \leq 2\exp\left(-\frac{2t^2}{\su
 ## 路由扩展
 - 若需要信息论界 → `entropy.md`（基于熵的集中不等式）
 - 若需要 Donsker-Varadhan 表示 → `kl-divergence.md`（KL 散度的变分表示）
-- 若涉及随机矩阵界 → `../matrix-analysis/matrix-perturbation.md`（随机矩阵的集中行为）
+- 若涉及随机矩阵界 → `../matrix-analysis/random-matrix.md`（MP 律、谱范数与最小奇异值的非渐近界）
 
 ## 可扩展方向
 - 鞅集中（Azuma / Freedman）：鞅差的集中不等式

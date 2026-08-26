@@ -571,7 +571,7 @@ check_not_contains "knowledge-base/cryptography/prf-prg-owf.md" '通常是 small
 check_contains "knowledge-base/cryptography/cca-cpa-ae-hierarchy.md" '不能映射成“训练数据量 ≥ 模型参数量”'
 check_not_contains "knowledge-base/cryptography/reduction-proof-template.md" '差分隐私假设'
 check_contains "references/gpu-friendly-math.md" '`N/A` 不计分'
-check_contains "package.json" '"version": "3.3.4"'
+check_contains "package.json" '"version": "3.3.5"'
 
 # --- v3.3.2 Documentation Discipline Checks ---
 echo ""
@@ -626,13 +626,13 @@ else
     FAIL=$((FAIL + 1))
 fi
 
-# v3.3.2 expected count: 33 shared (8 domains) + 4 crypto = 37
-EXPECTED_KB=37
+# v3.3.5 expected count: 37 shared (8 domains) + 4 crypto = 41
+EXPECTED_KB=41
 if [ "$KB_CN" -eq "$EXPECTED_KB" ]; then
-    echo -e "${GREEN}[PASS]${NC} Knowledge cards count = $EXPECTED_KB (expected for v3.3.2)"
+    echo -e "${GREEN}[PASS]${NC} Knowledge cards count = $EXPECTED_KB (expected for v3.3.5)"
     PASS=$((PASS + 1))
 else
-    echo -e "${YELLOW}[WARN]${NC} Knowledge cards count = $KB_CN (expected $EXPECTED_KB for v3.3.2)"
+    echo -e "${YELLOW}[WARN]${NC} Knowledge cards count = $KB_CN (expected $EXPECTED_KB for v3.3.5)"
     WARN=$((WARN + 1))
 fi
 

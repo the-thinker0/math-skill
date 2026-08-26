@@ -41,7 +41,7 @@ Use the target object and required guarantee:
 
 | Domain | Load | Exclude |
 |---|---|---|
-| Shared mathematics | `lenses/` plus the 8 non-cryptography domains and 33 anchors under `knowledge-base/` | Do not automatically load AI patterns or crypto books |
+| Shared mathematics | `lenses/` plus the 8 non-cryptography domains and 37 anchors under `knowledge-base/` | Do not automatically load AI patterns or crypto books |
 | AI research | Shared mathematics on demand plus 0–2 relevant prototypes from `design-patterns/` | Do not load crypto anchors/books |
 | Cryptography | Relevant `knowledge-base/cryptography/` anchors; then the three crypto books only if needed; shared mathematics by structure | Do not load AI design patterns or apply the GPU gate |
 | AI×crypto | Both a cryptographic primitive/formal property and an AI object/functional need are present, and the task asks to transfer or combine them | Load only material needed at the intersection |

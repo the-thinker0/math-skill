@@ -22,6 +22,7 @@ The variational perspective (formerly "Optimization") is a way of viewing "ratio
 ## Which Knowledge Domains It Routes To
 
 - `optimization/convex-optimization`: Convexity determination, properties of convex sets and functions — determines the difficulty class of the problem
+- `probability/optimal-transport`: Wasserstein distance and Sinkhorn — variational problems in distribution space
 - **optimization**: Solution methods for LP, QP, convex, non-convex, combinatorial, and stochastic optimization
 - **matrix-analysis**: Condition numbers, preconditioning, and low-rank approximation — feasibility analysis for second-order methods
 

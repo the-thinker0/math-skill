@@ -85,7 +85,7 @@ Check-File "package.json"
 Check-Contains "package.json" "lenses/"
 Check-Contains "package.json" "design-patterns/"
 Check-Contains "package.json" "knowledge-base/"
-Check-Contains "package.json" '"version": "3.3.4"'
+Check-Contains "package.json" '"version": "3.3.5"'
 Check-File "SKILL.md"
 Check-File "SKILL.en.md"
 if ((Get-Content "SKILL.md" -TotalCount 1) -eq "---" -and (Get-Content "SKILL.en.md" -TotalCount 1) -eq "---") {

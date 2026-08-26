@@ -109,7 +109,7 @@ npx -y math-skill@latest install --all
 | 层 | 职责 | 目录 | 文件数 |
 |----|------|------|--------|
 | **思想透镜** | 诊断问题结构，推荐数学视角 | `lenses/*.md` | 15 |
-| **激活锚点** | 33 个共用数学锚点 + 4 个密码学锚点；不足时触发知识缺口协议 | `knowledge-base/*/*.md` | 37 |
+| **激活锚点** | 37 个共用数学锚点 + 4 个密码学锚点；不足时触发知识缺口协议 | `knowledge-base/*/*.md` | 41 |
 | **设计翻译** | 把数学变成 AI 模块/loss/算子 | `design-patterns/*/*.md` | 22 |
 
 辅助层：
@@ -123,7 +123,7 @@ AI 研究与密码学**共享**数学根基（概率/信息/代数/矩阵/谱/�
 
 | Domain | 加载内容 | 信号词 |
 |--------|---------|--------|
-| **共用数学** | 8 域 33 锚点 + 相关透镜 | 概率/信息/代数/几何/矩阵/谱/优化/拓扑/复杂度 |
+| **共用数学** | 8 域 37 锚点 + 相关透镜 | 概率/信息/代数/几何/矩阵/谱/优化/拓扑/复杂度 |
 | **AI 研究** | 共用数学按需 + 0–2 个相关设计原型；书稿只在深查时加载 | attention/loss/routing/representation/compression/MoE/transformer/KV-cache/LoRA/SSM/扩散/RL |
 | **密码学** | 4 张密码锚点；不足时才查 3 本密码书稿；共用数学按需 | 加密/签名/MAC/PRF/PRG/PRP/OWF/CCA/CPA/AE/零知识/归约/DL/CDH/DDH/RSA/ECC/格密码 |
 | **AI×密码交叉** | 双 domain 加载 + 交叉点标注 | "PRF 做模型水印""对抗样本归约""可验证推理" |
@@ -220,13 +220,13 @@ math-skill/
 ├── skills/
 │   └── math-research-activator/    # 总控：意图诊断 + 路由
 ├── lenses/                         # 15 个思想透镜（推理方法论）
-├── knowledge-base/                 # 激活锚点（按数学领域组织，非封闭百科；共 37 卡）
-│   ├── matrix-analysis/            # 矩阵分析（5 卡片）
+├── knowledge-base/                 # 激活锚点（按数学领域组织，非封闭百科；共 41 卡）
+│   ├── matrix-analysis/            # 矩阵分析（7 卡片）
 │   ├── optimization/               # 最优化（5 卡片）
 │   ├── differential-geometry/      # 微分几何（6 卡片）
 │   ├── lie-theory/                 # 李理论（5 卡片）
 │   ├── topology/                   # 拓扑（3 卡片）
-│   ├── probability/                # 概率与信息（5 卡片）
+│   ├── probability/                # 概率与信息（7 卡片）
 │   ├── information-geometry/       # 信息几何（2 卡片）
 │   ├── algebraic-geometry/         # 代数几何（2 卡片）
 │   └── cryptography/               # 密码学（4 卡片，域独有）
@@ -278,6 +278,13 @@ math-skill/
 ---
 
 ## 变更日志
+
+### v3.3.5 — 知识勘误与锚点扩展
+
+- **新增 4 张共用锚点**：`random-matrix`、`hankel-state-space`（矩阵分析）+ `optimal-transport`、`score-matching-sde`（概率与信息），补齐随机矩阵 / 最优传输 / 扩散-SSM 三类高频缺口；全仓计数统一为 37 共用 + 4 密码 = 41
+- **数学勘误（双语同步）**：Bernstein 不等式补假设、Morse 公式修正、球面指数映射补前提、变分推断自然梯度公式修正、Cramér–Rao 路由纠正
+- **表述精确化**：凸优化"唯一可高效求解"过强断言软化、KKT/Slater 措辞修正、KL 双向免责、持续同调可微性正确表述、Plücker 公式符号统一
+- **跨文件自洽**：D1–D8 维度与 `[v]/[~]/[x]` 评级图例内联到 `gpu-friendly-math`；categorical/perturbation/game 透镜补域边界护栏，game 与密码攻击游戏互消歧
 
 ### v3.3.4 — v3.3.3 热修复
 

@@ -8,7 +8,7 @@
 
 | Domain | 加载内容 | 信号词 |
 |--------|---------|--------|
-| **共用数学** | 8 域 33 锚点（排除 cryptography）+ 相关透镜 | 概率/信息/代数/几何/矩阵/谱/优化/拓扑/复杂度 |
+| **共用数学** | 8 域 37 锚点（排除 cryptography）+ 相关透镜 | 概率/信息/代数/几何/矩阵/谱/优化/拓扑/复杂度 |
 | **AI 研究** | 共用数学按需 + `../design-patterns/`（5 类 22 模式）；书稿仅深查 | attention/loss/routing/representation/compression/MoE/transformer/KV-cache/LoRA/SSM/扩散/RL |
 | **密码学** | 4 张密码锚点；不足时才加载 3 本密码学书稿；共用数学按需 | 加密/签名/MAC/PRF/PRG/PRP/OWF/CCA/CPA/AE/零知识/归约/DL/CDH/DDH/RSA/ECC/格密码 |
 | **AI×密码交叉** | 双 domain 加载 + 交叉点标注 | "PRF 做模型水印""对抗样本归约""可验证推理" |
@@ -83,12 +83,12 @@
 
 | 领域 | 目录 | 锚点 |
 |------|------|---------|
-| 矩阵分析 | `../knowledge-base/matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
+| 矩阵分析 | `../knowledge-base/matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation, random-matrix, hankel-state-space |
 | 最优化 | `../knowledge-base/optimization/` | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
 | 微分几何 | `../knowledge-base/differential-geometry/` | manifold, tangent-space, metric-tensor, geodesic, curvature, connection |
 | 李理论 | `../knowledge-base/lie-theory/` | group-action, lie-group, lie-algebra, representation, equivariance |
 | 拓扑 | `../knowledge-base/topology/` | persistent-homology, euler-characteristic, fundamental-group |
-| 概率与信息 | `../knowledge-base/probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
+| 概率与信息 | `../knowledge-base/probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information, optimal-transport, score-matching-sde |
 | 信息几何 | `../knowledge-base/information-geometry/` | natural-gradient, fisher-metric |
 | 代数几何 | `../knowledge-base/algebraic-geometry/` | sheaf-cohomology, grassmannian-plucker |
 

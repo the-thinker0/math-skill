@@ -48,7 +48,7 @@ $$P(|f(X_1,\ldots,X_n) - \mathbb{E}[f]| \geq t) \leq 2\exp\left(-\frac{2t^2}{\su
 ## Routing Extensions
 - If information-theoretic bounds are needed -> `entropy.en.md` (entropy-based concentration inequalities)
 - If Donsker-Varadhan representation is needed -> `kl-divergence.en.md` (variational representation of KL divergence)
-- If random matrix bounds are involved -> `../matrix-analysis/matrix-perturbation.md` (concentration behavior of random matrices)
+- If random matrix bounds are involved -> `../matrix-analysis/random-matrix.en.md` (MP law, non-asymptotic bounds for spectral norms and smallest singular values)
 
 ## Extensible Directions
 - Martingale concentration (Azuma / Freedman): concentration inequalities for martingale differences

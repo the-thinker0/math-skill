@@ -25,6 +25,7 @@ This is a "decomposer's" perspective — breaking complex linear operators (matr
 - **matrix-analysis/spectral-decomposition**: EVD, Schur decomposition, normal matrices
 - **matrix-analysis/low-rank-approximation**: Eckart-Young theorem, randomized SVD
 - **matrix-analysis/matrix-perturbation**: Weyl's inequality, Davis-Kahan theorem
+- **matrix-analysis/random-matrix**: spectral statistics of high-dimensional random matrices (MP law, BBP transition, Tracy–Widom)
 - **matrix-analysis/positive-semidefinite**: Spectral properties of PSD matrices, Cholesky factorization
 
 ## What AI Designs It May Inspire

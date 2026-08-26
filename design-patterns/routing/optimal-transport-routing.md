@@ -10,7 +10,8 @@
 
 ## 数学思想来源
 - 透镜：../../lenses/variational.md（凸优化、对偶理论）、../../lenses/geometric.md（Wasserstein 距离）
-- 知识：../../knowledge-base/optimization/lagrangian-duality.md（对偶理论、约束优化）、
+- 知识：../../knowledge-base/probability/optimal-transport.md（Kantorovich 松弛、Sinkhorn、Wasserstein 距离）、
+  ../../knowledge-base/optimization/lagrangian-duality.md（对偶理论、约束优化）、
   ../../knowledge-base/probability/entropy.md（熵正则化、边际约束）
 
 ## 需要的数学知识

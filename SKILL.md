@@ -41,7 +41,7 @@ description: |
 
 | 域 | 加载范围 | 禁止污染 |
 |---|---|---|
-| 共用数学 | `lenses/` + `knowledge-base/` 中除 `knowledge-base/cryptography/` 外的 8 域 33 锚点 | 不自动加载 AI 模式或密码书稿 |
+| 共用数学 | `lenses/` + `knowledge-base/` 中除 `knowledge-base/cryptography/` 外的 8 域 37 锚点 | 不自动加载 AI 模式或密码书稿 |
 | AI 研究 | 共用数学按需 + `design-patterns/` 中相关的 0–2 个原型 | 不加载密码学锚点/书稿 |
 | 密码学 | `knowledge-base/cryptography/` 中相关锚点；不足时再查 3 本密码书稿；共用数学按结构按需 | 不加载 AI 设计模式，不以 GPU 清单作安全门 |
 | AI×密码 | 同时满足“密码学原语/形式安全性质”和“AI 对象/功能需求”，且问题要求迁移或组合 | 只加载交叉点实际需要的两侧材料 |

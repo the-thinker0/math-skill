@@ -8,7 +8,7 @@
 
 | Domain | Loaded Content | Signal Keywords |
 |--------|----------------|------------------|
-| **Shared Mathematics** | 33 anchors across 8 non-cryptography domains plus relevant lenses | probability/information/algebra/geometry/matrix/spectral/optimization/topology/complexity |
+| **Shared Mathematics** | 37 anchors across 8 non-cryptography domains plus relevant lenses | probability/information/algebra/geometry/matrix/spectral/optimization/topology/complexity |
 | **AI Research** | Shared mathematics on demand + `../design-patterns/` (5 types, 22 patterns); books only for deep checks | attention/loss/routing/representation/compression/MoE/transformer/KV-cache/LoRA/SSM/diffusion/RL |
 | **Cryptography** | 4 crypto anchors; only then 3 crypto books if needed; shared mathematics on demand | encryption/signature/MAC/PRF/PRG/PRP/OWF/CCA/CPA/AE/ZK/reduction/DL/CDH/DDH/RSA/ECC/lattice |
 | **AI×Crypto** | dual-domain load + intersection annotation | "PRF for watermarking," "adversarial example reduction," "verifiable inference" |
@@ -83,12 +83,12 @@ Each anchor is not a closed knowledge card but answers: what math structure to a
 
 | Domain | Directory | Anchors |
 |--------|-----------|----------------|
-| Matrix Analysis | `../knowledge-base/matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
+| Matrix Analysis | `../knowledge-base/matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation, random-matrix, hankel-state-space |
 | Optimization | `../knowledge-base/optimization/` | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
 | Differential Geometry | `../knowledge-base/differential-geometry/` | manifold, tangent-space, metric-tensor, geodesic, curvature, connection |
 | Lie Theory | `../knowledge-base/lie-theory/` | group-action, lie-group, lie-algebra, representation, equivariance |
 | Topology | `../knowledge-base/topology/` | persistent-homology, euler-characteristic, fundamental-group |
-| Probability & Information | `../knowledge-base/probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
+| Probability & Information | `../knowledge-base/probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information, optimal-transport, score-matching-sde |
 | Information Geometry | `../knowledge-base/information-geometry/` | natural-gradient, fisher-metric |
 | Algebraic Geometry | `../knowledge-base/algebraic-geometry/` | sheaf-cohomology, grassmannian-plucker |
 

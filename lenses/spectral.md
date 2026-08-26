@@ -25,6 +25,7 @@
 - **matrix-analysis/spectral-decomposition**：EVD、Schur 分解、正规矩阵
 - **matrix-analysis/low-rank-approximation**：Eckart-Young 定理、随机化 SVD
 - **matrix-analysis/matrix-perturbation**：Weyl 不等式、Davis-Kahan 定理
+- **matrix-analysis/random-matrix**：高维随机矩阵的谱统计（MP 律、BBP 相变、Tracy–Widom）
 - **matrix-analysis/positive-semidefinite**：PSD 矩阵的谱性质、Cholesky
 
 ## 可能产生哪些 AI 设计

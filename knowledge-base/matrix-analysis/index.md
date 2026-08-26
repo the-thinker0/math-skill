@@ -15,6 +15,8 @@
 - `low-rank-approximation.md` — 低秩近似与截断 SVD
 - `positive-semidefinite.md` — 半正定矩阵与 PSD 锥
 - `matrix-perturbation.md` — 矩阵扰动理论与误差界
+- `random-matrix.md` — 随机矩阵理论与谱统计（MP 律、BBP 相变）
+- `hankel-state-space.md` — Hankel 算子与状态空间模型（HiPPO/S4）
 
 ## 扩展概念
 当核心锚点不够时，以下概念可能需要临时激活：
@@ -30,7 +32,8 @@
 - randomized linear algebra：随机化线性代数方法
 - CUR decomposition：基于列/行采样的矩阵近似
 - Nystrom approximation：核矩阵的低秩近似
-- matrix concentration inequalities：随机矩阵的集中不等式
+- 自由概率（free probability）：独立随机矩阵之和/积的谱
+- 平衡截断（balanced truncation）：可控/可观 Gramian 引导的模型降阶
 
 ## 参考书方向
 - `../../references/books/matrix-analysis.md`：矩阵分析全面覆盖，特别是谱分解、扰动理论和矩阵函数章节
@@ -41,6 +44,8 @@
 - low-rank approximation → LoRA / adapter modules / memory-efficient attention
 - positive-semidefinite → covariance-aware regularization / PSD-constrained loss
 - matrix perturbation → condition number monitoring / robustness-aware training
+- random matrix → spectral health monitor / random projection / overparameterization analysis
+- hankel state-space → S4-style long-sequence layers / selective SSM / Hankel low-rank distillation
 
 ## 临时激活规则
 当问题需要的数学不在核心锚点中时：

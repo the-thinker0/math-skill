@@ -15,24 +15,25 @@
 - `kl-divergence.md` — KL 散度
 - `information-bottleneck.md` — 信息瓶颈
 - `fisher-information.md` — Fisher 信息
+- `optimal-transport.md` — 最优传输与 Wasserstein 距离（Sinkhorn）
+- `score-matching-sde.md` — 分数匹配与随机微分方程（扩散模型）
 
 ## 扩展概念
 当核心锚点不够时，以下概念可能需要临时激活：
-- optimal transport（Wasserstein distance, Sinkhorn）：最优传输与 Wasserstein 距离
 - total variation distance：全变差距离
 - f-divergence family：f-散度族（chi-squared, Hellinger, Jensen-Shannon 等）
 - mutual information estimation（MINE / NWJ）：互信息的神经估计方法
 - variational inference（ELBO / VI）：变分推断与证据下界
 - Markov chain Monte Carlo：马尔可夫链蒙特卡罗方法
-- stochastic process（martingale, Brownian motion, SDE）：随机过程基础
+- stochastic process（martingale, Brownian motion）：随机过程基础
 - PAC-Bayes bounds：PAC-Bayes 泛化界
 - Rademacher complexity：Rademacher 复杂度
 - VC dimension：VC 维与假设空间容量
 - generalization via compression：基于压缩的泛化理论
 - differential privacy：差分隐私
 - normalizing flow theory：规范化流理论
-- score matching：得分匹配
-- diffusion process theory：扩散过程理论
+- unbalanced / Gromov–Wasserstein OT：非平衡与跨空间最优传输
+- Langevin dynamics / Schrödinger bridge：Langevin 采样与扩散桥
 
 ## 参考书方向
 - `../../references/books/optimization-ml.md`：变分方法和概率推断相关章节
@@ -43,6 +44,8 @@
 - kl-divergence → distribution matching loss / knowledge distillation / policy regularization
 - information bottleneck → representation compression / VIB loss / uncertainty routing
 - fisher information → natural gradient / parameter sensitivity monitor / active learning
+- optimal transport → Sinkhorn routing / distribution matching loss / Wasserstein barycenter
+- score matching & SDE → diffusion training / ODE samplers / inverse-problem posterior sampling
 
 ## 临时激活规则
 当问题需要的数学不在核心锚点中时：

@@ -15,24 +15,25 @@ Activate this domain direction when the problem involves:
 - `kl-divergence.en.md` — KL divergence
 - `information-bottleneck.en.md` — Information bottleneck
 - `fisher-information.en.md` — Fisher information
+- `optimal-transport.en.md` — Optimal transport and Wasserstein distance (Sinkhorn)
+- `score-matching-sde.en.md` — Score matching and SDEs (diffusion models)
 
 ## Extended Concepts
 When core anchors are insufficient, the following concepts may need temporary activation:
-- optimal transport (Wasserstein distance, Sinkhorn): optimal transport and Wasserstein distance
 - total variation distance: total variation distance
 - f-divergence family: f-divergence family (chi-squared, Hellinger, Jensen-Shannon, etc.)
 - mutual information estimation (MINE / NWJ): neural estimation methods for mutual information
 - variational inference (ELBO / VI): variational inference and evidence lower bound
 - Markov chain Monte Carlo: Markov chain Monte Carlo methods
-- stochastic process (martingale, Brownian motion, SDE): stochastic process fundamentals
+- stochastic process (martingale, Brownian motion): stochastic process fundamentals
 - PAC-Bayes bounds: PAC-Bayes generalization bounds
 - Rademacher complexity: Rademacher complexity
 - VC dimension: VC dimension and hypothesis space capacity
 - generalization via compression: compression-based generalization theory
 - differential privacy: differential privacy
 - normalizing flow theory: normalizing flow theory
-- score matching: score matching
-- diffusion process theory: diffusion process theory
+- unbalanced / Gromov–Wasserstein OT: unbalanced and cross-space optimal transport
+- Langevin dynamics / Schrödinger bridge: Langevin sampling and diffusion bridges
 
 ## Reference Book Directions
 - `../../references/books/optimization-ml.en.md`: variational methods and probabilistic inference chapters
@@ -43,6 +44,8 @@ When core anchors are insufficient, the following concepts may need temporary ac
 - kl-divergence → distribution matching loss / knowledge distillation / policy regularization
 - information bottleneck → representation compression / VIB loss / uncertainty routing
 - fisher information → natural gradient / parameter sensitivity monitor / active learning
+- optimal transport → Sinkhorn routing / distribution matching loss / Wasserstein barycenter
+- score matching & SDE → diffusion training / ODE samplers / inverse-problem posterior sampling
 
 ## Temporary Activation Rules
 When the problem requires mathematics not in the core anchors:

@@ -8,7 +8,8 @@ Core requirement: **globally optimal assignment, rather than greedy per-point de
 
 ## Mathematical Inspiration
 - Lenses: ../../lenses/variational.en.md (convex variational, duality theory), ../../lenses/geometric.en.md (Wasserstein distance)
-- Knowledge: ../../knowledge-base/optimization/lagrangian-duality.en.md (duality theory, constrained optimization),
+- Knowledge: ../../knowledge-base/probability/optimal-transport.en.md (Kantorovich relaxation, Sinkhorn, Wasserstein distance),
+  ../../knowledge-base/optimization/lagrangian-duality.en.md (duality theory, constrained optimization),
   ../../knowledge-base/probability/entropy.en.md (entropy regularization, marginal constraints)
 
 ## Required Mathematical Background

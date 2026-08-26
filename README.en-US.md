@@ -109,7 +109,7 @@ Problem → Lenses (what perspective?) → Anchors (which math structures?) → 
 | Layer | Role | Directory | Files |
 |-------|------|-----------|-------|
 | **Thinking Lenses** | Diagnose problem structure, recommend math perspectives | `lenses/*.md` | 15 |
-| **Activation Anchors** | 33 shared-math anchors + 4 cryptography anchors; trigger Knowledge Gap Protocol when insufficient | `knowledge-base/*/*.md` | 37 |
+| **Activation Anchors** | 37 shared-math anchors + 4 cryptography anchors; trigger Knowledge Gap Protocol when insufficient | `knowledge-base/*/*.md` | 41 |
 | **Design Translation** | Bridge math to AI modules/losses/operators | `design-patterns/*/*.md` | 22 |
 
 Supporting layers:
@@ -123,7 +123,7 @@ AI research and cryptography **share** mathematical foundations (probability/inf
 
 | Domain | Loaded Content | Signal Keywords |
 |--------|----------------|------------------|
-| **Shared Mathematics** | 33 anchors across 8 domains plus relevant lenses | probability/information/algebra/geometry/matrix/spectral/optimization/topology/complexity |
+| **Shared Mathematics** | 37 anchors across 8 domains plus relevant lenses | probability/information/algebra/geometry/matrix/spectral/optimization/topology/complexity |
 | **AI Research** | Shared math on demand + 0–2 relevant design prototypes; books only for deep checks | attention/loss/routing/representation/compression/MoE/transformer/KV-cache/LoRA/SSM/diffusion/RL |
 | **Cryptography** | 4 crypto anchors; then 3 crypto books only if needed; shared math on demand | encryption/signature/MAC/PRF/PRG/PRP/OWF/CCA/CPA/AE/ZK/reduction/DL/CDH/DDH/RSA/ECC/lattice |
 | **AI×Crypto** | dual-domain load + intersection annotation | "PRF for watermarking," "adversarial example reduction," "verifiable inference" |
@@ -220,13 +220,13 @@ math-skill/
 ├── skills/
 │   └── math-research-activator/    # Orchestrator: intent diagnosis + routing
 ├── lenses/                         # 15 thinking lenses (reasoning methodology)
-├── knowledge-base/                 # Activation anchors by math domain, not a closed encyclopedia (37 cards total)
-│   ├── matrix-analysis/            # Matrix analysis (5 cards)
+├── knowledge-base/                 # Activation anchors by math domain, not a closed encyclopedia (41 cards total)
+│   ├── matrix-analysis/            # Matrix analysis (7 cards)
 │   ├── optimization/               # Optimization (5 cards)
 │   ├── differential-geometry/      # Differential geometry (6 cards)
 │   ├── lie-theory/                 # Lie theory (5 cards)
 │   ├── topology/                   # Topology (3 cards)
-│   ├── probability/                # Probability & information (5 cards)
+│   ├── probability/                # Probability & information (7 cards)
 │   ├── information-geometry/       # Information geometry (2 cards)
 │   ├── algebraic-geometry/         # Algebraic geometry (2 cards)
 │   └── cryptography/               # Cryptography (4 cards, domain-exclusive)
@@ -278,6 +278,13 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 ---
 
 ## Changelog
+
+### v3.3.5 — Knowledge Corrections & Anchor Expansion
+
+- **4 new shared anchors**: `random-matrix`, `hankel-state-space` (matrix analysis) + `optimal-transport`, `score-matching-sde` (probability & information), closing three high-frequency gaps: random matrices / optimal transport / diffusion–SSM. Repo-wide counts unified as 37 shared + 4 crypto = 41
+- **Math corrections (bilingual)**: Bernstein inequality assumptions added, Morse formula fixed, sphere exponential map preconditions stated, variational-inference natural gradient formula corrected, Cramér–Rao routing fixed
+- **Precision polish**: softened over-strong convex-optimization solvability claim, KKT/Slater wording fixed, symmetric KL caveats, correct differentiability statement for persistent homology, unified Plücker formula notation
+- **Cross-file consistency**: D1–D8 dimensions and `[v]/[~]/[x]` rating legend inlined into `gpu-friendly-math`; categorical/perturbation/game lenses gained domain-boundary guardrails, with game theory vs cryptographic attack games disambiguated both ways
 
 ### v3.3.4 — Hotfix for v3.3.3
 

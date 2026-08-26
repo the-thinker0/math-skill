@@ -4,16 +4,16 @@
 
 ## 知识库结构
 
-知识库按领域组织，共 9 个目录、37 张知识卡片：其中 8 个共享数学领域含 33 张锚点，密码学领域含 4 张专属锚点。共享数学卡按需给出 AI/工程翻译；密码学卡优先保持安全定义、构造与归约语义，不强塞 AI 或 GPU 模板。
+知识库按领域组织，共 9 个目录、41 张知识卡片：其中 8 个共享数学领域含 37 张锚点，密码学领域含 4 张专属锚点。共享数学卡按需给出 AI/工程翻译；密码学卡优先保持安全定义、构造与归约语义，不强塞 AI 或 GPU 模板。
 
 | 领域 | 目录 | 卡片 | 典型应用 |
 |------|------|------|---------|
-| 矩阵分析 | `matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation | LoRA、谱归一化、条件数监控 |
+| 矩阵分析 | `matrix-analysis/` | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation, random-matrix, hankel-state-space | LoRA、谱归一化、谱健康监控、S4 长序列层 |
 | 最优化 | `optimization/` | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method | GAN minimax、权重约束、Muon 优化器 |
 | 微分几何 | `differential-geometry/` | manifold, tangent-space, metric-tensor, geodesic, curvature, connection | 自然梯度、流形优化、K-FAC |
 | 李理论 | `lie-theory/` | group-action, lie-group, lie-algebra, representation, equivariance | 等变网络、SO(3) 参数化、球谐特征 |
 | 拓扑 | `topology/` | persistent-homology, euler-characteristic, fundamental-group | 拓扑正则、隐空间监控 |
-| 概率与信息 | `probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information | VAE、知识蒸馏、泛化界 |
+| 概率与信息 | `probability/` | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information, optimal-transport, score-matching-sde | VAE、扩散模型、Sinkhorn 路由、泛化界 |
 | 信息几何 | `information-geometry/` | natural-gradient, fisher-metric | 自然梯度下降、Fisher-Rao 度量 |
 | 代数几何 | `algebraic-geometry/` | grassmannian-plucker, sheaf-cohomology | 子空间参数化、局部到整体一致性 |
 | 密码学（领域专属） | `cryptography/` | prf-prg-owf, attack-game-framework, cca-cpa-ae-hierarchy, reduction-proof-template | 安全定义、构造、攻击游戏、归约证明 |
@@ -32,7 +32,7 @@
 
 ## 当锚点不够时
 
-现有 33 个共享数学锚点与 4 个密码学锚点覆盖高频结构。当问题需要的工具不在其中时：
+现有 37 个共享数学锚点与 4 个密码学锚点覆盖高频结构。当问题需要的工具不在其中时：
 
 1. 查看对应领域的 `*/index.md`（如 `topology/index.md`），获取扩展概念和参考书方向
 2. 进入根 `../SKILL.md` 中定义的**知识缺口协议**，生成临时知识卡
