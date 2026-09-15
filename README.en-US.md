@@ -2,7 +2,7 @@
 
 # 📐 Math Skill
 
-### A Mathematical Research Operating System for AI and Cryptography Innovation
+### Turn research objectives into mathematical mechanisms and verification
 
 <a href="README.md">中文</a> | <a href="README.en-US.md">English</a>
 
@@ -10,52 +10,44 @@
 [![npm version](https://img.shields.io/npm/v/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 [![npm downloads](https://img.shields.io/npm/dt/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 
-**🎉 NEWS: We now support dsh harness 🚀**
+**Unreleased · Improvements in development (no version bump yet)**
 
 </div>
 
-> Math Skill does not store mathematics. It activates, routes, and translates mathematics for AI and cryptography research.
+> Start from objectives and constraints, derive implementable mechanisms, and use evidence to decide what comes next.
 
-A math reasoning skill for **Claude Code / Codex / Cursor / DeepSeek Harness (dsh) and more** — automatically activates the right mathematical lenses, knowledge anchors, and design prototypes for AI architecture design, math-to-AI transfer, and cryptographic proof review, delivering conditional, falsifiable conclusions with counterexamples.
+A math reasoning skill for **Claude Code / Codex / Cursor / DeepSeek Harness (dsh) and more** — formalizes underspecified goals, constructs operators and validation procedures, and reviews mathematical arguments and cryptographic security.
 
 If this skill inspires you, please consider leaving a Star⭐. Your support keeps the project evolving.
 
 ---
 
-## How is this different from just asking the AI?
+## How does it support research?
 
-### [AI] Case 1: Analysis — "KAN's mathematical foundations and risks"
+This development round prioritizes valuable cross-field mathematical discovery, then develops promising directions into mechanisms or research conclusions without requiring users to name the mathematics in advance. The existing 15 lenses, 41 anchors, and 22 prototypes remain resources; they do not bound the candidate space.
 
-**User**: "KAN uses learnable B-splines instead of ReLU, claiming better accuracy and interpretability than MLPs. I want to analyze its mathematical foundations and potential risks."
+| User request | Added behavior | On-demand resource |
+|---|---|---|
+| “I have an objective, but no formula yet” | Choose objects from desired/failure behaviors and derive an update or decision rule | [Construction workbench](references/design-workbench.en.md) |
+| “Find valuable cross-field ideas, with fewer template-based proposals” | Follow missing task relations into new fields, verify object mappings, and compare genuinely different mechanisms | [Structural transfer](references/structural-transfer.en.md) |
+| “How does this theorem become a real module?” | Enforce conditions by parameterization, solver residuals, or testable assumptions | [From theorem to implementation](references/design-workbench.en.md) |
+| “Run a small check, then keep improving it” | Generate a candidate-specific probe, record failure, revise, and retest | [Research loop](references/agentic-workflow.en.md) |
 
-**Without Skill**:
-> KAN is based on the Kolmogorov-Arnold representation theorem, using B-splines as learnable activation functions on edges. Advantages include parameter efficiency and interpretable activations. Risks are mainly that spline computation is slower than ReLU and fine grids may overfit. Suggest running ablation experiments on specific tasks.
+Three transfer examples illustrate opportunities and failed routes: [observed information and function-space projection](references/structural-transfer.en.md), [topological obstructions to continuous orientation and multi-solution outputs](references/transfer-bridges.en.md), and [local consistency and error-correcting distance](references/transfer-bridges.en.md). They demonstrate real structural mappings rather than a fixed menu of recommendations.
 
-**With Skill** (activated: Perturbation + Spectral lenses → `low-rank-approximation` anchor):
+An independent online-fusion trial produced two routes: a four-valued evidence lattice and a joint posterior over truth and source faults, with derivations and failure conditions. The [trial records and original answer](tests/usability/README.en.md) preserve the evidence and limitations; a single result does not establish overall quality improvement.
 
-> **Conclusion**: The KA theorem guarantees **existence** of a representation, not **learnability**. Two overlooked mathematical quantities determine KAN's actual performance: the effective rank of the spline basis and the Fisher curvature of the parameter space.
->
-> - **Existence ≠ Learnability**: The KA theorem guarantees ∑φ_q(∑ψ_{q,p}(x_p)) can represent any continuous function, but—like the universal approximation theorem for MLPs—it does not guarantee that gradient descent finds the representation
-> - **Spline basis effective rank**: B-spline basis functions' support overlap causes effective rank to lag far behind parameter growth; if grids refine but bases remain highly correlated, actual expressive capacity stalls—monitor singular value decay curves, not just parameter counts
-> - **Fisher curvature**: Spline's second-order differentiability makes the Hessian more regular, but the Fisher information matrix's condition number may be far larger than in ReLU networks; natural gradient has theoretical advantages but higher estimation cost
-> - **Falsifiable experiment**: Compare KAN vs. same-parameter-budget MLP on spline basis effective rank decay; if rank growth stalls while parameters keep growing, the "interpretability" advantage is offset by redundancy
+After choosing a structure, consult the five [mathematical construction moves](references/construction-moves.en.md) as needed. For example, cheap feature statistics can combine with sampled residual corrections to yield a conditionally unbiased linear aggregate. Normalization, variance, and storage require separate analysis. This is a way to derive a computation graph, not evidence of task benefit or research novelty.
 
-### [Crypto] Case 2: Verification — "Is this PRF watermarking reduction tight?"
+The following three reproducible mathematical checks remain available:
 
-**User**: "I use a PRF to watermark model weights. The reduction proof says 'removing watermark ≥ breaking PRF'. Is this reduction tight?"
+| Research question | Key check | Worked example |
+|---|---|---|
+| Does small SVD error preserve attention for all future queries? | A two-dimensional counterexample, a bounded-query error estimate, basis and coefficient costs | [Low-rank KV and queries](references/worked-examples/query-aware-compression.en.md) |
+| Is attention equivariant to token permutations? | Score conjugation, position encodings/causal masks, inverse action in group averaging | [Equivariance checks](references/worked-examples/equivariance-check.en.md) |
+| How tight is a PRF-based MAC forgery bound? | Freshness game, actual oracle count, no invented query-count loss | [PRF-to-MAC reduction](references/worked-examples/security-reduction.en.md) |
 
-**Without Skill**:
-> If removing the watermark is equivalent to distinguishing PRF output from truly random, then the reduction is tight when the PRF security assumption holds. Suggest choosing an AES-based PRF for stronger assumptions.
-
-**With Skill** (activated: `reduction-proof-template` + `prf-prg-owf` anchors):
-
-> **Conclusion**: The reduction direction is correct, but tightness depends on query count Q and simulation quality—cannot claim "tight" just from "PRF assumption holds."
->
-> - **Reduction loss**: Adv^scheme ≤ Q · Adv^PRF + δ, where Q is the adversary's query count. If Q grows linearly with model parameters, concrete security degrades significantly—must report Q's magnitude, not just write "polynomial loss"
-> - **Simulation quality**: The reduction must construct simulator B to answer adversary oracle queries; if B's simulation distribution has non-negligible statistical distance from the real game, the entire reduction fails
-> - **Assumption hierarchy**: AES-as-PRF is a widely adopted empirical assumption, not a theorem unconditionally proven from the spec—standard model, ROM, and concrete security are three levels that must not be conflated
-> - **Multi-user degradation**: After deployment, multiple users query independently; birthday bound and hybrid steps amplify advantage loss
-> - **Falsifiable check**: Write out B's complete simulation (parameter generation, query answering, challenge embedding, abort handling), plug in concrete parameters to estimate Q and δ
+Ordinary Lipschitz or randomized-smoothing certificates remain AI mathematics. “Certificate,” “attack,” or “proof” does not automatically mean cryptography; cross-domain loading requires actual cryptographic primitives/security experiments combined with AI objects.
 
 ---
 
@@ -86,8 +78,9 @@ Please help me install math-skill: https://github.com/the-thinker0/math-skill, a
 
 | Scenario | Signal | Path |
 |----------|--------|------|
-| Analysis | "Is this design sound?" | Lenses → compact review |
-| Design | "Design a new attention" | Lenses → anchors → design translation → compact review |
+| Analysis | "Is this design sound?" | Analyze existing objects; use anchors or lenses as needed |
+| Cross-field exploration | "Can you find two directions from different mathematical fields?" | Missing relation → object mapping → derivation and counterexample screening |
+| Design | "I want this module behavior; how should I build it?" | Formalize objective → derive mechanism → implement and verify |
 | Knowledge query | "How does tangent space relate to gradient optimization?" | Activate anchor |
 | Verification | "Is this reduction tight enough?" | Anchors → conditions/boundaries |
 | Pure engineering | debug, refactoring, tuning | **Not triggered** |
@@ -108,7 +101,8 @@ Auto-detects Chinese/English: Chinese messages get Chinese output, English messa
 ## Three-Layer Orthogonal Architecture
 
 ```
-Problem → Lenses (what perspective?) → Anchors (which math structures?) → Design Translation (what module?) → Review (does it hold?)
+Research objective → Formulation → Construction/derivation → Implementation → Verify/revise
+                            ↑ Use lenses, anchors, and prototypes on demand
 ```
 
 | Layer | Role | Directory | Files |
@@ -118,6 +112,9 @@ Problem → Lenses (what perspective?) → Anchors (which math structures?) → 
 | **Design Translation** | Bridge math to AI modules/losses/operators | `design-patterns/*/*.md` | 22 |
 
 Supporting layers:
+- [Structural transfer](references/structural-transfer.en.md) + [transfer examples](references/transfer-bridges.en.md): discover cross-field mappings and check their conclusions and value
+- [Construction workbench](references/design-workbench.en.md) + [mathematical moves](references/construction-moves.en.md): derive mechanisms and instantiate conditions
+- [Research loop](references/agentic-workflow.en.md): run small checks, revise using results, and continue existing context
 - `references/books/*.md`: 10 book distillations (7 AI-direction + 3 cryptography-direction) for deep context
 - `references/gpu-friendly-math.en.md`: on-demand GPU checks with N/A for irrelevant dimensions
 - `agents/math-critic.en.md`: 19-dimension deep critic loaded only for comprehensive or paper-grade review
@@ -159,12 +156,12 @@ AI research and cryptography **share** mathematical foundations (probability/inf
 
 | Domain | Anchors |
 |--------|-------|
-| Matrix Analysis | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
+| Matrix Analysis | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation, random-matrix, hankel-state-space |
 | Optimization | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
 | Differential Geometry | manifold, tangent-space, metric-tensor, geodesic, curvature, connection |
 | Lie Theory | group-action, lie-group, lie-algebra, representation, equivariance |
 | Topology | persistent-homology, euler-characteristic, fundamental-group |
-| Probability & Information | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
+| Probability & Information | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information, optimal-transport, score-matching-sde |
 | Information Geometry | natural-gradient, fisher-metric |
 | Algebraic Geometry | sheaf-cohomology, grassmannian-plucker |
 | Cryptography (exclusive) | prf-prg-owf, reduction-proof-template, attack-game-framework, cca-cpa-ae-hierarchy |
@@ -187,43 +184,17 @@ The Lie group–Lie algebra machinery invented to solve differential equations u
 
 ---
 
-## Routing Example
+## Example Starting from the Problem
 
-**User**: "Design a new KV Cache compression method that preserves long-range dependencies without just doing top-k"
-
-```
-Step 1  Diagnosis: Scenario B (Mechanism Design)
-  Problem type: sequence memory compression + information preservation + long-range structure
-  Core tension: compress token count vs. preserve long-range dependencies
-
-Step 2  Lens Selection (default ≤2):
-  1. Spectral (preserve dominant subspace)
-  2. Probabilistic/Information (preserve mutual-information-sensitive states)
-  (Add Topological only when the user stresses connectivity/bridge structure; not in default budget)
-
-Step 3  Activation Anchors:
-  → low-rank-approximation (Matrix Analysis anchor)
-  → information-bottleneck (Probability & Information anchor)
-  → leverage-score-selection or low-rank-kv-cache (0–2 compression design patterns)
-  If existing anchors are insufficient, enter Knowledge Gap Protocol to generate a temporary knowledge card.
-
-Step 4  Design Translation:
-  Primary: Spectral KV Compression (low-rank + leverage score)
-  Alternative (key difference only): Information-Preserving Cache (relies on future query estimation)
-
-Step 5  Compact Review (ordinary tasks do not load the full critic):
-  Primary is most GPU-friendly; alternative needs future query estimation, higher uncertainty
-  Conclusion: prioritize primary; add a lightweight gate only if query-sensitive retention is needed
-```
-
+“Compress KV Cache while preserving long-range dependencies” first requires specifying which future query responses must be preserved. This can lead to query-sufficient summaries, a comparison of uniform approximation with distribution-averaged risk, and counterexamples with identical summaries but different answers. Avoid fixing the candidate to low rank plus top-k in advance. See the [workflow example](references/skill-index.en.md#workflow-example) for the derivation.
 ---
 
 ## Directory Structure
 
 ```
 math-skill/
-├── skills/
-│   └── math-research-activator/    # Orchestrator: intent diagnosis + routing
+├── SKILL.md / SKILL.en.md          # Installed entry: intent diagnosis + routing
+├── skills/math-research-activator/ # Repository compatibility entries (not in npm)
 ├── lenses/                         # 15 thinking lenses (reasoning methodology)
 ├── knowledge-base/                 # Activation anchors by math domain, not a closed encyclopedia (41 cards total)
 │   ├── matrix-analysis/            # Matrix analysis (7 cards)
@@ -243,6 +214,11 @@ math-skill/
 │   └── compression/                # Compression (4 patterns)
 ├── references/                     # Reference layer
 │   ├── books/                      # 10 book distillations (7 AI + 3 crypto)
+│   ├── worked-examples/            # 3 bilingual cases with runnable numerical checks
+│   ├── structural-transfer.en.md  # Find cross-field ideas from task relations
+│   ├── transfer-bridges.en.md      # Mappings, counterexamples, and opportunities
+│   ├── design-workbench.en.md      # From objectives to implementable mechanisms
+│   ├── construction-moves.en.md     # 5 composable mathematical moves
 │   ├── gpu-friendly-math.en.md     # GPU checklist (applicable dimensions only)
 │   ├── agentic-workflow.en.md      # Collaboration style
 │   ├── inspiration.en.md           # Inspiration
@@ -250,6 +226,8 @@ math-skill/
 │   └── skill-index.en.md           # Index (on-demand directory, not loaded by default)
 ├── agents/math-critic.en.md           # Math-engineering dual critic (19 dims, with crypto security review)
 ├── commands/ask.en.md                 # /ask manual entry
+├── bin/math-skill.cjs              # Install, update, doctor, and uninstall
+├── tests/                         # Content, installer, evaluator, and example checks (not published)
 ├── math_book/                      # Local PDFs (not published)
 └── README.md / LICENSE
 ```
@@ -262,27 +240,57 @@ math-skill/
 
 | # | Title | Author(s) | Publisher / Edition | Year | ISBN | Distillation |
 |---|-------|-----------|-------------------|------|------|-------------|
-| 1 | *Contemporary Abstract Algebra* | Joseph A. Gallian | Brooks/Cole, Cengage, 8th ed. | 2013 | 978-1-133-59971-5 | `abstract-algebra.en.md` |
-| 2 | *The Rising Sea: Foundations of Algebraic Geometry* | Ravi Vakil | Princeton University Press | 2025 | 978-0-691-26866-8 | `algebraic-geometry-rising-sea.en.md` |
-| 3 | *Manifolds and Differential Geometry* | Jeffrey M. Lee | AMS, Graduate Studies in Math Vol. 107 | 2009 | 978-0-8218-4815-9 | `differential-geometry.en.md` |
-| 4 | *Matrix Analysis* | Roger A. Horn, Charles R. Johnson | Cambridge University Press, 2nd ed. | 2013 | 978-0-521-83940-2 | `matrix-analysis.en.md` |
-| 5 | *A micro Lie theory for state estimation in robotics* | Joan Solà et al. | arXiv:1812.01537v9 | 2021 | — | `micro-lie-theory.en.md` |
-| 6 | *An Introduction to Optimization, With Applications to ML* | Chong, Lu, Żak | John Wiley & Sons, 5th ed. | 2024 | 978-1-119-87763-9 | `optimization-ml.en.md` |
-| 7 | *Introduction to Smooth Manifolds* | John M. Lee | Springer, GTM 218, 2nd ed. | 2013 | 978-1-4419-9981-8 | `smooth-manifolds.en.md` |
+| 1 | *Contemporary Abstract Algebra* | Joseph A. Gallian | Brooks/Cole, Cengage, 8th ed. | 2013 | 978-1-133-59971-5 | [abstract-algebra](references/books/abstract-algebra.en.md) |
+| 2 | *The Rising Sea: Foundations of Algebraic Geometry* | Ravi Vakil | Princeton University Press | 2025 | 978-0-691-26866-8 | [algebraic-geometry-rising-sea](references/books/algebraic-geometry-rising-sea.en.md) |
+| 3 | *Manifolds and Differential Geometry* | Jeffrey M. Lee | AMS, Graduate Studies in Math Vol. 107 | 2009 | 978-0-8218-4815-9 | [differential-geometry](references/books/differential-geometry.en.md) |
+| 4 | *Matrix Analysis* | Roger A. Horn, Charles R. Johnson | Cambridge University Press, 2nd ed. | 2013 | 978-0-521-83940-2 | [matrix-analysis](references/books/matrix-analysis.en.md) |
+| 5 | *A micro Lie theory for state estimation in robotics* | Joan Solà et al. | arXiv:1812.01537v9 | 2021 | — | [micro-lie-theory](references/books/micro-lie-theory.en.md) |
+| 6 | *An Introduction to Optimization, With Applications to ML* | Chong, Lu, Żak | John Wiley & Sons, 5th ed. | 2024 | 978-1-119-87763-9 | [optimization-ml](references/books/optimization-ml.en.md) |
+| 7 | *Introduction to Smooth Manifolds* | John M. Lee | Springer, GTM 218, 2nd ed. | 2013 | 978-1-4419-9981-8 | [smooth-manifolds](references/books/smooth-manifolds.en.md) |
 
 ### Cryptography Direction (3 books)
 
 | # | Title | Author(s) | Publisher / Edition | Year | ISBN | Distillation |
 |---|-------|-----------|-------------------|------|------|-------------|
-| 8 | *A Graduate Course in Applied Cryptography* | Dan Boneh & Victor Shoup | v0.4 online | 2017 | — | `applied-cryptography.en.md` |
-| 9 | *Foundations of Cryptography, Volume 1: Basic Tools* | Oded Goldreich | Cambridge University Press | 2001 | 978-0-521-79172-4 | `foundations-of-cryptography.en.md` |
-| 10 | *Introduction to Modern Cryptography* | Jonathan Katz & Yehuda Lindell | CRC Press, 2nd ed. | 2015 | 978-1-4665-7026-9 | `introduction-to-modern-cryptography.en.md` |
+| 8 | *A Graduate Course in Applied Cryptography* | Dan Boneh & Victor Shoup | v0.6 online | 2023 | — | [applied-cryptography](references/books/applied-cryptography.en.md) |
+| 9 | *Foundations of Cryptography, Volume 1: Basic Tools* | Oded Goldreich | Cambridge University Press | 2001 | 978-0-521-79172-4 | [foundations-of-cryptography](references/books/foundations-of-cryptography.en.md) |
+| 10 | *Introduction to Modern Cryptography* | Jonathan Katz & Yehuda Lindell | CRC Press, 2nd ed. | 2015 | 978-1-4665-7026-9 | [introduction-to-modern-cryptography](references/books/introduction-to-modern-cryptography.en.md) |
 
 Distillation files ship with the npm package. For full-fidelity lookups, place PDFs in the `math_book/` folder.
 
 ---
 
+## Validation and next-version status
+
+From a repository checkout, run:
+
+```bash
+npm run validate
+npm test
+npm run eval:behavioral
+```
+
+`validate` checks paired content, counts, paths, frontmatter, the 70-case routing manifest, and the npm package file list. `test` covers installer rollback, evaluator failures, and executable checks in the worked examples. A configured trusted runtime adapter is required for behavioral evaluation; otherwise it reports **SKIP**. Use `--require-runtime` when runtime evidence is mandatory. See [the evaluation contract](tests/eval/README.en.md) in the repository (tests are excluded from npm).
+
+`doctor` checks required resources and duplicate entries; damaged/duplicate installations exit with status 2. Unknown arguments exit with status 1. These are unpublished workspace improvements; the package remains at 3.3.7 pending a separate version decision. Windows behavior still needs a native Windows check; local fault injection covers cross-device failure paths.
+
 ## Changelog
+
+### Unreleased — Cross-field exploration and mechanism construction
+
+- Added a structural-transfer workflow: follow task relations into new fields, establish checkable mappings, and select directions that change mechanisms or research judgments.
+- Added transfer examples connecting probability with functional analysis, covering spaces with multi-solution representations, and local consistency with error-correcting distance; defer existing prototypes during idea generation.
+
+- Added a bilingual construction workbench and five composable mathematical moves; knowledge-gap material now returns to construction, with theorem-to-implementation mappings.
+- The entry follows user objectives; lenses and prototypes are optional tools, with duplicate loading guidance consolidated.
+- The research loop supports candidate-specific probes, revision after failure, and continuation from prior evidence; no version bump yet.
+
+Previously completed maintenance:
+
+- Corrected formulas, assumptions, and pseudocode across lenses, anchors, patterns, and book notes: spectral versus task error, Stiefel geometry, curvature/Hessian, information bounds, routing, and cryptographic reductions.
+- Replaced incorrect crypto chapter references with verified author contents; Boneh–Shoup now uses v0.6. Added three bilingual worked examples and an actionable temporary-card/source record.
+- Kept concept/verification tasks from skipping validity conditions; robustness certificates no longer cause crypto misrouting. Removed recursive critic routing and mandatory candidate enumeration.
+- Fixed installer backup/rollback failures and damaged-installation detection. Unified portable validation, strengthened schema/path isolation, and separated static checks from trusted runtime traces.
 
 ### v3.3.7 — Math corrections regression & eval automation loop
 

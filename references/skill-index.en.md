@@ -2,6 +2,12 @@
 
 > This is the on-demand catalog for `../SKILL.md`. The main entry keeps only selection rules; do not load this index by default for a clear request.
 
+For cross-field idea discovery, start with [structural transfer](structural-transfer.en.md) and generate candidates from task relations rather than the file catalog. A useful bridge may produce a mechanism, a guarantee, an impossibility result, or a new research question.
+
+## From a research objective to a mechanism
+
+For an underspecified goal or a mechanism outside the existing patterns, use the [construction workbench](design-workbench.en.md). Read only the relevant section of [mathematical construction moves](construction-moves.en.md): separable interactions, residual sampling, input-driven fixed points, propagated error budgets, or sequential decisions. Return to construction after filling a knowledge gap; a temporary card is not the design deliverable. Continue experiments using the [research loop](agentic-workflow.en.md).
+
 ## Domain Router Overview
 
 > Full definition: see the Domain Router section in `../SKILL.md`. Only a summary table appears here:
@@ -21,11 +27,11 @@
 >
 > 1. knowledge-base/ anchors describe mathematical structures themselves (manifolds, spectra, sheaf cohomology, pseudorandom function families, etc.), not specific AI architectures (diffusion, SSM, transformer variants).
 > 2. design-patterns/ is a paradigmatic demonstration of "math→AI module" translation, not a copy-paste template library; for new problems, generate temporary design candidates from the mathematical structure.
-> 3. Compatibility principle: research problems with architectures the skill did not pre-specify (e.g., future paradigms) are handled through lens-routing + anchor-activation + temporary-knowledge-card pipeline, not declared "not covered."
+> 3. For architectures not specified in advance, start from a concrete missing relation and seek mathematical correspondences that change the research decision. Use lenses, anchors, and temporary notes as needed; catalog gaps do not put the problem out of scope.
 
 ## Lean loading and size tiers (save tokens)
 
-- **Read by section, not whole file:** read an anchor's `Minimal Definition + Core Formulas + Applicable Problems` first; for a design pattern whose anchor is already loaded, skip `Mathematical Origins / Required Math` and read `AI Module Form / GPU Feasibility / Risks` directly.
+- **Read by section, not whole file:** read an anchor's `Minimal Definition + Core Formulas + Applicable Problems` and relevant risk/validity conditions first; for a design pattern whose anchor is already loaded, skip `Mathematical Origins / Required Math` and read `AI Module Form / GPU Feasibility / Risks` directly.
 - **Size tiers** (per file, approximate): books **L** (~4k tokens); design patterns **M** (~1.7–2.1k); knowledge anchors **M** (~1.3–1.7k); lenses **S** (~0.7–1.0k).
 - **Path preference:** prefer S over M over L; prefer one card over a book; do not re-read math already covered by a loaded anchor (Eckart-Young, randomized SVD, spectral clustering, etc.).
 - Read the `Routing / Extension / Deep References` tail only for citation or routing; output structure follows the task (see `../SKILL.md` output quality check).
@@ -120,29 +126,34 @@ The reference layer covers 10 books, all paired in Chinese and English. The thre
 
 ## Workflow Example
 
-**User**: "Design a new KV Cache compression method that preserves long-range dependencies — I don't want to just do top-k."
+**User**: “Design a new KV Cache compression method that preserves long-range dependencies without just doing top-k.”
 
-```
-Step 1 — Diagnosis: Scenario B (Mechanism Design)
-  Problem type: Sequence memory compression + information preservation + long-range structure
-  Core tension: Compressing token count vs. preserving long-range dependencies
+Turn “preserve long-range dependencies” into a testable object. Let $D$ be the historical keys and values, and $F_D(q)$ the full-cache response to a future query. A compressor stores $s(D)$ and a readout returns $g(s(D),q)$. Lossless recovery requires:
 
-Step 2 — Lens Selection (default ≤2):
-  1. Spectral Decomposition (preserve dominant subspace)
-  2. Probabilistic / Information (retain mutual-information-sensitive states)
-  (Add Topology only if the user emphasizes connectivity/bridging; it is outside the default budget)
+$$s(D)=s(D')\quad\Longrightarrow\quad F_D(q)=F_{D'}(q)\quad\text{for every allowed }q.$$
 
-Step 3 — Activation Anchors:
-  → low-rank-approximation (Matrix Analysis anchor)
-  → information-bottleneck (Probability & Information anchor)
-  → leverage-score-selection or low-rank-kv-cache (0–2 compression design patterns)
-  If existing anchors are insufficient, enter Knowledge Gap Protocol to generate a temporary knowledge card.
+This connects compression to a statistic sufficient for a family of queries: two histories with the same summary but different required answers refute a lossless claim. This query-relative sufficiency does not automatically establish Fisher–Neyman sufficiency for a statistical model.
 
-Step 4 — Design Translation:
-  Primary: Spectral KV Compression (low-rank + leverage score)
-  Alternative only by decisive difference: Information-Preserving Cache (depends on future-query estimates)
+Let the actual constraints determine alternative formulations. A guarantee over an entire query set may lead to uniform function approximation; accepting average loss under a specified query distribution may lead to decision risk under that distribution. These objectives can treat rare but important queries differently, so their guarantees cannot be interchanged. Do not silently assume future queries are predictable when the user has supplied no distribution.
 
-Step 5 — Compact Review (do not load the full critic for ordinary tasks):
-  Primary is most GPU-friendly; alternative needs future-query estimates and is more uncertain
-  Conclusion: Prefer the primary design; add a lightweight gate only when query-sensitive retention is required
-```
+After choosing an objective, derive the summary and update. For example, investigate whether a separable kernel permits additive query statistics and what conditions its normalization denominator needs; consult [mathematical construction moves](construction-moves.en.md) for relevant details. Compare existing low-rank prototypes after the candidate mapping holds. Use distinguishing queries and distribution shifts to examine tradeoffs; retained spectral energy alone does not establish retained task information.
+## Temporary card and verification record
+
+Use only when existing cards cannot support the current conclusion; a short paragraph may replace the table.
+
+| Field | Minimum content |
+|---|---|
+| Domain and objects | Shared math / AI / crypto / AI×crypto; variables, spaces, quantifiers |
+| Claim and conditions | Definition/theorem/derivation/hypothesis; conditions and target |
+| Source and verification | Original paper or author-book link, theorem/section; explicitly label agent inference or external verification needed |
+| Confidence | Evidence for this claim; verifying a theorem does not verify its AI transfer |
+| Counterexample or experiment | Minimal falsification, or independent validation data and metrics |
+| Unverified conclusions | Missing assumptions, proofs, or data; a temporary card is not a guarantee |
+
+## On-demand worked examples
+
+- AI compression: [query-aware-compression](worked-examples/query-aware-compression.en.md).
+- AI equivariance: [equivariance-check](worked-examples/equivariance-check.en.md).
+- Pure crypto: [security-reduction](worked-examples/security-reduction.en.md).
+
+Read these separately; exploring examples is not a reason to load unrelated domains.

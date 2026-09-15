@@ -1,133 +1,82 @@
 ---
 name: math-research-activator
 description: |
-  Route AI architecture/operator design, theoretical analysis, math-to-AI transfer, and cryptographic definitions, constructions, reductions, or protocol reviews to the minimum necessary mathematical lenses, anchors, and design checks. Also use for mathematics questions tied to AI research. Do not use for implementation-only debugging, refactoring, tuning, or general code review.
-  中文：为 AI 架构/算子设计、理论分析、数学迁移，以及密码学定义、构造、归约和协议审查，选择最少必要的数学透镜、锚点与检查；纯实现工程任务不触发。
+  Turn AI research goals into mathematical formulations, implementable mechanisms, and testable conclusions. Use for architecture/operator construction, theoretical analysis, cross-field mathematical discovery, math-to-AI transfer, research-related mathematics, and cryptographic definitions, constructions, reductions, or protocol reviews. Exclude implementation-only debugging, refactoring, tuning, and general code review.
+  中文：将 AI 研究目标转成数学对象、可实现机制和可验证结论；用于架构/算子构造、理论分析、跨数学领域思路发现与结构迁移、研究相关数学查询，以及密码学定义、构造、归约与协议审查。纯实现型 debug、重构、调参和一般代码审查不触发。
 ---
 
-# Mathematical Research Router
+# Mathematical Research: From Problem to Construction and Verification
 
-This is the English compatibility entry, loaded only via explicit English command paths (e.g. `/ask` English routing). `SKILL.md` is the canonical entry (Claude Code / Codex / Cursor / DeepSeek Harness all load it) and can answer in either language. Answer in the user's primary language; technical terms, code, paths, and formulas do not determine language. Do not load both entries simultaneously.
+This is the English compatibility entry, used only by explicit English entry paths. `SKILL.md` is the authoritative entry for Claude Code / Codex / Cursor / DeepSeek Harness and supports answers in either language. Answer in the user's primary natural language; technical terms, code, paths, and formulas do not determine language. Do not load both entries together. All resource paths are relative to this skill's installation directory (`resourceBase` in dsh), not the user's project root.
 
-## Objective and hard constraints
+## What to accomplish
 
-Route each problem to the **smallest sufficient** mathematical context and produce a falsifiable, conditional conclusion.
+Help the user explain, derive, or construct a mechanism that addresses the current research problem. Mathematical resources serve that task. Selecting lenses, listing terms, producing knowledge cards, or naming a template is not a deliverable.
 
-- Distinguish theorems, modeling assumptions, empirical regularities, and exploratory conjectures. Never present the last two as guarantees.
-- Keep mathematical anchors, AI design patterns, and cryptographic security semantics domain-separated.
-- Never load a directory merely because it exists. Load book distillations only when cards are insufficient, theorem conditions need checking, or the user asks for sources.
-- Converge to a conclusion; do not stop at a list of lenses, terms, or loaded files.
+- Preserve the user's existing goals, proposals, and constraints. Clarify only gaps that would change the conclusion; proceed with explicit assumptions when possible.
+- Distinguish established theorems, the current derivation, modeling assumptions, and empirical results. Every claim of optimality, stability, security, or equivalence needs corresponding conditions.
+- When the user requests implementation or verification and the environment permits it, run the authorized minimal checks and revise the candidate based on observations. For concept-only or planning requests, deliver within that scope.
 
-## Activation
+## Start with the task
 
-Classify by the requested **object and guarantee**, not by keyword voting.
+Activate when mathematical correctness, complexity, convergence, stability, or cryptographic security is a goal, even if the task includes code. Import/shape/OOM fixes, refactoring, tuning, deployment, and general code-quality work alone belong to E Engineering; do not load research resources. An explicit skill mention bypasses automatic trigger selection while retaining this engineering boundary.
 
-1. Classify import/shape/OOM fixes, refactoring, configuration changes, tuning, deployment, and general code-quality reviews as **E engineering** when no mathematical or security claim is at issue.
-2. Activate even when code is present if the user asks about mathematical correctness, complexity, convergence, numerical stability, or cryptographic security.
-3. A direct request to design, analyze, verify, or explain relevant mathematics is sufficient. Workspace files only disambiguate terse requests; they are not a mandatory gate.
-4. `/ask`, `/math-research-activator`, or an explicit skill mention bypasses automatic-trigger selection, while implementation-only work still remains outside scope.
-
-| Scenario | Goal | Minimal path |
+| Scenario | Deliverable | How to use resources |
 |---|---|---|
-| A Analysis | Assess a design, assumption, or argument | 1–2 lenses → conditions/counterexamples |
-| B Design | Construct a mechanism, operator, loss, router, or protocol | 1–2 lenses → 1–3 anchors → 0–2 prototypes → review |
-| C Knowledge | Understand mathematics tied to the research task | Usually one anchor |
-| D Verification | Check a formula, guarantee, reduction, or complexity claim | 1–2 anchors → conditions/boundaries/counterexamples |
-| E Engineering | Implementation and maintenance only | Do not load this system's resources |
+| A Analysis | Whether the current argument holds, the key reasons, and a repair | Start from the existing objects; use relevant anchors or lenses without a full preliminary diagnosis |
+| B Cross-field exploration | Find valuable, structurally different mathematical directions | Start with [structural transfer](references/structural-transfer.en.md); existing prototypes do not bound candidates |
+| B Construction | Turn a selected direction into a mechanism, implementation, and validation | Use the [construction workbench](references/design-workbench.en.md) when formulation and implementation need to be developed |
+| C Knowledge | Definitions, intuition, formulas, and applicability | Usually one anchor; do not append design, GPU, or experiment reports |
+| D Verification | A derivation, conditional bound, or minimal counterexample | Usually 1–2 anchors; run the check when requested |
+| E Engineering | Handle the engineering task | Do not load this system's resources |
+
+When the user wants cross-field mathematical ideas or fewer template-based proposals, remove application names and identify the structural relation the current approach cannot satisfy. Search alternative mathematical formulations; show the precise object mapping and the conclusion transferred back. Impossibility and missing-information results also count as useful research insights. Defer design prototypes until the central mapping is established, then use them as comparisons. The five construction moves are examples, not a closed candidate list.
+
+For B Construction, first identify the behavior to change and the information available at decision time, then choose mathematical objects. The workbench provides actions for deriving operators from objects, realizing theorem assumptions, and using small checks to make design decisions. Read the relevant section of [Mathematical Construction Moves](references/construction-moves.en.md) as needed. These moves can produce mechanisms beyond the existing 22 design prototypes; existing prototypes are references.
 
 ## Domain Router
 
-Use the target object and required guarantee:
+Classify by target objects and requested guarantees, not keyword counts.
 
-| Domain | Load | Exclude |
+| Domain | Available resources | Boundary |
 |---|---|---|
-| Shared mathematics | `lenses/` plus the 8 non-cryptography domains and 37 anchors under `knowledge-base/` | Do not automatically load AI patterns or crypto books |
-| AI research | Shared mathematics on demand plus 0–2 relevant prototypes from `design-patterns/` | Do not load crypto anchors/books |
-| Cryptography | Relevant `knowledge-base/cryptography/` anchors; then the three crypto books only if needed; shared mathematics by structure | Do not load AI design patterns or apply the GPU gate |
-| AI×crypto | Both a cryptographic primitive/formal property and an AI object/functional need are present, and the task asks to transfer or combine them | Load only material needed at the intersection |
+| Shared mathematics | `lenses/` and the 37 anchors in the 8 non-cryptographic domains | Do not automatically load AI prototypes or cryptography books |
+| AI research | Shared mathematics, the design workbench, and relevant AI prototypes | Do not load cryptography anchors or books |
+| Cryptography | Relevant anchors in `knowledge-base/cryptography/`; add shared mathematics when the structure requires it | Do not load AI prototypes or construction moves, or judge security using a GPU checklist |
+| AI×crypto | Both cryptographic primitives/formal security properties and AI objects are involved, and transfer or composition is requested | Read only resources needed at the intersection |
 
-Rules:
+`hashing`, `attack`, `certificate`, a general proof, or adversarial optimization does not establish a cryptography task. Feature hashing, Lipschitz robustness certificates, and randomized smoothing normally remain AI. A statistical privacy definition alone is not cryptography either.
 
-- Surface terms such as `hashing`, `attack`, or `security` are insufficient for crypto routing. Feature hashing is normally AI; adversarial examples enter crypto/cross-domain routing only when the task asks for a game, certificate, or reduction.
-- For pure crypto, review security definitions, reduction tightness, assumptions, and implementation pitfalls. Treat GPU performance as ordinary engineering only when explicitly asked, never as a security acceptance gate.
-- For cross-domain tasks, output one four-tuple: (1) primitive + security property; (2) AI object + functional need; (3) transfer direction; (4) whether the assumption remains achievable after transfer. Do not emit it elsewhere.
+For cross-domain problems, state once: the primitive and security property, the AI object and function, the transfer direction, and whether the assumptions remain satisfiable after transfer. For pure cryptography, first specify adversarial capabilities, the security game, advantage, and reduction resources. Select implementation considerations for the particular construction. Analyze hardware costs only when the user asks about cryptographic implementation performance.
 
-See `references/skill-index.en.md` for the full index and boundary examples. Do not load it by default merely to route a clear request.
+## Read only what can change the current decision
 
-## Progressive loading and token budget
+- When the required mathematical structure is known, read its anchor directly; lenses and the index are optional. Conceptual queries and short verifications generally need only 1–2 resources. Construction can start with the workbench and 1–3 relevant resources, expanding when derivation or verification requires it.
+- Lenses help discover formalizations; they are not a mandatory step. Read the [index](references/skill-index.en.md) only when filenames do not locate the needed material. Do not reread sufficient existing context.
+- Start with an anchor's definitions, core formulas, and risks or conditions that affect the conclusion. Skip mathematical sections in design prototypes that repeat already-read material. Read an individual file in full when it is short or section-based access is unavailable.
+- Read book distillations or original papers when cards are insufficient, exact conditions need checking, or the user requests sources. The workbench, full critic, and GPU checklist are not permanent context for every task.
+- Do not expose internal loading paths or workflow labels unless the user is debugging the skill. Do not repeat resources or turn a simple question into a comprehensive review.
 
-Use these defaults unless the user requests a comprehensive review, multiple candidates, or the available material is genuinely insufficient.
+## From solving to completion
 
-| Scenario | Default context | Default answer |
-|---|---|---|
-| A | 1–2 lenses; one anchor only if needed | Conclusion + 2–4 key issues + fixes |
-| B | 1–2 lenses, 1–3 anchors, 0–2 patterns | One primary design; alternatives only by decisive differences |
-| C | One anchor | Definition + formula/intuition + boundary |
-| D | 1–2 anchors | Short conclusion + conditions + non-guarantees |
+**Analysis or verification:** Extract objects, quantifiers, and assumptions; complete the required derivation or construct a counterexample. When identifying a failure, provide the smallest repair that preserves the user's goal. Extending a conclusion to outputs or task performance requires a separate argument; properties of intermediate tensors are insufficient by themselves.
 
-- Do not repeat cards or expose internal load paths unless debugging routing, handling a cross-domain task, or resolving ambiguity.
-- Do not force simple questions into a full report template. Every heading must add decision-relevant information.
-- Do not expand AI translation, the GPU scorecard, or long bibliographies for a concept-only query.
-- If one anchor is sufficient, do not load the matching book. If the card plus reliable existing knowledge is sufficient, do not inspect PDFs.
+**Construction:** Turn desired behaviors and failure cases into a testable relation, then derive an update, objective, solver, or decision rule. Substitute actual tensors for theorem variables and handle the key assumptions: enforce them structurally, control them through solver residuals, or retain them only as empirical assumptions. Training-time teacher information cannot become a free input available before an inference decision. Consult related prototypes after completing the candidate to avoid fitting the problem into an existing template too early.
 
-## Lean loading (save tokens)
+**Implementation and verification:** Specify the forward computation, training signals, gradient or solver paths, and main costs. When execution is requested and feasible, generate and run an analytically tractable small case, a simple baseline, or a control that violates a key assumption for the current candidate. Revise and recheck after observing failure. Describe unrun experiments only as plans; finite numerical support does not replace a universal proof. Read the [GPU checklist](references/gpu-friendly-math.en.md) for hardware details as needed, and report only dimensions that can change the choice.
 
-Load "smallest sufficient" to save tokens; **no fixed output format** — the output structure follows the task.
+**Continuing research:** Preserve existing objects, conditions, failed candidates, and measurements, and address the evidence added in the current turn. Do not restart the entire routing process. For work spanning multiple rounds of candidates or experiments, read the [research loop](references/agentic-workflow.en.md).
 
-- **Read by section, not whole file:** for an anchor, first read only `Minimal Definition + Core Formulas + Applicable Problems`; for AI-design (B) or analysis (A), read `AI Design Translation / Engineering Feasibility / Risks` only as needed; **do not read** `Deep References / Routing / Extension Directions` by default (that tail is ~15% of a card's tokens) unless citing a source or debugging routing.
-- **Skip duplicate math sections:** a design pattern's `Mathematical Origins / Required Math` often duplicates an already-read anchor (e.g., Eckart-Young, randomized SVD). If the anchor was read, skip these and read `AI Module Form / GPU Feasibility / Risks` directly.
-- **Smallest sufficient path first:** prefer one small card over a book or a large file (books are ~4k tokens; read them only on deep need).
-- **Output structure follows the task:** research/design outputs use whatever structure the task requires (derivations, alternatives, trade-offs); simple queries stay short. Use the output quality check to self-check convergence, conditions, boundaries, and falsifiability — no fixed template.
+## Knowledge Gap Protocol
 
-## Procedure
+When existing anchors are insufficient, do not force-fit a card. Locate the specific missing concept or theorem, use lenses to find structure as needed, verify sources, record the minimal definitions and conditions needed for the problem, and return to solving or construction. Temporary cards should identify the domain, source, what is established/derived/assumed, and what remains unverified. Suggest a permanent card only for frequent reuse. See the [index](references/skill-index.en.md) for detailed record fields.
 
-1. **Classify scenario and domain:** extract the target, constraints, properties to preserve/suppress, and requested guarantee.
-2. **Select minimal material:** read only the most relevant files. Use `references/skill-index.en.md` only when filenames do not locate them.
-3. **Solve or design:** state objects, assumptions, and testable goals before AI/crypto translation.
-4. **Review:** always check assumptions, logic, and boundaries; add complexity/memory/numerics for implementations and security-game/reduction/assumption checks for crypto.
-5. **Lead with the conclusion:** answer whether it holds, what to choose, or what to do next before supporting detail.
+Prefer original papers or author textbooks when checking exact constants, theorem conditions, reductions, and recent methods. Distillations and model memory are not independent verification. Search PDFs on demand only in the current repository or user-provided locations. If unavailable, consult primary sources online or retain unverified status; do not invent page numbers or citations. Proposing a mechanism does not establish publication novelty.
 
-### AI design
+## Before delivery
 
-- Treat design patterns as translation examples, not copy-ready models.
-- Read `references/gpu-friendly-math.en.md` only for operator, training, or inference implementation questions.
-- Report only applicable GPU dimensions that can change the decision. Quantify main FLOPs, peak intermediate/state memory, and low-precision risk. Mark irrelevant dimensions N/A instead of padding to eight items.
+Lead with the requested conclusion or main proposal, then provide enough evidence to reproduce and assess it. Check whether key conditions are realized, when information is available, which conclusions approximations change, whether degenerate solutions exist, and whether reported experiments actually ran. For short questions, keep only material that affects the answer.
 
-### Cryptography
+Read [math-critic](agents/math-critic.en.md) when a full review is needed. For a concrete example, choose only one from the current domain: [low rank and queries](references/worked-examples/query-aware-compression.en.md), [equivariance](references/worked-examples/equivariance-check.en.md), or [PRF→MAC](references/worked-examples/security-reduction.en.md).
 
-- Define adversarial capability, security game, and advantage before claiming security.
-- Separate standard-model theorems, primitive-based reductions, and empirical assumptions about concrete algorithms such as AES.
-- Report reduction loss and parameter compensation; check nonce/IV handling, key separation, composition order, and side channels.
-
-### Knowledge Gap Protocol
-
-When no anchor covers the problem, do not force-fit one:
-
-1. identify the gap type; 2. fall back to 1–2 lenses; 3. name concrete concepts/theorem families; 4. write a minimal temporary card; 5. translate into a design only if needed; 6. recommend a permanent card only for recurring gaps.
-
-Every temporary card must state its domain, source (agent inference/lens derivation/reference extrapolation/external verification needed), confidence, and unverified claims. See `references/skill-index.en.md` for detailed fields.
-
-## Output quality check
-
-Before answering, verify:
-
-- Does the conclusion answer the user's decision rather than display knowledge?
-- Does every claim of “guaranteed,” “optimal,” “secure,” “stable,” or “equivalent” state sufficient conditions?
-- Is there at least one boundary, counterexample, or falsification experiment?
-- Did correlation, analogy, or empirical behavior become a theorem or causal claim by accident?
-- Did irrelevant domain content leak into context or output?
-- Can a section be deleted without losing decision information? If yes, delete it.
-
-Load `agents/math-critic.en.md` only for paper-grade or explicitly comprehensive review. For ordinary A/B/D tasks, use the compact checks above instead of the full 19-dimension template.
-
-## Direct resources
-
-Paths below are relative to this skill's install directory (DeepSeek Harness: the `resourceBase` returned by the skill tool). Do not look for them at the user's project root.
-
-- Lenses: `lenses/`
-- Shared anchors: `knowledge-base/` except `knowledge-base/cryptography/`
-- Crypto anchors: `knowledge-base/cryptography/`
-- AI prototypes: `design-patterns/`
-- GPU deep check: `references/gpu-friendly-math.en.md`
-- Deep review: `agents/math-critic.en.md`
-- Books: `references/books/` on demand only
+Resource entry points: `lenses/` (15 perspectives), `knowledge-base/` (41 anchors, including 4 cryptography cards), `design-patterns/` (22 AI prototypes), and `references/books/` (book distillations on demand). These are open starting points, not limits on the mechanisms that can be constructed.

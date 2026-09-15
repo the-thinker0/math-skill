@@ -36,10 +36,10 @@ To reduce Agent cognitive load and guide dimension selection, the 19 dimensions 
 |------|------------|-------------------|
 | **Core tier** (in-depth for most problems) | 1 Assumption Review, 3 Logic Check, 4 Model Applicability, 15 Counterexample & Boundary | Select at least 2 core dimensions per review |
 | **Situational tier** (select 2-3 by problem nature) | 2 Abstraction Level, 5 Optimization Quality, 6 Quantitative Evaluation, 7 Transformation Opportunity, 8 Symmetry Exploitation, 9 Induction & Analogy, 10 Computational Feasibility, 11 Information Structure, 12 Game & Strategy, 13 Causal Chain, 14 Topological Structure | Match to relevant lenses by problem type |
-| **Mandatory tier** (must-select when triggered) | 17 GPU Feasibility (mandatory when algorithm/operator/GPU is involved), 18 Modern Math Activation (mandatory when "activating modern math" is claimed), 19 Cryptographic Security (mandatory for crypto constructions/proofs/protocols) | Cannot be skipped when trigger conditions are met |
+| **Mandatory tier** (must-select when triggered) | 17 GPU Feasibility (mandatory for AI algorithm/operator implementation), 18 Modern Math Activation (mandatory when "activating modern math" is claimed), 19 Cryptographic Security (mandatory for crypto constructions/proofs/protocols) | Cannot be skipped when trigger conditions are met |
 | **Meta tier** (reviewing the review itself) | 16 Tool-Selection & Flow Review | When unsure which dimensions to pick, invoke this dimension first for self-check |
 
-If the deliverable involves algorithm/operator/GPU design, **Dimension 17 (GPU) is mandatory**. Dimension 18 is mandatory only when the deliverable claims to transfer or activate a modern mathematical structure. If it involves cryptographic constructions, proofs, or protocols, **Dimension 19 (Cryptographic Security) is mandatory**.
+If the deliverable involves AI algorithm/operator implementation, **Dimension 17 (GPU) is mandatory**. Dimension 18 is mandatory only when the deliverable claims to transfer or activate a modern mathematical structure. If it involves cryptographic constructions, proofs, or protocols, **Dimension 19 (Cryptographic Security) is mandatory**.
 
 ### 1. Assumption Review -> axiomatization lens
 
@@ -142,15 +142,15 @@ If the deliverable involves algorithm/operator/GPU design, **Dimension 17 (GPU) 
 - Is the selection of review dimensions itself optimal? Have any critical dimensions been overlooked?
 - Were the thinking toolkits best suited to the nature of the problem selected, rather than merely the most familiar ones?
 - Is the activator main flow followed: **Intent diagnosis -> Lens routing -> Knowledge lookup -> Design translation -> GPU screening**? Was diagnosis skipped in favor of jumping straight to math exposition?
-- Were multiple candidate structures enumerated (rather than only one)?
-- If uncertain about which dimensions to review, first invoke `/ask` to have the activator recommend the 3-5 most suitable review dimensions.
+- Does candidate count fit the task? Expand only for a consequential trade-off or a requested comparison.
+- If dimension choice is unclear, revisit the current objective and this table; do not recursively invoke `/ask` to restart an ongoing review.
 
 ### 17. GPU-Feasibility Review -> `../references/gpu-friendly-math.en.md`
 
-> **Mandatory** when the deliverable involves algorithm/operator/training/GPU design. Corresponds to the relevant engineering-feasibility checks; mark unrelated dimensions `N/A` and do not treat them as vetoes.
+> **Mandatory** when the deliverable involves AI algorithm/operator/training implementation. Corresponds to the relevant engineering-feasibility checks; mark unrelated dimensions `N/A` and do not treat them as vetoes.
 
 - Evaluate only the applicable dimensions in `../references/gpu-friendly-math.en.md`: tensorization, GEMM-mappability, complexity, memory/KV cache, low-precision stability, parallelism/communication, sparsity, and fusion. Mark irrelevant dimensions `N/A`; quantify decisive items with shapes, operation counts, bytes, or communication volume. GEMM-mappability alone does not imply speed.
-- Are there structures that are "mathematically beautiful but not computable"? (Typical cases: second-order Hessian inversion, global exact homology, symbolic causal discovery, exact entropy estimation.) Has a differentiable/sampling/low-rank/approximate retrofit been provided?
+- Do exact operations exceed the target budget (for example, dense Hessian solves or large-complex homology)? Distinguish computational undecidability from high finite cost; use implicit solves, sampling, or approximation only when needed, and state the resulting error.
 - Are the inverse transforms and numerical components stable (condition number, ill-conditioning)?
 - Have memory and communication been assessed (KV-Cache, distributed all-reduce, optimizer state precision)?
 
@@ -158,9 +158,9 @@ If the deliverable involves algorithm/operator/GPU design, **Dimension 17 (GPU) 
 
 > **Mandatory** when the deliverable claims to "activate modern mathematics into algorithms." Corresponds to mathematical-correctness review plus cross-domain activation quality; irrelevant GPU dimensions must not veto exploratory candidates.
 
-- Does the work genuinely transfer modern mathematical structures (algebraic geometry / differential geometry / Lie theory / abstract algebra / matrix analysis / optimization), or does it merely recycle classical calculus and linear algebra?
-- Are the transferred structures mathematically self-consistent, differentiable (or relaxable to differentiable), and backed by correctness guarantees?
-- Were the corresponding `../references/books/*.en.md` distilled notes consulted? When the depth required original text, was the deep-dive protocol followed (local `math_book/` PDF auto-search)?
+- Does the claimed mathematical structure actually participate in the design? Judge contribution by its role, not mathematical age or abstraction level.
+- Are the transferred structures mathematically self-consistent, supported by stated conditions and evidence, and differentiable or supplied with a suitable estimator only where a gradient path requires it?
+- When cards were insufficient, were primary sources and conditions verified? Missing local PDFs should lead to accessible originals or an unverified status, not mandatory book loading.
 - Is the transfer a "cross-domain activation" (the structure already exists; only a cross-domain mapping is missing), or is it a forced transplant (borrowing terminology without borrowing structure)?
 - Is the deliverable mathematically correct and compatible with the task-critical engineering constraints? Irrelevant GPU dimensions must not reject a candidate, and experimental cross-domain mappings must be labeled as hypotheses rather than established theorems.
 
@@ -169,9 +169,9 @@ If the deliverable involves algorithm/operator/GPU design, **Dimension 17 (GPU) 
 > **Mandatory** when the deliverable involves cryptographic constructions / security proofs / protocol design (triggered when Domain Router determines the problem is cryptography or AI×crypto intersection). Cryptographic acceptance means: security definitions correct **AND** reduction tightness acceptable. Load relevant crypto anchors first; open crypto books only when cards are insufficient, theorem conditions need checking, or the user asks for sources. Never use the GPU checklist as a security gate.
 
 - **Security definitions**: Is the security goal defined via a formal attack game? Does the threat-model tier (CPA/CCA/AE/EUF-CMA) match the requirement? Avoid "intuitively secure" hand-waving.
-- **Reduction tightness**: How large is Q in the reduction loss ε_scheme ≈ Q·ε_assumption? Are parameters compensated? Does the proof claim "loose reduction = secure"?
+- **Reduction tightness**: What are the actual multiplicative loss, additive terms, ideal baseline, and adversary resources? Do not assume a query-count factor or confuse a loose upper bound with an attack.
 - **Assumption dependency**: Which assumption does the scheme rely on (OWF/DL/CDH/DDH/RSA/LWE)? Is it minimized? Are black-box separation results relevant? Does it need upgrading under quantum threats (Shor/Grover)?
-- **Composition & implementation pitfalls**: Is EtM/MtE/EaM chosen correctly? Are keys independent? Are IVs/nonces unique? Is MAC comparison constant-time? Is context (identity/transcript) bound?
+- **Composition & implementation pitfalls**: Is EtM/MtE/EaM chosen correctly? Are keys independent? Do IV randomness/unpredictability and nonce uniqueness match the actual scheme? Is MAC comparison constant-time? Is context (identity/transcript) bound?
 - **Anti-pattern check**: Is ROM treated as an absolute guarantee? Is deterministic encryption treated as CPA-secure? Is Merkle-Damgård treated as ROM? Plain RSA signatures?
 - **Cross-domain transfer validity** (AI×crypto only): When transferring cryptographic concepts to ML (e.g., PRF for watermarking, reductions for robustness certificates), are security semantics preserved, or is only terminology borrowed? Are assumptions still achievable after transfer?
 - **Domain Router consistency**: Does a pure crypto problem avoid loading AI design-patterns? Does a pure AI problem avoid loading `../knowledge-base/cryptography/` and crypto books? Does an intersection problem load only the material needed at the intersection and emit the four-tuple?
@@ -182,7 +182,7 @@ If the deliverable involves algorithm/operator/GPU design, **Dimension 17 (GPU) 
 
 1. **Summarize the conclusion**: First, state the core claim of the argument or proposal in one sentence.
 2. **List assumptions**: Enumerate all explicit, implicit, and background assumptions one by one.
-3. **Select dimensions**: Choose the 3-5 most relevant dimensions. If algorithm/GPU design is involved, **Dimension 17 is mandatory**; if modern-math activation is explicitly claimed, Dimension 18 is mandatory; if cryptography is involved, **Dimension 19 is mandatory**.
+3. **Select dimensions**: Choose the 3-5 most relevant dimensions. If AI implementation constraints apply, **Dimension 17 is mandatory**; if modern-math activation is explicitly claimed, Dimension 18 is mandatory; if cryptography is involved, **Dimension 19 is mandatory**.
 4. **Check the logical chain**: Verify whether the reasoning is complete and whether there are any leaps.
 5. **Apply the acceptance gates**: Check mathematical correctness first, then the task-relevant engineering constraints. Mark irrelevant dimensions `N/A`; an exploratory candidate may remain if clearly downgraded and paired with a validation plan.
 6. **Assess severity**: Classify the impact of discovered issues on the reliability of the conclusion.
@@ -206,7 +206,7 @@ The structure below is the full-report template, not the default response. For s
 ### Review Section
 
 #### Dimensions Focused on in This Review
-- [List the 3-5 dimensions selected for in-depth review and the rationale; if algorithm/GPU is involved, note that Dimensions 17/18 are included; if cryptography is involved, note that Dimension 19 is included]
+- [List the 3-5 dimensions selected for in-depth review and the rationale; when implementation constraints apply, include Dimension 17; include Dimension 18 only for claimed modern-math transfer; if cryptography is involved, note that Dimension 19 is included]
 
 #### Acceptance Results
 - Mathematical correctness: [pass / conditional pass / fail]
@@ -259,5 +259,5 @@ Notes:
 - **Rigorous but not harsh**: Point out problems while providing constructive improvement suggestions.
 - **Specific but not trivial**: Describe issues concretely; avoid vague generalities.
 - **Fair but uncompromising**: Zero tolerance for logical errors, but remain open to innovative ideas.
-- **Dual-gate, no compromise**: Deliverables that are mathematically beautiful but not computable must be marked "unfriendly" and require retrofitting; they must not be approved.
+- **Task-based acceptance**: check mathematical conditions and evidence; implementations violating actual resource limits need changes, while unverified research candidates remain hypotheses.
 - **Cross-domain activation first**: Encourage the transfer of modern mathematical structures into algorithm design, but require that the transfer borrows structure, not merely terminology.

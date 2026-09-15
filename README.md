@@ -2,7 +2,7 @@
 
 # 📐 Math Skill
 
-### 面向 AI 与密码学创新的数学研究操作系统
+### 把研究目标变成数学构造与验证
 
 <a href="README.md">中文</a> | <a href="README.en-US.md">English</a>
 
@@ -10,52 +10,44 @@
 [![npm version](https://img.shields.io/npm/v/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 [![npm downloads](https://img.shields.io/npm/dt/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 
-**🎉 NEWS: We now support dsh harness 🚀**
+**Unreleased · 改进开发中（暂不升版本号）**
 
 </div>
 
-> Math Skill 不存储数学，它激活数学、路由数学，并把数学翻译成 AI 与密码学研究设计。
+> 从目标与约束出发，推导可实现机制，并用证据决定下一步。
 
-面向 **Claude Code / Codex / Cursor / DeepSeek Harness (dsh) 等** 的数学推理技能——在 AI 架构设计、数学结构迁移和密码学证明审查中，自动激活正确的数学透镜、知识锚点和设计原型，给出带条件、带反例、可证伪的结论。
+面向 **Claude Code / Codex / Cursor / DeepSeek Harness (dsh) 等** 的数学推理技能——在 AI 架构设计、数学结构迁移和密码学证明审查中，将模糊目标形式化，构造算子与验证方法，也支持已有论证和密码学安全性的审查。
 
 如果这个 skill 对你有启发，欢迎点亮一颗 Star⭐。你的支持是项目持续打磨的动力。
 
 ---
 
-## 它和直接问 AI 有什么区别？
+## 它如何帮助研究？
 
-### 【AI】案例 1：分析——"KAN 的数学基础和风险"
+本轮重点是发现有价值的跨数学领域思路，再将值得做的方向落实为机制或研究结论，不要求用户先知道该用哪种数学。原有 15 个透镜、41 张锚点和 22 个原型继续作为材料；候选不受这个目录限制。
 
-**用户**："KAN 用可学习 B-spline 替代 ReLU，声称比 MLP 更准确且可解释。我想分析它的数学基础和潜在风险。"
+| 用户输入 | 新增处理方式 | 按需资源 |
+|---|---|---|
+| “只有研究目标，还没有公式” | 从期望/失败行为选对象，推导更新或决策规则 | [构造工作台](references/design-workbench.md) |
+| “想要有价值的跨数学领域思路，减少套模板” | 沿任务缺失的结构关系寻找新领域，核验对象对应并比较不同机制 | [结构迁移](references/structural-transfer.md) |
+| “这个定理怎么变成真实模块？” | 将条件落实为参数化约束、求解残差或可检验假设 | [从定理到实现](references/design-workbench.md) |
+| “运行一个小验证，再接着改” | 为当前候选生成检查，记录失败，修订后再验证 | [研究循环](references/agentic-workflow.md) |
 
-**不调用 Skill**：
-> KAN 基于 Kolmogorov-Arnold 表示定理，用 B-spline 作为可学习激活函数放在边上。优点是参数效率高、激活函数可解释。风险主要是 spline 计算比 ReLU 慢、grid 过细可能过拟合。建议在具体任务上做消融实验。
+三条迁移示例展示如何发现机会或排除错误路线：[观测信息与函数空间投影](references/structural-transfer.md)、[连续选向的拓扑障碍与多解表示](references/transfer-bridges.md)、[局部一致性与纠错距离](references/transfer-bridges.md)。示例用于校准什么算真实结构对应，不是固定推荐菜单。
 
-**调用 Skill 后**（激活：扰动 + 谱分解透镜 → `low-rank-approximation` 锚点）：
+一次独立的在线信息融合试用生成了“四值证据格”和“真值与来源故障联合后验”两条路线，含具体推导与失效条件。[试用记录与原始回答](tests/usability/README.md)保留了证据和局限；单次结果不代表整体质量提升。
 
-> **结论**：KA 定理保证表达能力的**存在性**，不保证**可学习性**。决定 KAN 实际性能的两个被忽视的数学量是 spline 基的有效秩和参数空间的 Fisher 曲率。
->
-> - **存在性 ≠ 可学习性**：KA 定理保证 ∑φ_q(∑ψ_{q,p}(x_p)) 可表示任意连续函数，但与 MLP 的万能逼近定理一样，不保证梯度下降能找到该表示
-> - **Spline 基有效秩**：B-spline 基函数的支撑重叠导致 effective rank 远低于参数增长；若 grid 细化但基函数高度相关，实际表达能力增长停滞——需监控奇异值衰减曲线而非只看参数量
-> - **Fisher 曲率**：spline 的二阶可导使 Hessian 更规则，但 Fisher 信息矩阵的 condition number 可能远大于 ReLU 网络；natural gradient 有理论优势但估计成本更高
-> - **可证伪实验**：比较 KAN 与同参数预算 MLP 的 spline 基有效秩衰减；若 rank 增长停滞而参数持续增长，则"可解释"优势被冗余抵消
+选定结构后，可按需参考五类[数学构造动作](references/construction-moves.md)。例如，廉价函数基统计可与随机残差修正组合，推导出条件无偏的线性聚合估计；归一化、方差和存储边界需要分别检查。这提供构造新计算图的起点，不宣称已经取得任务收益或论文新颖性。
 
-### 【密码学】案例 2：验证——"PRF 水印归约的紧度"
+下面保留三组可复算的数学核验案例：
 
-**用户**："我用 PRF 给模型权重加水印，归约证明说'去水印 ≥ 破 PRF'。这个归约 tight 吗？"
+| 研究问题 | 关键检查 | 完整案例 |
+|---|---|---|
+| SVD 压缩误差很小，是否对所有未来 query 保持 attention？ | 二维反例；query 范数受限时的输出误差界；基底与系数存储成本 | [低秩 KV 与 query](references/worked-examples/query-aware-compression.md) |
+| attention 是否对 token 置换等变？ | score 的共轭变换、位置编码/causal mask、有限群平均的逆作用 | [等变性检查](references/worked-examples/equivariance-check.md) |
+| PRF 安全能给 MAC 多紧的伪造界？ | 固定新鲜性游戏；实际 oracle 次数；不凭空添加 Q 倍损失 | [PRF→MAC 归约](references/worked-examples/security-reduction.md) |
 
-**不调用 Skill**：
-> 如果去水印的难度等价于区分 PRF 输出和真随机，那么在水印方案依赖的 PRF 安全假设成立时，归约是紧的。建议选择 AES-based PRF 以确保假设强度。
-
-**调用 Skill 后**（激活：`reduction-proof-template` + `prf-prg-owf` 锚点）：
-
-> **结论**：归约方向正确，但紧度取决于查询数 Q 和模拟质量，不能仅凭"假设 PRF 安全"就声称紧归约。
->
-> - **归约损失**：Adv^scheme ≤ Q · Adv^PRF + δ，其中 Q 是敌手查询数。若 Q 随模型参数量线性增长，具体安全参数显著退化——必须报告 Q 的量级，不能只写"多项式损失"
-> - **模拟质量**：归约须构造模拟器 B 回答敌手 oracle 查询；若 B 的模拟分布与真实游戏统计距离不可忽略，整个归约失效
-> - **假设层级**：AES 当 PRF 是广泛采用的经验假设，不是从规范无条件证明的定理——标准模型、ROM、具体安全三个层级不能混用
-> - **多用户退化**：模型部署后多用户独立查询，birthday bound 和 hybrid 步数放大优势损失
-> - **可证伪检查**：写出 B 的完整模拟（参数生成、查询回答、挑战嵌入、abort 处理），代入具体参数估计 Q 和 δ
+普通鲁棒性证书（如 Lipschitz 或随机平滑）仍属 AI 数学问题；出现“证书”“攻击”“证明”不自动进入密码学。只有涉及密码学原语/安全实验与 AI 对象的组合时，才加载交叉域材料。
 
 ---
 
@@ -75,7 +67,7 @@ npx -y math-skill@latest install --all
 请帮我安装 math-skill：https://github.com/the-thinker0/math-skill，并教我如何使用
 ```
 
-> 也支持：`install --codex` / `--claude` / `--dsh`（单独）、`update --all`（更新）、`doctor --all`（检查重复入口）
+> 也支持：`install --codex` / `--claude` / `--dsh`（单独）、`update --all`（更新）、`doctor --all`（检查安装完整性与重复入口）
 > 安装器自动排除内层 `skills/` 目录，保证每个平台只有一个入口。
 >
 > **DeepSeek Harness (dsh)**：`--dsh` 写入 `~/.dsh/skills/math-research-activator/`（可用 `$DSH_HOME` 覆盖）。安装后重启 dsh，命令面板输入 `/math-research-activator` 即可调用。也可手动把该目录放到项目级 `.dsh/skills/` 或共享的 `~/.agents/skills/`。
@@ -86,8 +78,9 @@ npx -y math-skill@latest install --all
 
 | 场景 | 诊断信号 | 调用路径 |
 |------|---------|---------|
-| 问题分析 | "这个设计合理吗？" | 透镜 → 紧凑审查 |
-| 机制设计 | "设计新 attention" | 透镜 → 锚点 → 设计翻译 → 紧凑审查 |
+| 问题分析 | "这个设计合理吗？" | 从现有对象分析；按需使用锚点或透镜 |
+| 跨域探索 | "能从不同数学领域找两条思路吗？" | 结构缺口 → 对象对应 → 推导与反例筛选 |
+| 机制设计 | "我希望模块有这种行为，该怎么设计？" | 目标形式化 → 推导机制 → 实现与验证 |
 | 知识查询 | "切空间和梯度优化有什么关系？" | 激活锚点 |
 | 验证审查 | "这个归约的 tightness 够吗？" | 锚点 → 条件/边界 |
 | 纯工程 | debug、重构、调参 | **不触发** |
@@ -108,7 +101,8 @@ npx -y math-skill@latest install --all
 ## 三层正交架构
 
 ```
-问题 → 透镜（用什么视角看？）→ 锚点（激活哪些数学结构？）→ 设计翻译（变成什么模块？）→ 审查（站得住吗？）
+研究目标 → 数学形式化 → 构造与推导 → 实现对应 → 验证与修订
+                  ↑ 按需使用透镜、锚点、原型；不是固定流水线
 ```
 
 | 层 | 职责 | 目录 | 文件数 |
@@ -118,6 +112,9 @@ npx -y math-skill@latest install --all
 | **设计翻译** | 把数学变成 AI 模块/loss/算子 | `design-patterns/*/*.md` | 22 |
 
 辅助层：
+- [结构迁移](references/structural-transfer.md) + [迁移桥示例](references/transfer-bridges.md)：主动寻找跨数学领域对应，检验迁回结论与价值
+- [构造工作台](references/design-workbench.md) + [数学构造动作](references/construction-moves.md)：从目标生成机制，落实条件与实现
+- [研究循环](references/agentic-workflow.md)：执行小验证、依据结果修订并接续上下文
 - `references/books/*.md`：10 本书蒸馏稿（7 本 AI 方向 + 3 本密码学方向），需要深入时的完整上下文
 - `references/gpu-friendly-math.md`：按需 GPU 检查；不适用维度标 N/A
 - `agents/math-critic.md`：仅全面/论文级审查按需加载的 19 维深度批判器
@@ -159,12 +156,12 @@ AI 研究与密码学**共享**数学根基（概率/信息/代数/矩阵/谱/�
 
 | 领域 | 锚点 |
 |------|---------|
-| 矩阵分析 | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation |
+| 矩阵分析 | projection, spectral-decomposition, low-rank-approximation, positive-semidefinite, matrix-perturbation, random-matrix, hankel-state-space |
 | 最优化 | lagrangian-duality, convex-optimization, constrained-optimization, riemannian-optimization, proximal-method |
 | 微分几何 | manifold, tangent-space, metric-tensor, geodesic, curvature, connection |
 | 李理论 | group-action, lie-group, lie-algebra, representation, equivariance |
 | 拓扑 | persistent-homology, euler-characteristic, fundamental-group |
-| 概率与信息 | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information |
+| 概率与信息 | concentration-inequality, entropy, kl-divergence, information-bottleneck, fisher-information, optimal-transport, score-matching-sde |
 | 信息几何 | natural-gradient, fisher-metric |
 | 代数几何 | sheaf-cohomology, grassmannian-plucker |
 | 密码学（独有） | prf-prg-owf, reduction-proof-template, attack-game-framework, cca-cpa-ae-hierarchy |
@@ -187,43 +184,17 @@ AI 研究与密码学**共享**数学根基（概率/信息/代数/矩阵/谱/�
 
 ---
 
-## 路由范例
+## 从问题出发的范例
 
-**用户**："设计新的 KV Cache 压缩方法，保留长期依赖，不想只做 top-k"
-
-```
-第一步 诊断：场景 B（机制设计）
-  问题类型：序列记忆压缩 + 信息保留 + 长程结构
-  核心张力：压缩 token 数量 vs 不破坏长期依赖
-
-第二步 透镜选择（默认 ≤2）：
-  1. 谱分解（保留主导子空间）
-  2. 概率/信息（保留互信息敏感状态）
-  （拓扑仅在用户强调连通/桥接结构时再加，不计入默认预算）
-
-第三步 激活锚点：
-  → low-rank-approximation（矩阵分析锚点）
-  → information-bottleneck（概率与信息锚点）
-  → leverage-score-selection 或 low-rank-kv-cache（0–2 个压缩设计模式）
-  若现有锚点不足，进入 Knowledge Gap Protocol 生成临时知识卡。
-
-第四步 设计翻译：
-  主方案：Spectral KV Compression（低秩 + leverage score）
-  备选仅写关键差异：Information-Preserving Cache（依赖未来 query 估计）
-
-第五步 紧凑审查（普通任务不加载完整 critic）：
-  主方案最 GPU 友好；备选需估计未来 query，不确定性更高
-  结论：优先主方案；需要 query 敏感保留时再加轻量 gate
-```
-
+“压缩 KV Cache 且保留长期依赖”首先需要确定应保留哪些未来查询的答案。由此可寻找对查询族充分的摘要、比较一致逼近与分布平均风险，并构造摘要相同而答案不同的反例；不能先把候选定成低秩加 top-k。完整推导见 [工作流范例](references/skill-index.md#工作流范例)。
 ---
 
 ## 目录结构
 
 ```
 math-skill/
-├── skills/
-│   └── math-research-activator/    # 总控：意图诊断 + 路由
+├── SKILL.md / SKILL.en.md          # 安装入口：意图诊断 + 路由
+├── skills/math-research-activator/ # 仓库兼容入口（不随 npm 分发）
 ├── lenses/                         # 15 个思想透镜（推理方法论）
 ├── knowledge-base/                 # 激活锚点（按数学领域组织，非封闭百科；共 41 卡）
 │   ├── matrix-analysis/            # 矩阵分析（7 卡片）
@@ -243,6 +214,11 @@ math-skill/
 │   └── compression/                # 压缩（4 模式）
 ├── references/                     # 参考层
 │   ├── books/                      # 10 本书蒸馏稿（7 AI + 3 密码学）
+│   ├── worked-examples/            # 3 组中英案例，含可运行数值检查
+│   ├── structural-transfer.md     # 从任务结构寻找跨数学领域思路
+│   ├── transfer-bridges.md         # 结构对应、反例与研究机会
+│   ├── design-workbench.md         # 从模糊目标构造可实现机制
+│   ├── construction-moves.md       # 5 类可组合数学动作
 │   ├── gpu-friendly-math.md        # GPU 维度清单（仅评相关项）
 │   ├── agentic-workflow.md         # 协作方式
 │   ├── inspiration.md              # 灵感来源
@@ -250,6 +226,8 @@ math-skill/
 │   └── skill-index.md              # 索引（按需目录，不默认加载）
 ├── agents/math-critic.md           # 数学-工程双重批判器（19 维，含密码学安全审视）
 ├── commands/ask.md                 # /ask 手动入口
+├── bin/math-skill.cjs              # 安装、更新、诊断和卸载
+├── tests/                         # 结构、安装器、评测与案例回归（不发布）
 ├── math_book/                      # 本地 PDF（不发布）
 └── README.md / LICENSE
 ```
@@ -262,27 +240,57 @@ math-skill/
 
 | # | 书名 | 作者 | 出版社 / 版次 | 年份 | ISBN | 蒸馏文件 |
 |---|------|------|-------------|------|------|---------|
-| 1 | *Contemporary Abstract Algebra* | Joseph A. Gallian | Brooks/Cole, Cengage, 8th ed. | 2013 | 978-1-133-59971-5 | `abstract-algebra.md` / `.en.md` |
-| 2 | *The Rising Sea: Foundations of Algebraic Geometry* | Ravi Vakil | Princeton University Press | 2025 | 978-0-691-26866-8 | `algebraic-geometry-rising-sea.md` / `.en.md` |
-| 3 | *Manifolds and Differential Geometry* | Jeffrey M. Lee | AMS, Graduate Studies in Math Vol. 107 | 2009 | 978-0-8218-4815-9 | `differential-geometry.md` / `.en.md` |
-| 4 | *Matrix Analysis* | Roger A. Horn, Charles R. Johnson | Cambridge University Press, 2nd ed. | 2013 | 978-0-521-83940-2 | `matrix-analysis.md` / `.en.md` |
-| 5 | *A micro Lie theory for state estimation in robotics* | Joan Solà et al. | arXiv:1812.01537v9 | 2021 | — | `micro-lie-theory.md` / `.en.md` |
-| 6 | *An Introduction to Optimization, With Applications to ML* | Chong, Lu, Żak | John Wiley & Sons, 5th ed. | 2024 | 978-1-119-87763-9 | `optimization-ml.md` / `.en.md` |
-| 7 | *Introduction to Smooth Manifolds* | John M. Lee | Springer, GTM 218, 2nd ed. | 2013 | 978-1-4419-9981-8 | `smooth-manifolds.md` / `.en.md` |
+| 1 | *Contemporary Abstract Algebra* | Joseph A. Gallian | Brooks/Cole, Cengage, 8th ed. | 2013 | 978-1-133-59971-5 | [中文](references/books/abstract-algebra.md) / [EN](references/books/abstract-algebra.en.md) |
+| 2 | *The Rising Sea: Foundations of Algebraic Geometry* | Ravi Vakil | Princeton University Press | 2025 | 978-0-691-26866-8 | [中文](references/books/algebraic-geometry-rising-sea.md) / [EN](references/books/algebraic-geometry-rising-sea.en.md) |
+| 3 | *Manifolds and Differential Geometry* | Jeffrey M. Lee | AMS, Graduate Studies in Math Vol. 107 | 2009 | 978-0-8218-4815-9 | [中文](references/books/differential-geometry.md) / [EN](references/books/differential-geometry.en.md) |
+| 4 | *Matrix Analysis* | Roger A. Horn, Charles R. Johnson | Cambridge University Press, 2nd ed. | 2013 | 978-0-521-83940-2 | [中文](references/books/matrix-analysis.md) / [EN](references/books/matrix-analysis.en.md) |
+| 5 | *A micro Lie theory for state estimation in robotics* | Joan Solà et al. | arXiv:1812.01537v9 | 2021 | — | [中文](references/books/micro-lie-theory.md) / [EN](references/books/micro-lie-theory.en.md) |
+| 6 | *An Introduction to Optimization, With Applications to ML* | Chong, Lu, Żak | John Wiley & Sons, 5th ed. | 2024 | 978-1-119-87763-9 | [中文](references/books/optimization-ml.md) / [EN](references/books/optimization-ml.en.md) |
+| 7 | *Introduction to Smooth Manifolds* | John M. Lee | Springer, GTM 218, 2nd ed. | 2013 | 978-1-4419-9981-8 | [中文](references/books/smooth-manifolds.md) / [EN](references/books/smooth-manifolds.en.md) |
 
 ### 密码学方向（3 本）
 
 | # | 书名 | 作者 | 出版社 / 版次 | 年份 | ISBN | 蒸馏文件 |
 |---|------|------|-------------|------|------|---------|
-| 8 | *A Graduate Course in Applied Cryptography* | Dan Boneh & Victor Shoup | v0.4 在线版 | 2017 | — | `applied-cryptography.md` / `.en.md` |
-| 9 | *Foundations of Cryptography, Volume 1: Basic Tools* | Oded Goldreich | Cambridge University Press | 2001 | 978-0-521-79172-4 | `foundations-of-cryptography.md` / `.en.md` |
-| 10 | *Introduction to Modern Cryptography* | Jonathan Katz & Yehuda Lindell | CRC Press, 2nd ed. | 2015 | 978-1-4665-7026-9 | `introduction-to-modern-cryptography.md` / `.en.md` |
+| 8 | *A Graduate Course in Applied Cryptography* | Dan Boneh & Victor Shoup | v0.6 在线版 | 2023 | — | [中文](references/books/applied-cryptography.md) / [EN](references/books/applied-cryptography.en.md) |
+| 9 | *Foundations of Cryptography, Volume 1: Basic Tools* | Oded Goldreich | Cambridge University Press | 2001 | 978-0-521-79172-4 | [中文](references/books/foundations-of-cryptography.md) / [EN](references/books/foundations-of-cryptography.en.md) |
+| 10 | *Introduction to Modern Cryptography* | Jonathan Katz & Yehuda Lindell | CRC Press, 2nd ed. | 2015 | 978-1-4665-7026-9 | [中文](references/books/introduction-to-modern-cryptography.md) / [EN](references/books/introduction-to-modern-cryptography.en.md) |
 
 蒸馏文件已随 npm 包发布。如需全保真原文，将 PDF 放入 `math_book/` 文件夹即可。
 
 ---
 
+## 验证与下一版本状态
+
+在仓库检出目录运行：
+
+```bash
+npm run validate
+npm test
+npm run eval:behavioral
+```
+
+`validate` 检查双语、计数、路径、frontmatter、70 例路由清单及 npm 文件清单；`test` 覆盖安装回滚、评测失败路径及案例中的可运行检查。行为评测需要可信运行时适配器，缺配置明确显示 **SKIP**；要求真实运行证据时加 `--require-runtime`。详见仓库内的[评测契约](tests/eval/README.md)（tests 不随 npm 分发）。
+
+`doctor` 检查必需资源与重复入口，损坏/重复安装返回 2；未知参数返回 1。这些是工作区中未发布的改进，包版本暂保持 3.3.7；版本升级另行决定。Windows 仍需原生环境验证；跨设备失败路径已用本地故障注入覆盖。
+
 ## 变更日志
+
+### Unreleased — 跨数学领域探索与构造能力
+
+- 新增结构迁移流程：从任务关系寻找新领域、建立可检查的对象对应、筛选能改变机制或研究判断的方向。
+- 补充概率与函数分析、覆盖空间与多解表示、局部一致性与纠错距离的迁移示例；生成阶段推迟加载已有设计原型。
+
+- 新增双语构造工作台与五类可组合数学动作，把临时知识卡接回实际构造，补齐定理条件到实现的对应。
+- 主入口改为按目标求解/构造；透镜与原型成为按需工具，合并重复加载规训。
+- 研究循环支持当前候选的小验证、失败修订和多轮状态延续；版本号暂不升级。
+
+此前完成的维护改进：
+
+- 修正透镜、锚点、设计模式和书稿中的公式、条件与伪代码，覆盖谱误差/任务误差、Stiefel 几何、曲率/Hessian、信息界、路由与密码归约。
+- 用作者目录替换错误密码学章号，Boneh–Shoup 对齐 v0.6；补充三组双语完整案例和可操作的临时卡/来源记录。
+- 查询/验证任务保留定理条件；鲁棒性证书不再误入密码域；移除 critic 递归路由和强制枚举候选。
+- 修复安装备份/回滚与残损安装检测；统一跨平台校验，强化 schema/路径隔离，并区分静态通过与可信运行 trace。
 
 ### v3.3.7 — 数学勘误回归与评测自动化闭环
 
