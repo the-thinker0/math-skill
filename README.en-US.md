@@ -10,7 +10,7 @@
 [![npm version](https://img.shields.io/npm/v/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 [![npm downloads](https://img.shields.io/npm/dt/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 
-**Unreleased · Improvements in development (no version bump yet)**
+**🎉 NEWS: v3.3.7 released · dsh harness supported 🚀**
 
 </div>
 
@@ -272,32 +272,25 @@ npm run eval:behavioral
 
 `validate` checks paired content, counts, paths, frontmatter, the 70-case routing manifest, and the npm package file list. `test` covers installer rollback, evaluator failures, and executable checks in the worked examples. A configured trusted runtime adapter is required for behavioral evaluation; otherwise it reports **SKIP**. Use `--require-runtime` when runtime evidence is mandatory. See [the evaluation contract](tests/eval/README.en.md) in the repository (tests are excluded from npm).
 
-`doctor` checks required resources and duplicate entries; damaged/duplicate installations exit with status 2. Unknown arguments exit with status 1. These are unpublished workspace improvements; the package remains at 3.3.7 pending a separate version decision. Windows behavior still needs a native Windows check; local fault injection covers cross-device failure paths.
+`doctor` checks required resources and duplicate entries; damaged/duplicate installations exit with status 2. Unknown arguments exit with status 1. Windows behavior still needs a native Windows check; local fault injection covers cross-device failure paths.
 
 ## Changelog
 
-### Unreleased — Cross-field exploration and mechanism construction
+### v3.3.7 — Cross-field exploration, mechanism construction & eval automation
 
 - Added a structural-transfer workflow: follow task relations into new fields, establish checkable mappings, and select directions that change mechanisms or research judgments.
 - Added transfer examples connecting probability with functional analysis, covering spaces with multi-solution representations, and local consistency with error-correcting distance; defer existing prototypes during idea generation.
-
 - Added a bilingual construction workbench and five composable mathematical moves; knowledge-gap material now returns to construction, with theorem-to-implementation mappings.
 - The entry follows user objectives; lenses and prototypes are optional tools, with duplicate loading guidance consolidated.
-- The research loop supports candidate-specific probes, revision after failure, and continuation from prior evidence; no version bump yet.
-
-Previously completed maintenance:
-
+- The research loop supports candidate-specific probes, revision after failure, and continuation from prior evidence.
 - Corrected formulas, assumptions, and pseudocode across lenses, anchors, patterns, and book notes: spectral versus task error, Stiefel geometry, curvature/Hessian, information bounds, routing, and cryptographic reductions.
 - Replaced incorrect crypto chapter references with verified author contents; Boneh–Shoup now uses v0.6. Added three bilingual worked examples and an actionable temporary-card/source record.
 - Kept concept/verification tasks from skipping validity conditions; robustness certificates no longer cause crypto misrouting. Removed recursive critic routing and mandatory candidate enumeration.
-- Fixed installer backup/rollback failures and damaged-installation detection. Unified portable validation, strengthened schema/path isolation, and separated static checks from trusted runtime traces.
-
-### v3.3.7 — Math corrections regression & eval automation loop
-
 - **Math corrections (bilingual + regression-locked)**: `prf-prg-owf` extra closing paren in the PRG advantage formula fixed; `natural-gradient` SVI natural gradient restated in the actual Hoffman et al. 2013 form (gap taken against the current natural parameter: $\hat\lambda = \eta_0 + N\,\mathbb{E}_q[T]$, update $\lambda \leftarrow (1-\rho)\lambda + \rho\hat\lambda$)
-- **Tier 1 eval automation (always-on CI)**: new `tests/eval/cases.jsonl` (68 structured cases) plus zero-dependency runner `run_eval.mjs` — schema validation, bidirectional paper ↔ manifest parity (drift-proof), Domain Router isolation policy assertions, and may_load existence checks; wired into `validate.sh`
+- **Tier 1 eval automation (always-on CI)**: new `tests/eval/cases.jsonl` (70 structured cases) plus zero-dependency runner `run_eval.mjs` — schema validation, bidirectional paper ↔ manifest parity (drift-proof), Domain Router isolation policy assertions, and may_load existence checks; wired into `validate.mjs`
 - **Tier 2 behavioral eval slot**: new `behavioral_eval.mjs` — set `MATH_SKILL_EVAL_CMD` to apply deterministic judges to a real agent's outputs (scenario E cites nothing, pure AI cites no crypto material, pure crypto cites no design patterns, zh CJK ratio); safely skips when unset, never blocking CI
 - **Frontmatter trigger-clause guards**: the negative-scope clauses in all four entry descriptions ("implementation-only debugging … do not use" / "纯实现型 debug…不触发") are now pinned by semantic regression so they cannot silently disappear
+- Fixed installer backup/rollback failures and damaged-installation detection. Unified portable validation (`validate.mjs` is the single checksum), strengthened schema/path isolation, and separated static checks from trusted runtime traces.
 
 ### v3.3.6 — DeepSeek Harness (dsh) support
 

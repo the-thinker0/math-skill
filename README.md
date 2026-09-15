@@ -10,7 +10,7 @@
 [![npm version](https://img.shields.io/npm/v/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 [![npm downloads](https://img.shields.io/npm/dt/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 
-**Unreleased · 改进开发中（暂不升版本号）**
+**🎉 NEWS: v3.3.7 已发布 · 已支持 dsh harness 🚀**
 
 </div>
 
@@ -272,32 +272,25 @@ npm run eval:behavioral
 
 `validate` 检查双语、计数、路径、frontmatter、70 例路由清单及 npm 文件清单；`test` 覆盖安装回滚、评测失败路径及案例中的可运行检查。行为评测需要可信运行时适配器，缺配置明确显示 **SKIP**；要求真实运行证据时加 `--require-runtime`。详见仓库内的[评测契约](tests/eval/README.md)（tests 不随 npm 分发）。
 
-`doctor` 检查必需资源与重复入口，损坏/重复安装返回 2；未知参数返回 1。这些是工作区中未发布的改进，包版本暂保持 3.3.7；版本升级另行决定。Windows 仍需原生环境验证；跨设备失败路径已用本地故障注入覆盖。
+`doctor` 检查必需资源与重复入口，损坏/重复安装返回 2；未知参数返回 1。Windows 仍需原生环境验证；跨设备失败路径已用本地故障注入覆盖。
 
 ## 变更日志
 
-### Unreleased — 跨数学领域探索与构造能力
+### v3.3.7 — 跨数学领域探索、构造能力与评测自动化
 
 - 新增结构迁移流程：从任务关系寻找新领域、建立可检查的对象对应、筛选能改变机制或研究判断的方向。
 - 补充概率与函数分析、覆盖空间与多解表示、局部一致性与纠错距离的迁移示例；生成阶段推迟加载已有设计原型。
-
 - 新增双语构造工作台与五类可组合数学动作，把临时知识卡接回实际构造，补齐定理条件到实现的对应。
 - 主入口改为按目标求解/构造；透镜与原型成为按需工具，合并重复加载规训。
-- 研究循环支持当前候选的小验证、失败修订和多轮状态延续；版本号暂不升级。
-
-此前完成的维护改进：
-
+- 研究循环支持当前候选的小验证、失败修订和多轮状态延续。
 - 修正透镜、锚点、设计模式和书稿中的公式、条件与伪代码，覆盖谱误差/任务误差、Stiefel 几何、曲率/Hessian、信息界、路由与密码归约。
 - 用作者目录替换错误密码学章号，Boneh–Shoup 对齐 v0.6；补充三组双语完整案例和可操作的临时卡/来源记录。
 - 查询/验证任务保留定理条件；鲁棒性证书不再误入密码域；移除 critic 递归路由和强制枚举候选。
-- 修复安装备份/回滚与残损安装检测；统一跨平台校验，强化 schema/路径隔离，并区分静态通过与可信运行 trace。
-
-### v3.3.7 — 数学勘误回归与评测自动化闭环
-
 - **数学勘误（双语同步 + 回归锁定）**：`prf-prg-owf` PRG 优势公式多余右括号修正；`natural-gradient` SVI 自然梯度改为 Hoffman et al. 2013 实际形式（差值对当前自然参数取：$\hat\lambda = \eta_0 + N\,\mathbb{E}_q[T]$，更新 $\lambda \leftarrow (1-\rho)\lambda + \rho\hat\lambda$）
-- **Tier 1 评测自动化（CI 必跑）**：新增 `tests/eval/cases.jsonl`（68 例结构化断言）与零依赖 runner `run_eval.mjs`——schema 校验、纸面清单 ↔ manifest 双向 parity（防漂移）、Domain Router 隔离策略静态断言、may_load 存在性检查；已接入 `validate.sh`
+- **Tier 1 评测自动化（CI 必跑）**：新增 `tests/eval/cases.jsonl`（70 例结构化断言）与零依赖 runner `run_eval.mjs`——schema 校验、纸面清单 ↔ manifest 双向 parity（防漂移）、Domain Router 隔离策略静态断言、may_load 存在性检查；已接入 `validate.mjs`
 - **Tier 2 行为级评测槽**：新增 `behavioral_eval.mjs`——配置 `MATH_SKILL_EVAL_CMD` 即对真实 agent 输出做确定性判定（E 场景零引用、纯 AI 不引密码材料、纯密码不引设计模式、中文 CJK 占比）；未配置时安全跳过，不阻塞 CI
 - **frontmatter 触发条款守护**：四个入口 description 的负面范围条款（"纯实现型 debug…不触发"/"Do not use…implementation-only debugging"）纳入语义回归，防止静默删除导致误触发
+- 修复安装备份/回滚与残损安装检测；统一跨平台校验（`validate.mjs` 为单一校验核心），强化 schema/路径隔离，并区分静态通过与可信运行 trace。
 
 ### v3.3.6 — DeepSeek Harness (dsh) 适配
 
