@@ -10,7 +10,7 @@
 [![npm version](https://img.shields.io/npm/v/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 [![npm downloads](https://img.shields.io/npm/dt/math-skill.svg)](https://www.npmjs.com/package/math-skill)
 
-**🎉 NEWS: v3.3.7 已发布 · 已支持 dsh harness 🚀**
+**🎉 NEWS: We now support DSH Harness 🚀**
 
 </div>
 
