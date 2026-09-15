@@ -260,7 +260,7 @@ Distillation files ship with the npm package. For full-fidelity lookups, place P
 
 ---
 
-## Validation and next-version status
+## Validation and reproduction
 
 From a repository checkout, run:
 
