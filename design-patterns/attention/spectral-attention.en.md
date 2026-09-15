@@ -1,5 +1,5 @@
 # Spectral Attention
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Evidence labels**: [v] supported by stated assumptions or recorded checks; [~] engineering proposal requiring validation; [x] incompatible under the stated conditions; [N/A] outside scope. Pseudocode specifies operators, not a production-ready implementation.
 
 ## Applicable Problems
 When the input signal exhibits **frequency-domain/spectral structure** (periodicity, cyclic symmetry, graph structure), computing attention in the spectral domain rather than the spatial domain can dramatically reduce complexity while exploiting the signal's intrinsic structure. Typical scenarios include: time series forecasting (periodic signals), graph neural networks (graph Laplacian spectral decomposition), positional encoding (frequency-domain interpretation of RoPE/ALiBi), and $O(n \log n)$ acceleration of long-sequence **position-dependent** attention (requires circulant/Toeplitz structure assumption; does not apply to general content-dependent softmax attention).
@@ -9,46 +9,26 @@ When the input signal exhibits **frequency-domain/spectral structure** (periodic
 - Knowledge: [`../../knowledge-base/probability/entropy.en.md` (spectral entropy for measuring signal complexity), `../../knowledge-base/probability/concentration-inequality.en.md` (frequency-domain concentration inequalities)]
 
 ## Required Mathematical Knowledge
-- **Discrete Fourier Transform (DFT/FFT)**: $O(n \log n)$ frequency-domain transform and the cyclic convolution theorem
-- **Graph Laplacian Spectral Decomposition**: $L = U \Lambda U^T$, where $U$ is the graph Fourier basis
-- **Irreducible Representations of the Cyclic Group $\mathbb{Z}_n$**: The DFT matrix is precisely the representation matrix of the cyclic group (see `../../references/books/abstract-algebra.en.md` Ch.4, Ch.11)
+
+- The DFT diagonalizes circulant operators. A finite Toeplitz convolution can be applied with FFT through zero-padding/circulant embedding; the original Toeplitz matrix is not generally diagonalized by the same-size DFT.
+- $\operatorname{ifft}(\operatorname{fft}(Q)\overline{\operatorname{fft}(K)})$ is circular **cross-correlation**, not ordinary convolution and not an attention output on $V$.
+- Graph spectral filters $Ug(\Lambda)U^T$ are basis-independent within repeated eigenvalues when the filter acts consistently on each eigenspace. Generic nonlinear attention on arbitrary eigenvector coordinates need not have this invariance.
+- RoPE is a block-diagonal rotation representation of additive positions. RoPE/ALiBi added to content attention do not make the full attention matrix Toeplitz.
 
 ## AI Module Form
 
-**Core Idea**: Transform attention from the spatial-domain $Q K^T$ into diagonal/sparse operations in the spectral domain:
-
-> **Critical Prerequisite**: The equivalence "spectral-domain diagonalization = attention" **holds only when the attention matrix is circulant or Toeplitz**, i.e., attention weights depend solely on relative position $a_{ij} = f(i-j)$ and are independent of token content. In this case, the cyclic convolution theorem guarantees that FFT diagonalizes the convolution kernel. For standard content-dependent softmax attention $\text{softmax}(QK^T/\sqrt{d})$, the attention matrix is determined by query/key content and is generally **not** circulant or Toeplitz; therefore FFT element-wise multiplication **cannot** equivalently replace the $QK^T$ computation. Schemes A/C are essentially position-dependent convolutional attention approximations, not exact substitutes for general softmax attention.
-
-**Scheme A: FFT-Accelerated Attention (Time Series)**:
+**Exact circular position-only weighted aggregation**:
 ```python
-# Express cyclic convolution as element-wise multiplication in the frequency domain
-Q_hat = fft(Q, dim=seq)        # (n, d) -> (n, d) frequency domain
-K_hat = fft(K, dim=seq)
-# Attention ~ frequency-domain filtering: independent weighting per frequency component
-attn_hat = Q_hat * conj(K_hat)  # element-wise multiply = cyclic convolution
-attn = ifft(attn_hat, dim=seq)
-# Complexity: O(n log n * d) vs. standard O(n^2 * d)
+# w[r] depends only on relative position r modulo n; w >= 0 and sum(w) = 1
+w = softmax(relative_position_logits, dim=0)
+output = irfft(rfft(w, n=n)[:, None] * rfft(V, n=n, dim=0), n=n, dim=0)
+# output[i] = sum_j w[(i-j) % n] * V[j]
 ```
+For a finite causal/nonperiodic position-only kernel $w$, use zero-padded linear convolution. If attention requires row normalization, compute both `conv(w, V)` and `conv(w, ones)` and divide; boundary-dependent denominators mean the normalized matrix need not remain Toeplitz. Mask patterns beyond the declared convolutional structure need separate handling.
 
-**Scheme B: Graph Spectral Attention (GNN)**:
-```python
-# Precompute graph Laplacian spectral decomposition L = U Lambda U^T (offline)
-U = eigenvectors(L)  # (n, k), take top-k low-frequency eigenvectors
-# Spectral-domain attention: compute in the low-frequency subspace
-Q_spec = U^T @ Q   # (k, d) project to spectral domain
-K_spec = U^T @ K
-scores = (Q_spec @ W_q) @ (K_spec @ W_k).T / sqrt(d)
-attn_spec = softmax(scores) @ (U^T @ V)
-output = U @ attn_spec  # back-project to spatial domain
-```
+**Content-derived correlation proposal**: FFT cross-correlation of Q/K can produce a lag score, followed by a lag-softmax and convolution of V. This is a different attention operator; compare against ordinary softmax attention, not an algebraic identity.
 
-**Scheme C: Frequency-Adaptive Attention Weights**:
-```python
-freq_weights = learnable_parameter(num_freq_bands)  # learnable spectral weights
-Q_hat, K_hat = fft(Q), fft(K)
-scores_freq = freq_weights.unsqueeze(-1) * (Q_hat * conj(K_hat))
-attn = ifft(scores_freq)
-```
+**Graph spectral alternative**: For a fixed symmetric graph Laplacian, retain low-frequency eigenvectors $U_k$, project features with $U_k^T$, apply a declared spectral filter or coordinate-dependent learned module, and reconstruct with $U_k$. Include projection cost and test sign/rotation changes of the basis. Truncation and nonlinear spectral attention generally change the original attention operator.
 
 ## Implementable Architectures
 - **Spectral Transformer**: Replace $O(n^2)$ attention with FFT, suitable for periodic sequence data (meteorological, financial, audio)
@@ -56,28 +36,22 @@ attn = ifft(scores_freq)
 - **Frequency-Aware Positional Encoding**: The essence of RoPE is the unitary representation of the cyclic group $\mathbb{Z}$ (see Abstract Algebra Ch.4), generalizable to other groups
 
 ## GPU Feasibility
-- **D1**: FFT and matrix multiplication are both standard tensor operations
-- **D2**: Spectral projection $U^T Q$ is a standard GEMM; although FFT is not GEMM, highly optimized cuFFT implementations are available
-- **D3[~]**: FFT attention $O(n \log n \cdot d)$, far superior to $O(n^2 d)$ -- **but only when attention has translation-invariant / position-dependent structure** (e.g., convolutional attention). General content-dependent softmax attention remains $O(n^2 d)$; linear attention approximations can achieve $O(n d^2)$, but via a different mechanism unrelated to FFT spectral methods.
-- **D4**: Frequency-domain representation introduces no extra dimensions; spectral projection can reduce to $k \ll n$ dimensions
-- **D5**: Complex-valued FFT suffers precision loss under fp16; fp32 or real-valued FFT (RFFT) is required
-- **D6**: FFT can be parallelized across batch/head; cuFFT supports multi-stream execution
-- **D7**: High-frequency components can be truncated in the spectral domain (structured sparsity), retaining only top-k frequencies
-- **D8**: Fusing FFT with attention requires custom kernels; no ready-made fusion exists in standard libraries
 
-**Quantitative assessment example** (standard transformer, d=128, n=2048, h=16):
-- D3: FFT path FLOPs ≈ 2·n·log₂(n)·d ≈ 2·2048·11·128 ≈ 5.8M vs standard attention 2·n²·d ≈ 1.1G (only when attention is convolutional)
-- D4: No n×n attention matrix materialization; FFT intermediates O(n·d) ≈ 1MB
-- D5: FFT under bf16 has twiddle factor error ~10⁻³, acceptable
-- D8: FFT + pointwise can be fused into a single CUDA kernel
+- **D1/D2[~]**: FFT is a separate primitive from GEMM; graph projection uses GEMM.
+- **D3[~]**: Convolutional aggregation costs $O(nd_v\log n)$ after kernel construction. Graph projection/reconstruction costs $O(nkd)$ plus the spectral module and eigensolver; spectral-coordinate attention costs $O(k^2d)$.
+- **D4[~]**: FFT avoids an $n^2$ matrix but stores complex workspaces; bytes depend on transforms, precision and padding. Graph bases store $O(nk)$.
+- **D5[~]**: Verify the actual FFT dtype/shape support; compare fp32 output and relative error at target length. A real FFT is not by itself a precision fix.
+- **D6/D7[~]**: Batch/head transforms parallelize; frequency truncation changes the kernel and must be evaluated for aliasing and task error.
+- **D8[~]**: FFT/pointwise fusion is implementation-specific. Report measured latency and workspace, and distinguish multiply-accumulates from FLOPs.
 
 ## Paper Phrasing
 "We propose a spectral-domain attention mechanism that transforms attention computation into the Fourier/Laplacian spectral domain, leveraging the cyclic convolution theorem to reduce **translation-invariant** sequence attention complexity from $O(n^2)$ to $O(n \log n)$ while preserving the ability to model dependencies at multiple scales through frequency-adaptive weights. Note: this acceleration **requires position-dependent (not content-dependent) attention structure**; for general content-dependent softmax attention, the spectral-domain equivalence does not hold."
 
 ## Applicability Conditions
-- **Core restriction of FFT spectral attention**: The FFT acceleration in Schemes A/C **requires the attention matrix to be circulant or Toeplitz**, i.e., attention weights depend only on relative position $a_{ij} = f(i-j)$ and are independent of the specific token content (query/key vectors).
-- **When the condition is NOT satisfied**: Standard softmax attention $\text{softmax}(QK^T/\sqrt{d})$ in most NLP tasks is content-dependent -- attention weights are jointly determined by query and key content, and the resulting attention matrix generally lacks circulant/Toeplitz structure. In this case, FFT element-wise multiplication **cannot** replace the $QK^T$ operation, and the $O(n \log n)$ complexity advantage does not hold.
-- **When the condition IS satisfied**: Positional encoding (e.g., frequency components of RoPE/ALiBi), periodic convolutional kernels for time series, fixed-pattern attention with translation-invariant priors. Scheme B (graph spectral attention) is not subject to this restriction, as it projects onto graph Laplacian eigenbases rather than exploiting the cyclic convolution theorem.
+
+- Exact FFT aggregation requires the declared circulant or embedded-convolution kernel, with boundary normalization handled explicitly.
+- Arbitrary content attention, causal masking and positional embeddings do not automatically satisfy that structure.
+- Correlation-based and graph-coordinate modules are separate model families, requiring operator-level and task-level comparisons.
 
 ## Risks
 - **[x] Content-dependent attention incompatibility**: The core assumption of FFT spectral methods (circulant/Toeplitz structure) is **fundamentally incompatible** with the mainstream content-dependent softmax attention used in NLP. Applying FFT methods indiscriminately to general attention mechanisms constitutes a mathematical error -- they compute different quantities. Any usage must explicitly declare the position-dependence assumption being made.

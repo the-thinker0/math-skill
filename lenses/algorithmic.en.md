@@ -28,7 +28,7 @@ This is an "engineer's" perspective — decomposing problems into finitely execu
 
 ## What AI Designs It May Inspire
 
-- Complexity classifier: input → automatic determination of P / NP-hard / undecidable, with recommended response strategies
+- Complexity evidence finder: match known algorithms or reductions; report unknown classifications rather than claiming a general automatic classifier
 - Algorithmic paradigm selector: automatic paradigm selection based on subproblem independence / overlap / greedy properties
 - Correctness verification pipeline: automated checking of loop invariants + structural induction + termination proofs
 
@@ -44,6 +44,6 @@ This is an "engineer's" perspective — decomposing problems into finitely execu
 
 - Input / output specifications have been formalized; pre- and post-conditions can be expressed as predicates
 - Complexity is given in terms of time order and space order, annotated with worst-case / average-case scenarios
-- Feasibility class has been determined (P / NP-hard / undecidable), with a corresponding response strategy stated
+- State known complexity classifications or uncertainty with evidence, and choose a strategy for the actual instance size
 - A correctness proof has been provided (loop invariant or inductive strategy), annotated as proved / unproved
 - Optimization recommendations are based on bottleneck analysis rather than blind parameter tuning

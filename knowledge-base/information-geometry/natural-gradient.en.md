@@ -1,7 +1,7 @@
 # Natural Gradient
 
 ## Minimal Definition
-The natural gradient is the steepest descent direction with respect to the **Fisher information metric** on the parameter space. Unlike the naive gradient defined under the Euclidean metric, the natural gradient is defined under the Riemannian metric of the statistical manifold, making it covariant under reparameterization (the direction as a geometric object does not change with coordinate choice) and automatically adaptive to the curvature structure of the loss surface.
+The natural gradient is the metric gradient for the Fisher information metric; its **negative** gives steepest descent. For a smooth invertible change of identifiable coordinates, this vector field transforms consistently. A finite Euler update, damping, or an approximate Fisher generally loses exact reparameterization invariance; Fisher describes distributional sensitivity rather than an arbitrary loss Hessian.
 
 ## Core Formulas
 
@@ -17,7 +17,7 @@ where $\mathcal{I}(\theta)$ is the Fisher information matrix (see `../probabilit
 **Equivalent Derivation (Constrained Optimization Perspective)**: The natural gradient is the solution to the following constrained optimization problem —
 $$\min_{\Delta\theta} \mathcal{L}(\theta + \Delta\theta) \quad \text{s.t.} \quad D_{KL}(p_\theta \| p_{\theta+\Delta\theta}) \leq \epsilon$$
 
-Using the second-order expansion $D_{KL} \approx \frac{1}{2} \Delta\theta^T \mathcal{I} \Delta\theta$, solving via Lagrangian yields the natural gradient.
+Linearize the objective as $\mathcal L(\theta)+\nabla\mathcal L^T\Delta\theta$ **and** approximate KL quadratically. For nonsingular Fisher and nonzero gradient the local trust-region solution is $\Delta\theta=-\sqrt{2\epsilon/(\nabla\mathcal L^T\mathcal I^{-1}\nabla\mathcal L)}\,\mathcal I^{-1}\nabla\mathcal L$. This is a local approximation, not the exact solution of the nonlinear constrained problem.
 
 **K-FAC Approximation** (Kronecker-Factored Approximate Curvature):
 $$\mathcal{I}_l \approx A_l \otimes B_l$$
@@ -35,9 +35,9 @@ where $A_l = \mathbb{E}[a_l a_l^T]$ (activation covariance) and $B_l = \mathbb{E
 
 ## Engineering Feasibility
 - **D1[~]**: The Kronecker factors of the FIM are dense matrices and can be tensorized; the full FIM cannot
-- **D2[v]**: K-FAC's $A_l^{-1} (\nabla W_l) B_l^{-1}$ is two matrix multiplications, naturally GEMM
-- **D3[~]**: K-FAC adds $O(d_A^2 + d_B^2)$ per-layer covariance estimation + $O(d_A^3 + d_B^3)$ matrix inversion; diagonal approximation is $O(d)$
-- **D4[~]**: Requires additional storage of $A_l$ and $B_l$ per layer ($O(d_A^2 + d_B^2)$); acceptable for LLMs but non-trivial
+- **D2[~]**: For $W\in\mathbb R^{b\times a}$, activation factor $A\in\mathbb R^{a\times a}$, output-score factor $B\in\mathbb R^{b\times b}$ and column-vectorization convention, $(A\otimes B)^{-1}\operatorname{vec}(G)=\operatorname{vec}(B^{-1}GA^{-1})$. The factor order must match weight dimensions.
+- **D3[~]**: For $B$ activation/score samples, factor estimation costs $O(B(d_A^2+d_B^2))$, dense inversion $O(d_A^3+d_B^3)$, and gradient preconditioning has additional GEMM costs. Record refresh frequency and amortization.
+- **D4[~]**: Store $O(d_A^2+d_B^2)$ factors per layer plus inverses, damping state and workspaces. LLM-scale feasibility is architecture/device dependent; some layers may need diagonal or low-rank approximations.
 - **D5[~]**: Matrix inversion may be unstable in fp16; fp32 or Tikhonov regularization $(A + \epsilon I)^{-1}$ is needed
 - **D6[v]**: Kronecker factors for each layer are computed independently; fully parallel across layers
 - **D8[v]**: Natural gradient updates can be fused into the parameter update kernel
@@ -56,7 +56,7 @@ where $A_l = \mathbb{E}[a_l a_l^T]$ (activation covariance) and $B_l = \mathbb{E
 
 ## Routing Extensions
 - If metric definition is needed -> `fisher-metric.en.md` (Fisher metric is the foundation of natural gradient)
-- If a general Riemannian optimization framework is needed -> `../optimization/riemannian-optimization.md` (natural gradient is a special case of Riemannian gradient)
+- If a general Riemannian optimization framework is needed -> `../optimization/riemannian-optimization.en.md` (natural gradient is a special case of Riemannian gradient)
 - If an information-theoretic perspective is needed -> `../probability/fisher-information.en.md` (statistical interpretation of Fisher information)
 
 ## Extensible Directions

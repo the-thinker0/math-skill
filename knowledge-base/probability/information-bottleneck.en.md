@@ -6,18 +6,18 @@ The Information Bottleneck (IB) is a theoretical framework for representation le
 ## Core Formulas
 
 **IB Objective**:
-$$\min_{p(z|x)} \; I(X; Z) - \beta \cdot I(Z; Y)$$
+$$\min_{q(z|x)} I(X;Z)-\beta_{pred}I(Z;Y)$$
 
-where $\beta > 0$ is a Lagrange multiplier controlling the **compression-prediction** trade-off:
+where $\beta_{pred}>0$ controls the **compression–prediction** trade-off:
 - $I(X; Z)$: the amount of information about input $X$ retained in representation $Z$ (smaller = stronger compression)
 - $I(Z; Y)$: the amount of information about target $Y$ contained in representation $Z$ (larger = better prediction)
 
-**Variational Lower Bound** (practically computable version):
-$$\mathcal{L}_{VIB} = \mathbb{E}_{p(x,y)}[-\log q_\phi(y|z)] + \beta \, D_{KL}(p_\theta(z|x) \| r(z))$$
+**Variational objective bound** (encoder defines $q(z|x)$; use $\beta_{pred}$ above and $\beta_{comp}=1/\beta_{pred}$ below):
+$$\mathcal L_{VIB}=\mathbb E_{p(x,y)q_\theta(z|x)}[-\log q_\phi(y|z)]+\beta_{comp}\,\mathbb E_{p(x)}D_{KL}(q_\theta(z|x)\|r(z)).$$
 
-where $q_\phi(y|z)$ is the classifier/decoder, $r(z)$ is the prior distribution (typically $\mathcal{N}(0,I)$), and $p_\theta(z|x)$ is the encoder.
+Here $q_\phi(y|z)$ is the predictive distribution and $r(z)$ a reference prior. The compression identity is $\mathbb E_x KL(q(z|x)\|r)=I(X;Z)+KL(q(z)\|r)\ge I(X;Z)$; prediction uses a lower bound on $I(Z;Y)$. Minimize the resulting **upper bound on the negative utility**, with expectations over the stochastic encoder. [Deep VIB](https://arxiv.org/abs/1612.00410).
 
-**IB Curve**: In the $(I(X;Z), I(Z;Y))$ plane, the Pareto-optimal solutions form a concave curve, with inflection points corresponding to optimal compression rates.
+**IB curve**: For an unrestricted stochastic encoder with time sharing, the optimal relevance as a function of the allowed information rate is nondecreasing and concave. Restricted neural encoder families can depart from this frontier; there is no universal inflection-point rule for choosing compression.
 
 ## Applicable Problems
 - **Understanding the learning dynamics of deep networks**: Information Plane analysis — tracking the trajectory of $(I(X;Z_l), I(Z_l;Y))$ for each layer during training
@@ -26,20 +26,20 @@ where $q_\phi(y|z)$ is the classifier/decoder, $r(z)$ is the prior distribution 
 
 ## AI Design Translation
 - **VIB Layer (Variational Information Bottleneck)**: Encoder $p_\theta(z|x)$ + KL regularization + decoder $q_\phi(y|z)$; structurally identical to a VAE but with different objective semantics (VAE reconstructs $X$, VIB predicts $Y$)
-- **Unified perspective on $\beta$-VAE**: The $\beta$-VAE objective is formally identical to the VIB objective, where $\beta$ is the IB Lagrange multiplier
+- **Beta-VAE comparison**: Both use an encoder-to-prior KL plus a prediction/reconstruction term. Their targets and information semantics differ; always identify whether beta weights compression or relevance.
 - **Information-theoretic interpretation of attention sparsification / routing**: Sparse Attention and MoE routing can be understood as implicit information bottlenecks — selectively allowing "useful" tokens to pass while discarding noise
 
 ## Engineering Feasibility
 - **D1[v]**: The VIB encoder/decoder are standard networks; $D_{KL}$ is computed element-wise
 - **D2[v]**: The main computation is a standard feedforward network + GEMM
 - **D3[v]**: Only adds $O(d)$ computation for the KL term compared to the original network
-- **D4[~]**: Requires additional parameters for the prior distribution $r(z)$ and intermediate quantities for KL computation
-- **D5[v]**: Reparameterization trick + analytical KL solution are stable in bf16
+- **D4[~]**: A fixed prior has no learned parameters; a Gaussian stochastic encoder usually adds mean/log-variance outputs and sampled latent activations. Count these explicitly.
+- **D5[~]**: Use fp32 KL reductions and range-aware log-variance; Gaussian exp terms can overflow even when the network matmuls use bf16.
 - **D8[v]**: No conflict with the standard training pipeline; normal fusion applies
 
 ## Risks and Failure Conditions
-- **Accurate estimation of $I(X;Z)$ is difficult**: Mutual information estimation between high-dimensional continuous variables is itself an open problem (estimators such as MINE and NWJ have high variance). In practice, the VIB variational lower bound is used as a workaround, but the bound may be loose.
-- **Sensitive to $\beta$ tuning**: If $\beta$ is too large, excessive compression leads to underfitting; if too small, the objective degenerates to standard ERM (no compression effect). Information plane analysis or adaptive $\beta$ scheduling is required.
+- **Bound gap**: VIB uses an upper bound for compression and a lower bound for relevance. The reference-prior mismatch can make compression bounds loose; MINE/NWJ lower bounds do not certify compression when minimized.
+- **Beta convention**: Larger `beta_comp` in prediction loss + `beta_comp * KL` encourages compression; larger `beta_pred` in classic IB encourages relevance. State the reciprocal conversion before scheduling or comparing papers.
 
 ## Further References
 - Distillation draft: `../../references/books/` — no dedicated IB distillation draft at present

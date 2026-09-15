@@ -2,7 +2,7 @@
 
 ## 最小定义
 
-在约束集 $\mathcal{C} = \{x : g_i(x) \leq 0, h_j(x) = 0\}$ 上最小化目标 $f(x)$。最优解满足 KKT 条件（一阶必要条件）：梯度为零（在 Lagrangian 意义下）、原始可行、对偶可行、互补松弛。约束优化将"硬限制"系统性地纳入优化框架。
+在 $\mathcal C=\{x:g_i(x)\le0,h_j(x)=0\}$ 上最小化 $f(x)$。可微问题的局部最优点在 LICQ/MFCQ 等约束资格条件下满足 KKT；不满足时乘子可能不存在。目标及不等式凸、等式仿射时，KKT 是全局最优的充分条件。
 
 ## 核心公式
 
@@ -14,7 +14,7 @@
 - 投影梯度法：$x_{k+1} = \text{proj}_{\mathcal{C}}(x_k - \alpha \nabla f(x_k))$
 - 惩罚函数法：$\min_x f(x) + \frac{\rho}{2}\sum [\max(0, g_i(x))]^2 + \frac{\rho}{2}\sum h_j(x)^2$
 - 增广 Lagrangian（不等式约束 $g_i(x) \leq 0$）：$\mathcal{L}_\rho(x,\lambda) = f(x) + \frac{\rho}{2}\sum_i \left[\max\!\left(0,\; \frac{\lambda_i}{\rho} + g_i(x)\right)^2 - \left(\frac{\lambda_i}{\rho}\right)^2\right]$（严格可行约束 $g_i(x) < 0$ 且 $\lambda_i/\rho + g_i(x) \leq 0$ 时不受惩罚；等式约束退化为 $\mathcal{L}_\rho = f(x) + \sum \nu_j h_j(x) + \frac{\rho}{2}\sum h_j(x)^2$）
-- Armijo 线搜索（约束版）：$\alpha$ 满足 $f(\text{proj}_\mathcal{C}(x - \alpha \nabla f)) \leq f(x) - \sigma \alpha \|\nabla f\|^2$
+- 投影 Armijo 检验（闭凸 $\mathcal C$、可行 $x$）：令 $z_\alpha=\operatorname{proj}_{\mathcal C}(x-\alpha\nabla f(x))$，接受 $f(z_\alpha)\le f(x)+\sigma\nabla f(x)^T(z_\alpha-x)$，其中 $0<\sigma<1$。以投影梯度映射 $G_\alpha=(x-z_\alpha)/\alpha$ 作停止指标，不用 $\|\nabla f(x)\|$：边界最优点的完整梯度可能非零。
 
 ## 适用问题
 
@@ -29,7 +29,7 @@
 - **Weight Clipping (WGAN)**：$W \leftarrow \text{clamp}(W, -c, c)$ 即投影到 $\ell_\infty$-box 约束。实现为 `torch.clamp(W, -c, c)`，elementwise 操作，零额外计算。简单但粗糙，不如谱归一化精细。
 - **谱归一化 (Spectral Normalization)**：约束 $\sigma_{\max}(W) \leq 1$ 的常用工程做法是缩放重参数化 $W \leftarrow W / \max(1,\sigma_{\max})$，其中 $\sigma_{\max}$ 用 power iteration 估计。注意这不是 Frobenius 范数下到算子范数球的最近投影；真正最近投影需对奇异值逐个裁剪。每步约 2 次 matvec + norm，PyTorch 内置 `torch.nn.utils.spectral_norm`。
 - **投影梯度做 $\ell_2$-ball 约束**：$\text{proj}(w) = w \cdot \min(1, R/\|w\|_2)$，实现为 `w * min(1, R / w.norm())`，一次 norm + elementwise，$O(d)$。用于 trust region、对抗鲁棒的 $\epsilon$-ball 约束。
-- **增广 Lagrangian 做 RLHF/PPO**：$\mathcal{L} = -\mathbb{E}[r] + \lambda(\text{KL}(\pi\|\pi_{\text{ref}}) - \epsilon) + \frac{\rho}{2}(\text{KL} - \epsilon)^2$。内层对 $\pi$ 用 PPO 优化，外层 $\lambda \leftarrow \lambda + \rho(\text{KL} - \epsilon)$。KL 计算是 softmax + elementwise log-ratio，GPU 友好。
+- **KL 约束策略优化**：$h=KL(\pi\|\pi_{ref})-\epsilon\le0$ 时，使用 $-\mathbb E[r]+([\max(0,\lambda+\rho h)]^2-\lambda^2)/(2\rho)$ 与 $\lambda^+=\max(0,\lambda+\rho h)$。等式型二次项会惩罚无需惩罚的较低 KL，属于不同目标；PPO 内层求解不保证精确约束最优性。
 - **惩罚法做稀疏/低秩约束**：$\mathcal{L}_{\text{penalty}} = \mathcal{L}_{\text{task}} + \rho \sum_i \max(0, \|w_i\|_1 - \tau)^2$ 约束每层稀疏度不超 $\tau$。惩罚项是 elementwise + reduce，可微且 GPU 友好。$\rho$ 递增策略：$\rho \leftarrow \beta \rho$（$\beta > 1$），每若干步加倍。
 
 ## 工程可行性
@@ -37,7 +37,7 @@
 - **主要操作**：投影 = elementwise + norm（$O(d)$）；惩罚项 = elementwise + reduce（$O(d)$）；KKT 梯度 = 标准反向传播；power iteration = matvec（$O(d^2)$ 或 $O(nd)$）。
 - **GPU 友好度**：高。投影梯度法的投影步骤多为廉价 elementwise（norm-ball、box、$\ell_1$-ball）；惩罚项 / 增广 Lagrangian 仅增加 elementwise 计算；谱归一化的 power iteration 是 matvec。
 - **复杂度**：投影 $O(d)$（norm-ball / box）到 $O(d \log d)$（$\ell_1$-ball）；惩罚评估 $O(d)$；谱归一化 $O(nd)$ per iteration；内点法每步 $O(d^3)$（避免在训练内环使用）。
-- **低精度**：投影操作在 bf16 下稳定（norm 和 clamp 不涉及精细数值）；惩罚项的 $\rho$ 需控制范围避免溢出（$\rho > 10^6$ 时用 fp32）。
+- **低精度**：范数、平方惩罚及乘子可溢出或失精；使用按尺度选择的 fp32 累加及可行性残差。固定惩罚系数阈值不能脱离残差尺度决定精度。
 
 ## 风险与失效条件
 

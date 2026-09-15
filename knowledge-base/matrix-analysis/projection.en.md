@@ -9,7 +9,7 @@ Maps a vector $v$ onto a subspace $\mathcal{S}$ such that the residual $v - Pv$ 
 - If $A$ has full column rank and column space $\mathcal{S}$, then $P=A(A^HA)^{-1}A^H$; in general use the Moore--Penrose pseudoinverse, $P=AA^\dagger$
 - If the columns of $A$ are orthonormal ($A^HA = I$), then $P = AA^H$
 - If $Q$ is an orthonormal basis, then $\|v-QQ^Hv\|^2=\|v\|^2-\|Q^Hv\|^2$
-- Courant-Fischer variational characterization: $\lambda_k = \max_{\dim(S)=k} \min_{x \in S, \|x\|=1} x^HAx$
+- Courant–Fischer (Hermitian $A$, descending eigenvalues): $\lambda_k=\max_{\dim S=k}\min_{x\in S,\|x\|=1}x^HAx$.
 - Orthogonal complement projection: $P^\perp = I - P$
 
 ## Applicable Problems
@@ -24,7 +24,7 @@ Maps a vector $v$ onto a subspace $\mathcal{S}$ such that the residual $v - Pv$ 
 - **Low-rank bottleneck analysis for linear layers**: Truncated SVD $W_k=U_k\Sigma_kV_k^H$ is a best rank-$k$ approximation under the standard unitarily invariant norms and can be stored as factors using $O(k(m+n))$ parameters. This does not make $W_k$ a projection operator.
 - **Subspace maps in attention heads**: Q/K/V are generally learned linear maps, not orthogonal projections unless idempotence and Hermitian symmetry hold. Batched GEMM still implements multiple heads, but orthogonal head subspaces require an explicit constraint and verification.
 - **Projection heads in contrastive learning**: A SimCLR/MoCo projection head is an MLP. Final $L_2$ normalization maps nonzero vectors radially to the unit sphere; it is neither a linear projection nor Euclidean projection onto a convex set.
-- **Gradient projection / Orthogonal Gradient Descent (OGD)**: In continual learning, projecting the new-task gradient onto the orthogonal complement of the old-task gradient space to avoid catastrophic forgetting; requires maintaining a basis matrix $G$ and computing $(I - G(G^TG)^{-1}G^T)\nabla$, with the core being two matmul operations
+- **Gradient projection (continual learning)**: For an orthonormal stored old-gradient basis $Q$, use $g_{new}^\perp=g_{new}-Q(Q^Tg_{new})$. This removes the first-order component along stored directions; finite steps, omitted directions and model nonlinearity mean it does not guarantee no forgetting.
 
 ## Engineering Feasibility
 
@@ -48,7 +48,7 @@ Maps a vector $v$ onto a subspace $\mathcal{S}$ such that the residual $v - Pv$ 
 
 ## Routing Extensions
 - If the goal is compression / dimensionality reduction -> `low-rank-approximation.en.md` (truncated SVD implementation)
-- If projection constraints are needed on a manifold -> `../optimization/riemannian-optimization.md` (constrained optimization on Riemannian manifolds)
+- If projection constraints are needed on a manifold -> `../optimization/riemannian-optimization.en.md` (constrained optimization on Riemannian manifolds)
 - If shared vs. private subspace separation is involved -> `shared-private-decomposition` (design pattern layer)
 
 ## Extensible Directions

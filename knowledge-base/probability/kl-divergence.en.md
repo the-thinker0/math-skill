@@ -29,7 +29,7 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 
 ## AI Design Translation
 - **Knowledge Distillation Loss**: $\mathcal{L} = (1-\alpha) \cdot CE(y, q_s) + \alpha \cdot T^2 \cdot D_{KL}(p_t \| q_s)$, where $T$ is the temperature parameter
-- **VAE Regularization Term**: $D_{KL}(q_\phi(z|x) \| p(z))$, typically with $p(z) = \mathcal{N}(0, I)$, which admits an analytical solution
+- **VAE regularization**: $KL(q_\phi(z|x)\|p(z))$ has the familiar closed form when both encoder and prior belong to suitable Gaussian families; a Gaussian prior alone does not guarantee an analytic KL.
 - **PPO / RLHF**: $D_{KL}(\pi_\theta \| \pi_{\text{ref}})$ serves as a penalty term for the policy deviating from the reference policy
 
 ## Engineering Feasibility
@@ -42,7 +42,7 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 
 ## Risks and Failure Conditions
 - **Support mismatch**: If $p(x)>0$ where $q(x)=0$, then $D_{KL}(p\|q)=\infty$. Exact softmax probabilities are positive, but finite precision can underflow; compute in log space. Smoothing is a modeling choice, not a universal requirement.
-- **High gradient variance**: In RL (PPO/RLHF), KL estimation relies on sampling; high variance can lead to training instability. A clipped + linear approximation $\mathbb{E}[\log p - \log q]$ is commonly used in place of the exact KL.
+- **Sampling semantics**: $\mathbb E_p[\log p-\log q]=KL(p\|q)$ exactly when defined; its Monte Carlo estimate has sampling error and can be negative. Samples from another policy need appropriate importance weighting or a separately derived estimator; clipping changes the target/bias.
 
 ## Further References
 - Distillation draft: `../../references/books/` — no dedicated information theory distillation draft at present

@@ -2,7 +2,7 @@
 
 ## 最小定义
 
-最优传输研究如何以最小总代价把一个概率分布"搬运"成另一个：给定代价函数 $c(x, y)$，在边际约束 $\pi \in \Pi(\mu, \nu)$ 下最小化 $\int c\, d\pi$。其最优值定义了分布间的 **Wasserstein 距离**——一种尊重底空间几何的分布度量，不像 KL 那样要求支撑集重叠。
+最优传输在给定边缘的耦合上最小化成本。底空间度量为 $d$、$p\ge1$、概率测度有有限 $p$ 阶矩时，成本 $c=d^p$ 的最优值取 $p$ 次根定义 Wasserstein-$p$ 度量。任意成本或熵正则 OT 目标不自动是距离。
 
 ## 核心公式
 
@@ -10,7 +10,7 @@
 - **Wasserstein-$p$ 距离**：$W_p(\mu, \nu) = \left(\inf_{\pi \in \Pi(\mu,\nu)} \int \|x - y\|^p d\pi\right)^{1/p}$
 - **对偶形式**：$W_1(\mu, \nu) = \sup_{\|f\|_{\text{Lip}} \leq 1} \mathbb{E}_\mu[f] - \mathbb{E}_\nu[f]$（Kantorovich–Rubinstein），是 WGAN 判别器的理论来源
 - **熵正则化（Sinkhorn）**：$\min_{\pi \in \Pi} \langle C, \pi \rangle - \epsilon H(\pi)$，解为 $\pi^* = \operatorname{diag}(u)\, e^{-C/\epsilon}\, \operatorname{diag}(v)$，交替行列缩放 $O(n^2)$/轮
-- **位移插值（McCann）**：Wasserstein 测地线 $\mu_t = ((1-t)\,\mathrm{id} + tT)_\# \mu$，分布间的"直线"是逐粒子匀速运动
+- **位移插值**：Euclidean 二次 OT 中若最优映射 $T$ 存在（例如源绝对连续且有有限二阶矩），则 $\mu_t=((1-t)\mathrm{id}+tT)_\#\mu$ 是 $W_2$ 测地线。不存在映射时，用最优耦合 $\pi$ 经 $(x,y)\mapsto(1-t)x+ty$ 推前。
 
 ## 适用问题
 
@@ -35,8 +35,8 @@
 
 ## 风险与失效条件
 
-- **$\epsilon$ 的偏差-计算权衡**：$\epsilon$ 大则快但偏离真实 OT（熵偏差）；$\epsilon$ 小则迭代慢且数值不稳。Sinkhorn 散度可去偏差但不等于真实 $W$
-- **样本复杂度灾难**：$W_p$ 的经验估计误差随维度指数恶化（$n^{-1/d}$），高维下迷你批次估计的系统性偏差不可忽略
+- **正则偏差**：Sinkhorn divergence 消除熵正则自交互项，但有限 epsilon 的值仍不同于无正则 Wasserstein 距离；它不消除采样、求解或所有熵正则偏差。
+- **样本复杂度**：常见高维条件下经验 Wasserstein 速率可慢至 $n^{-1/d}$，且依赖 $p$、矩及支撑维数。达到固定小误差可需随维数指数增长的样本量；不是误差本身“随维数指数衰减”。
 - **不平衡/部分传输**：标准 OT 要求两边总质量相等；实际数据常有离群点，需用 unbalanced OT（KL 松弛边际）或 partial OT
 - **WGAN 的 Lipschitz 约束只是对偶的近似**：weight clipping / gradient penalty 都是 1-Lipschitz 约束的启发式实现，不等于精确对偶
 

@@ -4,6 +4,8 @@
 
 A representation of a group $G$ on a vector space $V$ is a group homomorphism $\rho: G \to GL(V)$, realizing abstract group elements as computable linear transformations (matrices). The core problem of representation theory is decomposing a complex group action into a direct sum of irreducible representations (irreps), analogous to factoring integers into primes.
 
+Direct-sum decomposition into irreducibles requires complete reducibility, as in finite-dimensional complex representations of finite groups or compact groups. General representations can be reducible without splitting.
+
 ## Core Formulas
 
 - Representation: $\rho(g_1 g_2) = \rho(g_1)\rho(g_2)$, $\rho(e) = I$
@@ -24,23 +26,23 @@ A representation of a group $G$ on a vector space $V$ is a group homomorphism $\
 
 - **Spherical harmonic feature layer**: Expand 3D point cloud/molecular features into a spherical harmonic basis $Y_l^m$; each $(l,m)$ channel transforms according to an SO(3) irreducible representation, achieving strict rotational equivariance
 - **Group Fourier transform layer**: Transform a finite group signal $f: G \to \mathbb{R}$ to the frequency domain via $\hat{f}(\pi) = \sum_g f(g)\pi(g)$, converting convolution into per-irrep matrix multiplication
-- **Schur-constrained weight matrices**: Equivariant inter-layer maps $W: V_1 \to V_2$ must commute with the group action $W\rho_1(g) = \rho_2(g)W$; Schur's lemma forces $W$ to be block-diagonal/scalar, drastically reducing parameters
-- **Character pooling**: Extract invariants using $\chi_\rho(g) = \text{tr}(\rho(g))$ as input features for classification/regression
+- **Schur-constrained weights**: for finite-dimensional completely reducible complex representations, equivariant maps have isotypic blocks $A_\lambda\otimes I_{d_\lambda}$. Multiplicity spaces can mix linearly; the whole block need not be scalar. Real representations require their commutant algebra to be considered.
+- **Character pooling**: $\chi_\rho(hgh^{-1})=\chi_\rho(g)$ is invariant under conjugation. A character is not automatically invariant under an arbitrary action on the input.
 
 ## Engineering Feasibility
 
 GPU friendliness depends on the group size and representation dimension:
 - **Finite group representations**: Each irrep is a small matrix ($d \times d$); the group Fourier transform equals a batch of small GEMMs, $O(|G| \cdot d^2)$, batchable
-- **SO(3) spherical harmonic transform**: Fast algorithms exist ($O(L^2 \log L)$), but implementation is complex; the real-space to frequency-domain transform can be expressed as sparse matmul
+- **Sphere versus group transforms**: spherical harmonics on $S^2$ differ from Wigner-D transforms on SO(3). Complexity depends on bandwidth, sampling, and implementation; no shared $O(L^2\log L)$ claim.
 - **Clebsch-Gordan coefficients**: Once precomputed, they are fixed sparse tensors; contraction with features can be expressed as GEMM
-- **Sparsity from Schur constraints**: Weight matrices of equivariant layers are constrained to be block-diagonal/scalar, greatly reducing parameters but requiring sparse/block GEMM
+- **Schur blocks**: in a suitable representation basis, exploit multiplicity matrices and irrep identity factors, often using small dense GEMMs. Explicit sparsity in an arbitrary coordinate basis is not required.
 - Key bottleneck: the Clebsch-Gordan tensor size grows rapidly for high-dimensional irreps (large $l$ spherical harmonics)
 
 ## Risks and Failure Conditions
 
 - **High-frequency spherical harmonic numerical instability**: $Y_l^m$ for large $l$ oscillates violently near the poles, causing severe precision loss under fp16
 - **Irrep completeness truncation**: Keeping only up to $l_{\max}$ spherical harmonics loses high-frequency information; truncation error must be determined experimentally
-- **Infinite-dimensional representations of non-compact groups**: Irreducible representations of groups such as the Lorentz group are infinite-dimensional and must be truncated in practice
+- **Noncompact groups**: finite-dimensional representations may exist but be nonunitary; some harmonic analysis requires infinite-dimensional unitary representations. Not all Lorentz-group irreps are infinite dimensional.
 - **Freedom in representation selection**: Which irreps participate and to what order are hyperparameters with no automatic selection method
 - **Clebsch-Gordan tensor storage**: The number of CG coefficients grows as $O(l^3)$ with increasing $l$, increasing precomputation and storage costs
 
@@ -55,7 +57,7 @@ GPU friendliness depends on the group size and representation dimension:
 ## Routing Extensions
 - If equivariant network design is needed -> `equivariance.en.md` (representation theory drives equivariant network construction)
 - If the specific form of group action is needed -> `group-action.en.md` (representations are linear group actions)
-- If irreducible decomposition is needed -> `../matrix-analysis/spectral-decomposition.md` (analogous to spectral decomposition of matrices)
+- If irreducible decomposition is needed -> `../matrix-analysis/spectral-decomposition.en.md` (analogous to spectral decomposition of matrices)
 
 ## Extensible Directions
 - Irreducible representation: basic building blocks of representations

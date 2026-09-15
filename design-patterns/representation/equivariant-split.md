@@ -1,5 +1,5 @@
 # Equivariant Split（等变分割）
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
+> **证据标注**：[v] 有明确假设或记录验证支持；[~] 待验证的工程方案；[x] 在所述条件下不相容；[N/A] 不适用。伪代码用于定义算子，不是完整生产实现。
 
 ## 适用问题
 当输入具有对称性（如排列、旋转、平移），且表示应保持或反映这些对称性时使用。
@@ -10,56 +10,31 @@
 核心诉求：**让网络结构编码对称性先验，减少学习负担，提升泛化**。
 
 ## 数学思想来源
-- 透镜：../../lenses/geometric.md（群作用、不变/等变映射）、../../lenses/probabilistic.md（对称性与信息冗余）
-- 知识：../../knowledge-base/matrix-analysis/projection.md（群表示论、不可约表示）、
-  ../../knowledge-base/differential-geometry/manifold.md（李群、齐性空间）
+
+- 透镜：`../../lenses/symmetry.md`、`../../lenses/categorical.md`。
+- 知识：`../../knowledge-base/lie-theory/representation.md`、`../../knowledge-base/lie-theory/equivariance.md`。
 
 ## 需要的数学知识
-- **群作用与等变性**：映射 f 对群 G 等变 ⟺ f(g·x) = g·f(x), ∀g∈G
-  不变性是等变性的特例（g·f(x) = f(x)，即平凡表示）
-- **Schur 引理与不可约表示分解**：
-  任何有限群表示可分解为不可约表示的直和：V = ⊕_i m_i · V_i
-  等变线性映射在不可约分量间是对角/块对角的
-- **Peter-Weyl 定理**：紧群上的函数可分解为不可约表示矩阵元的级数
-  f(x) = Σ_ρ Σ_{ij} c_{ρ,ij} · ρ_{ij}(g)（广义 Fourier 展开）
-- **Steerable 特征空间**：特征按群的不可约表示组织，
-  变换 g 作用时各分量按对应的表示矩阵变换：f_i → Σ_j ρ_{ij}(g) f_j
+
+- 从明确的表示 $\rho:G\to GL(V)$ 出发，不能只有群名与特征维数。零特征域的有限群表示，以及紧群的连续有限维表示，可由完全可约性得到不可约基。
+- 在该基下 $V=\bigoplus_\lambda \mathbb C^{m_\lambda}\otimes V_\lambda$，复线性等变映射为 $\bigoplus_\lambda W_\lambda\otimes I_{\dim V_\lambda}$。重数通道可混合；不等价不可约表示不能通过线性 intertwiner 混合。实表示需相应实交换子代数。
+- 随意切分学习特征不等于不可约表示分解。需从已知作用得到/换到相应基，或从设计之初赋予特征明确类型。
+- 非线性、归一化、偏置和残差均须尊重类型；对旋转向量逐元素 ReLU 通常不旋转等变。
 
 ## AI 模块形式
+
+```python
+# 已知表示rho，basis_change把它化为同型分量块
+X_typed = X @ basis_change
+Y_blocks = []
+for block, multiplicity_map in typed_blocks(X_typed):
+    # block形状 N x 重数 x 不可约表示维数
+    Y_blocks.append(mix_multiplicity_only(block, multiplicity_map))
+Y = concatenate_typed_blocks(Y_blocks) @ inverse_output_basis
 ```
-模块：EquivariantSplit
-输入：X ∈ R^{N×d}，对称群 G（如 S_n 排列群、Z_n 循环群、SO(3) 旋转群）
+对 token 集合 $X\in\mathbb R^{N\times d}$，`X.mean(dim=0, keepdim=True)` 置换不变，可广播回等变 token 输出。原始逐 token“内容”仍是置换等变，不是不变。固定绝对位置分配或因果 mask 会改变允许的对称性。
 
-方法1 - 按不可约表示分割特征维度：
-  // 将 d 维特征按群的不可约表示分解
-  irreps = decompose(G, d)  // [(d₁, ρ₁), (d₂, ρ₂), ...] 其中 Σdᵢ = d
-  X_split = split(X, [d₁, d₂, ...], dim=-1)  // 按不可约分量切分
-  // 每个分量用等变层独立处理：
-  for (X_i, ρ_i) in zip(X_split, irreps):
-    Y_i = EquivariantLinear(X_i, ρ_i)  // 权重受 Schur 约束
-  Y = concat(Y_i, dim=-1)              // 重组
-
-方法2 - 位置等变分割（Token 排列群 S_n）：
-  // Transformer 自注意力天然对排列等变（无位置编码时）
-  // 显式引入可控的排列等变性：
-  X_content = X[:, :d_content]           // 排列不变的内容部分
-  X_position = X[:, d_content:]          // 位置相关的部分
-  // 内容部分用排列不变的池化：
-  z_inv = mean(X_content, dim=1)         // 全局不变特征
-  // 位置部分用等变操作：
-  z_equiv = Attention(X_position, X_position, X_position)  // 排列等变
-  output = z_equiv + MLP(z_inv).unsqueeze(1)  // 不变信号广播回去
-
-方法3 - 群卷积/群池化：
-  // 特征定义在群 G 上：f: G → R^c
-  // 群卷积：(f * ψ)(g) = Σ_{h∈G} f(h) · ψ(h⁻¹g)
-  // 群池化：pool over orbits of subgroup H < G
-  // 实现为矩阵乘法（群乘法表→稀疏置换矩阵）
-  for g in generators(G):
-    X_g = permutation_matrix(g) @ X    // 群生成元作用
-    features_g = Linear(X_g)            // 共享权重的等变处理
-  output = aggregate(features_g)        // 沿群维度聚合
-```
+有限群卷积使用所需的完整群索引特征及群乘法规则。仅对生成元变换后的输入施加共享线性层再平均，**不是**通用的精确群卷积/等变构造。可用 `../attention/equivariant-attention.md` 的完整有限群对称化作参照，或采用已有证明的生成元约束参数化。
 
 ## 可实现结构
 - **e3nn / lie_learn 集成**：使用现有库处理 SO(3)/SE(3) 的不可约表示和球谐函数
@@ -68,14 +43,12 @@
 - **对称性增强**：训练时对输入施加随机群元素 g∈G（数据增强），鼓励等变性
 
 ## GPU 可行性
-- **张量化**：不可约分量的处理为 batched GEMM；群卷积为稀疏 GEMM 或 batched matmul
-- **GEMM 可映射**：EquivariantLinear 的每个块为独立 GEMM (N×dᵢ)@(dᵢ×dᵢ_out)，可 batch
-- **复杂度**：与标准网络同阶（Schur 约束反而减少参数），群卷积额外 |G| 倍
-- **显存与 KV-Cache**：群卷积需存储 |G| 份特征，|G| 大时显存压力显著
-- **低精度稳定**：球谐函数 Y_l^m 的计算涉及阶乘和平方根，建议 fp32
-- **并行与通信**：不可约分量间独立，完美并行；群卷积的不同 g 可并行
-- **稀疏结构**：群卷积的置换矩阵极度稀疏（每行/列恰好一个非零），SpMM 高效
-- **算子融合**：split → batched matmul → concat 可融合；群池化的 scatter+reduce 可融合
+
+- **D1/D2[~]**：有类型线性映射是批处理通道 GEMM；一般张量积与 CG 系数另有非 GEMM 工作。
+- **D3/D4[~]**：成本取决于不可约维数、重数及张量积路径。显式群索引特征可增加 $|G|$ 倍成本；参数共享不能单独决定运行时间。
+- **D5[~]**：敏感谐函数/归一化在 fp32 计算，并在目标精度测试整个模块的等变性。
+- **D6/D8[~]**：独立块可批处理；小块可能不能充分利用 GPU，类型非线性交互还会耦合各块。
+- **D7[~]**：置换通常用 gather，无需物化稀疏置换矩阵；表示稀疏不蕴含快速稀疏注意力。
 
 ## 论文表述方式
 "利用群表示论的 Schur 引理，将 d 维特征空间按对称群 G 的不可约表示分解为直和 ⊕mᵢVᵢ，

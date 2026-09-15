@@ -2,7 +2,7 @@
 
 ## Minimal Definition
 
-Minimizes an objective $f(x)$ over a constraint set $\mathcal{C} = \{x : g_i(x) \leq 0, h_j(x) = 0\}$. The optimal solution satisfies the KKT conditions (first-order necessary conditions): stationarity of the gradient (in the Lagrangian sense), primal feasibility, dual feasibility, and complementary slackness. Constrained optimization systematically incorporates "hard restrictions" into the optimization framework.
+Minimize $f(x)$ over $\mathcal C=\{x:g_i(x)\le0,h_j(x)=0\}$. For differentiable data, a local optimum satisfies KKT under a constraint qualification such as LICQ/MFCQ; without it, multipliers may not exist. KKT is sufficient for global optimality when the objective and inequalities are convex and equalities affine.
 
 ## Core Formulas
 
@@ -14,7 +14,7 @@ Minimizes an objective $f(x)$ over a constraint set $\mathcal{C} = \{x : g_i(x) 
 - Projected gradient method: $x_{k+1} = \text{proj}_{\mathcal{C}}(x_k - \alpha \nabla f(x_k))$
 - Penalty function method: $\min_x f(x) + \frac{\rho}{2}\sum [\max(0, g_i(x))]^2 + \frac{\rho}{2}\sum h_j(x)^2$
 - Augmented Lagrangian (inequality constraints $g_i(x) \leq 0$): $\mathcal{L}_\rho(x,\lambda) = f(x) + \frac{\rho}{2}\sum_i \left[\max\!\left(0,\; \frac{\lambda_i}{\rho} + g_i(x)\right)^2 - \left(\frac{\lambda_i}{\rho}\right)^2\right]$ (strictly feasible constraints where $g_i(x) < 0$ and $\lambda_i/\rho + g_i(x) \leq 0$ are not penalized; for equality constraints this reduces to $\mathcal{L}_\rho = f(x) + \sum \nu_j h_j(x) + \frac{\rho}{2}\sum h_j(x)^2$)
-- Armijo line search (constrained version): $\alpha$ satisfies $f(\text{proj}_\mathcal{C}(x - \alpha \nabla f)) \leq f(x) - \sigma \alpha \|\nabla f\|^2$
+- Projected Armijo test (closed convex $\mathcal C$, feasible $x$): let $z_\alpha=\operatorname{proj}_{\mathcal C}(x-\alpha\nabla f(x))$ and accept $f(z_\alpha)\le f(x)+\sigma\nabla f(x)^T(z_\alpha-x)$, $0<\sigma<1$. Stop using the projected gradient mapping $G_\alpha=(x-z_\alpha)/\alpha$, not $\|\nabla f(x)\|$: a boundary optimum may have a nonzero full gradient.
 
 ## Applicable Problems
 
@@ -29,7 +29,7 @@ Minimizes an objective $f(x)$ over a constraint set $\mathcal{C} = \{x : g_i(x) 
 - **Weight clipping (WGAN)**: $W \leftarrow \text{clamp}(W, -c, c)$ is projection onto an $\ell_\infty$-box constraint. Implemented as `torch.clamp(W, -c, c)`, an elementwise operation with zero additional computation. Simple but coarse, less refined than spectral normalization.
 - **Spectral normalization**: A common engineering way to enforce $\sigma_{\max}(W) \leq 1$ is the scaling reparameterization $W \leftarrow W / \max(1,\sigma_{\max})$, with $\sigma_{\max}$ estimated by power iteration. This is not the Frobenius-nearest projection onto the operator-norm ball; the exact projection clips singular values individually. About two matvec + norm operations per step; built into PyTorch as `torch.nn.utils.spectral_norm`.
 - **Projected gradient for $\ell_2$-ball constraints**: $\text{proj}(w) = w \cdot \min(1, R/\|w\|_2)$, implemented as `w * min(1, R / w.norm())`, one norm + elementwise operation, $O(d)$. Used in trust regions and adversarial robustness $\epsilon$-ball constraints.
-- **Augmented Lagrangian for RLHF/PPO**: $\mathcal{L} = -\mathbb{E}[r] + \lambda(\text{KL}(\pi\|\pi_{\text{ref}}) - \epsilon) + \frac{\rho}{2}(\text{KL} - \epsilon)^2$. The inner loop optimizes $\pi$ via PPO; the outer loop updates $\lambda \leftarrow \lambda + \rho(\text{KL} - \epsilon)$. KL computation involves softmax + elementwise log-ratio, GPU-friendly.
+- **KL-constrained policy optimization**: For $h=KL(\pi\|\pi_{ref})-\epsilon\le0$, use $-\mathbb E[r]+([\max(0,\lambda+\rho h)]^2-\lambda^2)/(2\rho)$ and $\lambda^+=\max(0,\lambda+\rho h)$. An equality-style quadratic penalizes unnecessarily low KL and is a different objective; PPO inner solves do not guarantee exact constrained optimality.
 - **Penalty method for sparsity/low-rank constraints**: $\mathcal{L}_{\text{penalty}} = \mathcal{L}_{\text{task}} + \rho \sum_i \max(0, \|w_i\|_1 - \tau)^2$ constrains per-layer sparsity to not exceed $\tau$. The penalty term is elementwise + reduce, differentiable and GPU-friendly. $\rho$ increasing schedule: $\rho \leftarrow \beta \rho$ ($\beta > 1$), doubling every several steps.
 
 ## Engineering Feasibility
@@ -37,7 +37,7 @@ Minimizes an objective $f(x)$ over a constraint set $\mathcal{C} = \{x : g_i(x) 
 - **Primary operations**: Projection = elementwise + norm ($O(d)$); penalty term = elementwise + reduce ($O(d)$); KKT gradient = standard backpropagation; power iteration = matvec ($O(d^2)$ or $O(nd)$).
 - **GPU friendliness**: High. Projection steps in projected gradient methods are mostly cheap elementwise operations (norm-ball, box, $\ell_1$-ball); penalty terms / augmented Lagrangian only add elementwise computation; power iteration for spectral normalization is matvec.
 - **Complexity**: Projection $O(d)$ (norm-ball / box) to $O(d \log d)$ ($\ell_1$-ball); penalty evaluation $O(d)$; spectral normalization $O(nd)$ per iteration; interior-point methods per step $O(d^3)$ (avoid in the inner training loop).
-- **Low precision**: Projection operations are stable under bf16 (norm and clamp do not involve delicate numerical operations); the penalty coefficient $\rho$ must be range-controlled to avoid overflow (use fp32 when $\rho > 10^6$).
+- **Low precision**: Norms, squared penalties and multipliers can overflow or lose accuracy; use scale-aware fp32 accumulation and feasibility residuals. A fixed penalty-coefficient threshold cannot decide precision independently of residual scale.
 
 ## Risks and Failure Conditions
 

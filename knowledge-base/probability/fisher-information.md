@@ -3,6 +3,8 @@
 ## 最小定义
 Fisher 信息度量**概率分布族对参数的敏感度**——即观测数据对参数 $\theta$ 提供了多少信息。它在统计流形上定义了一个自然的黎曼度量（Fisher 信息矩阵 = 度量张量），是信息几何的基石。
 
+**正则条件**：score/Hessian 恒等式及 Cramér–Rao 界要求可微、积分与微分可交换及适当支撑/可积条件；参数依赖的支撑可能使其失效。$n$ 个 iid 观测的总信息为 $n\mathcal I_1(\theta)$。Fisher 总是 PSD，只有非奇异可辨识方向才定义 Riemannian 度量。
+
 ## 核心公式
 
 **Fisher 信息（标量参数）**：
@@ -29,16 +31,16 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 
 ## 工程可行性
 - **D1[~]**：完整 FIM 是 $d \times d$ 矩阵（$d$ = 参数量），直接物化不可行（LLM 参数量 $10^{10}+$）。必须用近似。
-- **D2[v]**：K-FAC 用 Kronecker 因子 $A \otimes B$，$A$ 和 $B$ 各自可用 GEMM 计算和求逆
-- **D3[~]**：精确 FIM 计算 $O(nd^2)$，K-FAC 降至 $O(d)$ 量级但需逐层维护
+- **D2[~]**：Kronecker 因子用 GEMM 估计；求逆/Cholesky 及刷新频率是独立成本。
+- **D3[~]**：$n$ 个长 $d$ score 的完整外积为 $O(nd^2)$。宽度 $a,b$ 的层，K-FAC 存储 $O(a^2+b^2)$、稠密因子求解 $O(a^3+b^3)$，不是通用 $O(d)$ 计算。
 - **D4[~]**：K-FAC 的 Kronecker 因子需额外显存，但相比完整 FIM 已大幅压缩
-- **D5[v]**：FIM 估计用 fp32 即可，不需 fp64
+- **D5[~]**：fp32 可作起点，但条件数及所需残差精度可能要求 fp64；不能仅从 PSD 决定精度。
 - **D6[v]**：K-FAC 的 Kronecker 因子天然按层分解，可并行计算
 - **D8[v]**：EWC 惩罚项为逐元素运算，可融入参数更新 kernel
 
 ## 风险与失效条件
 - **完整 FIM 不可计算**：对于 LLM 级别的参数规模（$d > 10^9$），即使 K-FAC 的 Kronecker 近似也可能代价过高。实践中常用对角 Fisher（$O(d)$）或低秩近似。
-- **经验 Fisher ≠ 真实 Fisher**：用训练集均值替代期望，在样本量不足时估计偏差大，自然梯度方向可能指向错误方向。需与 learning rate warmup 配合。
+- **经验 Fisher 与模型 Fisher**：条件模型的模型 Fisher 对 $p_\theta(y|x)$ 抽取的标签平均；经验 Fisher 用观测标签。二者期望目标不同，数据很多也未必相等。minibatch Monte Carlo 误差是另一问题；warmup 不修复此恒等式。
 
 ## 深入参考
 - 蒸馏稿：`../../references/books/` 暂无专用信息几何蒸馏稿

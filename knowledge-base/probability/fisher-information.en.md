@@ -3,6 +3,8 @@
 ## Minimal Definition
 Fisher information measures the **sensitivity of a parametric family of probability distributions to its parameters** — that is, how much information observed data provides about the parameter $\theta$. It defines a natural Riemannian metric on the statistical manifold (the Fisher information matrix = the metric tensor), and is the cornerstone of information geometry.
 
+**Regularity conditions**: Score/Hessian identities and Cramér–Rao require differentiability, interchange of integration and differentiation, and appropriate support/integrability conditions; parameter-dependent support can invalidate them. For $n$ iid observations, total information is $n\mathcal I_1(\theta)$. Fisher is PSD, and only nonsingular identifiable directions define a Riemannian metric.
+
 ## Core Formulas
 
 **Fisher Information (scalar parameter)**:
@@ -29,16 +31,16 @@ $$D_{KL}(p_\theta \| p_{\theta + d\theta}) \approx \frac{1}{2} d\theta^T \mathca
 
 ## Engineering Feasibility
 - **D1[~]**: The full FIM is a $d \times d$ matrix ($d$ = number of parameters); direct materialization is infeasible (LLM parameter counts $10^{10}+$). Approximations are required.
-- **D2[v]**: K-FAC uses Kronecker factors $A \otimes B$; $A$ and $B$ can each be computed and inverted using GEMM
-- **D3[~]**: Exact FIM computation is $O(nd^2)$; K-FAC reduces this to $O(d)$ scale but requires per-layer maintenance
+- **D2[~]**: Kronecker factors are estimated using GEMM; inverse/Cholesky operations and their refresh schedule are separate costs.
+- **D3[~]**: Empirical full outer products cost $O(nd^2)$ for $n$ scores of length $d$. A layer with widths $a,b$ has K-FAC storage $O(a^2+b^2)$ and dense factor solves $O(a^3+b^3)$, not generic $O(d)$ computation.
 - **D4[~]**: K-FAC's Kronecker factors require additional memory, though significantly compressed compared to the full FIM
-- **D5[v]**: FIM estimation can use fp32; fp64 is not required
+- **D5[~]**: fp32 is a practical starting point, but conditioning and required residual accuracy may justify fp64; precision is not settled by PSD alone.
 - **D6[v]**: K-FAC's Kronecker factors naturally decompose by layer, enabling parallel computation
 - **D8[v]**: The EWC penalty term is element-wise and can be fused into the parameter update kernel
 
 ## Risks and Failure Conditions
 - **Full FIM is intractable**: For LLM-scale parameter counts ($d > 10^9$), even K-FAC's Kronecker approximation may be too costly. In practice, diagonal Fisher ($O(d)$) or low-rank approximations are commonly used.
-- **Empirical Fisher ≠ True Fisher**: Replacing the expectation with a training set average introduces significant estimation bias when the sample size is insufficient, potentially causing the natural gradient direction to point in the wrong direction. This should be paired with learning rate warmup.
+- **Empirical Fisher versus model Fisher**: For conditional models, the model Fisher averages labels sampled from $p_\theta(y|x)$; the empirical Fisher uses observed labels. They are different expectation targets and need not coincide even with large data. Minibatch Monte Carlo error is a separate issue; warmup does not repair this identity.
 
 ## Further References
 - Distillation draft: `../../references/books/` — no dedicated information geometry distillation draft at present

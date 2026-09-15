@@ -55,3 +55,15 @@
 | 信息几何 | `information-geometry/index.md` |
 | 代数几何 | `algebraic-geometry/index.md` |
 | 密码学 | `cryptography/index.md` |
+
+## 假设与诊断
+
+应用公式前，明确对象（矩阵、算子、随机变量、流形或安全实验）、维度/定义域、定理假设，以及结论是精确、近似还是启发式。特别注意：
+
+- 特征值、奇异值及奇异子空间的扰动条件不同；有限迭代不证明谱范数上界。
+- 关于输出的凸损失未必关于网络参数凸。声称收敛时明确算法、步长、约束资格条件及残差。
+- 信息上下界及 beta 口径须与优化方向一致；确定性连续编码器的 MI 可能无穷大。
+- FLOP 估计需含 batch/序列/通道维数、分解及更新成本。低秩、低熵和代数稀疏不自动产生 GPU 加速。
+- 安全归约需精确博弈、对手资源及损失；近似数值证据不能替代证明。
+
+具体检查见 `../references/worked-examples/query-aware-compression.md`、`../references/worked-examples/equivariance-check.md` 与 `../references/worked-examples/security-reduction.md`。只按当前问题需要加载相应案例。

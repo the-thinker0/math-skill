@@ -8,7 +8,7 @@ The Lie algebra $\mathfrak{g}$ is the tangent space $T_e G$ of a Lie group $G$ a
 
 - Lie bracket: $[X, Y] = XY - YX$ (for matrix groups), satisfying $[X,[Y,Z]] + [Y,[Z,X]] + [Z,[X,Y]] = 0$
 - $\text{so}(3)$: skew-symmetric matrices, $[\omega]_\times = \begin{pmatrix} 0 & -\omega_3 & \omega_2 \\ \omega_3 & 0 & -\omega_1 \\ -\omega_2 & \omega_1 & 0 \end{pmatrix}$
-- hat/vee operators: $\hat{\cdot}: \mathbb{R}^n \to \mathfrak{g}$ (vector to skew-symmetric matrix), $\check{\cdot}: \mathfrak{g} \to \mathbb{R}^n$ (inverse)
+- hat/vee: a chosen basis identifies $\mathbb R^d$ with a matrix Lie algebra; general elements need not be skew-symmetric (e.g. $\mathfrak{se}(3)$).
 - Baker-Campbell-Hausdorff formula: $\log(\exp(X)\exp(Y)) = X + Y + \frac{1}{2}[X,Y] + \cdots$
 - Adjoint representation: $\text{ad}_X(Y) = [X,Y]$, which is the differential of $\text{Ad}$
 
@@ -16,7 +16,7 @@ The Lie algebra $\mathfrak{g}$ is the tangent space $T_e G$ of a Lie group $G$ a
 
 - Local linearization of rotations/poses: approximate nonlinear group variations in a small neighborhood using Lie algebra vectors $\delta \in \mathbb{R}^n$
 - Reparameterization for constrained optimization: convert orthogonality/rotation constraints into unconstrained Lie algebra parameters + exp map
-- Infinitesimal description of symmetries: continuous symmetry groups are fully characterized by a small set of generators
+- Infinitesimal symmetry: generators determine local/identity-component structure, not global covering topology or disconnected components.
 - Error-state estimation: covariances are defined on the tangent space $\mathbb{R}^n$ rather than on the group
 
 ## AI Design Translation
@@ -32,15 +32,15 @@ High GPU friendliness. The core advantage of the Lie algebra is that it is a "li
 - **hat/vee maps**: Pure index operations + sign flips, $O(n)$, perfectly GPU-friendly
 - **Lie bracket $[X,Y] = XY - YX$**: Two small matrix multiplications + subtraction, $O(n^3)$ for small matrices, batchable
 - **Linear combination $\sum c_i E_i$**: Vector addition + scalar multiplication, $O(nd)$, perfectly GPU-friendly
-- **BCH approximation**: The first few terms suffice for engineering precision; $[X,Y]$ computation is a small matrix multiplication
-- Main cost lies in $\exp$ rather than algebra operations: algebra operations are all linear; the bottleneck is the subsequent exp map
+- **BCH approximation**: truncate only within a suitable convergence neighborhood and error tolerance. Assess omitted nested brackets or residuals rather than assuming a few terms suffice.
+- The bracket is bilinear and BCH contains nonlinear nested brackets; not all algebra operations are linear. Exp is often costly, but compare actual matrix shapes.
 
 ## Risks and Failure Conditions
 
 - **BCH series truncation error**: Higher-order terms are non-negligible at large angles; the first-order approximation $X+Y$ is valid only for small perturbations
 - **Misinterpreting non-zero Lie brackets**: $[X,Y] \neq 0$ for non-commutative groups means group composition is order-sensitive; operations cannot be freely interchanged
 - **Basis selection affects optimization**: The choice of Lie algebra basis is not unique; poor conditioning leads to optimization difficulties
-- **Using the Lie algebra as global coordinates**: The exp map is only a local diffeomorphism; global coverage requires multiple charts (an atlas)
+- **Using the Lie algebra as global coordinates**: exp is a local diffeomorphism near zero; global coordinates/unique logs depend on the group. Rotation groups need branch handling, while additive Rⁿ is globally invertible.
 - **Inconsistent left/right conventions**: Right Jacobian vs. left Jacobian, local vs. global frame -- inconsistency leads to misaligned gradients and covariances
 
 ## Further References
@@ -54,7 +54,7 @@ High GPU friendliness. The core advantage of the Lie algebra is that it is a "li
 ## Routing Extensions
 - If the corresponding global group is needed -> `lie-group.en.md` (integrating Lie algebra yields Lie group)
 - If algebra representations are needed -> `representation.en.md` (representation theory of Lie algebras)
-- If acting as the tangent space of a group -> `../differential-geometry/tangent-space.md` (Lie algebra structure on tangent space)
+- If acting as the tangent space of a group -> `../differential-geometry/tangent-space.en.md` (Lie algebra structure on tangent space)
 
 ## Extensible Directions
 - Structure constants: components of Lie bracket in a basis

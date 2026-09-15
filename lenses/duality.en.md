@@ -1,10 +1,10 @@
 # Duality Lens
 
-> A hard problem is equivalent to an easy problem — the key is finding the right transform and its inverse
+> Change representation, take a dual, or relax — identify whether solutions, bounds, or partial structure are preserved
 
 ## What Perspective It Offers
 
-Duality (formerly "Transform") is a way of "looking at a problem through a different representation": the same problem can admit multiple representations, and choosing a good transform can make a difficult problem simple. The essence of a transform is not to change the problem itself, but to change the vantage point from which it is viewed — differentiation becomes multiplication, convolution becomes pointwise multiplication, constrained optimization becomes a dual problem. But every transform must have an inverse: a transform without an inverse is evasion, not a solution.
+Duality (formerly "Transform") is a way of "looking at a problem through a different representation": the same problem can admit multiple representations, and choosing a good transform can make a difficult problem simple. The essence of a transform is not to change the problem itself, but to change the vantage point from which it is viewed — differentiation becomes multiplication, convolution becomes pointwise multiplication, constrained optimization becomes a dual problem. Invertible transforms, dual problems, and lossy relaxations are distinct tools. Lagrange duality generally supplies bounds; strong duality requires conditions. Neither an inverse nor equivalence can be assumed for every tool.
 
 ## What Problems It Is Suited to Diagnose
 
@@ -16,7 +16,7 @@ Duality (formerly "Transform") is a way of "looking at a problem through a diffe
 ## What Problems It Is Not Suited For
 
 - The problem is already simple enough — no transform is needed
-- The transform discards critical information and is not invertible — choose an information-preserving transform
+- Exact recovery is required but the transform loses essential information — use a recoverable representation or state approximation error
 - Convergence conditions are not satisfied — forcing a transform produces meaningless results
 
 ## Which Knowledge Domains It Routes To
@@ -37,11 +37,11 @@ Duality (formerly "Transform") is a way of "looking at a problem through a diffe
 2. **Select a Transform**: Choose a transform based on the difficulty type; specify the formula, domain mapping, and convergence conditions
 3. **Execute the Transform**: Map the problem into the new representation space, strictly following the formula
 4. **Verify the Region of Convergence**: Before applying transformed results, validate that convergence conditions are satisfied
-5. **Inverse-Transform Back to the Original Space**: Translate the solution back into the language of the original problem and verify equivalence
+5. **Return to the Original Problem**: Invert reversible transforms; report feasibility, primal/dual bounds and gap for duality; describe recovery and error for relaxations
 
 ## Acceptance Criteria
 
 - The difficulty of the current representation has been clearly diagnosed
 - The transform selection is justified with clear reasoning, and convergence conditions have been verified
-- The inverse transform has been executed and the solution has been returned to the original space
-- Equivalence has been verified: no information loss, correct region of convergence, and correct encoding of boundary conditions
+- The solution or bound is expressed in the original problem; inability to recover a primal solution is explicit
+- Equivalence, weak/strong duality, and approximation are distinguished, with domain, convergence, gap, and recovery conditions checked

@@ -1,5 +1,5 @@
 # Information Bottleneck Loss
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Evidence labels**: [v] supported by stated assumptions or recorded checks; [~] engineering proposal requiring validation; [x] incompatible under the stated conditions; [N/A] outside scope. Pseudocode specifies operators, not a production-ready implementation.
 
 ## Applicable Problems
 When a representation $Z$ must achieve an optimal balance between "retaining task-relevant information" and "compressing input redundancy." Typical scenarios: (1) Shared representations should retain only cross-task common information, discarding task-specific noise; (2) Private representations should retain only single-task unique information; (3) Routing features should maximize expert-task matching information. Core objective: **optimal information compression -- nothing more, nothing less, retaining only what is useful**.
@@ -9,58 +9,47 @@ When a representation $Z$ must achieve an optimal balance between "retaining tas
 - Knowledge: ../../knowledge-base/probability/kl-divergence.en.md (IB theory, rate-distortion function), ../../knowledge-base/probability/entropy.en.md (mutual information and conditional entropy)
 
 ## Required Mathematical Knowledge
-- **Information Bottleneck Objective**: $\min I(X;Z) - \beta \cdot I(Z;Y)$, compressing $X \to Z$ while preserving the predictive power of $Z$ for $Y$
-- **Variational Bounds on Mutual Information**:
-  $I(X;Z) \leq \mathbb{E}_{p(x,z)}[\log q(z|x)] - \mathbb{E}_{p(z)}[\log q(z)]$ (upper bound for compression term)
-  $I(Z;Y) \geq \mathbb{E}_{p(z,y)}[\log q(y|z)] + H(Y)$ (lower bound for prediction term)
-- **CPC (Contrastive Predictive Coding)**: InfoNCE lower bound on $I(Z_t; Z_{t+k})$
-- **MINE (Mutual Information Neural Estimation)**:
-  $I(X;Z) = \sup_\phi \{ \mathbb{E}_{p(x,z)}[T_\phi(x,z)] - \log \mathbb{E}_{p(x)p(z)}[\exp(T_\phi(x,z))] \}$ (Donsker-Varadhan representation, $T_\phi$ is a neural network critic)
+
+- For the Markov chain $Y-X-Z$, classic IB minimizes $I(X;Z)-\beta_{pred}I(Z;Y)$. Equivalently, rescale to $-I(Z;Y)+\beta_{comp}I(X;Z)$ with $\beta_{comp}=1/\beta_{pred}$.
+- With encoder $q_\theta(z|x)$ and reference prior $r(z)$, $\mathbb E_x KL(q_\theta(z|x)\|r)=I(X;Z)+KL(q_\theta(z)\|r)\ge I(X;Z)$.
+- A predictive decoder yields $I(Z;Y)\ge H(Y)+\mathbb E\log q_\phi(y|z)$. Cross-entropy estimates **positive** conditional entropy plus approximation error.
+- MINE/NWJ/InfoNCE with restricted critics are lower bounds/estimators of MI, not certified upper bounds for a compression penalty. Minimizing a loose lower bound can hide information without reducing true MI. A neural-critic supremum equals true MI only with adequate function-class and optimization conditions.
+- Orthogonality controls linear overlap; it does not guarantee shared/private statistical independence. [Deep VIB](https://arxiv.org/abs/1612.00410).
 
 ## AI Module Form
+
+```python
+# Stochastic Gaussian bottleneck, expectation approximated by a minibatch/sample
+mu, logvar = encoder(X)
+z = mu + exp(0.5 * logvar) * randn_like(mu)
+kl_upper = 0.5 * (mu**2 + exp(logvar) - 1 - logvar).sum(-1).mean()
+prediction_ce = cross_entropy(decoder(z), Y)
+loss = prediction_ce + beta_comp * kl_upper
+# Larger beta_comp increases compression pressure; beta_pred = 1 / beta_comp.
 ```
-Module: InformationBottleneckLoss
-Input: representation Z in R^{B x d}, input X (or its encoding), label Y
+For shared/private branches use separate stochastic encoders, predictive targets, and compression weights. A decorrelation term is an additional proxy, not an information decomposition theorem. Deterministic continuous encoders can have infinite $I(X;Z)$; introduce noise/quantization or state a finite-data information model.
 
-Method 1 - VIB (Variational Information Bottleneck):
-  // Compression upper bound: variational approximation q(z) = N(0, I)
-  I_upper = KL(q(z|x) || p(z))  // standard VAE KL term
-  // Prediction lower bound: classifier/regressor q(y|z)
-  I_lower = CE(q(y|z), y)  // cross-entropy = estimate of -H(Y|Z)
-  L_IB = I_upper + beta * I_lower
-  // beta controls compression-prediction trade-off: larger beta = more aggressive compression
-
-Method 2 - Contrastive Mutual Information Estimation (no distributional assumptions):
-  // NWJ estimator instead of KL
-  I_nwj(x;z) = E_{p(x,z)}[f(x,z)] - e^{-1} * E_{p(x)p(z)}[exp(f(x,z))]  // f is a discriminator network, expectations over joint and product of marginals respectively
-  L_IB_contrast = I_nwj(x;z) - beta * InfoNCE(z, y)  // both terms differentiable
-
-Method 3 - Shared/Private IB Decomposition:
-  Z_s = enc_shared(x), Z_p = enc_private(x)
-  L = I(Z_s; X) + I(Z_p; X)           // total compression
-    - beta_1 * I(Z_s; Y_common)        // Shared retains common information
-    - beta_2 * I(Z_p; Y_specific)      // Private retains specific information
-    + gamma * OrthLoss(Z_s, Z_p)       // orthogonality ensures decomposition
-```
+If a learned MI critic is used, maximize its bound for a fixed encoder before using it as a diagnostic. Compression via adversarial critic minimization remains a heuristic with an optimization gap; do not report its lower bound as a compression certificate.
 
 ## Implementable Architectures
-- **Dual-Encoder Architecture**: enc_shared and enc_private share a base trunk, branching into separate heads
-- **Mutual Information Estimator**: Small MLP discriminator $T(x,z) \to$ scalar, alternating variational with the main network
-- **Beta Scheduling**: Set $\beta = 0$ at training start (no compression), gradually increase to target value during training
-- **Gradient Reversal**: Gradient of $I(X;Z)$ is reversed via z.flip_gradient(), implementing adversarial compression
+
+- Dual encoder plus predictive heads; explicitly declare which labels define “shared” and “private.”
+- Warm up `beta_comp` from zero if appropriate; report both prediction and KL curves.
+- Audit Gaussian-posterior mismatch with richer encoder families or held-out likelihood diagnostics.
+- Use a separate optimizer for an MI critic; a gradient-reversal sign must match the declared minimax objective.
 
 ## GPU Feasibility
-- **Tensorization**: Mutual information estimator is a standard MLP -> GEMM chain; KL is element-wise
-- **GEMM-mappability**: VIB method requires only encoder GEMM + KL computation; contrastive method adds 1 GEMM for shuffled negatives
-- **Complexity**: One additional KL term $O(B \cdot d)$ or one discriminator forward pass $O(B \cdot d^2)$ beyond the standard network; acceptable
-- **Memory & KV-Cache**: Requires additional storage for discriminator parameters (small MLP) and intermediate activations, <10MB
-- **Low Precision Stability**: The exp operation in the MINE estimator requires clipping under fp16; VIB KL is recommended in fp32
-- **Parallelism & Communication**: Discriminator and main network forward passes can run in parallel; gradients are synchronized through the shared representation layer
-- **Sparse Structure**: Compressed $Z$ dimensions can be dynamically pruned (Automatic Relevance Determination, ARD)
-- **Operator Fusion**: Encoder forward + KL computation + discriminator forward can be partially fused
+
+- **D1/D2[~]**: Encoder/decoder use GEMM; diagonal-Gaussian KL is elementwise plus reduction.
+- **D3/D4[~]**: KL costs $O(Bd_z)$ and stores $O(Bd_z)$ statistics. A learned critic adds its actual network cost and activations; there is no universal memory cap.
+- **D5[~]**: Evaluate exp/log and KL reductions in fp32, constrain pathological log-variance, and monitor posterior collapse.
+- **D6[~]**: Latent samples may batch; decoder/critic evaluations depend on encoder outputs, and alternating updates are sequential.
+- **D7[N/A]**: Low MI or a small KL does not imply zero tensor entries or executable sparse channels.
+- **D8[~]**: Elementwise KL can fuse; full encoder/critic fusion requires a concrete kernel and measurement.
 
 ## Paper Phrasing
-"Based on information bottleneck theory, we formalize Shared/Private decomposition as $\min I(X;Z_s) + I(X;Z_p) - \beta_1 I(Z_s;Y_c) - \beta_2 I(Z_p;Y_s)$, replacing mutual information terms with variational upper and lower bounds for end-to-end optimization. IB theory provides upper bounds on generalization error, but actual generalization also depends on optimization dynamics, data distribution, and model capacity."
+
+“We optimize predictive cross-entropy plus a variational upper bound on input–representation mutual information. We report the compression-weight convention, bound gap diagnostics, predictive quality, and sensitivity to posterior family; this objective alone does not establish a generalization-error bound.”
 
 ## Risks
 - Mutual information estimators (MINE/NWJ) have high variance, causing training instability; large batches or moving averages are needed

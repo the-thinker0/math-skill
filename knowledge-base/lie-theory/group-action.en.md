@@ -9,7 +9,7 @@ A group $G$ acting on a set $X$ is a homomorphism $\rho: G \to \text{Bij}(X)$ sa
 - Group action: $g \cdot x = \rho(g)(x)$, satisfying $e \cdot x = x$ and $(gh)\cdot x = g \cdot (h \cdot x)$
 - Orbit: $\text{Orb}(x) = \{g \cdot x \mid g \in G\}$
 - Stabilizer subgroup: $\text{Stab}(x) = \{g \in G \mid g \cdot x = x\}$
-- Orbit-stabilizer theorem: $|G| = |\text{Orb}(x)| \cdot |\text{Stab}(x)|$
+- Orbit-stabilizer for a finite group: $|G|=|\mathrm{Orb}(x)|\,|G_x|$; for general groups the orbit is in bijection with the coset space $G/G_x$.
 - Invariant function: $f(g \cdot x) = f(x), \forall g \in G$
 - Equivariant map: $\phi(g \cdot x) = g \cdot \phi(x)$
 
@@ -17,8 +17,8 @@ A group $G$ acting on a set $X$ is a homomorphism $\rho: G \to \text{Bij}(X)$ sa
 
 - Data possesses known symmetries: rotations, translations, permutations, scale transformations; the model must respect these symmetries
 - Output should covary with input: in pose estimation, when the object rotates, the output pose should rotate accordingly
-- Theoretical foundation for data augmentation: sampling along group orbits is equivalent to traversing the group action
-- Quotient space construction: modding out by the stabilizer subgroup yields an invariant feature space
+- Data augmentation samples group orbits; a finite training sample does not by itself guarantee invariance/equivariance over the entire group.
+- Quotients: $X/G$ is the set of orbits; $G/G_x$ parameterizes one orbit, not the orbit space $X/G$.
 
 ## AI Design Translation
 
@@ -30,10 +30,10 @@ A group $G$ acting on a set $X$ is a homomorphism $\rho: G \to \text{Bij}(X)$ sa
 ## Engineering Feasibility
 
 GPU friendliness depends on the type of group:
-- **Finite/discrete groups**: Group convolution can be expanded into batched GEMM or sparse matmul, $O(|G|^2)$ or $O(|G| \cdot d)$, GPU-friendly
-- **Continuous compact groups SO(n)/SU(n)**: Require discrete sampling or frequency-domain expansion (Peter-Weyl theorem); fast algorithms exist for spherical harmonic transforms
-- **Permutation group $S_n$**: Order $n!$, cannot be enumerated; use sort pooling, symmetric functions, and other approximate invariants
-- **Fourier-accelerated group convolution**: The FFT on finite groups reduces convolution from $O(|G|^2)$ to $O(|G| \log |G|)$, but implementation is complex
+- **Convolution on a finite group**: naive scalar convolution costs $O(|G|^2)$; a kernel supported on s elements can reduce this to $O(|G|s)$, before channel and implementation costs.
+- **Continuous compact groups SO(n)/SU(n)**: use sampling/frequency expansions (Peter-Weyl) or direct representation constraints; sampling is not required for every equivariant layer.
+- **Permutation group $S_n$**: avoid enumerating $n!$ elements; sum/mean/max aggregation is exactly invariant, while sorting needs tie and differentiability handling.
+- **Group FFTs**: cyclic/finite abelian groups admit efficient FFTs; arbitrary finite groups do not inherit a universal $O(|G|\log|G|)$ convolution bound. Count representation transforms and block matrix products.
 - Key bottleneck: if the discretization of a continuous group is not exact, equivariance silently breaks
 
 ## Risks and Failure Conditions
@@ -57,9 +57,9 @@ GPU friendliness depends on the type of group:
 - If invariant analysis is needed -> `symmetry` (design pattern layer for symmetry analysis)
 
 ## Extensible Directions
-- Orbit-stabilizer theorem: relationship between orbits and stabilizers of group actions
+- Orbit-stabilizer for a finite group: $|G|=|\mathrm{Orb}(x)|\,|G_x|$; for general groups the orbit is in bijection with the coset space $G/G_x$.
 - Transitive / free actions: special types of group actions
-- Homogeneous space G/H: orbit space of group actions
+- Homogeneous space G/H: a single orbit under a transitive action (with suitable conditions for a smooth structure), distinct from the general orbit set X/G.
 - Quotient manifold: quotient structure under smooth group actions
 - Slice theorem: local structure of compact group actions
 - Momentum map: conserved quantities of Hamiltonian group actions

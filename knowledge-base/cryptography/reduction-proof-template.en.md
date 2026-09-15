@@ -49,9 +49,9 @@ where $L$ is reduction loss and $\delta$ collects collisions, simulation failure
 
 ## Further References
 
-- `../../references/books/foundations-of-cryptography.md`
-- `../../references/books/applied-cryptography.md`
-- `../../references/books/introduction-to-modern-cryptography.md`
+- `../../references/books/foundations-of-cryptography.en.md`
+- `../../references/books/applied-cryptography.en.md`
+- `../../references/books/introduction-to-modern-cryptography.en.md`
 
 ## Routing Extensions
 

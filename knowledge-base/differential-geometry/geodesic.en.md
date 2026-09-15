@@ -8,15 +8,15 @@ A geodesic is a locally length-minimizing (or extremal-length) path $\gamma: [0,
 
 - Geodesic equation: $\ddot\gamma^k + \sum_{ij} \Gamma^k_{ij} \dot\gamma^i \dot\gamma^j = 0$
 - Exponential map: $\exp_p(v) = \gamma_v(1)$, where $\gamma_v$ is the geodesic with $\gamma(0)=p, \dot\gamma(0)=v$
-- Logarithmic map: $\log_p(q) = v \in T_pM$ such that $\exp_p(v) = q$ (the inverse of the exponential map)
-- Retraction (engineering approximation): $R_p(v) \approx \exp_p(v)$, requiring only a first-order approximation for optimization
-- Closed-form on the unit sphere: $\exp_p(v) = \cos(\|v\|)\, p + \sin(\|v\|)\, \frac{v}{\|v\|}$ (requires $\|p\|=1$ and $v \perp p$; for a sphere of radius $r$, replace $\|v\|$ with $\|v\|/r$)
+- Logarithmic map: $\log_p(q)$ is the local inverse of exp_p in a normal neighborhood; a unique global inverse cannot be assumed across branches or a cut locus.
+- Retraction: $R_p(0)=p$, $DR_p(0)=\mathrm{id}_{T_pM}$, with manifold-valued output. This is local first-order agreement, not a Banach contraction.
+- Sphere of radius $r>0$: $\exp_p(v)=\cos(\|v\|/r)p+r\sin(\|v\|/r)v/\|v\|$, with $\|p\|=r$, $p^Tv=0$; use the continuous limit $p$ at $v=0$.
 
 ## Applicable Problems
 
-- Constrained optimization: performing SGD on SPD/Stiefel/Grassmann/hyperbolic manifolds, where update steps must move along geodesics
+- Constrained optimization: a valid retraction can replace exact geodesic steps; match the update to its metric and convergence assumptions.
 - Latent space interpolation: geodesics between two points in the latent space respect the data manifold structure better than Euclidean straight lines
-- Distance computation on manifolds: $d(p,q) = \|\log_p(q)\|_g$
+- Manifold distance: $d(p,q)=\|\log_p(q)\|_g$ requires a minimizing geodesic branch reaching q.
 - Data augmentation: sampling along geodesics to generate new training samples
 
 ## AI Design Translation
@@ -29,18 +29,18 @@ A geodesic is a locally length-minimizing (or extremal-length) path $\gamma: [0,
 ## Engineering Feasibility
 
 GPU friendliness depends on whether a closed-form retraction exists:
-- **Manifolds with closed forms** (sphere, hyperbolic, SO(3), Stiefel-QR): $\exp_p(v)$ is a finite algebraic expression, $O(1)$/sample, tensorizable in batches, GPU-friendly
+- **Closed forms/finite algebraic steps**: sphere exp costs $O(n)$; Stiefel-QR is a retraction, typically $O(np^2)$, not an exp or constant-cost operation. SO(3) group exp equals Riemannian exp only for appropriate metrics.
 - **Manifolds without closed forms**: require numerical integration of the geodesic equation (second-order ODE), serial recurrence, GPU-unfriendly
 - Closed-form retractions as substitutes for exact exp: QR decomposition, Cayley transform, and other first-order approximations trade a small amount of precision for significant speedup
 - Small-matrix exp for 3x3/4x4 (SO(3)/SE(3)) can be fused into a single kernel, but cannot fully saturate Tensor Cores
-- **Low-precision critical issue**: $\sin\theta/\theta$ and $(1-\cos\theta)/\theta^2$ produce division by zero as $\theta \to 0$; $\log$ is singular as $\theta \to \pi$; fp16 yields NaN directly
+- **Numerical branches**: sinθ/θ has a removable zero-angle singularity; SO(3) Log near π needs separate axis/branch handling, not a zero-angle Taylor fallback.
 
 ## Risks and Failure Conditions
 
-- **Step-by-step ODE integration for geodesics**: Serial recurrence kills GPU parallelism; closed-form retractions must be used instead
-- **Small-angle / large-angle singularities**: Numerical instability at $\theta \to 0$ and $\theta \to \pi$ is catastrophically amplified at low precision; Taylor expansion fallbacks are essential
-- **Retraction error accumulation**: First-order approximations may accumulate errors over multiple iterations, requiring occasional exact projection corrections
-- **Cut locus problem**: Beyond the cut locus, the exponential map no longer yields the shortest path; $\log_p(q)$ may not exist or may not be unique
+- **ODE costs**: an exact geodesic-distance task cannot replace exp by an arbitrary retraction; optimization may compare retraction costs and convergence conditions with ODE integration.
+- **Numerical branches**: use Taylor/sinc near zero; near cut loci handle log branches and nonuniqueness, which small-angle Taylor expansions cannot remove.
+- **Retraction error**: valid retractions remain on the manifold at every exact-arithmetic step; local deviation from exp is not constraint drift. Measure floating-point constraint residuals separately.
+- **Cut locus**: beyond the cut time along a direction a geodesic loses minimality; a minimizing log may be nonunique at the cut locus. $d(p,q)=\|\log_pq\|$ requires a minimizing branch.
 - **Forced manifold structure for geometric aesthetics**: Applying geodesics to tasks where Euclidean approximations suffice adds complexity and singularity risk
 
 ## Further References
@@ -53,7 +53,7 @@ GPU friendliness depends on whether a closed-form retraction exists:
 
 ## Routing Extensions
 - If the distance definition is needed -> `metric-tensor.en.md` (metric tensor determines geodesics)
-- If used as a retraction -> `../optimization/riemannian-optimization.md` (exponential map as retraction)
+- For optimization updates → `../optimization/riemannian-optimization.en.md` (retractions and convergence conditions).
 - If deviation from flat space is needed -> `curvature.en.md` (curvature controls geodesic deviation)
 
 ## Extensible Directions

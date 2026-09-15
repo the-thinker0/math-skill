@@ -1,7 +1,7 @@
 # 熵 / Entropy
 
 ## 最小定义
-Shannon 熵度量一个随机变量的**不确定性总量**——即描述该变量所需的最少平均比特数。它是信息论的基石，也是最大似然、变分推断、正则化等 AI 方法的底层统一量。
+离散变量用以2为底的对数时，Shannon 熵以 bit 衡量不确定性，并给出平均无损码长下界；单符号前缀码未必精确达到它。自然对数用 nat。微分熵依赖参考测度及坐标，而固定概率测度之间的 KL/MI 具有换元不变性。
 
 ## 核心公式
 
@@ -17,7 +17,7 @@ $$H(X, Y) = H(X) + H(Y|X), \quad H(Y|X) = -\sum_{x,y} p(x,y) \log p(y|x)$$
 **互信息**（两个变量共享的信息量）：
 $$I(X; Y) = H(X) - H(X|Y) = H(Y) - H(Y|X) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}{p(x)p(y)}$$
 
-**最大熵原理**：在满足约束条件 $\mathbb{E}[f_i(X)] = c_i$ 的所有分布中，使 $H(X)$ 最大的分布为指数族 $p(x) \propto \exp\left(\sum \lambda_i f_i(x)\right)$。
+**约束最大熵**：明确支撑/底测度及可行矩约束后，若存在可归一化的内部最优点，Lagrange 驻点条件给出指数族形式。须检查存在性、边界最优及熵无上界情形；任意矩约束不保证可归一化最优分布。
 
 ## 适用问题
 - **特征选择**：用互信息 $I(X; Y)$ 筛选对目标变量最有信息量的特征
@@ -27,20 +27,20 @@ $$I(X; Y) = H(X) - H(X|Y) = H(Y) - H(Y|X) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}
 - **正则化设计**：最大熵正则化鼓励模型输出"不确定但公平"的分布，防止过自信；label smoothing 等价于对输出分布加熵正则
 
 ## AI 设计翻译
-- **交叉熵损失 Cross-Entropy Loss**：$H(p, q) = -\sum p(x)\log q(x)$，分类任务的默认损失函数，本质是真实分布 $p$ 与模型分布 $q$ 之间的"编码冗余"
+- **交叉熵**：$H(p,q)=-\sum p\log q$ 是使用模型码的期望码长/交叉熵；超过 $p$ 自身熵的冗余是 **KL**，不是交叉熵本身。
 - **KL 散度**（详见 `kl-divergence.md`）：$D_{KL}(p\|q) = H(p,q) - H(p)$，即交叉熵与熵之差
-- **变分自编码器 VAE**：ELBO = 重构似然 $-$ KL 正则项，本质是在信息压缩（低 $H(Z)$）与重构保真之间取平衡
+- **VAE**：编码器到先验的期望 KL 包含输入—潜变量 MI 以及聚合后验与先验失配，不等于最小化潜变量熵；需明确随机信道与先验。
 
 ## 工程可行性
 - **D1[v]**：$-\sum p \log p$ 是逐元素运算，完美向量化
 - **D2[~]**：熵本身不是 GEMM，但交叉熵损失的梯度计算涉及 softmax → matmul 链
 - **D3[v]**：$O(|\mathcal{X}|)$ 线性，vocab 级计算可接受
-- **D5[v]**：$\log$ 和 exp 在 bf16 下稳定，softmax 有 log-sum-exp 技巧
+- **D5[~]**：使用稳定 log-softmax 与 fp32 累加；mask 零概率按 $0\log0=0$ 处理。低精度 exp/log 可下溢或溢出。
 - **D8[v]**：softmax + cross-entropy 是经典融合算子（FusedSoftmaxCrossEntropy）
 
 ## 风险与失效条件
 - **连续熵可为负**：微分熵 $h(X)$ 不受 $H(X) \geq 0$ 约束，直接比较不同量纲的微分熵可产生误导。应改用互信息或 KL 散度（非负）。
-- **对 vocab 大小敏感**：大 vocab（如 LLM 的 128K tokenizer）下 softmax + 交叉熵的显存峰值可达数十 GB，需 chunked/online softmax 或 label smoothing 缓解。
+- **词表显存**：物化 $B\times T\times V$ logits 随 batch、序列及词表增长。分块/融合交叉熵可减中间存储；标签平滑改变目标，本身不是降显存方法。
 
 ## 深入参考
 - 蒸馏稿：`../../references/books/` 暂无专用信息论蒸馏稿

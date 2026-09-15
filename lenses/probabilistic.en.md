@@ -16,14 +16,14 @@ The probabilistic perspective is a way of "making rational decisions under uncer
 ## What Problems It Is Not Suited For
 
 - Deterministic problems — the answer is known or can be obtained by deduction; probabilistic tools are unnecessary
-- Extremely small sample sizes (n < 5) with no possibility of increase — report the data itself rather than inferences from it
+- Requests for assumption-free precise population inference from insufficient data — there is no universal n < 5 ban; exact tests or Bayesian analysis may be appropriate, with interval width and prior sensitivity reported
 - Data that is entirely missing or severely corrupted — no meaningful statistical operation can be performed
 
 ## Which Knowledge Domains It Routes To
 
-- `probability/entropy`: Kolmogorov axioms, distribution families, and the law of large numbers / CLT — the mathematical foundations of uncertainty
+- `probability/entropy`: entropy and mutual information; tail bounds route to `probability/concentration-inequality`; uncovered statistical theory uses the gap protocol
 - `probability/kl-divergence`: MLE, hypothesis testing, Bayesian inference, and regression modeling — extracting patterns from data
-- causal inference (no KB card yet, use critic): DAGs, the back-door criterion, and do-calculus — the reasoning framework from association to causation
+- causal inference (no KB card yet, verify through the Knowledge Gap Protocol): DAGs, the back-door criterion, and do-calculus — the reasoning framework from association to causation
 
 ## What AI Designs It May Inspire
 

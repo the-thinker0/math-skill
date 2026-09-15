@@ -17,7 +17,7 @@ This is an "interventionist's" perspective — unsatisfied with observed associa
 
 - Pure prediction tasks with no causal question — only P(y|x) is needed; association suffices, and causation is superfluous
 - Problems where no causal assumptions can be encoded — if a plausible DAG cannot be drawn, no causal conclusions can be reached
-- Deterministic systems with no variation — causation is already fully described by the mechanism
+- Executing a known deterministic calculation without an intervention question; deterministic structural equations can still model causation and counterfactuals
 - Tasks that merely contain words like "cause/effect/impact" but actually ask for correlation, attribution scores, or feature importance — those are statistical/interpretability questions; do not force the causal framework
 
 ## Which Knowledge Domains It Routes To
@@ -36,15 +36,15 @@ This is an "interventionist's" perspective — unsatisfied with observed associa
 ## Reasoning Protocol
 
 1. **Construct a causal DAG**: Identify all variables, draw causal arrows encoding direct-cause assumptions, and verify acyclicity
-2. **Identify confounders**: Find all common ancestors of X and Y; distinguish observed from unobserved confounders
+2. **Identify confounders**: Check paths and adjustment sets under the back-door criterion or another identification theorem; do not automatically adjust for every common ancestor, collider, or post-treatment variable
 3. **Select an identification strategy**: Based on confounder observability, choose back-door / front-door / do-calculus to reduce P(y|do(x)) to observable quantities
-4. **Compute the interventional effect**: Apply the adjustment formula; compare with observational P(y|x) to measure confounding bias
+4. **Compute the interventional effect**: Check identification, positivity, and consistency first; estimate an identified effect or report non-identification/partial bounds and missing assumptions
 5. **Sensitivity analysis**: Quantify how strong an unobserved confounder would need to be to overturn the conclusion (E-value / Rosenbaum Gamma)
 
 ## Acceptance Criteria
 
 - The DAG has been constructed with a justification for every arrow; acyclicity has been confirmed
 - Confounders have been listed, annotated as observed or unobserved
-- P(y|do(x)) has been computed and compared with P(y|x); confounding bias has been quantified
+- Identification is assessed; report an estimand, estimator, and uncertainty where estimation is justified, otherwise do not force a numerical effect
 - Counterfactual analysis (if required) states the necessary structural equations
 - Sensitivity analysis has been performed and the fragility of conclusions has been quantified

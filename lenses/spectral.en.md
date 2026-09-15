@@ -1,10 +1,10 @@
 # Spectral Decomposition Lens
 
-> Any linear operator can be decomposed into a superposition of eigencomponents — eigenvalues reveal dominant structure, eigenvectors reveal dominant directions.
+> Identify the operator class first: normal matrices admit unitary diagonalization; general finite matrices admit SVD/Schur decompositions.
 
 ## What Perspective It Offers
 
-This is a "decomposer's" perspective — breaking complex linear operators (matrices, kernel functions, graph Laplacians) into spectra of eigenvalues and singular values, using dominant eigencomponents to capture global behavior and tail eigenvalues to quantify noise and redundancy. The core conviction: the spectrum — the distribution of eigenvalues — determines everything about an operator: its condition number, rank, stability, and convergence rate.
+This is a "decomposer's" perspective — breaking complex linear operators (matrices, kernel functions, graph Laplacians) into spectra of eigenvalues and singular values, using dominant eigencomponents to capture global behavior and tail eigenvalues to quantify noise and redundancy. Eigenvalues, singular values, and eigenspaces answer different questions. Non-normal matrices can have arbitrarily large norms, condition numbers, and transient amplification at fixed eigenvalues. Spectral tails are not automatically noise.
 
 ## What Problems It Is Suited to Diagnose
 
@@ -31,18 +31,18 @@ This is a "decomposer's" perspective — breaking complex linear operators (matr
 ## What AI Designs It May Inspire
 
 - **Spectral Normalization**: Constrain the largest singular value of weight matrices to stabilize training
-- **Low-Rank Adaptation (LoRA)**: Fine-tune in a truncated SVD subspace
+- **Low-Rank Adaptation (LoRA)**: Learn a low-rank update BA; standard LoRA requires neither truncated SVD nor fixed singular subspaces
 - **Spectral Graph Attention**: Use graph Laplacian eigenvectors for positional encoding
-- **Spectral Clustering Routing**: Use top-k eigenvectors for MoE token assignment
-- **Effective Rank Monitoring**: Track the stable rank of weight matrices to detect overfitting
+- **Spectral Clustering Routing**: Use the smallest-eigenvalue Laplacian subspace for candidate grouping; hard routing still needs capacity constraints
+- **Effective Rank Monitoring**: Track stable rank as a structural diagnostic; overfitting needs independent validation evidence
 
 ## Reasoning Protocol
 
 1. **Identify the operator**: Which matrix, kernel, or graph requires spectral analysis? What are its dimensions?
 2. **Compute or estimate the spectrum**: Full EVD (small matrices) / power iteration for dominant eigenvalues / randomized SVD
 3. **Analyze the spectral distribution**: Condition number, spectral gap, effective rank, decay rate
-4. **Identify dominant components**: What proportion of the variance or Frobenius norm is explained by the first k eigenvalues?
-5. **Assess truncation impact**: Quantify the error introduced by discarding tail eigenvalues (Eckart-Young provides a sharp bound)
+4. **Identify dominant components**: How much covariance variance do the leading eigenvalues explain? For a general matrix, what fraction of squared Frobenius norm do the leading squared singular values retain?
+5. **Assess truncation impact**: Eckart–Young characterizes truncated-SVD error in spectral/Frobenius norm; eigenspace bounds additionally need gaps, and task-output error requires a separate derivation
 
 ## Acceptance Criteria
 

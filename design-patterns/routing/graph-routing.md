@@ -1,5 +1,5 @@
 # Graph Routing（图路由）
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
+> **证据标注**：[v] 有明确假设或记录验证支持；[~] 待验证的工程方案；[x] 在所述条件下不相容；[N/A] 不适用。伪代码用于定义算子，不是完整生产实现。
 
 ## 适用问题
 当模块/专家之间存在已知的或可学习的拓扑结构时使用。典型场景：
@@ -15,43 +15,36 @@
   ../../knowledge-base/optimization/lagrangian-duality.md（图上优化、扩散过程）
 
 ## 需要的数学知识
-- **图拉普拉斯**：L = D - A（组合）或 L_sym = D^{-1/2} L D^{-1/2}（归一化）
-  特征分解 L = U Λ U^T 给出图的频域基，低频分量对应平滑信号
-- **图扩散/Random Walk**：P = D^{-1}A 为转移矩阵，P^t 描述 t 步后的分布
-  PageRank: π = α·P^T·π + (1-α)·v，平衡图结构与先验偏好
-- **Graph Neural Network 消息传递**：
-  h_i^{(l+1)} = σ(Σ_{j∈N(i)} W^{(l)} h_j^{(l)} / √(d_i·d_j))
-  等价于一次稀疏矩阵乘法 L_sym · H · W
-- **Min-Cut 谱聚类**：min cut(A,B) s.t. vol(A)=vol(B) → 近似解为 L 的 Fiedler 向量
+
+- 对称非负邻接 $A$ 下，$L=D-A$、$L_{sym}=I-D^{-1/2}AD^{-1/2}$；明确孤立节点处理。
+- GCN 平滑使用归一化**邻接** $S=\tilde D^{-1/2}(A+I)\tilde D^{-1/2}$，不是 $L_{sym}$ 本身；$H'=\sigma(SHW)$。
+- 随机游走用 $P=D^{-1}A$，需悬挂节点约定。学习的边 logits 可用 mask softmax 归一化；不加 mask 会让不存在的边也为正，改变图。
+- Fiedler 向量求解图割目标的连续松弛；阈值化通常不产生精确平衡最小割，也不证明路由多样性。
+- 平衡二叉树每 token 访问 $O(\log K)$ 个节点，但通常存 $O(Kd)$ 节点参数，不是 $O(d\log K)$。
 
 ## AI 模块形式
+
+```python
+# A：非负专家邻接，明确自环/悬挂节点处理
+P = A / A.sum(-1, keepdim=True)
+route = softmax(X @ W_gate, dim=-1)  # 概率，N x K
+for _ in range(t):
+    route = route @ P               # 稀疏扩散，不显式构造 P**t
+
+A_tilde = A + eye(K)
+deg = A_tilde.sum(-1)
+S = deg[:, None]**(-0.5) * A_tilde * deg[None, :]**(-0.5)
+H1 = relu(S @ expert_embeddings @ W1)
+score = X @ (S @ H1 @ W2).T
+
+# 硬树遍历：每个 token 有自己的当前节点
+node = root_index_for_each_token(N)
+for level in range(tree_depth):
+    p_right = sigmoid((X * node_weights[node]).sum(-1) + node_bias[node])
+    take_right = p_right > 0.5
+    node = where(take_right, right_child[node], left_child[node])
 ```
-模块：GraphRouter
-输入：token 表示 X ∈ R^{N×d}，专家图 G = (V, E) 其中 |V|=K
-
-方法1 - 图扩散路由（预计算）：
-  A ∈ R^{K×K}   // 专家邻接矩阵（预定义或可学习）
-  P = softmax(A / τ, dim=-1)   // 归一化转移概率
-  P_t = matrix_power(P, t)     // t 步扩散，t=2~5
-  // 路由分数 = 初始分数 × 扩散矩阵
-  score_init = X @ W_gate      // N×K，标准 gate
-  score_final = score_init @ P_t  // N×K，图扩散平滑
-  // 一次 GEMM (N×K)@(K×K) 即可融入图结构
-
-方法2 - GNN 路由（可学习图结构）：
-  H_0 = expert_embeddings  // K×d
-  H_1 = ReLU(L_norm @ H_0 @ W_1)  // 1层 GCN
-  H_2 = L_norm @ H_1 @ W_2         // 2层 GCN
-  score = X @ H_2^T                // N×K 路由分数
-  // 图结构通过 A 的可学习参数化端到端更新
-
-方法3 - 层次树路由（O(log K) 复杂度）：
-  // 专家组织为二叉树，每个内部节点为二分类器
-  for level in range(depth):       // depth = log₂(K)
-    direction = sigmoid(X @ w_level + b_level)  // 左/右子树选择
-    path_prob *= direction          // 路径概率累积
-  // 总计算量：O(N·d·log K) vs 标准 MoE 的 O(N·d·K)
-```
+硬遍历含条件分支，决策处不可微；需监督路由、随机估计器或明确的松弛。为可微软路由评估所有分支通常会失去对数级推理成本。
 
 ## 可实现结构
 - **稀疏邻接矩阵**：用 torch.sparse 存储 A，稀疏 matmul 替代 dense
@@ -60,19 +53,17 @@
 - **层次树实现**：用完全二叉树的数组表示，level-wise 向量化
 
 ## GPU 可行性
-- **D1[v]**：GCN 层为稀疏矩阵×稠密矩阵 (SpMM)，PyTorch 和 cuSPARSE 均支持
-- **D2[v]**：方法1 的 score_init@P_t 为标准 GEMM (N×K)@(K×K)
-- **D3[v]**：方法1 O(N·K²) 扩散 + O(N·K·d) gate；方法3 O(N·d·log K) 显著优于 O(N·d·K)
-- **D4[v]**：A 矩阵 K×K 稀疏存储；层次树参数 d×log K 极小
-- **D5[v]**：概率矩阵 P 和 softmax 在 fp16 下需注意归一化精度
-- **D6[v]**：GNN 消息传递可批量并行；层次树同层节点独立可并行判断
-- **D7[v]**：图邻接矩阵天然稀疏（度 << K），SpMM 加速比 O(K²) 到 O(K·avg_deg)
-- **D8[v]**：GCN 的 L_norm@H@W 可融合为单次稀疏 GEMM
+
+- **D1/D2[~]**：gate GEMM 加稀疏邻接传播；稀疏 GPU 收益取决于度分布及批处理。
+- **D3[~]**：gate 为 $O(NdK)$，$t$ 次稀疏扩散为 $O(tN|E|)$；预计算稠密 $P^t$ 应用为 $O(NK^2)$，且幂可能稠密化。硬平衡树为 $O(Nd\log K)$，含不规则 gather。
+- **D4[~]**：图存储 $O(|E|)$；一般二叉树参数 $O(Kd)$；若物化路由概率还需 $O(NK)$。
+- **D5[~]**：fp32 累加概率，监控行和漂移及首选分数间隔。
+- **D6[~]**：token 及同深度节点可批处理，但遍历层和扩散轮之间串行。
+- **D7/D8[~]**：稀疏传播与稠密特征 GEMM 是不同操作；融合及稀疏盈亏点需具体核测量。
 
 ## 论文表述方式
-"利用专家间的层次树/图拓扑结构，将路由决策从 O(N·K) 的平铺搜索压缩为 O(N·log K) 的
-树遍历或 O(N·K·avg_deg) 的图扩散，Fiedler 谱分析表明图的代数连通度 λ₂ 直接控制
-路由的多样性-一致性权衡。"
+
+“我们用归一化邻接扩散或条件决策树编码指定的专家图，报告遍历深度、访问专家数、混合行为、图消融及实际计算与延迟；谱连通性本身不保证多样性与一致性的权衡。”
 
 ## 风险
 - 图结构先验不正确时，路由被误导到次优专家

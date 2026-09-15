@@ -1,5 +1,5 @@
 # MoE Routing（混合专家路由）
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
+> **证据标注**：[v] 有明确假设或记录验证支持；[~] 待验证的工程方案；[x] 在所述条件下不相容；[N/A] 不适用。伪代码用于定义算子，不是完整生产实现。
 
 ## 适用问题
 大规模模型中需要动态选择少量专家处理每个 token，以实现参数扩展而推理代价可控。
@@ -18,62 +18,50 @@
   E 步估计责任 γ_{nk} = π_k·p(y_n|x_n,θ_k) / Σ_j π_j·p(y_n|x_n,θ_j)
   M 步更新专家参数 θ_k 和混合权重 π_k
 - **Top-k 稀疏 Gate**：G(x) = Softmax(TopK(x·W_g))
-  TopK 操作不可微，训练时用 noisy top-k 或 straight-through estimator
+  TopK 索引离散，但入选值保留分段梯度；噪声/STE 是可选设计，top-1 权重须按下文明确口径
 - **负载均衡辅助损失**：L_aux = α · K · Σ_k f_k · P_k
   f_k = 分配到专家 k 的 token 比例，P_k = 专家 k 的平均门控概率
 - **Expert Choice Routing**：专家主动选择 token，而非 token 选择专家
   score_{ki} = sim(e_k, x_i)，每个专家选 top-C 个 token
 
 ## AI 模块形式
+
+```python
+# K个专家中选k个；可选噪声应作为单独变体验证
+logits = (X @ W_gate).float()
+p_full = softmax(logits, dim=-1)
+topk_idx = topk(logits, k, dim=-1).indices
+selected_p = gather(p_full, topk_idx)
+# top-1保留完整softmax概率，使任务损失能向router传梯度。
+gate_weights = selected_p if k == 1 else selected_p / selected_p.sum(-1, keepdim=True)
+output = dispatch_compute_combine(X, topk_idx, gate_weights)
+
+# 在 N*k 次分配上归一化负载比例
+f = one_hot(topk_idx, K).float().mean(dim=(0, 1)).detach()  # 形状K
+P = p_full.mean(dim=0)
+L_aux = K * dot(f, P)  # f或P均匀时为1；一般不保证 >= 1
+capacity = ceil(capacity_factor * N * k / K)
 ```
-模块：MoERouter
-输入：X ∈ R^{N×d}，K 个专家 {E_k}_{k=1}^K，每 token 激活 k 个专家
+Top-k **索引**离散，但选中权重可获得普通分段梯度；噪声 gate 或 STE 是设计选项，并非所有稀疏 gate 的必需步骤。只对单个入选 top-1 logit 作 softmax 会恒等于1，权重路径任务梯度为0。[Switch Transformer 原论文](https://arxiv.org/abs/2101.03961)。
 
-方法1 - Standard Top-K Gate (Switch/ST-MoE)：
-  logits = X @ W_gate               // N×K，标准 GEMM
-  noise = randn(N, K) * softplus(X @ W_noise)  // 可学习噪声，促进探索
-  logits_noisy = logits + noise
-  topk_vals, topk_idx = topk(logits_noisy, k, dim=-1)  // 选 top-k
-  gate_weights = softmax(topk_vals, dim=-1)    // k 个专家的权重
-  // 输出 = Σ_{j∈top-k} gate_weights_j · E_j(X)
-
-方法2 - Shared + Private 双路路由：
-  // Shared 专家始终激活，Private 专家 top-k 选择
-  shared_out = E_shared(X)           // 所有 token 都过 shared 专家
-  private_logits = X @ W_private_gate  // N×K_private
-  private_topk = topk(private_logits, k_p)
-  private_out = Σ_j gate_j · E_private_j(X)
-  output = shared_out + private_out   // 或 concat + linear
-
-方法3 - Expert Choice (Google 2022)：
-  // 反转视角：每个专家选择 top-C 个 token
-  affinity = E_embeddings @ X^T      // K×N，专家与 token 的亲和力
-  for k in range(K):
-    chosen_tokens = topk(affinity[k], C)  // 每个专家选 C=N/K 个 token
-    expert_k.process(chosen_tokens)
-  // 天然负载均衡：每个专家处理恰好 C 个 token
-
-辅助损失：
-  f = onehot(topk_idx).float().mean(dim=0)   // K 维，各专家负载
-  P = softmax(logits, dim=-1).mean(dim=0)    // K 维，各专家平均概率
-  L_aux = K * dot(f, P)                      // 均匀时为 1，不均匀时 >1
-```
+Expert-choice 由每个专家选择 top-$C$ token，固定专家负载，但每个 token 的专家数可变，甚至没有被选。需明确组合权重及 fallback。共享专家另有稠密路径成本。溢出处理需明确：丢弃、残差旁路、重路由或无丢弃执行。
 
 ## 可实现结构
-- **Gate 网络**：单层 Linear(d, K) + optional noise network
-- **专家并行**：each expert on separate GPU，all-to-all 通信交换 token
-- **容量因子**：cap = C_factor · N/K，超出容量的 token 走 residual（不被丢弃）
-- **Router Z-loss**：L_z = α·mean(logsumexp(logits)²) 稳定 logits 幅度
+
+- gate 网络与 dispatch/combine 配合明确的选中概率口径。
+- 一个设备可放多个专家；按实际放置方式计 token 交换。
+- 容量计入选分配数，因此随 `N*k/K` 缩放。
+- router z-loss 正则 logsumexp 大小；报告溢出、各专家负载及 gate 梯度。
 
 ## GPU 可行性
-- **D1[v]**：gate logits = X@W_gate 为标准 GEMM (N×d)@(d×K)；专家计算为 batched GEMM
-- **D2[v]**：gate 1 次 GEMM；每个专家内部为标准 FFN（2 次 GEMM + activation）
-- **D3[v]**：gate O(N·d·K)；每专家 O(N·d·d_ff/k)；总 FLOPs ≈ 标准 FFN × k
-- **D4[v]**：K 个专家参数全存储但仅 k 个激活，激活显存 ≈ 标准 FFN × k
-- **D5[v]**：gate 的 softmax + top-k 在 fp16 安全；Router Z-loss 需 fp32 logsumexp
-- **D6[~]**：专家并行需 all-to-all 通信（每个 GPU 收发 N/K 个 token），带宽敏感
-- **D7[v]**：top-k 路由天然稀疏（激活 k/K 的参数），稀疏度 = 1 - k/K
-- **D8[v]**：gate → top-k → softmax → weighted-sum 可融合；专家内 FFN 可 fuse
+
+- **D1/D2[~]**：gate 用 GEMM；专家 FFN 用 grouped/batched GEMM，另有 gather/scatter 分发开销。
+- **D3[~]**：gate 为 $O(NdK)$；均衡时每专家负载 $Nk/K$，成本 $O((Nk/K)dd_{ff})$，总计 $O(Nkdd_{ff})$。共享专家及容量填充另计。
+- **D4[~]**：全部 $K$ 组专家参数都存在；激活显存取决于容量填充、checkpoint 与并发，不只是入选参数比例。
+- **D5[~]**：按需以 fp32 计算路由 logits/softmax/归约；测量并列附近 top-k 不稳定。
+- **D6[~]**：通信由远程入选分配决定，全远程情况约 $O(Nkd)$ 元素外加 combine 流量；设备拓扑及专家位置决定各设备负载。
+- **D7[~]**：稀疏激活属于条件计算，不代表专家稠密权重矩阵稀疏。
+- **D8[~]**：router 与 dispatch 融合需具体实现；最终加权求和之前还有专家计算。
 
 ## 论文表述方式
 "采用 noisy top-k 门控实现稀疏混合专家路由，每个 token 仅激活 k 个专家以降低激活计算，同时用负载均衡辅助损失 L_aux = K·⟨f,P⟩ 和 Router Z-loss 稳定路由 logits。论文中应报告专家利用率、溢出率、all-to-all 通信占比，以及同等 FLOPs/参数预算下相对 dense baseline 的实测质量差异；不得用未实测的固定百分比占位。"

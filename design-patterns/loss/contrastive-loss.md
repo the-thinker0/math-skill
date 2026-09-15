@@ -1,5 +1,5 @@
 # Contrastive Loss（对比损失）
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
+> **证据标注**：[v] 有明确假设或记录验证支持；[~] 待验证的工程方案；[x] 在所述条件下不相容；[N/A] 不适用。伪代码用于定义算子，不是完整生产实现。
 
 ## 适用问题
 当需要让模型学会"什么和什么相似、什么和什么不同"时使用。典型场景：
@@ -24,48 +24,27 @@
 
 ## 对齐-均匀性理论 (Alignment-Uniformity Framework)
 
-对比学习的表示质量可分解为两个独立目标（Wang & Isola, 2020）：
+单位归一化特征可用对齐与均匀性作总体诊断：
+$$L_{align}=\mathbb E_{(x,x^+)}\|f(x)-f(x^+)\|^2,\qquad L_{uniform}=\log\mathbb E_{x,x'}e^{-t\|f(x)-f(x')\|^2},\ t>0.$$
+无限负样本分析在相应采样及分布假设下联系对比目标与这些性质。它不保证有限 batch 精确均匀，也没有1024负样本之类通用阈值。温度、正样本构造、模型容量及可达到的分布影响权衡。[Wang 与 Isola 原始分析](https://proceedings.mlr.press/v119/wang20k.html)。
 
-- **对齐 (Alignment)**：正对的表示应接近
-  $L_{\text{align}} = \mathbb{E}_{(x, x^+)}[\|f(x) - f(x^+)\|^2]$
-- **均匀性 (Uniformity)**：表示应在单位超球面 $S^{d-1}$ 上均匀分布
-  $L_{\text{uniform}} = \log \mathbb{E}_{x, x'}[\exp(-2\|f(x) - f(x')\|^2)]$
+一个来自联合分布的正对，加 $M-1$ 个来自相应边缘的 iid 负样本时，总体界为 $I(U;V)\ge\log M-\mathbb E[L_{NCE}]$。损失本身**不是** MI 下界，且界针对正对中的变量。它受 $\log M$ 饱和上限限制；有限样本估计偏差、困难负采样、相关队列及 critic 受限需单独处理。更多负样本不保证固定学习 critic 的实际估计更紧。[CPC 原论文](https://arxiv.org/abs/1807.03748)。
 
-**InfoNCE 与对齐-均匀性的关系**：当 $N \to \infty$ 且温度 $\tau$ 适当时，InfoNCE 损失渐近分解为 alignment + uniformity 之和。有限 $N$ 下，InfoNCE 给出 $I(X;Z)$ 的下界，下界紧度随 $N$ 增大。
-
-**均匀性成立的条件**：
-- 负样本数 $N$ 充分大（理论要求 $N \to \infty$，实践中 $N \geq 1024$ 通常足够）
-- 温度 $\tau$ 不过大（$\tau \to \infty$ 时 loss 退化为常数，丧失均匀性驱动力）
-- 表示维度 $d$ 足够支撑数据的本征维度
-
-**均匀性不成立的条件**：
-- 负样本不足 → 均匀性驱动力弱，表示可能聚集在球面局部
-- 表示坍塌 (representation collapse)：所有输入映射到同一/少数点，trivially 最小化 alignment 但完全丧失 uniformity
-- 温度 $\tau$ 过大 → softmax 趋于均匀分布，梯度消失，无均匀性保证
-- batch 内正负对比例严重失衡且未通过队列补偿
-
-**最多能保证什么**：在理想条件下（$N$ 充分大、$\tau$ 合适、无坍塌），对比损失最小化等价于同时最大化正对对齐度和表示均匀性。
-
-**不能保证什么**：不能保证学到的表示对下游任务最优（均匀性 ≠ 任务相关性）；不能保证语义层级的对齐（仅保证几何层面的正对接近）。
+对齐/均匀性不保证下游语义有效性。除 InfoNCE 外报告正对距离、经验均匀性、坍塌指标及下游任务。
 
 ## AI 模块形式
+
+```python
+anchors = normalize(encoder_q(x), dim=-1)
+positives = normalize(encoder_k(x_positive), dim=-1)
+negatives = queue.snapshot()               # 插入当前正样本前先读取
+positive_logits = (anchors * positives).sum(-1, keepdim=True)
+negative_logits = anchors @ negatives.T
+logits = cat([positive_logits, negative_logits], dim=-1) / tau
+loss = cross_entropy(logits.float(), zeros(B, dtype=long))
+queue.enqueue(positives.detach())          # 存储O(M*d)，不是免费显存
 ```
-模块：ContrastiveLoss
-输入：锚点 z_a ∈ R^{B×d}，正样本 z_p ∈ R^{B×d}，负样本库 z_n ∈ R^{N×d}
-
-核心公式 (InfoNCE + 温度缩放)：
-  sim(q, k) = q^T k / (‖q‖ · ‖k‖)       // cosine 相似度
-  logits_i = [sim(z_a_i, z_p_i)] ⊕ [sim(z_a_i, z_n_j)]_{j=1}^N  // 拼接
-  L_contrast = -1/B · Σ_i log( exp(logits_i[0]/τ) / Σ_j exp(logits_i[j]/τ) )
-
-Queue 机制（MoCo 风格）:
-  z_n = FIFO_queue.enqueue(z_p.detach())   // 负样本队列，容量 N >> B
-  // 队列中存储的是历史 batch 的编码，增大负样本数而不增加显存
-
-Hard Negative Mining:
-  top-k indices = argsort(sim(z_a, z_n), descending=True)[:k]
-  z_n_hard = z_n[top-k indices]            // 只保留最难的 k 个负样本
-```
+按定义从负池排除真实正对/自身。历史队列以陈旧/相关性换更大池，节省重复编码器工作但占用显存。困难负采样改变分布，寻找困难负样本也可能仍需全池打分；报告采样规则，不能默认保留 iid 边缘负样本的 MI 保证。
 
 ## 可实现结构
 - **双塔编码器 + 投影头**：encoder → projection_head(MLP 2层) → 归一化 → loss
@@ -74,14 +53,13 @@ Hard Negative Mining:
 - **多粒度对比**：同时在 token-level、sequence-level、expert-level 施加对比
 
 ## GPU 可行性
-- **D1[v]**：sim 计算为 z_a @ z_n^T → 标准 GEMM (B×d) @ (d×N) = B×N
-- **D2[v]**：核心就是 1-2 次矩阵乘法，完美映射 cuBLAS
-- **D3[v]**：O(B·N·d) 计算 + O(B·N) 存储 logits 矩阵，B=256,N=65536 时约 64MB
-- **D4[v]**：负样本队列占 N·d·4 bytes ≈ 65536·256·4 = 64MB，固定开销
-- **D5[v]**：cosine 相似度 + softmax 在 fp16 下需注意 exp 溢出，用 log-sum-exp trick
-- **D6[v]**：多 GPU 时用 all-gather 收集其他 GPU 的负样本扩大 N（MoCo v3 策略）
-- **D7[v]**：hard negative mining 后只保留 k<<N 个负样本，有效稀疏化 logits
-- **D8[v]**：L2-norm → matmul → scale → log-softmax → nll_loss 可融合
+
+- **D1/D2[~]**：相似度使用 $B\times d$ 乘 $d\times M$ GEMM；归一化和交叉熵另有归约。
+- **D3/D4[~]**：相似度 $O(BMd)$；物化 logits $O(BM)$，队列 $O(Md)$。fp32、$B=256,M=65536$ 时 logits 占64 MiB；$65536\times256$ 队列另占64 MiB。
+- **D5[~]**：使用稳定 log-softmax/log-sum-exp 及 fp32 累加；很小温度放大得分误差与梯度。
+- **D6[~]**：跨设备负样本需 all-gather（可能还有其梯度通信）；动量队列的通信形态不同。
+- **D7[~]**：保留困难负样本只在选择之后减少 logits；除非使用近似索引，全池搜索成本仍在。
+- **D8[~]**：分块相似度/交叉熵可降显存，但写成算子链不代表存在单个融合核。
 
 ## 论文表述方式
 "采用温度缩放的 InfoNCE 对比损失，通过动量编码器维护 N=65536 的负样本队列，

@@ -9,8 +9,8 @@ A map $f: X \to Y$ is equivariant with respect to the action of a group $G$ if $
 - Equivariance condition: $f(\rho_X(g) x) = \rho_Y(g) f(x), \quad \forall g \in G$
 - Invariance = equivariance to the trivial representation: $f(g \cdot x) = f(x)$ ($\rho_Y = \text{id}$)
 - Translation equivariance of convolution: $f(T_a x) = T_a f(x)$, where $T_a$ is the translation operator
-- Gauge equivariance: $f(\alpha \cdot_\omega x) = \alpha \cdot_{f(\omega)} f(x)$, where $\alpha$ is a local gauge transformation and $\omega$ is a connection
-- Adjoint equivariance: $f(X \oplus \tau) = f(X) \oplus (\text{Ad}_X \tau)$ (in the Lie group setting)
+- Gauge equivariance: $f_{A^g}(\rho_X(g)x)=\rho_Y(g)f_A(x)$, transforming both features and connection. Discrete transports obey $T_{ij}\mapsto g_iT_{ij}g_j^{-1}$.
+- Conjugation equivariance of exp: $\exp(\operatorname{Ad}_g\xi)=g\exp(\xi)g^{-1}$; this is not a property of arbitrary $f$.
 
 ## Applicable Problems
 
@@ -21,18 +21,18 @@ A map $f: X \to Y$ is equivariant with respect to the action of a group $G$ if $
 
 ## AI Design Translation
 
-- **E(n)-equivariant GNN**: Node features + coordinates; message passing simultaneously updates scalar features and equivariantly updates coordinates $x_i \to x_i + \sum_j \phi(r_{ij}) \cdot (x_i - x_j)$
-- **Gauge-equivariant CNN**: Each edge carries a $G$-connection to align local frames; convolution kernels are invariant to local coordinate choices; applicable to meshes/spheres/graphs
+- **E(n)-equivariant GNN**: $x_i\mapsto x_i+\sum_j\phi(r_{ij})(x_i-x_j)$ is equivariant when coefficients depend on invariant scalars such as distances and adjacency/aggregation are compatible. Arbitrary directional coefficients do not share this guarantee.
+- **Gauge-equivariant CNN**: edge transports and features follow local-frame transformation laws; kernels satisfy intertwiner constraints. Intermediate features are usually equivariant, with invariant readouts constructed separately.
 - **Steerable CNN**: Feature fields are direct sums of group representations $\bigoplus_l \rho_l$; convolution kernels are constrained by Schur's lemma to block structure, yielding few parameters with strict equivariance
-- **Adjoint-equiv output head**: Pose regression $f: X \to SE(3)$ satisfying $f(g \cdot X) = g \cdot f(X)$, implemented using $\exp$ and the Lie algebra
+- **Pose output head**: distinguish left-action equivariance $f(gX)=g f(X)$ from conjugation equivariance. Exp alone does not guarantee left-equivariant pose prediction; prove the complete encoding/action/output construction.
 - **Equivariance verification loss**: $L_{\text{eq}} = \|f(g \cdot x) - g \cdot f(x)\|^2$ as an auxiliary regularizer, enforcing approximate equivariance
 
 ## Engineering Feasibility
 
 GPU friendliness depends on the degree of group discretization:
 - **Discrete groups ($C_n$, octahedral group, etc.)**: Group convolution can be expanded into GEMM; equivariance constraints block-diagonalize weights (reducing parameters), GPU-friendly
-- **Translation group (standard CNN)**: Naturally equivariant; weight sharing is the engineering realization of equivariance, perfectly GPU-friendly
-- **Continuous groups SO(3)/SE(3)**: Require frequency-domain expansion (spherical harmonics) or sampling-based discretization; fast algorithms exist for spherical harmonic transforms but implementation is complex
+- **Translation group (CNN)**: stride-one convolution on infinite/periodic grids with compatible boundaries is translation equivariant. Padding, subsampling and finite cropping change the set of translations covered by the guarantee.
+- **SO(3)/SE(3)**: harmonic representations are one option; invariant scalar coefficients with relative vectors also construct equivariant layers. Continuous groups do not require discrete enumeration.
 - **Gauge-equivariant**: One $G$-element action per edge equals small matrix-times-feature-vector, expressible as sparse matmul
 - **Approximate equivariance (regularization)**: The equivariance loss $L_{\text{eq}}$ is a standard MSE, fully GPU-friendly, but equivariance is not exact
 - Key trade-off: strict equivariance (structural constraints) vs. approximate equivariance (regularization) -- the former has fewer parameters but complex implementation, the latter is simple but not guaranteed

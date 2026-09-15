@@ -10,7 +10,7 @@ Given a matrix $A \in \mathbb{R}^{m \times n}$, find a matrix $B$ with rank at m
 - Truncated SVD (optimal rank-$k$ approximation): $A_k = U_k \Sigma_k V_k^H$
 - Eckart-Young error: $\|A - A_k\|_F = \sqrt{\sum_{i=k+1}^r \sigma_i^2}$, $\|A - A_k\|_2 = \sigma_{k+1}$
 - Randomized SVD: $A \approx Q(Q^HA)$, where $Q$ is the $Q$-factor from the QR decomposition of $A\Omega$ ($\Omega$ random Gaussian)
-- Effective rank: $r_{\text{eff}}(A) = \|A\|_F^2 / \|A\|_2^2 = \sum \sigma_i^2 / \sigma_1^2$
+- Stable rank (for $A\ne0$): $r_s(A)=\|A\|_F^2/\|A\|_2^2$. Distinguish it from entropy effective rank $\exp(-\sum_i p_i\log p_i)$, $p_i=\sigma_i/\sum_j\sigma_j$; always state the convention.
 - Nuclear norm (convex relaxation of rank): $\|A\|_* = \sum \sigma_i$, the dual of the spectral norm
 
 ## Applicable Problems
@@ -27,14 +27,14 @@ Given a matrix $A \in \mathbb{R}^{m \times n}$, find a matrix $B$ with rank at m
 - **Randomized SVD operator**: For a large matrix $A \in \mathbb{R}^{m \times n}$, first sample $Y = A\Omega$ ($\Omega \in \mathbb{R}^{n \times (k+p)}$ random Gaussian), compute QR decomposition $Y = QR$, then form $B = Q^HA$ (small matrix $O(k \times n)$), and perform SVD on $B$. Total complexity $O(mnk)$ instead of $O(mn^2)$; all core operations are matmul.
 - **KV-Cache low-rank reduction**: Maintain $K$ in factored low-rank form $K \approx U_k \Sigma_k V_k^H$ (storing $U_k \in \mathbb{R}^{L \times k}$ and $\Sigma_k V_k^H \in \mathbb{R}^{k \times d}$, totaling $O(Lk + kd)$ instead of $O(Ld)$). Perform incremental PCA or streaming SVD updates for each new token. **Note**: for standard softmax attention, low-rank factors cannot be treated as $k$ compressed tokens; softmax is still normalized over length $L$. However, one can compute $qK^T = (q(\Sigma_k V_k^H)^T)U_k^T$ in factored form, avoiding materialized $L \times d$ reconstruction and reducing the QK inner dimension from $d$ to $k$. Only in linear attention, and only when compressing additive statistics such as $\phi(K)^T V$ and $\phi(K)^T\mathbf{1}$, can the historical state truly shrink from $L$ tokens to $k$ statistical factors.
 - **Nuclear norm regularization**: $\mathcal{L} = \mathcal{L}_{\text{task}} + \lambda \|W\|_*$ promotes low-rank solutions. However, nuclear norm computation requires full SVD ($O(n^3)$). Alternatives: (1) approximate with truncated SVD; (2) factorize $\|W\|_* = \min_{W=UV^H} \frac{1}{2}(\|U\|_F^2 + \|V\|_F^2)$, converting to Frobenius regularization on $U, V$.
-- **Gradient low-rank compression (distributed training)**: For a gradient matrix $G \in \mathbb{R}^{m \times n}$, transmit top-$k$ SVD factors before all-reduce, reducing communication from $O(mn)$ to $O(k(m+n))$ (if $m \approx n \approx d$, this is $O(d^2) \to O(kd)$). Use randomized SVD locally on each device, then merge.
+- **Distributed gradient compression**: Rank-$k$ factors use $O(k(m+n))$ numbers per worker, but independent SVD factors cannot be summed separately to obtain the sum of gradients. Use a compatible shared-sketch protocol, factor all-gather followed by recompression, or another defined aggregation scheme; count aggregation and error feedback.
 
 ## Engineering Feasibility
 
 - **Primary operations**: matmul + small-matrix SVD. LoRA forward = two matmul operations; randomized SVD = several matmuls + one thin QR + one small SVD, typically $O(mnk)$ (also depending on oversampling, power iterations, and spectral gaps). Lanczos / randomized truncated SVD is usually far cheaper than full SVD, but should not be summarized as an $O(k/n)$ fraction of full SVD.
 - **GPU friendliness**: Extremely high. LoRA forward/backward are all tensor core matmul operations; the dominant cost of randomized SVD is also matmul. Small-matrix SVD has cuSOLVER batched implementations.
-- **Complexity**: LoRA forward $O(dk)$ per sample vs. $O(d^2)$ full rank; randomized SVD $O(mnk)$; full SVD $O(\min(m^2n, mn^2))$.
-- **Memory**: LoRA storage $O(dr)$ vs. $O(d^2)$; KV-Cache low-rank factor storage $O(Lk + kd)$ vs. $O(Ld)$.
+- **Complexity**: The LoRA **update branch** costs $O(dr)$ per sample, while the frozen dense base layer still costs $O(d^2)$. Merging removes branch overhead, not the base matrix. Randomized SVD also includes QR and a small SVD; full rectangular SVD costs $O(\min(m^2n,mn^2))$.
+- **Memory**: LoRA trainable parameters/optimizer state scale as $O(dr)$ while the frozen base remains $O(d^2)$. KV low-rank storage is $O(Lk+kd)$ per compressed matrix, excluding basis updates, recent-token buffers and metadata.
 
 ## Risks and Failure Conditions
 

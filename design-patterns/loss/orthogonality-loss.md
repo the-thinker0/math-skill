@@ -1,5 +1,5 @@
 # Orthogonality Loss（正交性损失）
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
+> **证据标注**：[v] 有明确假设或记录验证支持；[~] 待验证的工程方案；[x] 在所述条件下不相容；[N/A] 不适用。伪代码用于定义算子，不是完整生产实现。
 
 ## 适用问题
 多专家/多任务场景中，各子模块学习到的表示高度重叠、冗余，导致参数利用率低下。
@@ -18,29 +18,21 @@ MoE 专家差异化、多任务 head 去相关。核心诉求：**让不同模�
 - **cosine 相似度矩阵去对角外元素**：C_ij = |⟨w_i, w_j⟩| / (‖w_i‖‖w_j‖)，最小化 Σ_{i≠j} C_ij²
 
 ## AI 模块形式
+
+```python
+# W_i形状d x r、满列秩；QR避免重叠惩罚靠缩小范数坍塌
+Q = [qr(W_i, mode='reduced').Q for W_i in W]
+L_overlap = sum(((Q[i].T @ Q[j])**2).sum() for i, j in pairs)
+
+# 可选平滑重叠障碍
+sigma = svdvals(Q_i.T @ Q_j).clamp(0, 1)
+L_barrier = -log((1 - sigma**2 + eps) / (1 + eps)).sum()
 ```
-模块：OrthogonalDiversityLoss
-输入：K 个特征矩阵 {W_k ∈ R^{d×r}}_{k=1}^K（K 个子模块的权重或特征）
-  // 注意：Grassmann 距离需先对 W_i 做 QR 分解取正交基 Q_i
+无 epsilon 时，障碍在正交处为0、完全重叠时发散；有 epsilon 后重叠处有限，上述归一化表达式仍在正交处为0。Epsilon 不解决重根处奇异向量梯度未定义；Gram 重叠损失避免显式奇异向量。
 
-方法1 - Frobenius 正交正则：
-  L_orth = Σ_{i<j} ‖W_i^T W_j‖_F²
-  // 计算量：O(K² · d · r²)，K 一般 <16 所以可控
+原始 `||W_i.T @ W_j||_F**2` 可通过把任一矩阵缩到0而消失。需归一化/控制方差或使用正交基；若要求严格相互正交，确保 $Kr\le d$。仅 Frobenius 内积 $\operatorname{tr}(A^TB)=0$ **不**蕴含列空间正交。行列式多样性目标需范数约束，防止尺度无界增长。
 
-方法2 - 子空间重叠对数障碍（基于主角度）：
-  σ_k = SVD(Q_i^T Q_j) 的奇异值（= cos(θ_k)，θ_k 为主角度）
-  // ⚠ 必须先将 W_i, W_j 正交归一化：Q_i = qr(W_i).Q, Q_j = qr(W_j).Q
-  // 否则奇异值可能 > 1，导致 -log(1-σ²+ε) 未定义
-  // ⚠ 原公式 σ²(1-σ²) 错误：σ=0（正交）和 σ=1（完全重叠）时惩罚均为 0！
-  // 完全重叠的子空间获得零惩罚，违背正交性目标。
-  // 正确公式：对数障碍，σ=0 时为 0，σ→1 时 → +∞
-  L_grass = Σ_{i<j} Σ_k -log(1 - σ_k² + ε)  // = -Σ log(sin²θ_k)，正交时 θ=π/2 → 0，重叠时 θ→0 → ∞
-
-方法3 - 高效归一化 Gram 去相关：
-  W_norm = column_normalize(concat([W_1,...,W_K]))       // 若不归一化，会同时惩罚范数而非只惩罚角度
-  G = W_norm^T · W_norm                                  // 一次 GEMM
-  L_corr = ‖G ⊙ (1 - I)‖_F²   // mask 掉对角线，惩罚非对角元素
-```
+归一化拼接 Gram 惩罚同时包含块内去相关与块间重叠；若只需专家间重叠，应屏蔽块内项。
 
 ## 可实现结构
 - **嵌入为 nn.Module**：forward 接收 K 个 tensor，返回标量 loss，可直接 .backward()

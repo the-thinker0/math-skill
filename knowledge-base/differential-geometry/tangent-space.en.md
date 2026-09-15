@@ -9,7 +9,7 @@ The tangent space $T_pM$ is the $n$-dimensional vector space of all tangent vect
 - Tangent vector as a derivation: $v(f) = \sum_i v^i \frac{\partial f}{\partial x^i}\bigg|_p$
 - Pushforward (differential): $df_p: T_pM \to T_{f(p)}N$, with coordinate representation given by the Jacobian matrix $J_f(p)$
 - Tangent bundle: $TM = \bigsqcup_{p \in M} T_pM$
-- Cotangent space (the true gradient): $df \in T_p^*M$, which requires the metric to raise the index via $\sharp$ to obtain a tangent vector
+- Cotangent space: a scalar function has differential $df_p\in T_p^*M$; the gradient $\operatorname{grad}_g f=(df)^\sharp$ is a tangent vector.
 
 ## Applicable Problems
 
@@ -21,24 +21,24 @@ The tangent space $T_pM$ is the $n$-dimensional vector space of all tangent vect
 ## AI Design Translation
 
 - **Natural gradient layer**: $\tilde{\nabla} L = g^{-1} \nabla L$, using the Fisher metric to raise the covector (autodiff output) to a tangent vector, invariant under reparameterization
-- **Tangent space projection module**: Under orthogonality/Stiefel constraints, project the gradient onto the tangent space $W\Omega$ (where $\Omega$ is skew-symmetric) to maintain constraints
+- **Tangent space projection module**: for $W\in\mathrm{St}(n,p)$, tangents satisfy $W^TZ+Z^TW=0$; $W\Omega$ alone misses complement directions. Under the embedded Euclidean metric, projection is $Z-W\operatorname{sym}(W^TZ)$.
 - **Jacobian-vector product (JVP) acceleration**: The pushforward $df_p(v)$ naturally corresponds to the JVP, serving as the geometric prototype for forward-mode AD
 - **Tangent space feature representation**: In manifold optimization, store momentum/historical gradients in the tangent space and transport them across points via vector transport
 
 ## Engineering Feasibility
 
 High GPU friendliness. The core operations of the tangent space are linear algebra:
-- Pushforward $df_p(v) = Jv$: matrix-vector multiplication, $O(n^2)$, naturally batched GEMM
+- Pushforward/JVP: an explicit m×n Jacobian costs $O(mn)$ to apply. Automatic differentiation usually avoids materializing it; cost follows the original computation graph.
 - Pullback $df_p^*(\omega) = J^T \omega$: transposed matrix-vector multiplication, which is backpropagation itself
-- Tangent space projection $P = I - WW^T$ (Stiefel): a chain of matrix multiplications, GPU-friendly
-- Metric index raising $g^{-1}\nabla L$: depends on the structure of $g$ -- diagonal/Kronecker-factored yields $O(n)$ to $O(n^2)$, full matrix $O(n^3)$ is infeasible
+- Tangent projection: $\Pi_W(Z)=Z-W\operatorname{sym}(W^TZ)$ costs $O(np^2)$; $(I-WW^T)Z$ is a Grassmann horizontal projection, not the full Stiefel tangent projection.
+- Metric index raising: diagonal solves cost $O(n)$; dense factorization typically $O(n^3)$ followed by $O(n^2)$ per solve. Matrix-free cost depends on product cost and iteration count.
 
 ## Risks and Failure Conditions
 
 - **Confusing gradient with descent direction**: Forgetting the metric index-raising and directly using the raw autodiff output (covector) as a descent direction (tangent vector) leads to incorrect directions in curved spaces
-- **Large matrix inversion**: Natural gradients require $g^{-1}$; the full Fisher matrix $O(N^3)$ is infeasible and necessitates Kronecker/block-diagonal/low-rank factorization
+- **Large metric solves**: obtain the action $g^{-1}df$, not necessarily an explicit inverse. Matrix-free products with iterative solves or structured approximations are alternatives; check conditioning and residuals.
 - **Confusing tangent space with the ambient space**: Performing tangent-space vector addition directly on a curved manifold ignores nonlinear deviations caused by curvature
-- **Missing vector transport**: Tangent spaces at different points cannot be directly summed; momentum/Adam states require parallel transport to be carried across steps
+- **Missing vector transport**: Tangent spaces at different points cannot be directly summed; momentum needs a suitable vector transport, not necessarily exact parallel transport; Adam second moments need their own representation and update convention
 
 ## Further References
 
@@ -49,12 +49,12 @@ High GPU friendliness. The core operations of the tangent space are linear algeb
 
 
 ## Routing Extensions
-- If gradient computation on manifolds is needed -> `../optimization/riemannian-optimization.md` (gradient descent on manifolds)
-- If the tangent space of a group structure is involved -> `../lie-theory/lie-algebra.md` (tangent space of a Lie group is its Lie algebra)
+- If gradient computation on manifolds is needed -> `../optimization/riemannian-optimization.en.md` (gradient descent on manifolds)
+- If the tangent space of a group structure is involved -> `../lie-theory/lie-algebra.en.md` (the tangent space at the identity, with its Lie bracket, is the Lie algebra)
 - If covariant derivative is needed -> `connection.en.md` (connection defines covariant differentiation)
 
 ## Extensible Directions
-- Cotangent space: dual space and differential forms
+- Cotangent space: a scalar function has differential $df_p\in T_p^*M$; the gradient $\operatorname{grad}_g f=(df)^\sharp$ is a tangent vector.
 - Differential / pushforward: tangent map of smooth maps
 - Vector field: smooth vector fields on manifolds
 - Lie bracket: commutation relations of vector fields

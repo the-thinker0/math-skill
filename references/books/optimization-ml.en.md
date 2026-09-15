@@ -45,31 +45,15 @@ Actual chapter map:
 
 ## Core Structures Transferable to AI/Infra
 
-- **First-order optimality + gradient geometry (Ch 6, S5.5)**
-  - Gradient is perpendicular to level sets and is the steepest ascent direction -- the axiomatic root of all training optimizers.
-  - `nabla f = 0` is the stopping criterion; saddle points / non-convexity are the central pain points of modern deep learning.
-- **Convergence analysis framework (Ch 8 S8.3)**
-  - Uses the condition number kappa = lambda_max/lambda_min to characterize the convergence rate of steepest descent.
-  - Explains "why ill-conditioned networks are hard to train, why normalization / preconditioning is needed."
-- **Second-order curvature and damping (Ch 9)**
-  - Newton's method uses the Hessian to provide affine-invariant step sizes and directions.
-  - Levenberg-Marquardt's `(H+mu I)` damping = trust-region idea, the ancestor of Adam's `epsilon` and second-order optimizers.
-- **Quasi-Newton low-rank updates (Ch 11)**
-  - BFGS/DFP uses only gradient differences, maintaining an inverse Hessian approximation via rank-1/rank-2 updates.
-  - Direct intellectual ancestor of L-BFGS, K-FAC, and Shampoo.
-- **Matrix-free second-order methods (Ch 10)**
-  - Conjugate gradient requires only Hessian-vector products without storing the full Hessian; corresponds to autodiff HVP (Hessian-free).
-- **Constraint geometry (Ch 20-21, 24)**
-  - Tangent/normal spaces -> Lagrange/KKT -> projected gradient + penalty / augmented Lagrangian.
-  - Forms a complete toolkit for "training with constraints."
-- **Duality and saddle points (Ch 17, 23)**
-  - Strong duality <=> minimax = maximin; KKT, complementary slackness, Slater conditions.
-  - Min-max training (GAN / adversarial robustness) and SVM duality both fall here.
-- **Stochastic and distributed methods (Ch 27)**
-  - SGD's unbiased gradient estimation, SVRG variance reduction.
-  - **Explicit "communication vs. computation" tradeoff in distributed settings** -- the theoretical root of data-parallel training.
-- **Low-rank / spectral methods (Ch 26, S3.4)**
-  - SVD/PCA/linear autoencoders, quadratic forms and spectra -- the mathematical foundation of LoRA, KV compression, and spectral normalization.
+- **Stationarity and geometry (Ch 6, S5.5):** at a regular level set, the nonzero Euclidean gradient is normal to the set and gives steepest ascent in the Euclidean metric. A small gradient is a stationarity diagnostic, not proof of a local minimum; constrained problems need feasible/KKT residuals.
+- **Conditioning (Ch 8):** kappa=lambda_max/lambda_min applies directly to positive-definite quadratic Hessians; L/mu is the analogous smooth strongly-convex ratio. An indefinite neural-network Hessian does not satisfy this model without further restrictions.
+- **Newton and damping (Ch 9):** Newton solves H p=-g; positive definiteness or a globalization strategy is needed for a reliable descent step. For nonlinear least squares, Levenberg-Marquardt uses (J^T J+mu I)p=-J^T r. Adam's denominator epsilon has a numerical stabilization role, but is not this curvature matrix or an equivalent trust region.
+- **Quasi-Newton (Ch 11):** BFGS/DFP use secant information to update a Hessian or inverse-Hessian approximation; curvature conditions or damping preserve positive definiteness. L-BFGS limits stored history. K-FAC's Fisher approximation and Shampoo's gradient-moment factors have different derivations.
+- **Matrix-free methods (Ch 10):** HVPs avoid storing a dense Hessian. Standard linear CG assumes a symmetric positive-definite system; nonconvex Hessian-free methods need damping, a PSD surrogate, or truncated-CG negative-curvature handling.
+- **Constraints (Ch 20-21, 24):** projections, penalties, and augmented Lagrangians represent different algorithms. Finite penalties do not automatically enforce feasibility; inequalities require the right multiplier signs and complementarity.
+- **Duality (Ch 17, 23):** weak duality supplies bounds. Strong duality requires appropriate conditions; Slater is a sufficient condition for suitable convex problems. For smooth nonconvex problems, KKT necessity generally needs a constraint qualification. KKT is sufficient for global optimality in differentiable convex problems, but a generic GAN is not such a problem.
+- **Stochastic methods (Ch 27):** unbiasedness depends on the sampling/estimation scheme. SVRG is a control-variate construction with a reference gradient; ordinary large batches or gradient accumulation are not SVRG.
+- **Spectral methods (Ch 26):** SVD and PCA support low-rank approximation. The bridge from reconstruction error to LoRA or KV-compression task quality must be established separately.
 
 ## Problem Types Suited for Activation
 
@@ -82,53 +66,27 @@ Actual chapter map:
 
 ## Possible Algorithmic Inspirations
 
-- **Adaptive optimizers**
-  - Levenberg-Marquardt's `(H+mu I)` damping -> Adam's `epsilon`, trust regions, adaptive learning rates.
-  - Making "curvature / damping" explicit rather than staying with purely heuristic hyperparameter tuning.
-- **Feasible second-order for large models**
-  - L-BFGS: Store only the most recent m gradient pairs (low-rank history, memory O(md)).
-  - Hessian-free: Autodiff HVP + CG (matrix-free, no need to materialize the Hessian).
-  - K-FAC / Shampoo: Approximate the Hessian as **block-diagonal / Kronecker factors**, reducing each block to a small GEMM.
-- **Efficient solving via the dual perspective**
-  - SVM converts a high-dimensional primal into a dual that depends only on the kernel Gram matrix (Ch 30-31), a big win when sample count << dimensionality.
-  - Dual decomposition of constrained problems is naturally parallelizable.
-- **Constrained training**
-  - Projected gradient (S24.3) for norm-ball / spectral-norm constraints (weight clipping, spectral normalization).
-  - Augmented Lagrangian / penalty methods (S24.5-S24.6) soften hard constraints into differentiable regularization.
-- **Variance reduction / large batch**
-  - SVRG's (S27.2) control variate idea -> gradient accumulation, stability analysis of large-batch training.
-- **Distributed training**
-  - S27.3 "Communication vs. Computation" directly corresponds to all-reduce and computation overlap, gradient compression, federated / data security.
+- **Match the optimizer to the target:** specify the objective, metric/preconditioner, stochastic oracle, and stopping criterion before borrowing Newton, natural-gradient, or adaptive-moment ideas.
+- **Scalable curvature:** L-BFGS stores O(md) history for d parameters and m pairs; HVP methods trade memory for repeated autodiff passes. K-FAC approximates Fisher blocks, while Shampoo forms per-axis gradient moments and inverse roots. Include their update frequency and factorization costs.
+- **Choose primal versus dual by size:** an SVM dual can help when sample count n is small relative to dimension d, but a dense kernel matrix costs O(n^2) storage. Separability and coupling determine whether dual decomposition parallelizes well.
+- **Constrained training:** a box projection clips coordinates; an l2-ball projection requires a norm reduction and radial scaling; l1 and spectral-norm balls have different algorithms. Dividing every singular value by the largest is not generally Euclidean projection onto a spectral-norm ball, which clips singular values individually.
+- **SVRG as a concrete control variate:** for f=(1/n)sum_i f_i and uniform i, use v=grad f_i(x)-grad f_i(x_ref)+grad f(x_ref). This is unbiased, and the extra reference-gradient pass must be included in costs. Linear-rate claims need the stated smoothness/convexity and step-size assumptions.
+- **Distributed execution:** overlap communication where dependencies permit; report bytes, synchronization, and any gradient-estimator bias. Distributed optimization alone provides neither privacy nor secure aggregation.
 
 ## GPU Friendliness Warning
 
-> The following item-by-item evaluation uses the **eight-dimension scorecard** from `../gpu-friendly-math.en.md` (read that first).
-> Conclusion: The book's first-order / stochastic / low-rank content is naturally GPU-friendly; second-order methods and search-based methods require heavy adaptation or elimination.
+> Evaluate only relevant dimensions from `../gpu-friendly-math.en.md`. Derivative-free methods, serial dependencies, and non-GEMM operations are workload choices to measure, not automatic disqualifications.
 
-- **Full Hessian in second-order methods (Ch 9, 11)**
-  - Violates **D4**: Dense Hessian is O(d^2), impossible to materialize for hundreds of millions of parameters.
-  - Violates **D2**: Inversion / factorization is not batched-GEMM friendly.
-  - Violates **D5**: Ill-conditioned inversion causes catastrophic cancellation under bf16/fp16.
-  - Adaptation: Matrix-free HVP + CG, L-BFGS low-rank, K-FAC block-diagonal -> restores **D2/D4** friendliness.
-- **Line search (Ch 7 golden section / Armijo S24.4.4)**
-  - Violates **D1**: Essentially a scalar loop + data-dependent branching (step-by-step comparison of function values).
-  - Violates **D8**: Frequent small kernels, control-flow divergence.
-  - Adaptation: Large models almost universally use scheduled step sizes (warmup + cosine) instead of step-by-step line search.
-- **First-order / SGD (Ch 8, 27)**
-  - **D1/D2 friendly**: Gradients = tensor algebra, expressible as GEMM.
-  - **D6** is good: Data-parallel all-reduce can overlap with backprop -- the fundamental reason this is the default approach for large models.
-- **Global search (Ch 14: GA/SA/PSO)**
-  - Violates **D1**: Non-differentiable, discrete stochastic search, blocks end-to-end gradient training.
-  - **D6** is also poor: Inter-population dependencies, hard to parallelize. Only suitable for black-box hyperparameter search, not for the training inner loop.
-- **LP simplex / interior-point methods (Ch 16, 18)**
-  - Simplex row operations are acceptable; interior-point methods require solving a linear system at each step, **D2/D6** limited by factorization and communication.
-  - Suitable for medium-scale constrained subproblems, not for placement inside every training step.
-- **Projections (S24.2)**
-  - Norm-ball / box projections are cheap elementwise operations (**D1/D8** friendly).
-  - General polyhedral projections require solving a QP (**D2** degrades).
-- **Convergence depends on condition number kappa**
-  - Large kappa -> **D5** is further amplified at low precision (ill-conditioned gradients).
-  - Must pair with normalization / preconditioning; otherwise bf16 training diverges.
+| Method | Cost and numerical checks |
+|---|---|
+| Dense Newton | O(d^2) Hessian storage and typically O(d^3) dense factorization. Solve systems rather than explicitly forming inverses; use structure or matrix-free methods at large d. |
+| HVP / L-BFGS / structured factors | Lower storage does not remove iterative passes, dot-product reductions, history memory, or matrix-root costs. Benchmark total time to comparable quality. |
+| Line search | Extra objective/gradient evaluations and synchronization can be expensive. Batched trial steps are possible; compare against fixed/scheduled steps for the actual workload. |
+| SGD and adaptive first-order updates | Backprop cost follows the model; optimizer steps often use bandwidth-bound elementwise kernels, not GEMM. Communication overlap depends on the graph and implementation. |
+| GA / PSO / evolution strategies | Candidate evaluations can be parallel and can optimize neural weights. They do not require pathwise derivatives; evaluate population cost, sample efficiency, synchronization, and the chosen estimator. |
+| LP / QP / interior-point subproblems | Factorization shape and reuse determine cost. Small batched or implicitly differentiated optimization layers can appear in training; check regularity and solve accuracy. |
+| Projection | Box projection is elementwise, l2 uses a reduction, l1 may require sorting/selection, and spectral constraints may require singular-value calculations. |
+| Low precision | Condition number, scaling, stochastic noise, and residual tolerance jointly matter. Preconditioning may help but neither its presence nor its absence determines bf16 convergence alone. |
 
 ## Which Thinking Lens to Invoke
 
@@ -139,13 +97,14 @@ Actual chapter map:
 
 ## Anti-patterns
 
-- Applying **full-Hessian Newton** directly to large models -- O(d^2) memory and inversion blow up immediately (must use matrix-free / low-rank / block-diagonal).
-- Using **line search** to tune step sizes at every step of a large model -- scalar serial, control-flow divergence, burns through compute; should switch to scheduled learning rates.
-- Using **GA/SA/PSO to train neural networks** -- non-differentiable, cannot parallelize, extremely sample-inefficient; limited to black-box hyperparameter search only.
-- Discussing convergence while **ignoring the condition number kappa** -- expecting low-precision convergence without normalization / preconditioning is wishful thinking.
-- Forcing **LP simplex thinking** onto continuously differentiable problems.
-- Treating **duality / KKT as universal** -- non-convex problems typically lack strong duality and have duality gaps (S23.4.6); KKT is only a necessary condition.
-- Treating this "activation reference" as a source of rigorous proofs -- details and theorem conditions must be verified against the original book.
+- Equating a small gradient or a KKT point with a global optimum without the required hypotheses.
+- Using standard CG on an indefinite Hessian without negative-curvature handling.
+- Calling K-FAC and Shampoo Hessian approximations, or equating Adam epsilon with Levenberg-Marquardt damping.
+- Calling gradient accumulation SVRG without a control variate and reference-gradient computation.
+- Treating norm-ball projections, spectral normalization, and generic weight clipping as the same operation.
+- Assuming a hard constraint holds merely because its violation appears in the loss.
+- Rejecting all line searches or population methods on the false premise that they cannot parallelize; compare cost and quality for the workload.
+- Claiming secure or private training from a communication/computation optimization alone.
 
 ## Deep-dive Entry
 
@@ -161,3 +120,7 @@ Full-fidelity lookup = have the Agent directly search the local PDF
 - **Ch 23 Lagrangian Duality** (S23.5 strong duality, S23.6.3 Slater conditions) + **Ch 21 KKT Conditions** -- Duality / KKT / saddle points.
 - **Ch 24 Algorithms for Constrained Optimization** (S24.3 projected gradient, S24.5 augmented Lagrangian, S24.6 penalty methods) -- Constrained training algorithms.
 - **Ch 27 Stochastic Gradient Descent Algorithms** (S27.1 SGD, S27.2 SVRG, S27.3 distributed and communication/computation) -- Large-scale training core.
+
+## Verified Extension Sources
+
+[Boyd & Vandenberghe, Convex Optimization](https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf) provides an independently accessible reference for convexity, KKT, duality, and numerical methods. Modern extensions require their own sources: [Adam](https://arxiv.org/abs/1412.6980), [K-FAC](https://proceedings.mlr.press/v37/martens15.html), [Shampoo](https://proceedings.mlr.press/v80/gupta18a.html), and [SVRG](https://proceedings.neurips.cc/paper/2013/hash/ac1dd209cbcc5e5d1c6e28598e8cbbe8-Abstract.html). These algorithms should not be presented as identical consequences of one textbook construction.

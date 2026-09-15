@@ -47,8 +47,8 @@ This is a common hierarchy, not a claim that IND-CCA2 is the strongest possible 
 
 ## Further References
 
-- `../../references/books/applied-cryptography.md`
-- `../../references/books/introduction-to-modern-cryptography.md`
+- `../../references/books/applied-cryptography.en.md`
+- `../../references/books/introduction-to-modern-cryptography.en.md`
 
 ## Routing Extensions
 

@@ -33,9 +33,9 @@ When core anchors are insufficient, these concepts may require temporary activat
 - Impossibility & separation results: black-box separation, Oracle separation, meta-theorems
 
 ## Reference Book Directions
-- `../../references/books/applied-cryptography.md`: Boneh & Shoup, attack games + reduction proofs + constructions and protocols
-- `../../references/books/foundations-of-cryptography.md`: Goldreich, definitional methodology + constructive reductions + meta-theorems
-- `../../references/books/introduction-to-modern-cryptography.md`: Katz & Lindell, formal security definitions + construction paradigms + implementation pitfalls
+- `../../references/books/applied-cryptography.en.md`: Boneh & Shoup, attack games + reduction proofs + constructions and protocols
+- `../../references/books/foundations-of-cryptography.en.md`: Goldreich, definitional methodology + constructive reductions + meta-theorems
+- `../../references/books/introduction-to-modern-cryptography.en.md`: Katz & Lindell, formal security definitions + construction paradigms + implementation pitfalls
 
 ## AI×Crypto Boundary
 Load cross-domain material only when a task combines an AI object with a formal cryptographic property:

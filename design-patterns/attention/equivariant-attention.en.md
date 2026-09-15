@@ -1,53 +1,37 @@
 # Equivariant Attention
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Evidence labels**: [v] supported by stated assumptions or recorded checks; [~] engineering proposal requiring validation; [x] incompatible under the stated conditions; [N/A] outside scope. Pseudocode specifies operators, not a production-ready implementation.
 
 ## Applicable Problems
 When the input possesses an **explicit symmetry group $G$ action** (rotation, translation, permutation, reflection, etc.), and the desired model output should be **equivariant** (covariant) rather than invariant under the same transformations, equivariant constraints must be directly encoded into the attention mechanism. Typical scenarios include: 3D point clouds / molecules ($E(3)$ rigid-body group), image classification ($D_n$ rotation/reflection group), set data ($S_n$ permutation group), and multi-view / multi-sensor fusion.
 
 ## Mathematical Inspiration
-- Lenses: [symmetry, categorical (unified framework for group actions)]
-- Knowledge: [`../../knowledge-base/probability/concentration-inequality.en.md` (sample efficiency gains under equivariant constraints -- data equivalence along orbits), `../../knowledge-base/probability/entropy.en.md` (equivariant constraints reduce output distribution entropy, yielding stronger inductive bias)]
+
+- Lenses: `../../lenses/symmetry.en.md`, `../../lenses/categorical.en.md`.
+- Knowledge: `../../knowledge-base/lie-theory/equivariance.en.md`, `../../knowledge-base/lie-theory/representation.en.md`.
 
 ## Required Mathematical Knowledge
-- **Group Representation Theory Basics**: Linear representation of a group $G$, $\rho: G \to GL(V)$, and irreducible representation decomposition
-- **Equivariant Map Definition**: $f(g \cdot x) = \rho_{\text{out}}(g) \cdot f(x)$ for all $g \in G$
-- **Orbit-Stabilizer Theorem** (see `../../references/books/abstract-algebra.en.md` Ch.5): $|orbit| = |G|/|stab|$, giving the parameter sharing multiplier
-- **Schur's Lemma**: An equivariant linear map between irreducible representations is either zero or a scalar multiple
+
+- Specify input/output representations: $f(\rho_{in}(g)x)=\rho_{out}(g)f(x)$.
+- For token permutation $P$, scores transform as $S'=PSP^T$, attention weights as $A'=PAP^T$, and outputs as $O'=PO$. Weights are not an unchanged matrix; their indices are relabeled.
+- Schur's lemma: between inequivalent irreducible representations an intertwiner is zero; between copies of the same finite-dimensional complex irrep it is scalar on the irrep factor, with arbitrary mixing between multiplicity channels. Real irreps need not have a scalar commutant.
+- A single $SO(3)$ degree-$\ell$ irrep has $2\ell+1$ components; one copy of every degree through $L$ has $(L+1)^2$. Reflection equivariance additionally requires parity types.
 
 ## AI Module Form
 
-**Core Idea**: Replace the standard attention $Q, K, V$ with **steerable features**, ensuring that attention weights are invariant under group actions and that outputs are equivariant under group actions.
-
-**Scheme A: Permutation-Equivariant Attention ($S_n$ group, set data)**:
+**Permutation equivariance** (row-wise shared maps; masks and positions must transform consistently):
 ```python
-# DeepSets / Set Transformer style
-# Attention weights are permutation-invariant: pi(Q)pi(K)^T = QK^T (permutations cancel)
-# Output is permutation-equivariant: pi(softmax(QK^T) V) = softmax(QK^T) pi(V)
-Q, K, V = W_q(X), W_k(X), W_v(X)  # pointwise linear transform
-scores = Q @ K.T / sqrt(d)         # permutation-invariant
-attn = softmax(scores)             # permutation-invariant
-output = attn @ V                  # permutation-equivariant (V is equivariant)
+Q, K, V = W_q(X), W_k(X), W_v(X)
+A = softmax(Q @ K.T / sqrt(d), dim=-1)
+output = A @ V
+# For X' = P @ X: A' = P @ A @ P.T and output' = P @ output
 ```
+A fixed causal mask or absolute positions generally break arbitrary token-permutation symmetry.
 
-**Scheme B: $E(3)$-Equivariant Attention (3D point clouds / molecules)**:
-```python
-# Decompose features into scalars + vectors + higher-order tensors (spherical harmonic basis)
-# Attention weights computed using only scalar features (rotation-invariant)
-scalar_Q = scalar_proj(X_scalar)   # scalars only -> rotation-invariant
-scalar_K = scalar_proj(X_scalar)
-scores = scalar_Q @ scalar_K.T / sqrt(d_s)  # rotation-invariant attention weights
+**Rotation/translation equivariance**: Build scalar scores from invariant features such as relative distances and invariant tensor contractions; aggregate typed equivariant values with those scalar weights. Translation-invariant scalar inputs alone do not make absolute vector coordinates translation-equivariant. Audit positional inputs, value projections, nonlinearities, residuals, and output type.
 
-# V contains equivariant features (scalars + vectors), weighted by invariant weights
-output_scalar = softmax(scores) @ V_scalar   # scalar -> invariant
-output_vector = softmax(scores) @ V_vector   # vector -> equivariant (rotation-covariant)
-```
-
-**Scheme C: $D_n$-Equivariant Attention (image rotation / reflection)**:
-```python
-# G-CNN style: for each group element g in D_n, transform input with rho(g) then compute attention
-# Weights shared along orbits (same W_q/W_k/W_v), aggregate outputs over all group elements
-output = mean(softmax((rho(g)@X@W_q) @ (rho(g)@X@W_k).T/sqrt(d)) @ (rho(g)@X@W_v) for g in D_n)
-```
+**Finite-group symmetrization** (generic, expensive reference construction):
+$$F(x)=\frac1{|G|}\sum_{g\in G}\rho_{out}(g)^{-1} f(\rho_{in}(g)x).$$
+For equivariant outputs, inverse output transforms are essential. Averaging $f(\rho_{in}(g)x)$ without undoing the output action instead builds an invariant map. A 24-element rotation subgroup is finite-group equivariance, not exact $SO(3)$ or $E(3)$ equivariance.
 
 ## Implementable Architectures
 - **SE(3)-Transformer / Equiformer**: Spherical harmonic features + equivariant attention for molecular property prediction and protein structure
@@ -55,24 +39,19 @@ output = mean(softmax((rho(g)@X@W_q) @ (rho(g)@X@W_k).T/sqrt(d)) @ (rho(g)@X@W_v
 - **G-CNN Attention**: $D_n$ rotation/reflection equivariance for remote sensing imagery and medical imaging
 
 ## GPU Feasibility
-- **D1**: Group actions implemented as $\rho(g)$ matrix multiplications; equivariant features stored as batched tensors
-- **D2**: $\rho(g) X$ and $Q K^T$ are both GEMM operations; $|G|$ group elements map to batched GEMM
-- **D3**: $|G|$-fold computation overhead; acceptable for small groups ($|D_4|=8$), infeasible for large groups ($|S_n|=n!$). Remedy: use generators + Cayley graph propagation instead of full group enumeration
-- **D4**: Requires storing $|G|$ copies of intermediate features; mitigated by chunking + gradient checkpointing
-- **D5**: Orthogonal representation matrices are numerically stable under bf16
-- **D6**: $|G|$ group elements are naturally parallelizable (along the batch dimension)
-- **D7**: Permutation $\rho(g)$ is extremely sparse and can be encoded as gather indices
-- **D8**: Group action + linear duality can be fused into a single batched GEMM
 
-**Quantitative assessment example** (E(3) equivariant, |G|=24 rotation group, d=64, n=512):
-- D3: |G|x standard attention FLOPs = 24 · 2·512²·64 ≈ 805M (vs standard 33.6M)
-- D4: Requires storing |G|=24 copies of intermediate features, 24 · 512 · 64 · 2B ≈ 1.5MB extra memory
-- D6: 24 group elements parallelizable along the batch dimension, ideal speedup 24x
-- D8: ρ(g)·X·W_q three-step fusion into a single batched GEMM
+- **D1/D2[~]**: Shared pointwise maps and attention use GEMM; tensor products and irrep mixing require type-aware kernels. Permutation equivariance requires no enumeration of $n!$ elements.
+- **D3/D4[~]**: Generic finite-group symmetrization costs roughly $|G|$ base evaluations; peak activation memory depends on batching/chunking. Exact continuous-group constructions use representation constraints rather than enumerating an infinite group.
+- **D5[~]**: Test the relative equivariance residual $\|F(gx)-\rho_{out}(g)F(x)\|/(\|F(x)\|+\epsilon)$ in fp32 and target precision, including reflections and rotations near numerical singularities.
+- **D6/D8[~]**: Independent group evaluations can batch, but batching does not imply a $|G|$ wall-clock speedup. Measure launch, bandwidth, and tensor-product overhead.
+- **D7[N/A]**: Representation sparsity does not by itself create useful sparse attention kernels.
 
 ## Paper Phrasing
-"We propose an equivariant attention mechanism that constrains attention weights to be group invariants and attention outputs to be group equivariants, directly encoding the inductive bias of symmetry group $G$ into the model architecture without additional data augmentation, achieving a $|G|/|stab|$-fold improvement in parameter efficiency."
+
+“Invariant scalar scores and type-preserving value maps enforce the specified equivariance. We report equivariance residuals and measured parameter, memory, latency, and task-quality changes; orbit size alone does not determine parameter savings.”
 
 ## Risks
-- **Cost of Incorrect Group Selection**: If the data does not possess the assumed symmetry (e.g., molecules lacking full $E(3)$ symmetry), equivariant constraints will impair expressiveness. The symmetry assumption must be validated first, or "approximate equivariance" (soft equivariance) should be used.
-- **Memory Explosion of High-Order Representations**: The $L$-th order spherical harmonic representation of $SO(3)$ has dimension $(2L+1)^2$, causing storage and computation to grow rapidly for high-order features ($L \geq 3$). In practice, truncation to $L \leq 2$ is standard.
+
+- Validate the symmetry against the prediction target: energy may be rotation-invariant while force is rotation-equivariant; chirality may make reflections inappropriate.
+- High-degree tensor products and channel multiplicities increase cost; choose truncation by task ablations.
+- Shared unconstrained linear maps, normalization, biases, or nonlinearities can break nontrivial group equivariance. Test the entire module, not only its attention weights.

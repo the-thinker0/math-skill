@@ -4,6 +4,8 @@
 
 对不可微或非光滑目标函数 $f(x) = g(x) + h(x)$（$g$ 光滑、$h$ 可能不可微但"简单"），用近端算子 $\text{prox}_{\eta h}(v) = \arg\min_x \{h(x) + \frac{1}{2\eta}\|x - v\|^2\}$ 代替对 $h$ 的梯度。近端方法将不可微部分封装为一个闭式子问题。
 
+**保证范围**：$h$ 为正常闭凸函数、$\eta>0$ 时，prox 单值且 Moreau 包络可微。ISTA/FISTA 目标值收敛率要求 $g$ 凸且梯度 $L$-Lipschitz、$\eta\le1/L$、存在最优解及足够准确的 prox 求解；不是非凸神经网络的通用收敛率。
+
 ## 核心公式
 
 - 近端算子：$\text{prox}_{\eta h}(v) = \arg\min_x \left\{h(x) + \frac{1}{2\eta}\|x - v\|^2\right\}$
@@ -27,16 +29,16 @@
 
 - **Soft-thresholding 做稀疏训练**：$\text{prox}_{\eta\lambda\|\cdot\|_1}(w) = \text{sign}(w) \odot \max(|w| - \eta\lambda, 0)$，实现为 `w.sign() * (w.abs() - eta * lam).clamp(min=0)`，纯 elementwise，$O(d)$，零额外显存。每次 SGD 更新后做一次 soft-thresholding 即可得到稀疏权重。
 - **奇异值软阈值做低秩正则**：$\text{prox}_{\eta\|\cdot\|_*}(W) = U(\Sigma - \eta)_+ V^H$。需 SVD，大矩阵用随机化 SVD 近似：先做 randomized SVD 到 rank $r$，再对 $\Sigma$ 做 elementwise soft-threshold，重构。核心是 matmul 链 + elementwise。
-- **Group Lasso 结构化剪枝**：$\text{prox}_{\eta\sum_g\|w_g\|_2}(w)_g = w_g \cdot \max(1 - \eta/\|w_g\|_2, 0)$。按通道/头分组后，每组独立做 soft-thresholding（norm + elementwise scale），$O(d)$。实现为 reshape + norm(dim) + clamp + mul。
-- **ADMM 做分布式训练**：$\min \sum_i f_i(x_i) + g(z)$ s.t. $x_i = z$。各节点独立更新 $x_i$（本地 SGD），server 更新 $z = \text{prox}_{g/\rho}(\bar{x} + u)$（聚合 + 近端），$u$ 对偶变量更新。通信效率高于 all-reduce（只需传 $x_i$ 和 $z$）。
-- **量化近端算子**：将权重量化建模为 $\text{prox}(w) = \Delta \cdot \text{round}(w/\Delta)$，反向传播用 straight-through estimator（STE）：$\partial \text{prox}/\partial w \approx 1$。实现为 `w_q = (w / delta).round() * delta`，forward 是 elementwise round + mul，backward 是 identity。
+- **不重叠 group lasso**：组互不相交时，$\operatorname{prox}_{\eta\sum_g\|\cdot\|_2}(w)_g=(1-\eta/\|w_g\|)_+w_g$，$w_g=0$ 时定义输出为0。组重叠通常需其他求解器，不能独立套块公式。
+- **共识 ADMM**：$m$ 个 worker 最小化 $\sum_i f_i(x_i)+g(z)$、$x_i=z$ 时，共享步为 $z^+=\operatorname{prox}_{g/(m\rho)}(\frac1m\sum_i(x_i^++u_i))$，再更新 $u_i^+=u_i+x_i^+-z^+$。prox 缩放需包含 worker 数；局部 SGD 是需控制误差的非精确内层求解。相对 all-reduce 的通信收益依赖负载。
+- **量化投影**：$q(w)=\Delta\operatorname{round}(w/\Delta)$ 投影到离散均匀网格（非凸指示函数 prox，并列需约定）。STE 可写 `w + (q(w)-w).detach()`；普通 `round` 几乎处处导数为0，不自动具有恒等反向。
 
 ## 工程可行性
 
 - **主要操作**：近端算子多为 elementwise（soft-thresholding、clamp、group norm）或 matmul + 小 SVD（核范数）。梯度步 = 标准反向传播。
 - **GPU 友好度**：极高。$\ell_1$ 近端 = elementwise；group lasso 近端 = reshape + norm + scale = elementwise；核范数近端 = matmul + 小 SVD。FISTA 的动量项也是 elementwise。ADMM 的通信模式适配数据并行。
 - **复杂度**：ISTA/FISTA 每步 = 一次梯度计算 + 一次近端算子（$O(d)$ elementwise）；核范数近端 = $O(nd^2)$（随机化 SVD 降到 $O(ndk)$）；ADMM 每节点 = 本地 SGD + $O(d)$ 通信。
-- **低精度**：elementwise 近端算子在 bf16 下稳定（不涉及精细数值运算）。SVD 类近端需在 fp32 下计算。FISTA 的动量累积在 bf16 下可能丢精度，建议用 fp32 存储 $y_k$。
+- **低精度**：零点/阈值附近舍入可改变阈值决策；检查稀疏模式和优化残差。按需以 fp32 累加范数/动量，验证核范数近似 prox 在截断阈值附近的行为。
 
 ## 风险与失效条件
 

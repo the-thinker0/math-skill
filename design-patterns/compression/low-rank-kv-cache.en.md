@@ -1,88 +1,81 @@
 # Low-Rank KV-Cache
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+
+> Rigor convention: [v] denotes a checkable formula or cost count; [~] denotes a compression/implementation design requiring experiments. This prototype claims no measured GPU throughput.
 
 ## Target Problem
-Use when KV-Cache memory consumption becomes the bottleneck during LLM inference: long-context inference ($L > 8K$), multi-turn conversation accumulation, edge deployment, speculative decoding / beam search. Core objective: **compress the KV-Cache from $O(Ld)$ to low-rank factor storage $O(Lk + kd)$ with $k \ll d$, under controlled information loss**.
+Explore factor storage when inference KV-cache memory is a bottleneck and K/V contain useful redundancy under the actual query distribution. Low-rank approximation concerns specified matrices; it does not directly guarantee long-range retrieval or generation quality.
 
 ## Mathematical Foundations
-- Lenses: ../../lenses/spectral.en.md (spectral component identification and truncation), ../../lenses/variational.en.md (Pareto trade-off between compression ratio and reconstruction error), ../../lenses/duality.en.md (nuclear norm--spectral norm duality)
-- Knowledge: ../../knowledge-base/matrix-analysis/low-rank-approximation.en.md (Eckart--Young optimal approximation, randomized SVD), ../../knowledge-base/matrix-analysis/projection.en.md (orthogonal projection onto principal subspace), ../../knowledge-base/matrix-analysis/matrix-perturbation.en.md (Weyl perturbation bound)
+- Lenses: `../../lenses/spectral.en.md`, `../../lenses/variational.en.md`, `../../lenses/duality.en.md`.
+- Knowledge: `../../knowledge-base/matrix-analysis/low-rank-approximation.en.md`, `../../knowledge-base/matrix-analysis/projection.en.md`, `../../knowledge-base/matrix-analysis/matrix-perturbation.en.md`.
 
 ## Required Mathematical Background
-- **Eckart--Young--Mirsky Theorem**: $A_k = U_k \Sigma_k V_k^H$, $\|A - A_k\|_F = \sqrt{\sum_{i>k} \sigma_i^2}$; truncated SVD = optimal rank-$k$ approximation
-- **Randomized SVD**: $Y = A\Omega$ ($\Omega$ random Gaussian), $Y = QR$, $B = Q^H A$, perform SVD on $B$; complexity $O(Ldk)$, dominated by matrix multiplications
-- **Eckart--Young spectral-norm error**: $\|A - A_k\|_2 = \sigma_{k+1}$ (bounds only the optimal rank-$k$ compression error of the matrix itself; Weyl is for singular-value changes under perturbation). Extending this to attention output error requires additional conditions: bounding $\|\text{Attn}(Q,K,V) - \text{Attn}(Q,K_k,V_k)\|$ requires (a) bounded $\|Q\|$, (b) the softmax Lipschitz constant (which depends on temperature and score range), and (c) compression errors for **both** K and V. Roughly: error $\lesssim C \cdot (\|Q\| \cdot \|K - K_k\| \cdot \|V\| + \|Q\| \cdot \|K_k\| \cdot \|V - V_k\|) / \tau$, where $C$ depends on the softmax Lipschitz constant and $\tau$ is the temperature parameter. Directly using $\sigma_{k+1}$ to bound attention score deviation **holds only under the simplifying assumptions of fixed Q and ignoring V compression error**.
-- **Effective Rank**: $r_{\text{eff}}(K) = \|K\|_F^2 / \|K\|_2^2$, guides adaptive selection of $k$
+- **Eckart-Young-Mirsky [v]:** exact truncated SVD attains ||A-A_k||_2=sigma_(k+1) and ||A-A_k||_F^2=sum_(i>k)sigma_i^2. Randomized SVD has additional subspace error; its actual error need not equal these optima.
+- **Randomized SVD [v]:** with sketch width ell=k+p<=min(L,d), a basic dense algorithm costs approximately O(Ld ell+(L+d)ell^2), including QR and a smaller SVD. Power iterations add data passes.
+- **Stable rank [v]:** ||K||_F^2/||K||_2^2 is stable rank, conventionally 0 for K=0. It is not entropy-defined effective rank and does not alone determine the rank needed for a chosen tolerance. Inspect tail spectra and query-weighted error too.
+
+**Explicit single-query output bound [v]:** fix q, equal token-row counts for K,K_hat and V,V_hat, the same visibility mask with at least one visible key, and temperature tau>0. For o=softmax(qK^T/tau)V and o_hat=softmax(qK_hat^T/tau)V_hat,
+
+$$\|o-\hat o\|_2\le\frac{\|q\|_2\|K-\hat K\|_2\|V\|_2}{2\tau}+\|V-\hat V\|_2.$$
+
+The softmax Jacobian has 2-operator norm at most 1/2 and a probability vector has 2-norm at most 1; split the difference as (a-a_hat)V+a_hat(V-V_hat). Standard attention uses tau=sqrt(d). The second term does not vanish with q: even q=0 can have a changed mean output after Value approximation. Later-layer amplification and additional rounding are outside this bound.
 
 ## AI Module Specification
+For K∈R^(L×d), V∈R^(L×d_v), store K_hat=U_K B_K and V_hat=U_V B_V separately, possibly with different ranks. This fp32 dense reference uses **factorized GEMMs**, not a fused kernel:
+
+```python
+import math
+import torch
+
+def low_rank_factors(A, rank, oversample=8):
+    A = A.float()
+    rows, cols = A.shape
+    assert 1 <= rank <= min(rows, cols) and oversample >= 0
+    ell = min(rank + oversample, rows, cols)
+    omega = torch.randn(cols, ell, device=A.device, dtype=A.dtype)
+    Q_base = torch.linalg.qr(A @ omega, mode="reduced").Q
+    U_small, S, Vh = torch.linalg.svd(Q_base.T @ A, full_matrices=False)
+    Q_final = Q_base @ U_small[:, :rank]
+    A_comp = S[:rank, None] * Vh[:rank, :]  # Row scaling, shape (rank, cols).
+    return Q_final, A_comp
+
+def factorized_attention(Q, U_K, B_K, U_V, B_V, allowed=None):
+    Q, U_K, B_K, U_V, B_V = [x.float() for x in (Q, U_K, B_K, U_V, B_V)]
+    logits = ((Q @ B_K.T) @ U_K.T) / math.sqrt(Q.shape[-1])
+    if allowed is not None:
+        assert bool(allowed.any(dim=-1).all())
+        logits = logits.masked_fill(~allowed, -torch.inf)
+    weights = torch.softmax(logits, dim=-1)  # Normalize over all L positions.
+    return (weights @ U_V) @ B_V
+# U_K, B_K = low_rank_factors(K, rank_k)
+# U_V, B_V = low_rank_factors(V, rank_v)
+# output = factorized_attention(Q, U_K, B_K, U_V, B_V, allowed)
 ```
-Module: LowRankKVCompressor
-Input: K ∈ R^{L×d}, V ∈ R^{L×d}    Parameters: target rank k << L, update frequency M
 
-Method 1 - Offline periodic compression (most practical):
-  Omega = randn(d, k+p)                    // random projection, p=5 oversampling
-  Q_base = qr(K @ Omega)[0]                // L×(k+p) oversampled orthonormal basis (GEMM + QR)
-  B_k = Q_base^T @ K                       // (k+p)×d small matrix GEMM
-  U_r, S_r, Vt_r = svd(B_k)               // small matrix SVD
-  Q_final = Q_base @ U_r[:, :k]            // L×k final left factor
-  K_comp = S_r[:k] * Vt_r[:k, :]           // k×d compressed Key (low-rank factor)
-  // V_comp definition: apply analogous truncated SVD to V, V_comp = Σ_k^{(V)} · Vt_k^{(V)} (k×d compressed Value)
-  // Alternatively, if K and V share the left factor Q_final, then V_comp = Q_final^T @ V (project onto the same low-rank subspace)
-  //
-  // ⚠ Critical distinction -- low-rank factors CANNOT directly replace the original sequence in softmax attention:
-  //   K ≈ Q_final @ K_comp (L×d reconstruction); softmax is a nonlinear operation, so
-  //   softmax(Q @ K_comp^T / √d) @ V_comp ≠ softmax(Q @ K^T / √d) @ V
-  //   The "k compressed tokens" interpretation is only valid for linear attention, not softmax attention.
-  //
-  // Mode A - Standard softmax attention (saves memory; may reduce inner dimension, not sequence length):
-  //   K_recon need not be materialized. If K ≈ Q_final @ K_comp, then
-  //   logits = (Q @ K_comp^T) @ Q_final^T / √d // for Q in R^{m×d}: O(mdk + mLk)
-  //   attn = softmax(logits)                   // softmax is still normalized over L positions
-  //   If V ≈ Q_final @ V_comp, output = (attn @ Q_final) @ V_comp
-  //   // Advantage: storage reduced from O(Ld) to O(Lk + kd); QK/AV inner dimension goes from d to k
-  //   // Limitation: the attention matrix is still m×L; the k factors are not k tokens
-  //
-  // Mode B - Linear attention (kernel feature map φ; compress additive statistics of φ(K), V):
-  //   Replace softmax with kernel feature map φ: Attn = φ(Q) @ (φ(K)^T @ V) / (φ(Q) @ φ(K)^T @ 1)
-  //   History can shrink from L tokens to k statistical factors only if the compressed objects are
-  //   additive statistics such as φ(K)^T V and φ(K)^T 1, or if low-rank/aggregation is performed
-  //   directly in φ(K) space. Applying φ directly to K_comp is not generally equivalent.
+**Critical distinction [v]:** left factors such as Q_final retain L rows, and softmax still normalizes over L positions. Factorized GEMMs avoid full K/V reconstruction, but k factors are not k tokens. Sharing U_V=U_K requires computing B_V=U_K^T V and measuring Value projection error; the right factor of an independent V-SVD cannot be paired with U_K.
 
-Method 2 - Streaming incremental compression (low latency):
-  Maintain basis (U_basis ∈ R^{k×d}), on new token arrival:
-    residual p = k_new - U_basis^T @ (U_basis @ k_new)
-    if ‖p‖ > τ: brand_update + truncate_to_rank(k)  // expand basis
-    else: coeff = U_basis @ k_new                    // project onto existing basis
-
-Method 3 - Layer-wise adaptive: allocate per-layer, per-head k based on effective rank r_eff[l,h]
-```
+**Linear attention [v/conditional]:** for a specified finite-dimensional map phi(x)∈R^s, accumulate S=sum phi(k_i)v_i^T and z=sum phi(k_i), then output phi(q)^T S/(phi(q)^T z), with a nonzero denominator. State size is O(sd_v+s); feature dimension s is not the SVD rank k of K. Applying nonlinear phi directly to K_comp generally fails to preserve these statistics. This is not an unconditional equivalent of standard softmax.
 
 ## Implementable Architectures
-- **Periodic compression layer**: trigger randomized SVD every $M=64$ steps, $L \times d \to (L \times k) + (k \times d)$
-- **Double buffering**: compressed basis + recent $w$ raw tokens, balancing accuracy and compression ratio
-- **Shared basis**: multi-head sharing of the Key column-space basis, each head stores only coefficients
-- **Quantized basis**: further INT8/FP8 quantization after compression, achieving dual compression
+- **Periodic compression [~]:** choose M by amortized cost and quality, not a universal M=64. This offline baseline needs raw A and workspaces; peak memory can exceed final factor storage.
+- **Fixed streaming basis [v]:** for R∈R^(k×d), RR^T=I, the new row Key has coefficients c=k_new R^T and residual k_new-cR at O(kd) cost. **[~]** A changing basis requires rotating/recomputing historical coefficients; the full incremental-SVD update is not always O(kd).
+- **Double buffering [~]:** compress old tokens and retain recent raw tokens. Preserve the common temperature, original positions, and mask; normalize logits from both regions with one shared softmax.
+- **Cross-head sharing/quantization [~]:** test subspace compatibility and quantization error. Low rank does not imply exploitable zero-entry sparsity in the factors.
 
 ## GPU Feasibility
-- Tensorization / GEMM: randomized SVD = 3 GEMMs + 1 small SVD, maps perfectly onto Tensor Cores
-- Complexity: $O(Ldk)$ is far superior to $O(Ld^2)$ full SVD; overhead negligible for $k \sim 256$
-- Memory: Key-Cache stored in low-rank factor form ($Q_{\text{final}} \in \mathbb{R}^{L \times k}$ + $B_k \in \mathbb{R}^{k \times d}$), total parameters $Lk + kd$, compression ratio $Ld/(Lk+kd) \approx d/k$ (when $L \gg k$). Note $Q_{\text{final}}$ still has $L$ dimension, so sequence length is NOT reduced; softmax attention can compute length-$L$ logits with factorized GEMMs without materializing a full $L \times d$ reconstruction. V-Cache requires independent compression. End-to-end compression ratio depends on K/V storage format and rank selection
-- Low precision: SVD recommended in fp32 (acceptable for small matrices); compressed KV can be stored back in bf16
-- Parallelism: compression across layers / heads is fully independent; incremental update $O(kd)$ with very low latency
-- Operator fusion: $K\Omega$ + QR can be partially fused; in the softmax path, QK/AV inner dimension can drop from $d$ to $k$, but softmax is still normalized over length $L$; linear attention only shrinks history to $k$ when compressing additive statistics
+- **D1/D2 [v]:** sketching and factor application contain GEMMs; QR/SVD retain separate costs. **[~]** This does not establish full Tensor Core utilization or whole-decomposition fusion.
+- **D3 [v]:** for m queries, factorized QK costs O(mdk_K+mLk_K), and AV costs O(mLk_V+mk_Vd_v), plus length-L softmax, compression, and updates. Ranks must fit the corresponding dimensions; k=256 is invalid for d=128.
+- **D4 [v]:** K-only factors have Lk+kd entries and ratio Ld/[k(L+d)]; savings require k<Ld/(L+d), and the approximation d/k additionally needs L>>d. Independent Value factors add Lk_V+k_Vd_v entries.
+- **D5 [~]:** use fp32 QR/SVD as a baseline and inspect orthogonality, tail spectra, logits, and output error after low precision/quantization. There is no universal “sigma_k error amplified by kappa” statement.
+- **D6/D8 [~]:** independent heads may parallelize, while each decomposition/basis update has dependencies. Tiled factor-attention fusion needs an actual kernel and end-to-end benchmarks.
 
-**Quantitative assessment example** (standard transformer, d=128, n=2048, rank k=64):
-- D3: SVD computation O(n·d·k) ≈ 2048·128·64 ≈ 16.8M FLOPs (one-time); softmax inference per query with factors is about O(dk + n·k), with a length-n softmax still required; linear attention removes n only when compressed statistics are used
-- D4: KV-Cache from O(n·d) = 2048·128·2B ≈ 512KB; factor format O(n·k + k·d) ≈ 2048·64·2B + 64·128·2B ≈ 278KB (compression ratio ~1.8x); final-left-factor + coefficient format ($Q_{\text{final}} \in \mathbb{R}^{n \times k}$ columns + $B_k \in \mathbb{R}^{k \times d}$) total parameters $nk + kd$, compression ratio $nd/(nk+kd) = d/k \cdot 1/(1+d/n) \approx d/k = 2x$, V-Cache requires independent compression
-- D5: Truncated SVD under bf16 amplifies singular value errors near σ_k by ~κ(A), requires caution
-- D8: SVD → matmul can be fused; online updates use incremental SVD to avoid full recomputation
-- Sparsity: when the effective rank $r_{\text{eff}}$ is much smaller than $k$, the factor matrices $Q_{\text{final}}$ and $B_k$ have implicit sparsity in their spectral structure; explicit block-sparse formats are typically unnecessary for KV-Cache compression, but pruning near-zero coefficients in $B_k$ can use structured sparsity (block-sparse BSR) for additional memory savings
+**Byte and FLOP accounting [v]:** L=2048, d=128, k=64, with 2-byte persistent elements: K occupies 512 KiB and its factors 272 KiB, a ratio of about 1.882x. Independently compressing V at the same rank reduces total KV from 1024 to 544 KiB; K-only compression gives 784 KiB. Workspaces/metadata are excluded. K Omega alone with ell=64 already costs about 2Ld ell=33.6M FLOPs for one GEMM; this is not the total SVD cost.
 
 ## Paper-Worthy Formulation
-"Building on the Eckart--Young--Mirsky theorem, we employ randomized SVD to project the KV-Cache onto a rank-$k$ subspace, compressing storage from $O(Ld)$ to $O(Lk + kd)$ (basis+coefficient format) at $O(Ldk)$ complexity. For standard softmax attention, low-rank factors cannot be interpreted as $k$ compressed tokens; softmax is still normalized over length $L$, but factorized GEMMs can compute logits and value aggregation without materializing a full $L \times d$ reconstruction, reducing the QK/AV inner dimension from $d$ to $k$. Only in linear attention, and only when compressing additive statistics such as $\phi(K)^T V$ and $\phi(K)^T\mathbf{1}$, can the historical state truly shrink from $L$ tokens to $k$ statistical factors. The Eckart--Young spectral-norm error gives $\sigma_{k+1}$ as the optimal rank-$k$ compression error for the K/V matrices themselves; the end-to-end attention output error bound further depends on query norms, the softmax Lipschitz constant, and the temperature parameter. The actual memory compression ratio depends on storage format and the independent V-Cache compression strategy."
+“We store KV as randomized low-rank factors and measure reconstruction, logit, and output errors. The Eckart--Young spectral-norm error serves as the exact truncated-SVD reference; randomized approximation error is measured separately. Standard softmax still normalizes over all historical positions. We compare end-to-end memory and latency including factorization, updates, and workspaces.”
 
 ## Risks
-- **Improper rank selection**: $k$ too small causes $\sigma_{k+1}$ to be non-negligible, degrading long-range recall; singular value decay curves must be monitored
-- **Incremental SVD error accumulation**: repeated Brand updates drift away from the true SVD, requiring periodic re-compression for correction
-- **Positional encoding distortion**: RoPE is coupled with Keys, and compression may disrupt relative positional information; separate handling or re-injection is needed
-- **Double-buffer seam**: attention score scales differ between the compressed region and the raw region, requiring unified normalization
+High-energy directions need not serve future queries. Rotating existing factors cannot recover information already lost to truncation. Post-RoPE Keys can be compressed in their actual form; pre-RoPE compression requires compatibility between projection and per-position rotations, rather than arbitrarily moving rotations past shared coefficients. Autoregressive training compressors must not access future data unavailable to the current Query.
+
+## Sources
+[Halko, Martinsson & Tropp](https://arxiv.org/abs/0909.4061) analyze randomized low-rank approximation; [Performers](https://research.google/pubs/rethinking-attention-with-performers/) discuss kernel-feature attention. The output bound above follows directly from its stated Jacobian and norm inequalities; matrix reconstruction optima are not task guarantees.

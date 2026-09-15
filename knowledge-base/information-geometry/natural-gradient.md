@@ -1,7 +1,7 @@
 # 自然梯度 / Natural Gradient
 
 ## 最小定义
-自然梯度是参数空间上关于**Fisher 信息度量**的最速下降方向。与朴素梯度在欧氏度量下定义不同，自然梯度在统计流形的黎曼度量下定义，因此在重参数化下协变（reparameterization covariant：方向作为几何对象不随坐标选择改变），且能自动适应损失面的曲率结构。
+自然梯度是 Fisher 信息度量下的梯度，其**负方向**才是最速下降。可辨识坐标间光滑可逆换元下，该向量场按坐标一致变换。有限 Euler 更新、阻尼及 Fisher 近似通常不再精确重参数化不变；Fisher 描述分布敏感性，不是任意损失 Hessian。
 
 ## 核心公式
 
@@ -17,7 +17,7 @@ $$\theta_{t+1} = \theta_t - \eta \, \mathcal{I}(\theta)^{-1} \nabla_\theta \math
 **等价推导（约束优化视角）**：自然梯度是以下约束优化问题的解——
 $$\min_{\Delta\theta} \mathcal{L}(\theta + \Delta\theta) \quad \text{s.t.} \quad D_{KL}(p_\theta \| p_{\theta+\Delta\theta}) \leq \epsilon$$
 
-用二阶展开 $D_{KL} \approx \frac{1}{2} \Delta\theta^T \mathcal{I} \Delta\theta$，拉格朗日求解即得自然梯度。
+需**同时**把目标线性化为 $\mathcal L(\theta)+\nabla\mathcal L^T\Delta\theta$，把 KL 二次近似。Fisher 非奇异且梯度非零时，局部信赖域解为 $\Delta\theta=-\sqrt{2\epsilon/(\nabla\mathcal L^T\mathcal I^{-1}\nabla\mathcal L)}\,\mathcal I^{-1}\nabla\mathcal L$。这是局部近似，不是原非线性约束问题的精确解。
 
 **K-FAC 近似**（Kronecker-Factored Approximate Curvature）：
 $$\mathcal{I}_l \approx A_l \otimes B_l$$
@@ -35,9 +35,9 @@ $$\mathcal{I}_l \approx A_l \otimes B_l$$
 
 ## 工程可行性
 - **D1[~]**：FIM 的 Kronecker 因子为稠密矩阵，可张量化；完整 FIM 不可
-- **D2[v]**：K-FAC 的 $A_l^{-1} (\nabla W_l) B_l^{-1}$ 是两次矩阵乘，天然 GEMM
-- **D3[~]**：K-FAC 每层额外 $O(d_A^2 + d_B^2)$ 协方差估计 + $O(d_A^3 + d_B^3)$ 矩阵逆；对角近似 $O(d)$
-- **D4[~]**：需额外存储每层的 $A_l$ 和 $B_l$（$O(d_A^2 + d_B^2)$），对 LLM 可接受但非零
+- **D2[~]**：$W\in\mathbb R^{b\times a}$、激活因子 $A\in\mathbb R^{a\times a}$、输出score因子 $B\in\mathbb R^{b\times b}$，采用列向量化时，$(A\otimes B)^{-1}\operatorname{vec}(G)=\operatorname{vec}(B^{-1}GA^{-1})$。因子顺序须匹配权重维度。
+- **D3[~]**：$B$ 个激活/score 样本下，因子估计为 $O(B(d_A^2+d_B^2))$、稠密求逆 $O(d_A^3+d_B^3)$，梯度预条件另有 GEMM 成本。记录刷新频率与摊销。
+- **D4[~]**：逐层存 $O(d_A^2+d_B^2)$ 因子，另加逆、阻尼状态及工作区。LLM 可行性依赖架构/设备；部分层可能需对角或低秩近似。
 - **D5[~]**：矩阵求逆在 fp16 下可能不稳定，需 fp32 或 Tikhonov 正则化 $(A + \epsilon I)^{-1}$
 - **D6[v]**：各层 Kronecker 因子独立计算，层间完全并行
 - **D8[v]**：自然梯度更新可融入参数更新 kernel

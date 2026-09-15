@@ -3,6 +3,8 @@
 ## Minimal Definition
 Concentration inequalities bound the **probability that a sum of independent random variables (or a Lipschitz function) deviates from its expectation**. The core intuition: when many independent random factors are superimposed, the outcome is highly concentrated around the mean, with tail probabilities decaying exponentially. They serve as a "quantitative strengthening of the law of large numbers."
 
+**Check before use**: Markov needs $a>0$ and finite expectation; Hoeffding needs independent $X_i\in[a_i,b_i]$ almost surely; McDiarmid needs independent inputs and a uniform bounded-difference condition. Exponential concentration requires distributional/dependence assumptions and does not follow merely from summing many random terms. Matrix concentration is a separate theorem, not scalar concentration applied entrywise without a dimension factor.
+
 ## Core Formulas
 
 **Markov's Inequality** (weakest, most general):
@@ -23,9 +25,9 @@ $$P(|f(X_1,\ldots,X_n) - \mathbb{E}[f]| \geq t) \leq 2\exp\left(-\frac{2t^2}{\su
 - **Sampling estimation accuracy**: Quantitative computation of confidence intervals for Monte Carlo estimators
 
 ## AI Design Translation
-- **PAC learning bounds / generalization bounds**: Hoeffding/McDiarmid provides probabilistic bounds on the gap between empirical risk and true risk
-- **Variance control for Dropout / Stochastic Depth**: Bernstein's inequality guarantees output concentration under stochastic regularization
-- **Gradient compression / communication efficiency**: Concentration bounds on gradient deviation after quantization or sparsification, ensuring convergence of distributed training
+- **Generalization**: A fixed-predictor concentration bound does not automatically cover a predictor fitted on the same sample. Add a uniform bound/complexity measure, stability argument or independent hold-out protocol.
+- **Stochastic regularization**: Bound dropout/stochastic-depth output only after specifying independence, bounded increments or tail assumptions and the nonlinear propagation of noise.
+- **Gradient compression**: Concentration can bound a defined estimator error; distributed convergence additionally requires optimization assumptions, compression bias handling and communication/update rules.
 
 ## Engineering Feasibility
 - **D1[v]**: The bounds themselves are scalar formulas with no tensor operations; zero overhead as an analytical tool
@@ -36,7 +38,7 @@ $$P(|f(X_1,\ldots,X_n) - \mathbb{E}[f]| \geq t) \leq 2\exp\left(-\frac{2t^2}{\su
 
 ## Risks and Failure Conditions
 - **Independence assumption violated**: In sequential data and autoregressive models, tokens are strongly correlated, and Hoeffding's exponential decay guarantee fails. Martingale versions (Azuma-Hoeffding) or mixing-time corrections are required.
-- **Boundedness assumption violated**: Under heavy-tailed distributions (e.g., power laws), Hoeffding does not apply; Bernstein or truncation tricks are needed. In LLM training, when gradients occasionally take extreme values, naive concentration bounds yield a false sense of security.
+- **Heavy tails**: Neither bounded-variable Hoeffding nor the displayed bounded-variable Bernstein applies directly to unbounded heavy tails. Use appropriate finite-moment bounds, robust estimators or truncation with an explicit bias term.
 
 ## Further References
 - Distillation draft: `../../references/books/` — no dedicated probability distillation draft at present; this card is based on standard probability theory textbooks

@@ -12,24 +12,24 @@
 - **Ch 1–2 Smooth Manifolds / Smooth Maps**：拓扑流形、光滑结构（atlas）、光滑映射、单位分解（partition of unity）。→ 局部线性化 + 全局拼接的语言。
 - **Ch 3 Tangent Vectors**：切空间 T_pM、微分（differential / pushforward）df_p、切丛 TM。→ **局部线性化的核心**，反向传播的几何原型。
 - **Ch 4–5 Submersions, Immersions, Embeddings / Submanifolds**：常秩定理、嵌入、正则水平集 → 子流形。→ 约束集 = 子流形。
-- **Ch 6 Sard's Theorem**：临界值测度为零、Whitney 嵌入定理（n 维流形可嵌入 R^{2n}）。→ 嵌入维数 / 流形假设。
-- **Ch 7 Lie Groups**：既是群又是流形（SO(n), U(n), GL(n), Stiefel…），李代数 = 单位元处切空间。→ 正交/酉权重约束、等变。
-- **Ch 8–9 Vector Fields / Integral Curves and Flows**：向量场、积分曲线、流（flow，单参数微分同胚群）、李导数与李括号 [X,Y]。→ **Neural ODE / 扩散 / 连续归一化流** 的母结构。
-- **Ch 10–12 Vector Bundles / Cotangent Bundle / Tensors**：丛、余向量场（1-form）、拉回（pullback）、张量。→ 梯度的真身是余向量。
+- **Ch 6 Sard's Theorem**：临界值测度为零、Whitney 嵌入定理（适当嵌入 R^{2n+1}；书中陈述的强版本在 n>0 时给出 R^{2n}）。→ 嵌入维数 / 流形假设。
+- **Ch 7 Lie Groups**：既是群又是流形（SO(n), U(n), GL(n)…），李代数 = 单位元处切空间。→ 正交/酉权重约束、等变。
+- **Ch 8–9 Vector Fields / Integral Curves and Flows**：向量场、积分曲线、局部流（完备向量场才生成全局单参数微分同胚群）、李导数与李括号 [X,Y]。→ **Neural ODE / 扩散 / 连续归一化流** 的母结构。
+- **Ch 10–12 Vector Bundles / Cotangent Bundle / Tensors**：丛、余向量场（1-form）、拉回（pullback）、张量。→ 微分 df 是余向量；梯度还需要度量。
 - **Ch 13 Riemannian Metrics**：每点内积、长度/距离/体积、切-余切同构（musical (sharp)/(flat)，升降指标）。→ **自然梯度 / 黎曼优化的度量来源**。
 - **Ch 14–16 Differential Forms / Orientations / Integration**：k-形式、楔积、外微分 d（d²=0）、定向、体积形式、流形上积分与变量替换。→ 归一化流的 log-det-Jacobian = 体积形式拉回。
 - **Ch 17–18 De Rham Cohomology / de Rham Theorem**：闭形式模去恰当形式 = 从微分数据读出的拓扑不变量。→ 全局障碍 / 上同调正则。
-- **Ch 19–22 Distributions & Foliations / Exponential Map / Quotient Manifolds / Symplectic Manifolds**：可积分布（Frobenius）、指数映射（retraction 原型）、商流形（Grassmann 等）、辛形式与 Hamilton 流。→ retraction、商空间约束、辛积分器 / HMC。
+- **Ch 19–22 Distributions & Foliations / Exponential Map / Quotient Manifolds / Symplectic Manifolds**：可积分布（Frobenius）、李群指数映射（不能混同一般黎曼指数）、商流形（Grassmann 等）、辛形式与 Hamilton 流。→ retraction、商空间约束、辛积分器 / HMC。
 
-**作者明示的边界（preface）**：本书止步于"建立工具"，**刻意不讲** connection、geodesic、curvature、纤维丛、Hodge 理论——这些在 Lee 的 *Riemannian Manifolds* 续作里。所以若问题真正需要曲率/平行移动的深层几何，本书只给到度量与指数映射的入口，需另取黎曼几何书续接。
+**范围边界**：本书提供光滑结构、向量丛、度量和李群指数映射的工具。联络、黎曼测地线、平行移动与曲率需转向黎曼几何教材；不能把 Ch 20 当作一般黎曼指数映射的系统讲解。版本勘误可查[作者书目页](https://sites.math.washington.edu/~lee/Books/ISM/)。
 
 ## 可迁移到 AI/Infra 的核心结构
 
 - **切空间 = 参数/隐空间的局部线性化（local linearization）**。`df_p: T_pM → T_{f(p)}N` 就是 Jacobian / pushforward（前推，对应 JVP / 前向模式 AD）；反向传播 = 余切丛上的拉回（pullback on cotangent bundle，VJP = 向量-Jacobian 积 = 余向量的拉回），即沿复合映射做 pullback（链式法则的几何版）。一切一阶方法都活在切空间里。
-- **梯度是余向量（covector），不是向量**。autodiff 给出的是 1-form（余切空间元素）；要变成可下降的方向（切向量）必须用 **度量升指标**（(sharp)）。欧氏度量 → 普通梯度；Fisher 度量 → 自然梯度（natural gradient）。**这是自然梯度 / 镜像下降的流形根因**。
+- **微分 df 是余向量，grad_g f 是向量**。反向模式 AD 给出 df 的坐标分量；选定度量后，grad_g f = g⁻¹df，负梯度是最陡下降方向。欧氏与自然梯度的区别来自度量选择；镜像下降与特定 Hessian 度量的关系还需要凸势等条件。
 - **约束集 = 子流形（submanifold）**。正则水平集定理：当 g 是 submersion 时 `g(x)=c` 的解集是光滑子流形；约束优化 = 在子流形上做无约束优化。
-- **李群 = 可微的对称群**。SO(n)/U(n)/Stiefel/Grassmann 都是流形；其李代数（如反对称矩阵 so(n)）是线性空间，用 `exp` 映射回群 → **把"约束权重"重参数化为"无约束李代数 + exp"**。
-- **流（flow）= 时间参数化的微分同胚族**。学一个向量场 + 沿它积分 = Neural ODE / 连续归一化流 / 扩散采样。流的可逆性、保体积性直接对应模型性质。
+- **李群与齐性空间要区分**。SO(n)、U(n) 是李群，其李代数可用于 Exp 参数化。一般 Stiefel/Grassmann 是相应群作用下的齐性/商流形，不具备这里假定的群乘法或自身李代数；可使用矩形 QR retraction、商空间方法或群作用构造，而非照搬群 Exp。
+- **局部流与存在性条件**。光滑向量场在其解存在的区间内生成局部微分同胚；全局时间需完备性，保体积需对所选体积形式散度为零。Neural ODE/CNF 使用确定性流；随机扩散 SDE 不能直接当作确定性可逆流，probability-flow ODE 的联系另需条件。
 - **黎曼度量 = 可设计/可学习的"局部几何"**。它决定距离、夹角、体积、谁与谁正交；改度量就改了优化轨迹与采样测度。
 - **微分形式 + 体积形式 = 变量替换的语言**。归一化流里的 `log|det J|` 项就是体积形式在映射下的拉回；选对结构（三角/耦合 Jacobian）能让它廉价。
 
@@ -43,33 +43,24 @@
 
 ## 可能的算法启发
 
-- **黎曼/流形优化器（Riemannian optimizers）**：把 Adam/SGD 搬到 Stiefel、Grassmann、SPD、双曲空间——梯度投影到切空间 + retraction 回流形。
+- **黎曼/流形优化器（Riemannian optimizers）**：把 Adam/SGD 搬到 Stiefel、Grassmann、SPD、双曲空间——按所选度量计算梯度、应用 retraction 并一致搬运状态；环境欧氏梯度的切空间投影适用于诱导度量。
 - **正交/Stiefel 约束权重**：用 Cayley 变换或 QR-retraction 维持 `WᵀW=I`，缓解 RNN/深网的梯度爆炸/消失；或用 so(n) 李代数 + matrix-exp 重参数化旋转。
 - **测地线插值（geodesic interpolation）**：在球面/双曲/SPD 隐空间用闭式测地线做插值与混合，替代欧氏线性插值。
-- **流形上的归一化**：把 LayerNorm/特征归一化理解为投影到球面/单位流形；超球面 softmax、谱归一化都是此类。
-- **Neural ODE / 连续归一化流 / 扩散**：学向量场 X_θ，用流求解；结构化 Jacobian 让 `log-det` 廉价。
+- **归一化的对象要明确**：非零特征的 L2 归一化落在球面上；忽略 ε 与仿射变换时，LayerNorm 还施加零均值约束。谱归一化约束的是矩阵算子范数，不能直接等同球面投影或保证约束集处处光滑。
+- **Neural ODE / CNF**：学确定性向量场，核对解的存在唯一性和散度计算成本；随机扩散及其 probability-flow ODE 单独定义。
 - **辛积分器（symplectic integrator）/ HMC**：用 leapfrog 这种保辛、保体积的显式更新做采样与"带动量的优化"，长程稳定。
 - **等变网络（equivariant nets）**：用李群作用 + 商流形把对称性写进结构（geometric deep learning）。
 
 ## GPU 友好性警告
 
-> 实现审查按 `../gpu-friendly-math.md` 选择相关维度，无关项标 `N/A`。流形方法通常要重点检查 retraction / 指数映射的批处理方式、迭代成本、数值稳定性和内存，而不应把 GEMM 可映射性当成唯一成败标准。
+按 `../gpu-friendly-math.md` 选择适用维度。光滑流形结构本身不规定 GPU 成本，具体算子和表示才规定成本。
 
-逐维对照：
+- **D1/D2 [~]**：线性映射的 JVP/VJP 可用 GEMM；一般微分的实现仍由原计算图决定，不能把所有切空间操作都称为 GEMM。QR、矩阵指数和求解器可批处理，但需要实测尺寸、吞吐与峰值内存。
+- **D3/D4 [v]**：球面点的内积/距离通常为 O(n)，矩形 n×r QR 约 O(nr²)，稠密 n×n SPD 特征分解通常 O(n³)。不存在“所有测地线/平行移动都 O(n³) 起”的统一下界。
+- **D5 [~]**：误差取决于谱间隙、条件数、角度分支与算法。以 fp32/fp64 为参照测试目标精度；升精度和正则化也不能消除数学上的不可微点或病态性。
+- **D6/D7/D8 [~]**：ODE 时间步有依赖，但样本、块和部分线性子问题可并行。低维闭式表达、稀疏结构和融合能否获益由实现决定。
 
-- **D1–D2** 切空间运算（pushforward/pullback、Jacobian-向量积、把梯度投影到切空间）**天然是 batched GEMM** [v]——反向传播本就是 pullback（VJP），这部分对 GPU 极友好。**但** retraction/exp 多半要 QR、特征分解、矩阵指数或小矩阵求逆：QR/eig **不是干净的 GEMM**，是带串行依赖的分解（cuSOLVER 批量小矩阵尚可，大矩阵 O(n³) 且并行差）→ **可改造** 而非天然友好。
-- **D3 复杂度**：测地线距离、平行移动、一般 `log|det J|` 都是 O(n³) 起。**改造**：限定有闭式测地线的流形（球面/双曲/SO(3)）；归一化流用三角/耦合层让 log-det 退化成对角和（O(n)）。
-- **D5 低精度**：[~] **最大坑**。矩阵 `exp / log / sqrt`、特征分解、SPD 的仿射不变度量在 bf16/fp16 下 **灾难性不稳定**，常静默地需要 fp32/fp64。流形原语经常"表面能跑、数值早已发散"。
-- **D6 并行与通信**：scaling-and-squaring 的平方链、ODE 积分步、Householder/QR 都有 **串行递推**，难跨 SM/设备 overlap。反例向好：显式辛积分器（leapfrog）高并行 [v]。
-- **D4/D7/D8 显存 / 稀疏 / 融合**：李代数/旋转参数化若限制在 **小矩阵或块对角**（如逐头旋转、SO(3) 的 Rodrigues 闭式），可融进 kernel、走 Tensor Core；大稠密流形算子则要物化大中间张量。
-
-**结论与改造手法（呼应 gpu-friendly-math.md 工具箱）**：
-
-1. **优先选有闭式 retraction 的流形**（球面、Stiefel-QR、SO(3)、双曲）。
-2. **能软化就软化**：把硬约束换成纯 GEMM 的正则项（如 `λ‖WᵀW−I‖²` 替代严格正交流形）——多数训练这就够。
-3. **小矩阵 / 块化**：把 exp/Cayley/QR 限制在小块或逐头，批量化为 batched GEMM。
-4. **结构化 Jacobian**：归一化流坚持三角/耦合结构，杜绝通用 LU 求 det。
-5. **精度护栏**：凡矩阵 exp/log/eig，强制 fp32 累加并做数值稳定（log-sum-exp 式）。
+硬约束与软正则应按所需保证选择：正交惩罚并不确保严格正交。辛积分器保持辛结构，不一般逐步精确保能；leapfrog 的显式形式还依赖可分离 Hamiltonian，HMC 接受率需要另测。
 
 ## 该调用哪个思想透镜
 
@@ -82,10 +73,10 @@
 ## 反模式
 
 - **把 ML 的 "tensor"（数组）当数学 tensor（多线性、有协变/逆变变换律）**，误以为自动获得坐标无关的不变性。
-- **把 exp / 测地线 / matrix-log 放进 bf16 热训练循环**：既慢（串行分解）又静默发散。先问"有没有闭式 retraction / 能不能软化"。
+- **未经验证把矩阵 exp/log 放入低精度热循环**：先检查条件数、分支、梯度残差和实测耗时，再选择精度与近似。
 - **该软不软**：用严格流形约束换来微小收益，却付出 QR/eig 的吞吐与稳定性代价；很多任务一个正交正则项就够。
-- **混淆梯度（余向量）与下降方向（向量）**：忘了度量、把 raw autodiff 输出直接当自然梯度。
-- **单一全局坐标卡的幻觉**：用一套全局参数化覆盖整个流形必有奇点（如欧拉角的 gimbal lock）；流形本质需要 atlas / 冗余参数化。
+- **混淆微分 df（余向量）与梯度 grad_g f（向量）**：忘了度量、把 raw autodiff 输出直接当自然梯度。
+- **单一全局坐标卡的幻觉**：球面/SO(3) 等空间不能用单个无奇异欧氏坐标图覆盖，但 Rⁿ 和 SPD 的矩阵对数坐标是反例；是否需要多图取决于对象拓扑，不是所有流形的必然限制。
 - **流形假设滥用**：参数空间本是平坦欧氏时硬套黎曼机器，纯属过度工程（违反 simplicity-first）。
 
 ## 深挖入口
@@ -97,9 +88,9 @@
 > **全保真回查**：需要原文定义/定理/证明时，让 Agent **自动搜索本地 PDF** `math_book/Introduction to Smooth Manifolds.pdf`（按章号/关键词定位，勿凭记忆复述）。下列为真实章号（2nd ed.）：
 
 - **Ch 3 Tangent Vectors** — 切空间、微分/pushforward、切丛：局部线性化与反传的几何原型。
-- **Ch 11 The Cotangent Bundle** — 余向量场（1-form）、`df` 作为余向量、pullback：梯度真身 = 余向量。
+- **Ch 11 The Cotangent Bundle** — 余向量场（1-form）、`df` 作为余向量、pullback：df 是余向量，梯度由度量升指标得到。
 - **Ch 13 Riemannian Metrics** — 度量、切-余切同构（(sharp)/(flat)）、距离：自然梯度 / 黎曼优化的根。
 - **Ch 9 Integral Curves and Flows** — 流、积分曲线、李导数/李括号：Neural ODE / 扩散 / 保结构动力学。
-- **Ch 20 The Exponential Map** — 指数映射：retraction 原型，也是 GPU 可行性的主瓶颈。
+- **Ch 20 The Exponential Map** — 李群指数映射：由左不变向量场的流定义；不要把该章当成一般黎曼测地线教材。
 
 （延伸：Ch 7 Lie Groups → 正交/酉约束与等变；Ch 14 Differential Forms → 体积形式与 log-det-Jacobian；Ch 22 Symplectic Manifolds → 辛积分器 / HMC。）

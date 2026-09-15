@@ -1,5 +1,5 @@
 # Information Bottleneck Attention
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Evidence labels**: [v] supported by stated assumptions or recorded checks; [~] engineering proposal requiring validation; [x] incompatible under the stated conditions; [N/A] outside scope. Pseudocode specifies operators, not a production-ready implementation.
 
 ## Applicable Problems
 When the attention mechanism needs to **selectively transmit useful information while suppressing redundant/noisy information**, information bottleneck theory can guide the learning of attention weights -- maximizing the mutual information $I(Z;Y)$ of the attention distribution with respect to the target $Y$, while minimizing the mutual information $I(X;Z)$ with respect to the input $X$. Typical scenarios include: long-document summarization (filtering large numbers of irrelevant tokens), multimodal alignment (cross-modal noise suppression), and interpretability (attention weights as visualization of information flow).
@@ -15,77 +15,46 @@ When the attention mechanism needs to **selectively transmit useful information 
 
 ## AI Module Form
 
-**Core Idea**: Treat attention as an information bottleneck -- attention weights determine "how much information flows from values to output," while KL regularization constrains the information throughput.
-
-**Scheme A: KL-Regularized Attention (Simplest IB Attention)**:
+**Attention entropy proxy**:
 ```python
-# ⚠ Note the semantic direction of KL:
-# KL(attn || uniform) = log(n) - H(attn)
-# Minimizing +beta * KL(attn || uniform) = maximizing H(attn) → pushes toward uniform (max entropy / max compression)
-# This does NOT induce sparsity by itself! Sparsity emerges from the tension with task_loss.
-# For explicit sparsity induction, use an entropy penalty +beta * H(attn) (minimize entropy).
-
-scores = (Q @ K.T) / sqrt(d)
-attn = softmax(scores)
-uniform_prior = ones_like(attn) / n
-
-# Correct IB compression term: KL(q(z|x) || p(z)), where p(z) is a fixed prior
-# Minimizing this term → compresses information (pushes toward prior); tension with task_loss yields useful attention
-kl_compression = (attn * (log(attn + eps) - log(uniform_prior))).sum(dim=-1).mean()
-# = log(n) - H(attn)
-
-# IB objective: min task_loss + beta * I(X;Z), where I(X;Z) ≈ KL(attn || prior)
-loss_ib = task_loss + beta * kl_compression
-# Note: this term alone pushes toward uniform; sparsity arises from the counter-pull of task_loss
-
-# Alternative: explicit sparsity induction (not IB compression, but entropy penalty)
-entropy = -(attn * log(attn + eps)).sum(dim=-1).mean()
-loss_sparse = task_loss + beta * entropy  # minimize entropy → concentrated attention → implicit Top-K
-
+log_attn = log_softmax(Q @ K.T / sqrt(d), dim=-1)
+attn = exp(log_attn)
+entropy = -(attn * log_attn).sum(-1).mean()
+kl_to_uniform = log(n) - entropy
+loss_uniform = task_loss + beta * kl_to_uniform  # encourages diffuse attention
+loss_concentrated = task_loss + beta * entropy   # encourages concentration, not exact zeros
 output = attn @ V
 ```
+A categorical channel $J\sim\operatorname{Cat}(a(X))$ satisfies $\mathbb E_X KL(a(X)\|r)=I(X;J)+KL(p_J\|r)$. This bounds the information of the **sampled index** $J$, not automatically the continuous context $Z=a(X)V(X)$, since $V$ also depends on $X$. Calling attention entropy a context information bottleneck needs this missing channel definition.
 
-**Scheme B: Variational Information Bottleneck Attention (VIB-Attention)**:
+**Actual stochastic context bottleneck**:
 ```python
-# Introduce a continuous stochastic bottleneck Z ~ q(Z|context) after value aggregation
-scores = (Q @ K.T) / sqrt(d)
-attn = softmax(scores)
 context = attn @ V
-mu_z, log_var_z = linear_mu(context), linear_logvar(context)
-z = mu_z + exp(0.5 * log_var_z) * randn_like(mu_z)  # Gaussian reparameterization
-kl = 0.5 * (mu_z^2 + exp(log_var_z) - log_var_z - 1).sum(-1).mean()  # KL[q(z|context)||N(0,I)]
-output = linear_out(z)
-loss = task_loss + beta * kl
+mu, logvar = linear_mu(context), linear_logvar(context)
+z = mu + exp(0.5 * logvar) * randn_like(mu)
+kl = 0.5 * (mu**2 + exp(logvar) - logvar - 1).sum(-1).mean()
+loss = prediction_loss(task_head(z), target) + beta_comp * kl
 ```
-
-If the bottleneck is applied directly on the attention simplex (e.g., noisy logits followed by softmax), the random variable is logistic-normal / Concrete-like. The closed-form Gaussian KL above no longer applies; use Monte Carlo KL, a Concrete KL approximation, or place the Gaussian KL on pre-softmax logits.
-
-**Scheme C: Mutual Information Maximization Attention (DIM Style)**:
-```python
-# Directly maximize I(Z;Y) via InfoNCE, with KL constraining I(X;Z)
-Z = softmax((Q @ K.T) / sqrt(d)) @ V
-info_nce = infonce_loss(Z, target_embedding, negatives, tau=0.1)
-kl_bottleneck = estimate_kl(X, Z)  # MINE/NWJ estimator
-loss = -info_nce + beta * kl_bottleneck
-```
+A Gaussian KL on pre-softmax logits can upper-bound downstream simplex MI by data processing; it is not generally the exact KL of logistic-normal simplex distributions. If `infonce_loss` returns the usual nonnegative loss, **minimize it**; the MI lower bound is `log(num_candidates) - infonce_loss`. MINE/NWJ lower bounds cannot certify compression when minimized.
 
 ## Implementable Architectures
-- **IB-Sparse Attention**: The IB compression term KL(attn || uniform) by itself pushes toward uniform (maximum entropy), but its tension with task_loss forces the attention to balance between "compressing all information" and "selectively transmitting useful information," implicitly producing non-uniform attention. For **explicit** sparsity induction (Top-K selection), use an entropy penalty `+beta * H(attn)` (minimize attention entropy → concentration), rather than relying on the IB compression term alone
-- **IB Interpretation of Dropout**: Dropout is a form of stochastic information bottleneck -- randomly blocking information channels forces the model to learn robust representations. The dropout rate corresponds to the $\beta$ parameter
-- **Multi-Head Information Allocation**: Different heads learn different information bottlenecks (different $\beta$); some heads transmit global information, others only local information
+
+- Entropy-regularized attention for a measured concentration/uniformity preference.
+- Stochastic context VIB for a declared input–latent information bound.
+- Different head weights are design hyperparameters; dropout rates have no universal one-to-one mapping to IB beta.
+- Executable sparsity requires explicit masks/top-k or sparse probability transforms and a supported kernel.
 
 ## GPU Feasibility
-- **D1**: KL regularization involves element-wise operations; VIB reparameterization sampling is element-wise
-- **D2**: The main body $QK^T$ and $attn \cdot V$ are standard GEMM; regularization introduces no new GEMM operations
-- **D3**: KL regularization is $O(n)$ per token, adding no asymptotic complexity
-- **D4**: VIB requires additional $\mu_z$ and $\log\sigma_z$, approximately doubling attention weight memory
-- **D5**: log/exp in KL computations are stable under bf16 (standard log-softmax tricks)
-- **D6**: Regularization can be computed in parallel with forward propagation, introducing no serial dependencies
-- **D7[~]**: KL regularization by itself does not induce sparsity (pushes toward uniform distribution); for sparsity, use an entropy penalty +beta * H(attn), which then enables block-sparse acceleration
-- **D8**: KL can be fused into the softmax kernel (FusedSoftmaxKL)
+
+- **D1/D2[~]**: KL/entropy are elementwise reductions; Gaussian statistics require additional linear maps with their own GEMM costs.
+- **D3/D4[~]**: Dense attention entropy costs $O(n^2)$ per head and can defeat memory savings if the full attention matrix is exposed. Context VIB statistics use $O(nd_z)$ storage, not a fixed doubling of attention-weight memory.
+- **D5[~]**: Use fp32 log-softmax/reductions and bounded log-variance; masked probabilities need safe $0\log0$ handling.
+- **D6/D8[~]**: Entropy depends on attention scores; a streaming implementation may accumulate it within the attention kernel, but backward and actual kernel support need validation.
+- **D7[~]**: Low entropy is not block sparsity. Report retained blocks, dropped mass, output error and actual latency if sparsifying.
 
 ## Paper Phrasing
-"We propose information bottleneck attention, which models attention as an information bottleneck optimization problem. By maximizing the mutual information between output and target while constraining redundant information transmission from the input, the IB compression term by itself pushes toward a uniform distribution (maximum entropy), and its tension with the task loss produces non-uniform attention; explicit sparsity induction requires an additional entropy penalty term."
+
+“We distinguish attention-entropy regularization from a stochastic context bottleneck. The former controls categorical weight concentration; the latter has an explicitly defined variational information upper bound. We report the corresponding entropy/KL, predictive quality, and measured implementation cost.”
 
 ## Risks
 - **High Variance of Mutual Information Estimators**: The MINE/NWJ/InfoNCE estimators in Scheme C exhibit high variance in high-dimensional spaces, potentially causing training instability. It is recommended to first validate the basic effect of IB attention with Scheme A (KL regularization) before attempting the full IB objective.

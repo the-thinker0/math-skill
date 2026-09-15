@@ -1,68 +1,74 @@
 # Projection Attention
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+
+> Rigor convention: [v] denotes a directly checkable mathematical relation or cost count; [~] denotes a design requiring task/hardware validation. Throughput, fusion, and low-precision quality are not verified without benchmarks.
 
 ## Applicable Problems
-When the token/key space dimensionality is too high, the standard attention $Q K^T$ inner product tends to become uniform in high-dimensional spaces ("attention collapse"). In such cases, key/query vectors must first be projected onto a **subspace with superior geometric structure** before computing attention. Typical scenarios include: KV-Cache compression for long-context LLMs, attention sparsification in high-dimensional embedding spaces, and attention alignment of heterogeneous features in multimodal fusion.
+Explore feature projection when Q/K have measurable redundancy or Key-cache storage is a bottleneck. High dimension alone does not imply uniform attention: the dot product of independent zero-mean unit-variance coordinates has variance d, which the standard 1/sqrt(d) scaling controls. Compressible directions require data, logit-error, and task measurements.
 
 ## Mathematical Inspiration
-- Lenses: [projection, spectral, probabilistic]
-- Knowledge: [`../../knowledge-base/probability/concentration-inequality.en.md` (high-dimensional concentration inequalities provide theoretical explanation for attention collapse), `../../knowledge-base/probability/entropy.en.md` (entropy of attention distributions as a quality metric)]
+- Lenses: `../../lenses/projection.en.md`, `../../lenses/spectral.en.md`, `../../lenses/probabilistic.en.md`.
+- Knowledge: `../../knowledge-base/matrix-analysis/projection.en.md`, `../../knowledge-base/probability/concentration-inequality.en.md`, `../../knowledge-base/probability/entropy.en.md`.
 
 ## Required Mathematical Knowledge
-- **Johnson-Lindenstrauss Lemma**: High-dimensional point sets can be projected onto an $O(\log n / \epsilon^2)$-dimensional subspace while approximately preserving distances
-- **Random Projections and Subspace Embeddings**: Sparse projection matrices (e.g., CountSketch, SRHT) approximately preserve inner products
-- **SVD / PCA Truncation**: Optimal low-rank subspace projection that maximizes retained variance
+- **JL boundary:** Euclidean distances of a finite point set independent of the random map are approximately preserved under the appropriate map, dimension, and failure-probability conditions. This does not establish softmax-output or task preservation. CountSketch and SRHT need their own dimension guarantees.
+- **Two different objectives:** learning independent P_Q and P_K defines a new bilinear metric; approximating existing inner products with a shared scaled random P requires retaining the original temperature. These do not share one unconditional guarantee.
+- **Subspace truncation:** right singular vectors of K minimize its uncentered reconstruction error. K^T K/n is a second moment; covariance requires mean subtraction and reconstruction must then handle the mean term.
 
 ## AI Module Form
+Let Q∈R^(m×d), K∈R^(n×d), V∈R^(n×d_v), and P_Q,P_K∈R^(d×r):
 
-**Core Idea**: Project $Q, K \in \mathbb{R}^{n \times d}$ onto an $r$-dimensional subspace ($r \ll d$) before computing attention:
+$$O=\operatorname{softmax}_{j}\left(\frac{(QP_Q)(KP_K)^T}{\tau}+M\right)V.$$
 
-$$\text{ProjAttn}(Q, K, V) = \text{softmax}\left(\frac{Q P_Q (K P_K)^T}{\sqrt{r}}\right) V$$
+M is the same visibility mask, with at least one allowed key per row.
 
-where $P_Q, P_K \in \mathbb{R}^{d \times r}$ are projection matrices.
+```python
+import math
+import torch
 
-**Three Projection Strategies**:
+def projected_attention(Q, K, V, P_Q, P_K, temperature, allowed=None):
+    assert temperature > 0
+    Q, K, P_Q, P_K = [x.float() for x in (Q, K, P_Q, P_K)]
+    scores = ((Q @ P_Q) @ (K @ P_K).T) / temperature
+    if allowed is not None:
+        assert bool(allowed.any(dim=-1).all())
+        scores = scores.masked_fill(~allowed, -torch.inf)
+    return torch.softmax(scores, dim=-1) @ V.float()
 
-1. **Learnable Projection** ($P$ as trainable parameters):
+# Approximate original QK^T / sqrt(d); keep P fixed throughout cache use.
+def gaussian_projection(d, r, *, device, dtype):
+    return torch.randn(d, r, device=device, dtype=dtype) / math.sqrt(r)
+# P = gaussian_projection(...)
+# output = projected_attention(Q, K, V, P, P, math.sqrt(Q.shape[-1]))
 ```
-P_Q = Linear(d, r, bias=False)  # r << d
-P_K = Linear(d, r, bias=False)
-scores = (Q @ P_Q) @ (K @ P_K).T / sqrt(r)
-attn = softmax(scores) @ V
-```
 
-2. **Random Fixed Projection** (distance-preservation bound when JL conditions hold):
-```
-P = random_gaussian(d, r) / sqrt(r)  # fixed, not trained
-scores = (Q @ P) @ (K @ P).T / sqrt(r)
-```
+**Random-map scale [v]:** for P_ab~N(0,1/r), E[PP^T]=I and E[(qP)(kP)^T]=qk^T. Retain sqrt(d) to approximate the original attention; dividing by sqrt(r) changes its temperature. The dot-product expectation identity does not make softmax unbiased.
 
-3. **Data-Adaptive Projection** (online PCA):
-```
-# Maintain running covariance of K, take top-r eigenvectors
-C = running_mean(K^T @ K)  # d x d
-eigenvecs = top_r_eigenvectors(C)  # d x r
-scores = (Q @ eigenvecs) @ (K @ eigenvecs).T / sqrt(r)
-```
+**Learnable projection [~]:** use two `torch.nn.Linear(d, r, bias=False)` layers and call them as `P_Q(Q)` and `P_K(K)`, rather than multiplying tensors by a layer object. sqrt(r) is one temperature choice for the new architecture and needs training/calibration.
+
+**Data-adaptive subspace [~]:** truncated SVD of K can supply orthogonal P. Updating P online invalidates historical Key coefficients: reproject, update old coefficients, or retain block-specific bases. Updating only Query projection while keeping stale KP is inconsistent.
 
 ## Implementable Architectures
-- **Multi-Head Projection**: Each head uses a different $P_h \in \mathbb{R}^{d_h \times r}$, with total computation $O(n \cdot d \cdot r + n^2 \cdot r)$. When $r \ll d$, this saves the $O(n^2 d)$ cost of $Q K^T$
-- **Key-cache Compression**: The projected $K' = K P_K \in \mathbb{R}^{n \times r}$ replaces the original $K$ in storage, reducing Key-cache memory by about $d/r$. Full KV-Cache compression requires a separate V compression/reconstruction mechanism
-- **Hierarchical Projection**: Shallow layers use small $r$ (coarse filtering), while deep layers use large $r$ (fine ranking)
+- Choose r per head and record the Q/K maps and temperature; sum costs across heads.
+- Storing only KP compresses Key; Value remains n×d_v.
+- Data-adaptive subspaces in autoregressive training must not read future tokens unavailable to the current Query. Freeze an offline calibration basis or update by prefix.
 
 ## GPU Feasibility
-- **D1**: Projection = matrix multiplication, attention = matrix multiplication chain; entirely tensor operations
-- **D2**: $Q P_Q$ and $K P_K$ are both standard GEMM operations, fully utilizing Tensor Cores
-- **D3**: Projection cost $O(ndr)$ is far below attention cost $O(n^2 d)$, and after projection $r \ll d$ reduces attention to $O(n^2 r)$
-- **D4**: Key-cache compressed by $d/r$; V-cache must be handled separately
-- **D5**: Projection matrices are orthogonal or near-orthogonal, yielding numerical stability; bf16 is acceptable
-- **D6**: Projection can be pipelined with attention; Multi-Head is naturally parallel across heads
-- **D7**: Projection matrices are inherently dense; sparse projections (CountSketch) may introduce gather/scatter operations
-- **D8[~] Retrofittable, needs kernel-level validation**: Projection may be integrated into a FlashAttention-style kernel, but requires kernel-level verification
+- **D1/D2 [v]:** dense QP, KP, and projected QK use GEMM; **[~]** Tensor Core utilization depends on shape, dtype, and implementation.
+- **D3 [v]:** single-head cost is O((m+n)dr+mnr+mnd_v), including projection, scores, and AV. Lower r removes neither the quadratic sequence term nor the uncompressed AV cost.
+- **D4 [v]:** Key entries fall from nd to nr, plus dr projection parameters. Total KV ratio is n(d+d_v)/(nr+nd_v+projection overhead). **[~]** Releasing original K, workspaces, peak memory, and cache layout require measurement.
+- **D5 [~]:** orthogonality limits some amplification but does not guarantee bf16 logit, softmax, or task accuracy; retain fp32 accumulation/softmax references.
+- **D6/D7 [~]:** heads can parallelize, but attention depends on the projection; sparse maps may introduce gather/scatter.
+- **D8 [~]:** projecting before a compatible attention kernel is one option; fusion into online softmax requires separate kernel implementation and validation.
 
 ## Paper Phrasing
-"We decompose attention computation into low-dimensional subspace projection and projected-space attention to reduce Key dimensionality; V-cache must be handled separately. With an independent random projection and the sample-size / target-dimension conditions of the Johnson-Lindenstrauss lemma, Euclidean distances of the projected objects can be approximately preserved. This does not automatically guarantee softmax-attention quality, so attention/output error and task metrics must be reported."
+“We compare learned and fixed-random Q/K feature projections, specifying their temperatures and approximation targets separately. We report projection cost, Key and total KV bytes, attention/output error, and task metrics. JL claims are restricted to finite-set distance preservation under the stated assumptions.”
 
 ## Risks
-- **Projection Direction Degeneracy**: Learnable projections may collapse onto a few directions (deterioration of the condition number of $P^T P$), causing attention distributions to degenerate. Orthogonal regularization $\|P^T P - I\|_F^2$ is required.
-- **Irreversible Information Loss**: Projection discards $(d-r)$ dimensions of information; if the task relies on features in these dimensions, performance will degrade. It is recommended to combine with residual connections (weighted combination of original attention and projected attention).
+- Low rank can discard query-relevant directions with little Key variance; retained variance alone is insufficient.
+- Orthogonal regularization is optional, not a universal anti-collapse requirement; ablate it separately.
+- A residual mixture that computes both original and projected attention reintroduces original computation and cache costs.
+
+## Sources
+Standard scaling: [Attention Is All You Need](https://arxiv.org/abs/1706.03762). This pattern projects the **feature dimension**; [Linformer](https://arxiv.org/abs/2006.04768) compresses the sequence dimension, so its linear-complexity claim cannot be transferred directly.
+
+JL conditions: [Dasgupta & Gupta](https://cseweb.ucsd.edu/~dasgupta/papers/jl.pdf).

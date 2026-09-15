@@ -1,5 +1,5 @@
 # Constraint Penalty
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Evidence labels**: [v] supported by stated assumptions or recorded checks; [~] engineering proposal requiring validation; [x] incompatible under the stated conditions; [N/A] outside scope. Pseudocode specifies operators, not a production-ready implementation.
 
 ## Applicable Problems
 When the design involves hard constraints (e.g., probability simplex, orthogonality, capacity limits, load balancing) but end-to-end training is required. Typical scenarios: (1) MoE routing probabilities must lie on the $K$-simplex with load balancing; (2) Expert activation count is constrained (top-k); (3) Subspace projection matrices must satisfy orthogonality $W^T W = I$; (4) Feature norms are bounded $\|z\| \leq R$. Core objective: **transform mathematical constraints into differentiable penalty terms integrated into gradient-based variational**.
@@ -15,51 +15,37 @@ When the design involves hard constraints (e.g., probability simplex, orthogonal
 - **Barrier Function Method**: $\min f(x) - \mu \sum \log(-g_i(x))$ for inequality constraints $g_i(x) \leq 0$ -- as $\mu \to 0$, approaches the constrained optimum
 
 ## AI Module Form
+
+```python
+# Equality g(x)=0, inequality h(x)<=0; multipliers are state, not primal-optimizer params.
+L_eq = dot(nu, g) + 0.5 * rho * (g**2).sum()
+L_ineq = ((relu(lam + rho*h)**2 - lam**2) / (2*rho)).sum()
+primal_loss = task_loss + L_eq + L_ineq
+# Perform specified primal inner updates, then update multipliers without autograd:
+with no_grad():
+    nu += rho * equality_violation(x)
+    lam = clamp(lam + rho * inequality_violation(x), min=0)
 ```
-Module: ConstraintPenalty
-Input: constraint violations g(x) in R^m (equality constraints), h(x) in R^p (inequality constraints)
+Finite quadratic penalties need not exactly enforce constraints. ALM convergence needs its own regularity, solve accuracy and update assumptions; report primal/dual/KKT residuals for the chosen regime.
 
-Method 1 - Adaptive Penalty Function (most commonly used):
-  L_penalty = Sum_i rho_i/2 * g_i(x)^2  +  Sum_j rho_j/2 * max(0, h_j(x))^2
-  // rho updated dynamically: each epoch rho_i *= gamma (gamma=2~10) until constraints are satisfied
-  // Different constraints can have different rho values, adapted to violation severity
+`softmax(logits/tau)` **parameterizes the interior of the simplex**; it is not Euclidean projection onto it. Euclidean simplex projection instead has $p_i=\max(v_i-\theta,0)$ with $\theta$ chosen so $\sum_i p_i=1$. Individual uniform token probabilities and aggregate expert load balancing are distinct constraints.
 
-Method 2 - Augmented Lagrangian Method (ALM):
-  L_ALM = lambda^T * g(x) + rho/2 * ||g(x)||^2
-  // lambda is a learnable parameter (nn.Parameter), updated via gradient ascent:
-  lambda.data += rho * g(x).detach()   // dual ascent step
-  // Converges faster than pure penalty, avoids rho -> infinity
-  For inequality constraints h(x) <= 0:
-  L_ALM = Sum_j 1/(2*rho) * [max(0, lambda_j + rho*h_j(x))^2 - lambda_j^2]
-  // lambda update: lambda_j <- max(0, lambda_j + rho*h_j(x))
-  // Strictly feasible constraints (lambda_j + rho*h_j(x) < 0) are not penalized
-
-Method 3 - Softmax Projection onto Simplex (load balancing special case):
-  p = softmax(logits / tau)           // project onto Delta^{K-1}
-  L_balance = ||p - 1/K||^2           // uniformity penalty
-  // Or Switch Transformer auxiliary loss:
-  L_aux = K * Sum_k f_k * P_k         // f_k = allocation fraction, P_k = average probability
-
-Method 4 - Orthogonal Constraint Projection:
-  W_proj = W * (W^T W)^{-1/2}       // project onto Stiefel manifold via matrix square root inverse
-  // Or parameterize via Cayley transform: W = (I-A)(I+A)^{-1} * W_0, A is skew-symmetric
-```
+For full-column-rank $W\in\mathbb R^{d\times r}$, $d\ge r$, the polar factor $W(W^TW)^{-1/2}$ has orthonormal columns. Rank deficiency requires a deliberate completion/regularization policy; adding jitter makes this only approximately orthogonal.
 
 ## Implementable Architectures
-- **Loss Wrapper**: ConstraintLoss(base_loss, constraints, rho_schedule) -- forward computes base_loss + Sum constraint.penalty()
-- **Dual Variable Management**: equality multipliers can use nn.Parameter with a negative learning rate for gradient ascent; inequality multipliers must satisfy $\lambda \geq 0$, so use explicit projected updates `lambda <- max(0, lambda + rho*h(x))` or clamp after optimizer steps
-- **Warm-up Strategy**: Optimize only base_loss for the first $N$ steps, then progressively activate constraint penalties
-- **Constraint Monitoring**: Record $\|g(x)\|$ at each step for visualization and adaptive rho adjustment
+
+- Loss wrapper separates task and constraint residuals with explicit scales.
+- Store multipliers in buffers or a separate ascent optimizer; avoid undocumented negative learning rates and `.data` mutation.
+- Adapt penalty weights using measured residuals, not automatic aggressive growth.
+- Keep a feasible construction when exact constraints are required at every iterate.
 
 ## GPU Feasibility
-- **Tensorization**: Constraint violations are vector/matrix operations; penalty terms are element-wise squared sums
-- **GEMM-mappability**: Load balancing $f_k$, $P_k$ computation uses softmax + reduce_sum; orthogonal constraint uses matmul
-- **Complexity**: Penalty computation is $O(m)$ or $O(m^2)$, far smaller than the main network forward pass; negligible
-- **Memory & KV-Cache**: Only additional storage for lambda ($m$ dimensions) and rho ($m$ dimensions); minimal overhead
-- **Low Precision Stability**: Penalty terms are squaring operations, safe under fp16; ALM lambda updates are recommended in fp32 to avoid accumulated errors
-- **Parallelism & Communication**: Constraints are independently computable and parallelizable; on multiple GPUs, lambda updates require all-reduce of $g(x)$
-- **Sparse Structure**: $\max(0, h(x))^2$ has zero gradient when constraints are satisfied, naturally sparse activation
-- **Operator Fusion**: Constraint computation + weighted summation + merging with base_loss can be fused into a single kernel
+
+- **D1/D2[~]**: Scalar penalties are reductions; computing the constraints themselves may require GEMM, decompositions or network evaluations.
+- **D3/D4[~]**: $m$ already-computed scalar residuals cost $O(m)$ to penalize, but an orthogonality residual for $W\in\mathbb R^{d\times r}$ costs $O(dr^2)$ and stores $O(r^2)$ intermediates. Count the constraint work separately.
+- **D5[~]**: Squaring in fp16 can overflow; accumulate penalties/multipliers in fp32 and scale constraints consistently.
+- **D6[~]**: Independent residuals can parallelize; global constraints need reduction before multiplier updates, while local constraints need not communicate.
+- **D7/D8[~]**: Zero gradients on satisfied inequality penalties do not create block-sparse forward computation. Elementwise penalties can fuse, but expensive constraint evaluation remains.
 
 ## Paper Phrasing
 "We employ the augmented Lagrangian method to convert hard constraints $g(x)=0$ into differentiable penalty terms $\lambda^T g(x) + \rho/2 \|g(x)\|^2$, using alternating dual ascent updates of $\lambda$ rather than relying only on $\rho \to \infty$. Under convexity, constraint qualifications such as LICQ/MFCQ, and sufficiently accurate inner solves, ALM can converge to KKT solutions; in non-convex training, report the measured constraint-violation curve instead of claiming a universal $O(1/\rho)$ rate."

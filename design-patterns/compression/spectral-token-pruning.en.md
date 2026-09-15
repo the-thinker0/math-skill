@@ -1,63 +1,79 @@
 # Spectral Token Pruning
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+
+> Rigor convention: [v] denotes a checkable graph/matrix relation or count; [~] denotes a heuristic requiring task and hardware validation. Centrality is not an information-preservation guarantee.
 
 ## Target Problem
-Use when pruning must be based on the structural importance of tokens (rather than raw attention scores alone): KV-Cache eviction, long-document summarization, inference acceleration (reducing $O(L^2)$), multimodal vision token compression. Core objective: **quantify the structural importance of each token via spectral methods, achieving pruning with minimal information loss**.
+Explore token selection based on graph centrality, connectivity, or spectral representations for KV eviction, visual-token compression, and long documents. These are candidate pruning scores; without a separate proof, they are neither minimum-information-loss pruning nor spectrally guaranteed sparsification.
 
 ## Mathematical Foundations
-- Lenses: ../../lenses/spectral.en.md (identifying dominant spectral components, discarding redundant ones), ../../lenses/algorithmic.en.md (complexity classification and approximation algorithms), ../../lenses/perturbation.en.md (pruning = sparse perturbation, Cauchy interlacing theorem / Bauer-Fike pseudospectral analysis for spectral drift bounds)
-- Knowledge: ../../knowledge-base/matrix-analysis/spectral-decomposition.en.md (spectral radius, eigenvector centrality), ../../knowledge-base/matrix-analysis/matrix-perturbation.en.md (Geršgorin discs, perturbation bounds), ../../knowledge-base/matrix-analysis/positive-semidefinite.en.md (Gram matrix PSD structure)
+- Lenses: `../../lenses/spectral.en.md`, `../../lenses/algorithmic.en.md`, `../../lenses/perturbation.en.md`.
+- Knowledge: `../../knowledge-base/matrix-analysis/spectral-decomposition.en.md`, `../../knowledge-base/matrix-analysis/matrix-perturbation.en.md`, `../../knowledge-base/matrix-analysis/positive-semidefinite.en.md`.
 
 ## Required Mathematical Background
-- **Eigenvector Centrality**: For an unmasked, positive, irreducible row-stochastic attention matrix $A$, the right principal eigenvector $Ax = \lambda_1 x$ degenerates to the all-ones vector (since $A \mathbf{1} = \mathbf{1}$), making it useless for distinguishing token importance; the left principal eigenvector $x^T A = \lambda_1 x^T$ (equivalently $A^T x = \lambda_1 x$) can be used as a stationary-distribution / PageRank-like score. For causal or heavily masked attention, the chain is often reducible and the stationary distribution may collapse toward early tokens; use a K/V similarity graph, a symmetrized graph, or teleportation $A_\alpha=\alpha A+(1-\alpha)\mathbf{1}\pi^T$ before interpreting PageRank.
-- **Spectral Gap**: $\Delta = \lambda_1 - \lambda_2$ governs the rate of information diffusion; large $\Delta \Rightarrow$ a few tokens dominate $\Rightarrow$ safe to prune
-- **Fiedler Vector**: the second-smallest eigenvector of the Laplacian $L_{\text{sym}}$ yields the optimal bipartition; small magnitude = partition boundary = important
-- **Spectral Perturbation Analysis**: Pruning changes the matrix dimension and cannot directly apply the Weyl theorem. For a principal submatrix of a fixed Hermitian matrix (e.g., a symmetrized matrix $S=(A+A^T)/2$ without re-normalization), Cauchy interlacing bounds eigenvalue interlacing. If the Laplacian / attention graph is re-normalized after pruning, the matrix itself has changed, so this bound no longer applies directly. For non-symmetric row-stochastic matrices, spectral radius perturbation can be bounded via Bauer--Fike or pseudospectral analysis, though the bounds are less tight than in the Hermitian case.
+- **Left versus right eigenvectors [v]:** row-stochastic A always satisfies A1=1. On an unmasked irreducible, aperiodic chain, a left stationary probability vector supplies one centrality score. Causal/masked graphs may be reducible; teleportation A_alpha=alpha A+(1-alpha)1 pi^T gives a unique stationary distribution for 0<alpha<1 and strictly positive pi.
+- **This example needs no power iteration [v]:** for S=KK^T/sqrt(d) and W_ij=exp(S_ij), W is symmetric and positive. The row-normalized A has stationary p_i=s_i/sum_j s_j, where s_i=sum_j W_ij, since p_i A_ij=W_ij/sum_j s_j=p_j A_ji. Compute this directly with logsumexp instead of assuming five iterations converge.
+- **Spectral-gap boundary [v]:** mixing involves nonprincipal eigenvalue moduli, graph assumptions, and nonnormal transients. A large gap does not imply concentration on a few tokens: A=11^T/L has gap 1 and a completely uniform stationary distribution.
+- **Fiedler vector [v/conditional]:** for a suitable undirected nonnegative graph it solves a continuous spectral-partition relaxation. Thresholding need not yield the optimal discrete bipartition, and small component magnitudes are not a universal token-importance criterion.
+- **Perturbation boundary [v]:** Cauchy interlacing applies to principal submatrices of a fixed Hermitian matrix; renormalization changes the object. Bauer-Fike needs equal dimensions, a diagonalizable reference, and an eigenvector condition number; it is not directly a node-deletion bound. Gershgorin radii locate spectra, not semantic information loss.
 
 ## AI Module Specification
+These are dense single-head references. The first directly computes stationary mass on a symmetric Key-similarity graph; the second handles a supplied directed row-stochastic graph and reports convergence residual.
+
+```python
+import math
+import torch
+
+def symmetric_key_centrality(K):
+    scores = (K.float() @ K.float().T) / math.sqrt(K.shape[-1])
+    log_degree = torch.logsumexp(scores, dim=-1)
+    return torch.softmax(log_degree, dim=0)  # Exact stationary mass for this graph.
+
+def teleported_pagerank(A, alpha=0.85, max_steps=100, tolerance=1e-6):
+    A = A.float()
+    assert A.ndim == 2 and A.shape[0] == A.shape[1] and A.shape[0] > 0
+    assert 0 < alpha < 1 and bool(torch.isfinite(A).all()) and bool((A >= 0).all())
+    assert torch.allclose(A.sum(dim=-1), torch.ones(A.shape[0], device=A.device), atol=1e-5)
+    prior = torch.full((A.shape[0],), 1 / A.shape[0], device=A.device)
+    v = prior.clone()
+    for _ in range(max_steps):
+        next_v = alpha * (A.T @ v) + (1 - alpha) * prior
+        change = (next_v - v).abs().sum()
+        v = next_v
+        if change <= (1 - alpha) * tolerance:
+            break
+    residual = (alpha * (A.T @ v) + (1 - alpha) * prior - v).abs().sum()
+    return v, residual  # In exact arithmetic: l1 error <= residual/(1-alpha).
+
+def keep_by_score(K, V, score, retention):
+    assert 0 < retention <= 1 and K.shape[0] == V.shape[0] > 0
+    assert score.shape == (K.shape[0],)
+    count = math.ceil(retention * K.shape[0])
+    indices = torch.topk(score, count).indices.sort().values
+    return K[indices], V[indices], indices  # Retain original token order.
 ```
-Module: SpectralTokenPruner
-Input: K ∈ R^{L×d}    Parameters: retention ratio ρ ∈ (0,1]
 
-Method 1 - Spectral centrality pruning (power iteration, left eigenvector):
-  A = softmax(K @ K^T / √d)                  // L×L row-stochastic similarity graph; handle causal/masked cases separately
-  // ⚠ A is row-stochastic: right principal eigenvector = all-ones (degenerate); must use left eigenvector
-  // Left principal eigenvector = right eigenvector of A^T; PageRank interpretation is stable only for irreducible/teleported chains
-  v = ones(L) / √L
-  for t in range(5): v = A^T @ v; v = v / ‖v‖  // power iteration on A^T (not A), O(L²·T)
-  indices = topk(v, ceil(ρ * L))              // retain tokens with highest left-eigenvector centrality
+**Gershgorin heuristic [~]:** rank raw S by sum_(j!=i)|S_ij|. This measures absolute connection weight in that matrix; graph construction still costs O(L^2 d), and high-norm/repeated tokens may dominate.
 
-Method 2 - Geršgorin cheap pruning (zero iterations):
-  S = K @ K^T / √d                         // L×L raw similarity matrix (pre-softmax, so row sums vary)
-  gersh_score = sum(|S|, dim=1) - |diag(S)|  // Geršgorin disc radius R_i = sum_{j!=i}|S_{ij}|, measures connectivity
-  indices = topk(gersh_score, ceil(ρ * L))    // O(L²) elementwise, no power iteration needed
-
-Method 3 - Differentiable spectral pruning (end-to-end):
-  v = power_iteration(A^T, T=5)               // left principal eigenvector (power iteration on A^T)
-  gate = sigmoid(v @ W_gate / τ)               // soft gating, τ annealing
-  K_gated = gate * K                            // per-token scaling
-  L_sparse = ‖gate‖_1 / L                       // sparsity regularization
-```
+**Soft gates [~]:** for score∈R^L, use scalar w,b to form g=sigmoid((w*score+b)/tau)∈R^L. To reduce a token's attention mass, add log(g_j) to column j of the logits using stable log-sigmoid, then normalize. Scaling K_j by g_j is not deletion: a zero Key has score 0 and still receives mass. Soft gates retain L positions and save no computation/cache automatically; hard gathering needs separate validation.
 
 ## Implementable Architectures
-- **Power iteration centrality**: 5-step matvec to estimate the principal eigenvector of $A^T$ (i.e., the left principal eigenvector / stationary distribution of $A$), $O(L^2 \cdot 5)$, suitable for moderate-length sequences
-- **Sampling approximation**: for $L > 4096$, sample $m$ anchor points and construct an $m \times m$ submatrix for spectral analysis
-- **Multi-head fusion**: average the attention graphs across different heads before performing spectral analysis
-- **Progressive pruning**: incrementally increase the pruning ratio across layers (light pruning in shallow layers, heavy pruning in deep layers)
+- **Full graph [~]:** use where construction can be amortized; choose sequence thresholds from measurements.
+- **Anchor approximation [~]:** an m×m subgraph scores only anchors. Scoring all L tokens additionally requires L×m cross-similarities and an explicit extension/assignment rule, with its own approximation error.
+- **Multi-head/progressive pruning [~]:** averaging graphs changes the centrality being measured. Evaluate accumulated layer errors; successive layers are not automatically concurrent.
+- **Deployment constraints [~]:** preserve K/V correspondence, original positions, required special/recent tokens, and masks. Autoregressive training selectors must not access future content unavailable to a Query.
 
 ## GPU Feasibility
-- Tensorization / GEMM: $A = KK^T$ is a GEMM; power iteration is a chain of matvecs; Geršgorin is elementwise
-- Complexity: power iteration $O(L^2 T)$, $T \leq 10$; Geršgorin $O(L^2)$ elementwise, zero iterations
-- Memory: the $L \times L$ similarity matrix exceeds 256 MB for $L > 8K$, requiring chunking or sampling
-- Low precision: power iteration is stable in bf16 (normalization prevents overflow); Geršgorin is purely elementwise with no precision concerns
-- Parallelism: spectral analysis across heads / layers is independently parallel; matvec is highly parallelizable
-- Operator fusion: $KK^T$ + row-sum + topk can be fused into a single kernel
+- **D1/D2 [v]:** KK^T is a GEMM; softmax, row reductions, and top-k are distinct operations. **[~]** Matvec can be bandwidth bound, so tensor notation does not imply high utilization.
+- **D3 [v]:** dense graph construction costs O(L^2 d), symmetric-graph row sums O(L^2), and general PageRank an additional O(TL^2). Choose T by residual, not a universal five- or ten-step rule.
+- **D4 [v]:** at L=8192, one L×L bf16 matrix occupies 128 MiB, or 256 MiB in fp32, excluding workspaces/gradients. **[~]** Blocking lowers peak storage, but repeated propagation may require recomputing blocks.
+- **D5 [~]:** low-precision reductions, spectral gaps, softmax dynamic range, and near-ties affect ranking. Normalization does not guarantee bf16 accuracy, and Gershgorin sums also round.
+- **D6/D8 [~]:** graph blocks and some head tasks can parallelize, but graph construction, reductions, and global top-k have dependencies. Fusion and advantages over simple scores need real kernels and total-latency benchmarks.
 
 ## Paper-Worthy Formulation
-"We cast token pruning as spectral sparsification of a directed graph: on unmasked irreducible row-stochastic graphs, left-eigenvector / PageRank-like centrality can quantify global token importance; for causal or heavily masked attention, use a K/V similarity graph, a symmetrized graph, or teleported PageRank to avoid stationary-mass collapse toward early tokens. Cauchy interlacing applies to principal submatrices of fixed Hermitian matrices; after re-normalization or for non-symmetric graphs, use weaker but applicable diagnostics such as pseudospectral analysis, Bauer--Fike, or Geršgorin discs."
+“We use graph-centrality heuristics to select tokens, distinguishing exact stationary scores for symmetric-similarity graphs from approximate PageRank on directed graphs. We report total graph, selection, cache-reordering, and subsequent-attention cost alongside task loss and retention rules. Node deletion is not claimed to satisfy a Laplacian quadratic-form spectral-sparsification guarantee.”
 
 ## Risks
-- **$L \times L$ matrix memory bottleneck**: for long sequences the similarity matrix itself may exceed available memory, necessitating sampling or chunking
-- **Slow power iteration convergence**: when $\lambda_1 / \lambda_2 \approx 1$, $O(1/\Delta)$ iterations are required, reducing efficiency
-- **Semantics $\neq$ spectral importance**: certain tokens (e.g., punctuation) have low spectral centrality yet are semantically critical; purely spectral methods may prune them erroneously
-- **Hard pruning is non-differentiable**: top-k blocks gradients; end-to-end training requires softmax relaxation or Gumbel-topk
+Spectral centrality can conflict with semantic importance, and uniform graphs/repeated vectors can create ties. PageRank interpretation depends on edge direction and the teleportation prior; Query-independent Key graphs need not predict future access. Hard selection indices are nondifferentiable, but selected K/V values still receive gradients. A frozen selector does not require a differentiable relaxation.
+
+## Sources
+See [von Luxburg's tutorial](https://arxiv.org/abs/0711.0189) for spectral-partition assumptions and relaxations. The direct stationary-score algorithm follows from the detailed-balance identity above; it establishes centrality computation, not safe pruning.

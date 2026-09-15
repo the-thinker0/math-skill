@@ -1,5 +1,5 @@
 # Spectral Clustering Routing（谱聚类路由）
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
+> **证据标注**：[v] 有明确假设或记录验证支持；[~] 待验证的工程方案；[x] 在所述条件下不相容；[N/A] 不适用。伪代码用于定义算子，不是完整生产实现。
 
 ## 适用问题
 当需要基于 token/样本的内在相似性结构进行分组路由时使用。典型场景：
@@ -15,62 +15,34 @@
   ../../knowledge-base/differential-geometry/manifold.md（流形学习、图割）
 
 ## 需要的数学知识
-- **谱聚类 (Ng-Jordan-Weiss)**：
-  1. 构造相似度图 W_{ij} = exp(-‖x_i - x_j‖² / 2σ²)
-  2. 计算归一化拉普拉斯 L_sym = I - D^{-1/2} W D^{-1/2}
-  3. 取前 k 个最小特征向量 U_k ∈ R^{N×k}
-  4. 对 U_k 的行做 k-means 得到 k 个簇
-- **Nyström 近似**：当 N 太大无法计算完整 W 时，采样 m<<N 个点
-  W ≈ C · W_m^{-1} · C^T，将特征分解降维到 m×m
-- **谱松弛连续化**：离散聚类分配 → 连续特征向量 → 可微路由
-  用 softmax(U_k · W_proj) 替代硬 k-means 分配
-- **幂迭代加速**：不需完整特征分解，只需拉普拉斯 $L$ 的前 $k$ 个**最小**特征向量
-  ⚠ 幂迭代天然找**最大**特征向量，因此不能直接对 $L$ 做幂迭代！
-  正确做法：(1) 对相似度矩阵 $W$（或归一化 $D^{-1/2}WD^{-1/2}$）做幂迭代找最大特征向量
-  （对应 $L$ 的最小特征向量）；(2) 对 $L$ 用 Lanczos + which='SM'；(3) 移位逆迭代 $(L - \sigma I)^{-1}$
-  Lanczos/Arnoldi 迭代 O(N²·k·iter) 或 randomized SVD O(N²·k)
+
+- 对称非负相似度 $W$ 构造 $S=D^{-1/2}WD^{-1/2}$、$L=I-S$。$L$ 的最小代数特征值对应 $S$ 的最大**代数**特征值，一般不对应原始 $W$。
+- Ng–Jordan–Weiss 在 k-means 前对选出的特征向量矩阵逐行归一化。零度节点需明确约定。
+- 普通幂迭代找最大模特征值。若 $S$ 可能不定，可移位为 $(I+S)/2$ 或指定最大代数特征值求解器；不能不加条件地用 SVD 替代特征值排序。
+- 特征向量有符号及重特征子空间旋转自由度。对原始特征向量接可学习线性映射不会自动对该选择不变；使用投影子、对齐、不变特征或稳定存储基。
+- 归一化核的 Nyström 须使用归一化跨集合相似度及 $S$ 的特征值，即 $1-\lambda_j(L)$；近零分母需截断。
 
 ## AI 模块形式
+
+```python
+# 固定 landmark X_ref；参考图及归一化冻结
+W_ref = rbf_affinity(X_ref, X_ref)
+d_ref = W_ref.sum(-1)
+S_ref = W_ref / sqrt(d_ref[:, None] * d_ref[None, :])
+lam, U = largest_algebraic_eigenpairs(S_ref, K)
+keep = abs(lam) > eigenvalue_tolerance
+lam, U = lam[keep], U[:, keep]
+centers = kmeans(row_normalize(U), K)
+
+W_cross = rbf_affinity(X_new, X_ref)
+d_new = W_cross.sum(-1)          # 扩展度约定，参考度保持不变
+S_cross = W_cross / sqrt(d_new[:, None] * d_ref[None, :])
+embedding = (S_cross @ U) / lam[None, :]
+assignment = nearest_center(row_normalize(embedding), centers)
 ```
-模块：SpectralClusterRouter
-输入：X ∈ R^{N×d}，簇数 K
+这是**冻结参考**归一化核的扩展；将所有新点插入并重算全图度会得到另一个算子。用留出点将扩展与小图重算结果比较。
 
-方法1 - 在线谱聚类路由（训练时周期性更新）：
-  // 每 M 步更新一次聚类中心，推理时用最近邻
-  W = exp(-(cdist(X_sample, X_sample)**2) / (2σ²))  // m×m RBF 相似度
-  L = I - D^{-1/2} W D^{-1/2}                    // 归一化拉普拉斯
-  U_k = eigsh(L, k=K, which='SM')                // 前 K 个最小特征向量
-  centers = kmeans(U_k, K)                        // K 个聚类中心
-  // 路由：将新 token 嵌入到谱空间后分配
-  // ⚠ X @ W_proj 仅为可学习线性投影，不是 Nyström 扩展！
-  // 真正的 Nyström 扩展：v_new = (1/λ) * W(x_new, X_sample) @ v，其中 v 为特征向量，λ 为特征值
-  proj_nystrom = (1/λ_k) * W_new_sample @ U_k    // Nyström 扩展：x_new 到 m 个采样点的相似度 × 特征向量
-  proj = X @ W_proj                               // 替代方案：可学习线性投影（非 Nyström，但可端到端训练）
-  assignment = argmin(cdist(proj_nystrom, centers))  // 最近中心分配
-
-方法2 - 可微谱路由（端到端）：
-  // 用 softmax 松弛替代硬分配
-  sim_matrix = X @ X^T                             // N×N（或采样 m×m）
-  A = exp(sim_matrix / τ)                          // 相似度图（可学习 τ）
-  D_inv_sqrt = diag(1 / sqrt(sum(A, dim=1) + ε))
-  L_norm = I - D_inv_sqrt @ A @ D_inv_sqrt         // 归一化拉普拉斯
-  // ⚠ 幂迭代找最大特征向量，但谱聚类需要 L_norm 的最小特征向量！
-  // 对归一化相似度矩阵做幂迭代：其最大特征向量 = L_norm 的最小特征向量
-  W_norm = D_inv_sqrt @ A @ D_inv_sqrt             // = I - L_norm
-  U_k = power_iteration_approx(W_norm, K, steps=5)  // N×K（W_norm 的最大特征向量 = L_norm 的最小）
-  // 软分配
-  cluster_logits = U_k @ W_cluster                  // N×K（可学习投影）
-  route_probs = softmax(cluster_logits / τ_route)    // 软路由概率
-
-方法3 - 锚点谱聚类（大规模）：
-  anchors = kmeans_pp(X, m)                         // m 个锚点，m << N
-  Z = exp(-(cdist(X, anchors)**2) / (2σ²))          // N×m RBF 亲和矩阵
-  L_anchor = I - D_z^{-1/2} Z^T Z D_z^{-1/2}        // m×m 拉普拉斯
-  U_k = eigsh(L_anchor, K)                          // m×K 特征向量
-  // Nyström 扩展：Z @ U_k 将锚点特征向量扩展到全部 N 个点（非可学习部分）
-  embedding_nystrom = Z @ U_k                       // N×K Nyström 扩展嵌入
-  route = embedding_nystrom @ W_proj                 // N×K 可学习投影后的路由分数
-```
+**锚点图替代**：对非负 $Z\in\mathbb R^{N\times m}$，行列和非零时设 $B=D_{row}^{-1/2}ZD_{col}^{-1/2}$。计算 $B^TB$ 的主特征系统 $(V,\Lambda)$；保留正特征值上，点算子 $BB^T$ 的特征向量为 $U=BV\Lambda^{-1/2}$。聚类前逐行归一化 $U$。这里明确的是归一化二部图算子，而不是把未归一化 $ZV$ 叫作精确 Nyström 扩展。
 
 ## 可实现结构
 - **周期性离线聚类**：每 N_step 步收集 token 表示 → 离线谱聚类 → 更新路由表
@@ -79,21 +51,21 @@
 - **渐进式训练**：初期用 k-means 粗路由 → 中期谱聚类精化 → 后期可微调路由网络
 
 ## GPU 可行性
-- **张量化**：相似度矩阵 X@X^T 为 GEMM；拉普拉斯构造为 element-wise + 对角矩阵
-- **GEMM 可映射**：方法3 的 Z^T@Z 为 GEMM (m×N)@(N×m)；Z@U_k 为 GEMM (N×m)@(m×K)
-- **复杂度**：完整谱聚类 O(N²·K) 不可扩展；Nyström O(N·m·K+m³)；幂迭代 O(N²·K·T)
-- **显存与 KV-Cache**：N×N 相似度矩阵在 N>4096 时 >64MB，必须采样降维
-- **低精度稳定**：特征分解建议 fp32；exp(-dist/σ²) 在 fp16 下需 clip distance
-- **并行与通信**：幂迭代的 matvec 高度并行；k-means 的 assign+update 可批并行
-- **稀疏结构**：k-NN 图替代全连接图，W 稀疏度约为 $1-k_{\text{nn}}/N$，可用 SpMM 加速
-- **算子融合**：D^{-1/2}@A@D^{-1/2} 的对角缩放可融合；cdist+exp+normalize 可融合
+
+- **D1/D2[~]**：相似度构造与归一化是张量操作；特征求解器含全局归约及正交化。
+- **D3[~]**：稠密相似度 $O(N^2d)$；块迭代 $O(TN^2K)$ 加正交化。锚点 Gram 构造 $O(Nm^2)$、完整 EVD $O(m^3)$、扩展 $O(NmK)$，另计 $O(Nmd)$ 相似度。
+- **D4[~]**：fp32 稠密 $N^2$ 阵需 $4N^2$ 字节（$N=4096$ 时64 MiB）。不流式处理时锚点存储为 $O(Nm+m^2)$。
+- **D5[~]**：用 fp32/fp64 求特征子空间，报告谱间隙及残差，避免跨重根对任意基微分。
+- **D6/D7[~]**：k-NN 稀疏可有帮助，但图构造及近邻召回率另计；固定迭代数不证明收敛。
+- **D8[~]**：逐元素相似度缩放可融合；特征求解及全局 k-means 阶段仍有依赖。
 
 ## 论文表述方式
 "利用谱聚类的连续松弛实现路由：构造 token 相似度图的归一化拉普拉斯，
 通过 Nyström / 锚点近似和幂迭代避免完整 O(N³) 特征分解，并将主要计算转化为 GEMM、matvec 与 k-means。Normalized Cut 可作为聚类质量指标，但近似比依赖图模型、采样策略和求解器假设，不能无条件宣称。"
 
 ## 风险
-- N×N 相似度矩阵的显存和计算在长序列下不可扩展，必须采样或 k-NN 稀疏化
-- 特征分解不可微（特征值重合时梯度未定义），端到端训练需松弛或 stop-gradient
-- 簇数 K 需先验指定，且 K 变化时需重新聚类
-- σ（带宽参数）对聚类质量敏感，过小导致孤立点，过大导致合并
+
+- 核带宽、断连分量及零度节点可能改变推断簇数。
+- 特征向量导数在重根附近不稳定；若子空间边界间隙仍存在，不变子空间量可保持良好定义。
+- 重新聚类可置换专家标签；更新已训练路由前先对齐标签/基。
+- 报告小图精确解与近似路由分歧、扩展误差、延迟及下游质量。

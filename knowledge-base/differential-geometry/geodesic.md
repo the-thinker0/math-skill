@@ -8,15 +8,15 @@
 
 - 测地方程：$\ddot\gamma^k + \sum_{ij} \Gamma^k_{ij} \dot\gamma^i \dot\gamma^j = 0$
 - 指数映射：$\exp_p(v) = \gamma_v(1)$，其中 $\gamma_v$ 是 $\gamma(0)=p, \dot\gamma(0)=v$ 的测地线
-- 对数映射：$\log_p(q) = v \in T_pM$ 使得 $\exp_p(v) = q$（指数映射的逆）
-- Retraction（工程近似）：$R_p(v) \approx \exp_p(v)$，只需一阶近似即可用于优化
-- 单位球面闭式：$\exp_p(v) = \cos(\|v\|)\, p + \sin(\|v\|)\, \frac{v}{\|v\|}$（要求 $\|p\|=1$ 且 $v \perp p$；半径 $r$ 的球面把 $\|v\|$ 换成 $\|v\|/r$）
+- 对数映射：$\log_p(q)$ 在正常邻域中是 exp_p 的局部逆；越过分支或 cut locus 不能预设唯一的全局逆。
+- Retraction：$R_p(0)=p$、$DR_p(0)=\mathrm{id}_{T_pM}$，且输出位于流形；这是局部一阶一致性，不是 Banach 意义的收缩映射。
+- 半径 $r>0$ 球面：$\exp_p(v)=\cos(\|v\|/r)p+r\sin(\|v\|/r)v/\|v\|$，$\|p\|=r$、$p^Tv=0$；$v=0$ 用连续极限 $p$。
 
 ## 适用问题
 
-- 约束优化：在 SPD/Stiefel/Grassmann/双曲流形上做 SGD，更新步需要沿测地线移动
+- 约束优化：可采用满足条件的 retraction，不一定每步求精确测地线；所选更新需配合度量与收敛假设。
 - 隐空间插值：latent space 中两点间的测地线比欧氏直线更尊重数据流形结构
-- 流形上的距离计算：$d(p,q) = \|\log_p(q)\|_g$
+- 流形距离：仅当 $\log_p(q)$ 选取到达 q 的最短测地分支时，$d(p,q)=\|\log_p(q)\|_g$。
 - 数据增广：沿测地线采样生成新训练样本
 
 ## AI 设计翻译
@@ -29,18 +29,18 @@
 ## 工程可行性
 
 GPU 友好度取决于是否有闭式 retraction：
-- **有闭式的流形**（球面、双曲、SO(3)、Stiefel-QR）：$\exp_p(v)$ 是有限项代数表达式，$O(1)$/样本，可 batched 张量化，GPU 友好
+- **闭式/有限代数步骤**：球面 exp 为 $O(n)$；Stiefel-QR 是 retraction，通常 $O(np^2)$，不是球面 exp 或常数成本。SO(3) 群 exp 只有在相应度量下才等于黎曼 exp。
 - **无闭式的流形**：需要数值积分测地方程（二阶 ODE），串行递推，GPU 不友好
 - 闭式 retraction 替代精确 exp：QR 分解、Cayley 变换等一阶近似，牺牲少量精度换取大幅加速
 - 3x3/4x4 小矩阵 exp（SO(3)/SE(3)）可融进单 kernel，但吃不满 Tensor Core
-- **低精度致命点**：$\sin\theta/\theta$、$(1-\cos\theta)/\theta^2$ 在 $\theta \to 0$ 时除零，$\theta \to \pi$ 时 log 奇异，fp16 直接 NaN
+- **数值分支**：零角的 sinθ/θ 是可去奇点；SO(3) Log 在 π 附近的分支/轴问题需另行处理，零角 Taylor 不能解决。
 
 ## 风险与失效条件
 
-- **逐步 ODE 积分做测地线**：串行递推杀死 GPU 并行度，必须用闭式 retraction 替代
-- **小角/大角奇异点**：$\theta \to 0$ 和 $\theta \to \pi$ 处的数值不稳定在低精度下被灾难性放大，必须做 Taylor 展开兜底
-- **Retraction 误差累积**：一阶近似在多步迭代中误差可能累积，需偶尔做一次精确投影校正
-- **Cut locus 问题**：指数映射在 cut locus 以外不再是最短路径，$\log_p(q)$ 可能不存在或不唯一
+- **ODE 成本**：精确测地线距离任务不能任意换成 retraction；优化任务可比较 retraction 与 ODE 的成本及收敛条件。
+- **数值分支**：小角可用 Taylor/sinc；割迹附近需处理 log 分支与非唯一性，不能靠小角 Taylor 消除拓扑问题。
+- **Retraction 误差**：合法 retraction 每步仍在流形上；与 exp 的局部差异不等于约束漂移，有限精度约束残差另测。
+- **Cut locus 问题**：超过沿某方向的 cut time，测地线失去最短性；割迹处最短 log 可能非唯一。$d(p,q)=\|\log_pq\|$ 只对最短分支成立。
 - **为几何美强行流形化**：欧氏近似已足够的任务硬上测地线，增加复杂度和奇异点风险
 
 ## 深入参考
@@ -53,7 +53,7 @@ GPU 友好度取决于是否有闭式 retraction：
 
 ## 路由扩展
 - 若需要距离的具体定义 → `metric-tensor.md`（度量张量决定测地线）
-- 若用作收缩映射 → `../optimization/riemannian-optimization.md`（指数映射作为收缩映射）
+- 若用于优化更新 → `../optimization/riemannian-optimization.md`（retraction 与收敛条件）。
 - 若需要偏离平坦空间的程度 → `curvature.md`（曲率控制测地线偏差）
 
 ## 可扩展方向

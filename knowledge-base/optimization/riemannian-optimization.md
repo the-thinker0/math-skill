@@ -6,12 +6,12 @@
 
 ## 核心公式
 
-- 黎曼梯度：$\text{grad} f(x) = \text{proj}_{T_x\mathcal{M}}(\nabla f(x))$（欧氏梯度投影到切空间）
+- 嵌入流形采用诱导 Euclidean 度量时，$\operatorname{grad}f(x)=\operatorname{proj}_{T_x\mathcal M}(\nabla f(x))$。其他度量需解 $g_x(\operatorname{grad}f,\xi)=Df(x)[\xi]$；单纯 Euclidean 投影不够。
 - 黎曼梯度下降：$x_{k+1} = R_{x_k}(-\alpha_k \cdot \text{grad} f(x_k))$，$R$ 为收缩映射（retraction）
 - 正交群 $O(n)$ 的切空间：$T_Q O(n) = \{Q\Omega : \Omega^T = -\Omega\}$（反对称矩阵左乘）
-- 正交群收缩映射（Cayley）：$R_Q(\xi) = Q(I + \frac{1}{2}\Omega)^{-1}(I - \frac{1}{2}\Omega)$，$\xi = Q\Omega$；等价地用 $A$-形式：设 $G = \nabla f(Q)$ 为欧氏梯度，$A = GQ^T - QG^T$（反对称），则 $R_Q(t) = (I + \frac{t}{2}A)^{-1}(I - \frac{t}{2}A)Q$，步长 $t > 0$ 沿负梯度方向移动（下降方向）
+- $O(n)$ 的 Cayley 回缩：$\xi=Q\Omega$、$\Omega^T=-\Omega$ 时，取 $R_Q(\xi)=Q(I-\Omega/2)^{-1}(I+\Omega/2)$，满足 $R_Q(0)=Q$ 与 $\frac{d}{dt}R_Q(t\xi)|_{t=0}=\xi$。下降步代入 $\xi=-\alpha\,\operatorname{grad}f(Q)$；反转 Cayley 符号会反转方向。
 - 极分解收缩：$R_Q(\xi) = (Q + \xi)(I + \xi^T\xi)^{-1/2}$（投影到最近正交矩阵）
-- Newton-Schulz 正交化：$X_{k+1} = \frac{1}{2}X_k(3I - X_k^T X_k)$，收敛到最近正交矩阵
+- Newton–Schulz 正交化：$X_{k+1}=X_k(3I-X_k^TX_k)/2$ 在输入满列秩且初始奇异值位于 $(0,\sqrt3)$ 时收敛到列极分解因子；先缩放并检查 $\|X_k^TX_k-I\|$。秩亏输入不能靠该迭代产生正交归一列。
 - 双曲空间（Poincaré ball）：$\text{grad}_{\mathcal{H}} f = \frac{(1-\|x\|^2)^2}{4} \nabla f(x)$
 - Stiefel 流形 $St(n,p) = \{W : W^TW = I_p\}$ 的黎曼梯度：$\text{grad} f(W) = G - W \cdot \text{sym}(W^TG)$，其中 $G = \nabla f(W)$ 为欧氏梯度，$\text{sym}(A) = \frac{A + A^T}{2}$ 为对称修正项。注意：不能简单用 $G - WW^TG$（正交投影），必须包含对称修正才能保证梯度在切空间中。
 
@@ -36,7 +36,7 @@
 - **主要操作**：黎曼梯度投影 = matmul（$Q^T \nabla$ 得切空间分量）；收缩映射 = matmul + 小矩阵求逆 / Newton-Schulz（纯 matmul）；双曲度量 = elementwise。
 - **GPU 友好度**：高（Newton-Schulz 正交化 = 纯 matmul 链）到中等（Cayley 映射需 $n \times n$ 矩阵求逆，$n$ 为层维度，$n \leq 1024$ 时 cuSOLVER 可行）。双曲嵌入的度量缩放是纯 elementwise。
 - **复杂度**：Newton-Schulz 每步 $O(n^3)$（但 $n$ 为层维度，非模型总参数量）；Cayley $O(n^3)$；双曲梯度 $O(d)$；Grassmann QR $O(nd^2)$。
-- **低精度**：Newton-Schulz 在 bf16 下稳定（纯 matmul 迭代，不涉及除法/开方）；Cayley 映射的求逆在 bf16 下可能失败（需 fp32）；双曲度量在 $\|x\| \to 1$ 时分母趋零，需 clamp 防溢出。
+- **低精度**：Newton–Schulz 仍依赖缩放、奇异值区间及停止容差；纯 matmul 不代表 bf16 稳定。检查正交与下降残差。Poincaré 边界附近度量发散而其逆因子趋零，最终梯度行为取决于目标。
 
 ## 风险与失效条件
 
@@ -44,7 +44,7 @@
 - **双曲空间的数值溢出**：$\|x\| \to 1$ 时 $d(x,y) \to \infty$，度量因子 $(1-\|x\|^2)^{-2} \to \infty$，梯度爆炸。解决：clamp $\|x\| \leq 1 - \epsilon$（$\epsilon \sim 10^{-5}$），或用 Lorentz 模型（数值更稳定的双曲参数化）。
 - **收缩映射 vs. 指数映射**：收缩映射（retraction）是指数映射的一阶近似，大步长时精度下降。对学习率敏感的优化问题，可能需要真正的指数映射（更贵）。
 - **非紧凑流形的无界性**：SPD 流形 / 双曲空间非紧，优化路径可能跑到无穷远。需加正则化或信赖域约束。
-- **正交约束与 BatchNorm 冲突**：BatchNorm 的仿射变换破坏正交性。需在正交约束层后禁用 BN 的 scale/shift，或改用 GroupNorm。
+- **归一化复合**：权重矩阵正交不代表整个网络等距。BatchNorm、GroupNorm、可学习缩放及非线性都可能改变度量；仅更换归一化不会保持复合映射的正交性。
 
 ## 深入参考
 

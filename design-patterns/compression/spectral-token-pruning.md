@@ -1,63 +1,79 @@
 # Spectral Token Pruning（谱 Token 剪枝）
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
+
+> 严谨性约定：[v] 表示可核查的图/矩阵关系或计数；[~] 表示需要任务与硬件验证的启发式。中心性不是信息保留保证。
 
 ## 适用问题
-当需要基于 token 的结构性重要性（而非单纯 attention score）进行剪枝时使用：KV-Cache 驱逐、长文档摘要、推理加速（降低 $O(L^2)$）、多模态视觉 token 压缩。核心诉求：**用谱方法量化每个 token 的结构性重要性，实现信息损失最小的剪枝**。
+探索基于图中心性、连通结构或谱表示的 token 选择，用于 KV 驱逐、视觉 token 压缩或长文档处理。目标是提出可比较的剪枝分数；未经独立证明，不称为最小信息损失或有谱保持保证的稀疏化。
 
 ## 数学思想来源
-- 透镜：../../lenses/spectral.md（识别主导谱分量、丢弃冗余分量）、../../lenses/algorithmic.md（复杂度分类与近似算法）、../../lenses/perturbation.md（剪枝 = 稀疏扰动，Cauchy 交错定理 / Bauer-Fike 伪谱分析界定谱漂移）
-- 知识：../../knowledge-base/matrix-analysis/spectral-decomposition.md（谱半径、特征向量中心性）、../../knowledge-base/matrix-analysis/matrix-perturbation.md（Geršgorin 圆盘、扰动界）、../../knowledge-base/matrix-analysis/positive-semidefinite.md（Gram 矩阵 PSD 结构）
+- 透镜：`../../lenses/spectral.md`、`../../lenses/algorithmic.md`、`../../lenses/perturbation.md`。
+- 知识：`../../knowledge-base/matrix-analysis/spectral-decomposition.md`、`../../knowledge-base/matrix-analysis/matrix-perturbation.md`、`../../knowledge-base/matrix-analysis/positive-semidefinite.md`。
 
 ## 需要的数学知识
-- **特征向量中心性**：对未 mask、正且不可约的行随机（行 softmax）attention 矩阵 $A$，右主特征向量 $Ax = \lambda_1 x$ 退化为全 1 向量（因 $A \mathbf{1} = \mathbf{1}$），无法区分 token 重要性；可使用左主特征向量 $x^T A = \lambda_1 x^T$（等价于 $A^T x = \lambda_1 x$）作为平稳分布/PageRank 式重要性。对 causal 或强 mask attention，链通常非不可约，平稳分布可能偏向早期 token；应改用 K/V 相似度图、对称化图，或加入 teleportation $A_\alpha=\alpha A+(1-\alpha)\mathbf{1}\pi^T$ 后再解释 PageRank。
-- **谱间隙**：$\Delta = \lambda_1 - \lambda_2$ 决定信息扩散速度，$\Delta$ 大 $\Rightarrow$ 少数 token 主导 $\Rightarrow$ 安全剪枝
-- **Fiedler 向量**：Laplacian $L_{\text{sym}}$ 的第二小特征向量给出最优二分割，幅值小 = 分割边界 = 重要
-- **谱扰动分析**：剪枝改变矩阵维度，不能直接套用 Weyl 定理。对固定 Hermitian 矩阵的主子矩阵（如不重新归一化的对称化矩阵 $S=(A+A^T)/2$），可用 Cauchy 交错定理界定特征值交错；若剪枝后重新归一化 Laplacian/attention graph，矩阵本身已改变，不能直接套该界。对非对称行随机矩阵，谱半径扰动可用 Bauer-Fike 或伪谱分析，但界不如 Hermitian 情形紧凑。
+- **左右特征向量 [v]**：行随机 A 总有 A1=1；未 mask 且不可约、非周期时，左平稳概率向量可作为一个中心性分数。causal/mask 图可能可约；teleportation A_α=αA+(1−α)1πᵀ 在 0<α<1、π 各项正时给唯一平稳分布。
+- **本例可省去幂迭代 [v]**：若 S=KKᵀ/√d、W_ij=exp(S_ij)，则 W 对称且正。A_ij=W_ij/Σ_jW_ij 的平稳分布恰为 p_i=s_i/Σ_js_j，s_i=Σ_jW_ij；因为 p_iA_ij=W_ij/Σ_js_j=p_jA_ji。可用 logsumexp 直接算，不必声称固定 5 步已收敛。
+- **谱间隙边界 [v]**：混合与非主特征值的模、图条件及非正规瞬态有关，不是“gap 大所以少数 token 主导”。反例 A=11ᵀ/L 的间隙为 1，但平稳分布完全均匀。
+- **Fiedler 向量 [v/条件]**：对适当的无向非负图，它对应连续的谱分割松弛；阈值化不保证最优离散二分割，幅值小也不是通用 token 重要性标准。
+- **扰动边界 [v]**：Cauchy 交错适用于固定 Hermitian 矩阵的主子矩阵；重新归一化会改变对象。Bauer–Fike 需同尺寸、可对角化参考矩阵及特征向量条件数；不能把它直接当删节点误差界。Geršgorin 半径是谱定位量，不是语义信息损失证书。
 
 ## AI 模块形式
+下列是稠密单头参考。第一种针对对称 Key 相似度图直接计算平稳质量；第二种处理给定的有向行随机图并报告收敛残差。
+
+```python
+import math
+import torch
+
+def symmetric_key_centrality(K):
+    scores = (K.float() @ K.float().T) / math.sqrt(K.shape[-1])
+    log_degree = torch.logsumexp(scores, dim=-1)
+    return torch.softmax(log_degree, dim=0)  # Exact stationary mass for this graph.
+
+def teleported_pagerank(A, alpha=0.85, max_steps=100, tolerance=1e-6):
+    A = A.float()
+    assert A.ndim == 2 and A.shape[0] == A.shape[1] and A.shape[0] > 0
+    assert 0 < alpha < 1 and bool(torch.isfinite(A).all()) and bool((A >= 0).all())
+    assert torch.allclose(A.sum(dim=-1), torch.ones(A.shape[0], device=A.device), atol=1e-5)
+    prior = torch.full((A.shape[0],), 1 / A.shape[0], device=A.device)
+    v = prior.clone()
+    for _ in range(max_steps):
+        next_v = alpha * (A.T @ v) + (1 - alpha) * prior
+        change = (next_v - v).abs().sum()
+        v = next_v
+        if change <= (1 - alpha) * tolerance:
+            break
+    residual = (alpha * (A.T @ v) + (1 - alpha) * prior - v).abs().sum()
+    return v, residual  # In exact arithmetic: l1 error <= residual/(1-alpha).
+
+def keep_by_score(K, V, score, retention):
+    assert 0 < retention <= 1 and K.shape[0] == V.shape[0] > 0
+    assert score.shape == (K.shape[0],)
+    count = math.ceil(retention * K.shape[0])
+    indices = torch.topk(score, count).indices.sort().values
+    return K[indices], V[indices], indices  # Retain original token order.
 ```
-模块：SpectralTokenPruner
-输入：K ∈ R^{L×d}    参数：保留比例 ρ ∈ (0,1]
 
-方法1 - 谱中心性剪枝（幂迭代，左特征向量）：
-  A = softmax(K @ K^T / √d)                  // L×L 行随机相似度图；causal/mask 场景需另行处理
-  // ⚠ A 为行随机矩阵，右主特征向量 = 全 1 向量（退化），必须用左主特征向量
-  // 左主特征向量 = A^T 的右主特征向量；仅在链不可约/加 teleportation 后可稳定解释为 PageRank
-  v = ones(L) / √L
-  for t in range(5): v = A^T @ v; v = v / ‖v‖  // 幂迭代 A^T（非 A），O(L²·T)
-  indices = topk(v, ceil(ρ * L))              // 保留左特征向量中心性最高的 token
+**Geršgorin 启发式 [~]**：对原始 S，可取 Σ_(j≠i)|S_ij| 排序；这仅反映该矩阵的绝对连接权重，构图成本仍为 O(L²d)，高范数或重复 token 可能占优。
 
-方法2 - Geršgorin 廉价剪枝（零迭代）：
-  S = K @ K^T / √d                         // L×L 原始相似度矩阵（非 softmax，行使行和有区分度）
-  gersh_score = sum(|S|, dim=1) - |diag(S)|  // Geršgorin 圆盘半径 R_i = Σ_{j≠i}|S_{ij}|，衡量连通度
-  indices = topk(gersh_score, ceil(ρ * L))    // O(L²) elementwise，无需幂迭代
-
-方法3 - 可微谱剪枝（端到端）：
-  v = power_iteration(A^T, T=5)               // 左主特征向量（A^T 的幂迭代）
-  gate = sigmoid(v @ W_gate / τ)               // 软门控，τ 退火
-  K_gated = gate * K                            // 逐 token 缩放
-  L_sparse = ‖gate‖_1 / L                       // 稀疏正则
-```
+**软门控 [~]**：若 score∈R^L，使用标量 w、b 构造 g=sigmoid((w·score+b)/τ)∈R^L。若意图降低 token 的注意力质量，应把 log(g_j) 加到第 j 列 logits（用稳定的 log-sigmoid），再归一化；仅令 K_j←g_jK_j 不等于删除该 token，零 Key 的 score=0 仍会获得权重。软门控保留 L 个位置，不自动省计算/缓存；之后的硬 gather 需另外验证。
 
 ## 可实现结构
-- **幂迭代中心性**：5 步 matvec 估计 $A^T$ 的主特征向量（即 $A$ 的左主特征向量 / 平稳分布），$O(L^2 \cdot 5)$，适合中等序列
-- **采样近似**：$L > 4096$ 时采样 $m$ 个锚点，构造 $m \times m$ 子矩阵做谱分析
-- **多头融合**：不同头的 attention 图取平均后再做谱分析
-- **渐进式剪枝**：逐层递增剪枝比例（浅层少剪、深层多剪）
+- **完整图 [~]**：适合构图成本可摊销的规模；序列阈值应由基准决定。
+- **锚点近似 [~]**：只做 m×m 子图只能给锚点评分；要给全部 L 个 token 评分还需 L×m 交叉相似度及明确的延拓/分配规则，并验证其偏差。
+- **多头与渐进剪枝 [~]**：平均图改变所衡量的中心性；逐层误差需累积评估，不能假定各层可同时执行。
+- **部署约束 [~]**：保留 K/V 一一对应、原始位置、特殊/近期必保 token，并同步更新 mask。用于自回归训练时，选择规则不能利用 Query 不可见的未来内容。
 
 ## GPU 可行性
-- 张量化/GEMM：$A = KK^T$ 为 GEMM；幂迭代为 matvec 链；Geršgorin 为 elementwise
-- 复杂度：幂迭代 $O(L^2 T)$，$T \leq 10$；Geršgorin $O(L^2)$ elementwise，零迭代
-- 显存：$L \times L$ 相似度矩阵在 $L > 8K$ 时超 256MB，需分块或采样
-- 低精度：幂迭代在 bf16 下稳定（归一化防溢出）；Geršgorin 纯 elementwise 无精度问题
-- 并行：多头/多层谱分析独立并行；matvec 高度并行
-- 算子融合：$KK^T$ + row-sum + topk 可融合为单一 kernel
+- **D1/D2 [v]**：KKᵀ 是 GEMM；softmax、行归约和 top-k 是不同运算。**[~]** matvec 常受带宽限制，不能以张量形式推断高利用率。
+- **D3 [v]**：稠密构图 O(L²d)；对称图的行和 O(L²)，一般 PageRank 另需 O(TL²)。T 由残差控制，不能统一限定为 5 或 10。
+- **D4 [v]**：L=8192 时，单个 L×L bf16 矩阵是 128 MiB，fp32 是 256 MiB，工作区/梯度另计。**[~]** 分块可降低峰值存储，但反复传播可能要求重复计算图块。
+- **D5 [~]**：低精度归约、谱间隙、softmax 动态范围及 top-k 近似并列值影响排序；归一化不能保证 bf16 正确，Geršgorin 行和也有舍入误差。
+- **D6/D8 [~]**：图块与部分头任务可并行，但构图、归约和全局 top-k 有依赖。是否融合及是否快于简单评分，需实际 kernel 和完整延迟基准。
 
 ## 论文表述方式
-"将 token 剪枝建模为有向图的谱稀疏化：在未 mask 且不可约的行随机图上，利用左主特征向量/PageRank 式中心性量化全局重要性；对 causal 或强 mask attention，则改用 K/V 相似度图、对称化图或 teleportation 后的 PageRank，避免平稳分布退化到早期 token。对固定 Hermitian 子矩阵可用 Cauchy 交错分析谱漂移；重新归一化或非对称图则需改用伪谱、Bauer-Fike 或 Geršgorin 圆盘等更弱但适用的扰动诊断。"
+“我们采用图中心性启发式选择 token，区分对称相似度图的精确平稳分数与有向图的近似 PageRank。我们报告构图、选择、缓存重排和后续 attention 的总成本，以及任务损失和保留策略；不把节点删除称为已经满足 Laplacian 二次型保证的谱稀疏化。”
 
 ## 风险
-- **$L \times L$ 矩阵显存瓶颈**：长序列下相似度矩阵本身可能超出显存，必须采样或分块
-- **幂迭代收敛慢**：$\lambda_1 / \lambda_2 \approx 1$ 时需 $O(1/\Delta)$ 步，效率下降
-- **语义 ≠ 谱重要性**：某些 token（如标点）谱中心性低但语义关键，纯谱方法可能误剪
-- **硬剪枝不可微**：top-k 阻断梯度，端到端训练需 softmax 松弛或 Gumbel-topk
+谱中心性与语义重要性可能冲突，均匀图或重复向量还会导致分数并列。PageRank 的解释取决于边方向与 teleportation 先验；与真实 Query 无关的 Key 图未必预测未来访问。硬选择的索引不可微，但被选中的 K/V 值仍可接收梯度；若不学习选择器，不必强制加入可微松弛。
+
+## 来源
+[Fiedler/谱分割的条件与松弛](https://arxiv.org/abs/0711.0189)见 von Luxburg 的教程。本例平稳分布的直接算法由上面的 detailed balance 等式推导；它支持中心性计算，不证明剪枝安全。

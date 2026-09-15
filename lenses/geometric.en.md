@@ -4,14 +4,14 @@
 
 ## What This Perspective Is
 
-This is a "surveyor's" perspective — endowing the problem space with a metric tensor (defining distance and angle), characterizing spatial bending through curvature, and finding optimal paths via geodesics. The core conviction: many seemingly complex nonlinear problems become natural once the correct manifold structure is recognized — the geometry of parameter space determines the optimization landscape, and the intrinsic dimensionality of data sets the ultimate compression limit.
+This is a "surveyor's" perspective — endowing the problem space with a metric tensor (defining distance and angle), characterizing spatial bending through curvature, and studying locally length-stationary paths via geodesics. The core conviction: many seemingly complex nonlinear problems become natural once the correct manifold structure is recognized — the metric, objective and algorithm jointly affect optimization; intrinsic dimension can guide compression, while limits also depend on distribution, distortion and accuracy requirements.
 
 ## Problems It Diagnoses Well
 
 - The geometry of parameter space — is a Euclidean metric adequate, or is a Riemannian metric needed?
 - The intrinsic dimensionality of data is far below the embedding dimension — does the manifold hypothesis hold?
 - Distance between two distributions or models — the difference between Fisher metric and Euclidean distance
-- Optimization landscape analysis — high-curvature directions converge fast, low-curvature directions converge slowly
+- Optimization landscape analysis — distinguish loss Hessian from Riemann curvature; quadratic-loss contraction depends on both step size and Hessian eigenvalues
 - The importance of preserving intrinsic geometry in representation learning
 
 ## Problems It Doesn't Fit
@@ -25,7 +25,7 @@ This is a "surveyor's" perspective — endowing the problem space with a metric 
 - **differential-geometry/manifold**: Manifold definitions, atlases, coordinate transformations — the stage for geometric reasoning
 - **differential-geometry/metric-tensor**: Metric tensors defining distance and inner product; Fisher information matrix as the natural metric
 - **differential-geometry/curvature**: Curvature tensors and sectional curvature — precise measures of spatial bending
-- **differential-geometry/geodesic**: Geodesic equations and exponential maps — shortest paths on manifolds
+- **differential-geometry/geodesic**: Geodesic equations and exponential maps — locally length-stationary paths; global minimality needs additional conditions
 - **optimization/riemannian-optimization**: Riemannian gradient descent and retraction operators — optimization algorithms on manifolds
 - **information-geometry/natural-gradient**: Natural gradient as steepest descent direction under the Fisher metric
 

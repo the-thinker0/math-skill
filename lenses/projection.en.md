@@ -1,6 +1,6 @@
 # Projection & Decomposition Lens
 
-> Complex wholes can be orthogonally decomposed into independent components — conflicts are exposed in subspaces, signal and noise are separated under projection.
+> Complex wholes can be decomposed into orthogonal components; orthogonality does not imply statistical independence — conflicts are exposed in subspaces, signal and noise are separated under projection.
 
 ## What Perspective It Offers
 
@@ -17,7 +17,7 @@ This is a "separator's" perspective — projecting mixed wholes onto orthogonal 
 
 - The problem itself is an indecomposable whole (strongly coupled systems, chaotic dynamics)
 - The subspace assumption is too strong — data does not lie on a low-dimensional subspace
-- Scenarios that require retaining all information with zero loss
+- Discarding a nonzero component when exact recovery is required; retaining both orthogonal components is lossless
 
 ## Which Knowledge Domains It Routes To
 
@@ -37,9 +37,9 @@ This is a "separator's" perspective — projecting mixed wholes onto orthogonal 
 
 1. **Identify mixed sources**: Which information, gradients, or representations are mixed together? Where do conflicts arise?
 2. **Define subspaces**: How are the dimensions of the shared space versus the specific space determined? What is the effective rank?
-3. **Construct projection operators**: $P = AA^H$ (orthonormal basis) or $P = A(A^HA)^{-1}A^H$ (general basis)
+3. **Construct projection operators**: $P = AA^H$ (orthonormal basis) or $P = A(A^HA)^{-1}A^H$ (full-column-rank basis; use a Moore–Penrose pseudoinverse or orthonormal basis when rank deficient)
 4. **Perform decomposition**: $x = Px + (I-P)x$; evaluate the contribution of each component separately
-5. **Verify orthogonality**: Are $P^2 = P$ and $P = P^H$ satisfied? Is the condition number well-controlled?
+5. **Verify orthogonality**: Are $P^2 = P$ and $P = P^H$ satisfied? Are the basis and numerical solve well-conditioned? A non-full-rank projector itself is singular.
 
 ## Acceptance Criteria
 

@@ -8,10 +8,10 @@ The fundamental group $\pi_1(X, x_0)$ is the group of equivalence classes of loo
 
 - Fundamental group: $\pi_1(X, x_0) = \{[\gamma] \mid \gamma: [0,1] \to X, \gamma(0)=\gamma(1)=x_0\}$
 - Group operation: $[\alpha] \cdot [\beta] = [\alpha * \beta]$, $(\alpha * \beta)(t) = \begin{cases} \alpha(2t) & t \leq 1/2 \\ \beta(2t-1) & t \geq 1/2 \end{cases}$
-- Simply connected: $\pi_1(X) = \{e\}$ (all loops can be contracted to a point)
+- Simply connected means path connected with trivial $\pi_1(X,x_0)$.
 - Common fundamental groups: $\pi_1(S^1) = \mathbb{Z}$, $\pi_1(T^2) = \mathbb{Z}^2$, $\pi_1(S^n) = 0 \, (n \geq 2)$
-- Covering space correspondence: subgroups of $\pi_1$ $\leftrightarrow$ covering spaces (Galois correspondence)
-- Seifert-van Kampen theorem: $\pi_1(X) = \pi_1(U) *_{\pi_1(U \cap V)} \pi_1(V)$ (computation via cover decomposition)
+- Cover classification: for connected, locally path-connected, semilocally simply-connected spaces, pointed connected covers correspond to subgroups of $\pi_1$; unpointed covers correspond to subgroup conjugacy classes.
+- The amalgamated-product form of Seifert–van Kampen assumes an open cover $X=U\cup V$, with $U,V,U\cap V$ path connected and the base point in the intersection.
 
 ## Applicable Problems
 
@@ -30,11 +30,11 @@ The fundamental group $\pi_1(X, x_0)$ is the group of equivalence classes of loo
 ## Engineering Feasibility
 
 Low GPU friendliness. Computation of the fundamental group is inherently combinatorial/algebraic rather than numerically linear:
-- **Computing the fundamental group itself**: For a simplicial complex, $\pi_1$ is isomorphic to the edge group modulo face relations (Wirtinger presentation); requires a group presentation, **not tensorizable**
-- **Loop detection**: Finding non-contractible loops on a graph/mesh is equivalent to finding non-trivial cycles, solvable via BFS/DFS, $O(V+E)$, but unsuitable for GPU parallelism (data-dependent graph traversal)
+- **Finite-complex presentations**: use edges outside a spanning tree as generators and face boundaries as relations; Wirtinger is the specialized knot-diagram presentation. Constructing a presentation does not solve arbitrary word problems.
+- **Loop detection**: traversal detects graph cycles; on meshes with 2-cells a cycle may bound a contractible face. BFS/DFS is not a general noncontractibility test.
 - **Differentiable alternatives**: Convert "loop contractibility" into a differentiable proxy -- such as loop integrals $\oint \omega$ (de Rham cohomology); a non-zero closed-form integral implies non-contractibility, which is differentiable
 - **Numerical implementation of covering spaces**: For known group structures (e.g., $\mathbb{Z}^n$), covering spaces can be explicitly parameterized as periodic identifications, which is tensorizable
-- Overall assessment: exact computation of $\pi_1$ belongs to the "beautiful but incomputable" category; differentiable proxies (loop integrals/cohomology) are required
+- Known spaces such as circles, tori, and finite graphs have explicit groups; undecidability of general finitely presented word problems does not make every fundamental-group computation infeasible.
 
 ## Risks and Failure Conditions
 
@@ -54,7 +54,7 @@ Low GPU friendliness. Computation of the fundamental group is inherently combina
 
 ## Routing Extensions
 - If higher-dimensional homology is needed -> `persistent-homology.en.md` (higher homology groups)
-- If geometric structure is involved -> `../differential-geometry/curvature.md` (relationship between geometry and topology)
+- If geometric structure is involved -> `../differential-geometry/curvature.en.md` (relationship between geometry and topology)
 
 ## Extensible Directions
 - Covering space theory: Galois correspondence between fundamental group and coverings

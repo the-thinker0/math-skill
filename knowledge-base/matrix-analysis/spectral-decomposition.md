@@ -15,25 +15,25 @@
 
 ## 适用问题
 
-- Hessian 谱分析：判断损失面曲率（正定 = 局部极小、有负特征值 = 鞍点）
-- 梯度协方差谱：诊断训练动力学，谱半径决定稳定性
+- Hessian 分析：二阶可微损失的驻点处，正定 Hessian 蕴含严格局部极小，不定 Hessian 蕴含鞍点；只有负特征值也可能是局部极大。
+- 梯度协方差谱诊断各向异性；稳定性需从实际更新算子、步长及噪声模型分析。
 - 谱归一化：约束 $\sigma_{\max}(W) \leq 1$ 稳定 GAN/扩散模型训练
 - 状态空间模型 (SSM) 稳定性：离散化矩阵谱半径 $< 1$ 保证不发散
 - 图神经网络：Laplacian 谱分解 = 图上的 Fourier 基
 
 ## AI 设计翻译
 
-- **Power Iteration 估谱半径/最大奇异值**：$u_{k+1} = Au_k / \|Au_k\|$，每步仅一次 matvec + norm，$O(n^2)$。谱归一化中标准做法（SN-GAN），PyTorch 内置 `torch.nn.utils.spectral_norm`。注意：单向量迭代串行度低，需 block iteration 并行化。
-- **Hessian-Free 优化 (HVP + CG)**：不物化 Hessian，用 autodiff 算 $Hv$（一次前向 + 一次反向），再喂给 CG 求解 $Hd = -g$。核心操作是两次反向传播（matvec），完全 GPU 友好。
-- **Kronecker-Factored 近似曲率 (K-FAC)**：将 Hessian 近似为 $H \approx A \otimes B$（Kronecker 积），每个因子是小矩阵（层维度量级），求逆退化为小 GEMM。每层独立，天然可并行。
+- **幂迭代**：$u\leftarrow Au/\|Au\|$ 只在主特征值模严格占优且初始化有非零重叠等条件下估计主特征向量。估计 $\sigma_{\max}(W)$ 应交替 $u\leftarrow Wv/\|Wv\|$、$v\leftarrow W^Tu/\|W^Tu\|$，再取 $u^TWv$；不要与非正规矩阵的谱半径混淆。
+- **Hessian 向量积**：用嵌套自动微分计算 HVP，不物化 Hessian。标准 CG 要求对称正定算子；使用带阻尼的适当 PSD 曲率近似，或显式处理负曲率的求解器/信赖域方法。
+- **K-FAC**：用 $A\otimes B$ 近似逐层 Fisher（或明确指定的广义 Gauss–Newton）块。稠密 $d\times d$ 因子求逆为 $O(d^3)$、存储 $O(d^2)$，常跨多步摊销；它不是任意 Hessian 的分解。[K-FAC 原论文](https://arxiv.org/abs/1503.05671)。
 - **谱正则化 Loss**：$\mathcal{L}_{\text{spec}} = \max(0, \rho(A) - 1)^2$ 或 $\mathcal{L}_{\text{spec}} = \|\sigma_{\max}(W) - 1\|^2$，通过 power iteration 估计后加入总 loss。实现为附加标量 loss，不影响主计算图结构。
 - **Graph Fourier Transform**：图 Laplacian $L = D - A$ 的特征分解 $L = U\Lambda U^H$ 给出图频域基。GCN 的谱卷积 = $U g(\Lambda) U^H x$，三次 matmul。大规模图用 Chebyshev 多项式近似避免显式分解。
 
 ## 工程可行性
 
-- **主要操作**：完整 EVD 是 $O(n^3)$，但 AI 中极少需要完整分解。Power iteration 是 $O(n^2)$/step 的 matvec；K-FAC 因子是 $O(d^2)$ 的小矩阵求逆。
-- **GPU 友好度**：中-高（取决于方法）。Power iteration / HVP = matvec = 友好；完整 EVD 在 $n > 1000$ 时不可行。cuSOLVER 有 `syevd`（对称 EVD）和 `gesvd`（SVD），但 $O(n^3)$ 限制规模。
-- **低精度**：Hermitian 矩阵 EVD 在 bf16 下相对稳定（特征值是 Lipschitz 连续的，Weyl 界）。非正规矩阵的特征值在低精度下可能严重失真，需改用 SVD。
+- **主要操作**：完整 EVD 为 $O(n^3)$ 时间、$O(n^2)$ 存储；稠密幂迭代每步 $O(n^2)$。K-FAC 因子构造、立方级因子求解及刷新频率分别计入成本。
+- **GPU 可行性**：matvec 与分解均有 GPU 实现，但吞吐取决于矩阵尺寸、批处理、精度及设备；按所需谱范围测量，不设完整 EVD 的通用不可行维数阈值。
+- **低精度**：Weyl 界控制 Hermitian 输入扰动引起的特征值绝对误差，不保证近零特征值相对误差、特征向量稳定或求解器支持低精度。Gram/Hessian 累加与敏感分解使用 fp32/fp64，检查残差及谱间隙。
 
 ## 风险与失效条件
 

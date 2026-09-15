@@ -46,9 +46,9 @@ An encryption indistinguishability game is only one instance. Signatures, MACs, 
 
 ## Further References
 
-- `../../references/books/applied-cryptography.md`
-- `../../references/books/foundations-of-cryptography.md`
-- `../../references/books/introduction-to-modern-cryptography.md`
+- `../../references/books/applied-cryptography.en.md`
+- `../../references/books/foundations-of-cryptography.en.md`
+- `../../references/books/introduction-to-modern-cryptography.en.md`
 
 ## Routing Extensions
 

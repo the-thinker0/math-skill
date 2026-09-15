@@ -3,6 +3,8 @@
 ## Minimal Definition
 The Fisher-Rao metric is a **Riemannian metric** on the parameter space of a family of probability distributions (statistical model), whose metric tensor is precisely the Fisher information matrix. It endows the parameter space with an intrinsic geometric structure, enabling the "distance" between probability distributions to be described using geometric language (geodesics, curvature, connections). It is the core structure of information geometry.
 
+**Regularity and identifiability**: The expected negative-Hessian identity assumes interchangeable differentiation/integration and suitable support. Fisher is only semidefinite in redundant or nonidentifiable parameterizations; a Riemannian metric requires positive definiteness on the modeled directions. Damping creates a usable preconditioner but changes the metric and its invariance properties.
+
 ## Core Formulas
 
 **Metric Tensor (i.e., Fisher Information Matrix)**:
@@ -32,24 +34,24 @@ $$\Gamma_{ijk}^{(\alpha)} = \mathbb{E}\left[\left(\partial_i \partial_j \ell + \
 - **Parameterization-invariant optimization**: Ensuring that the behavior of optimization algorithms does not depend on the specific choice of parameterization (reparameterization invariance)
 
 ## AI Design Translation
-- **Wasserstein vs. Fisher-Rao in generative models**: GANs use the Wasserstein distance to measure distributional differences; the Fisher-Rao metric provides an alternative — performing geometry-aware optimization in the parameter space of the distribution family
+- **Wasserstein versus Fisher–Rao**: WGAN-type methods compare distributions using a Wasserstein objective; general GANs need not. Fisher–Rao instead supplies a metric on an identifiable model family; comparing these geometries requires a shared distributional setup.
 - **Geometry of pretrained model space**: Treating different checkpoints as points on the statistical manifold, Fisher geodesic distances can be used for model selection, model merging, and interpolation path planning
 - **Geometric analysis of MoE expert distributions**: The degree of separation between the output distributions of different experts under the Fisher metric can quantify expert diversity
 
 ## Engineering Feasibility
 - **D1[x]**: The full metric tensor $g_{ij}$ is $d \times d$; infeasible to materialize when $d \sim 10^{10}$
-- **D2[~]**: Kronecker/diagonal approximations can be mapped; the exact metric cannot
-- **D3[x]**: Geodesic computation requires solving a second-order ODE; exact computation is intractable
+- **D2[~]**: Matrix-free Fisher-vector products can avoid dense storage; exactness depends on the expectation and autodiff implementation. Diagonal/Kronecker/low-rank metrics are separate approximations.
+- **D3[~]**: Some statistical families have closed-form geodesics. A general high-dimensional Fisher geodesic can require expensive differential-equation/boundary-value solves; complexity is model-dependent, not universally intractable.
 - **D4[x]**: Full metric tensor storage is $O(d^2)$; completely impossible at LLM scale
 - **D5[~]**: The condition number of the metric tensor may be very large, leading to instability under low precision
-- **D6[~]**: Approximate versions (K-FAC, diagonal) can be parallelized; exact versions cannot
+- **D6[~]**: Samples, blocks and independent solves can parallelize; exactness alone does not determine parallelism. Iterative solves and coordinate paths can retain dependencies.
 - **D7[~]**: The Fisher information matrix is typically dense; block-diagonal approximations (inter-layer independence) introduce structured sparsity
 - **D8[v]**: Approximate versions can be fused into optimizer updates
 
-**Conclusion**: The exact Fisher metric is infeasible at LLM scale, but **approximate versions** (K-FAC, diagonal Fisher, low-rank) are engineering-viable. The theoretical value of information geometry lies primarily in **guiding design** rather than direct computation.
+**Feasibility decision**: Avoid dense full-parameter metrics at LLM scale, but distinguish matrix-free products, structured exact families and approximate metrics. Select by the required guarantee, operator access and measured solver cost.
 
 ## Risks and Failure Conditions
-- **Computational complexity is prohibitive**: The metric tensor in a $d$-dimensional parameter space has $O(d^2)$ independent components, which is unaffordable at LLM scale. All practical approaches must use approximations (diagonal, Kronecker, low-rank), and the quality of the approximation determines the practical effectiveness.
+- **Storage versus access**: Dense storage is $O(d^2)$, but matrix-free access does not require those entries. Iteration count, conditioning and expectation estimation may still dominate; do not equate avoiding storage with an efficient exact geodesic algorithm.
 - **Singularities of the statistical manifold**: In certain regions of the parameter space (e.g., degenerate points of mixture distributions), the Fisher metric may degenerate ($\det \mathcal{I} = 0$), causing geodesic distances to be undefined. This type of degeneracy arises in MoE when an expert's weight is zero.
 
 ## Further References
@@ -62,8 +64,8 @@ $$\Gamma_{ijk}^{(\alpha)} = \mathbb{E}\left[\left(\partial_i \partial_j \ell + \
 
 ## Routing Extensions
 - If optimization application is needed -> `natural-gradient.en.md` (natural gradient descent under Fisher metric)
-- If a general Riemannian metric is needed -> `../differential-geometry/metric-tensor.md` (Fisher metric is a special case of Riemannian metric)
-- If local KL analysis is needed -> `../probability/kl-divergence.md` (local KL divergence equals Fisher metric)
+- If a general Riemannian metric is needed -> `../differential-geometry/metric-tensor.en.md` (Fisher metric is a special case of Riemannian metric)
+- If local KL analysis is needed -> `../probability/kl-divergence.en.md` (local KL divergence equals Fisher metric)
 
 ## Extensible Directions
 - Rao's distance: geodesic distance under Fisher-Rao metric

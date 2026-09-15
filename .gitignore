@@ -30,3 +30,7 @@ math_book/
 # (math_book/ above already excludes the known location; this catches any
 # PDF accidentally placed inside skills/, commands/, references/, docs/, etc.)
 *.pdf
+
+# Machine-local matplotlib font cache written by the usability probe scripts.
+# Regenerated on any machine that reruns them; not part of the recorded runs.
+tests/usability/runs/**/.mplconfig/

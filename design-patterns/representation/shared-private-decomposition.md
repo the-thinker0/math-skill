@@ -1,5 +1,5 @@
 # Shared-Private Decomposition（共享-私有分解）
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
+> **证据标注**：[v] 有明确假设或记录验证支持；[~] 待验证的工程方案；[x] 在所述条件下不相容；[N/A] 不适用。伪代码用于定义算子，不是完整生产实现。
 
 ## 适用问题
 多任务/多领域学习中，需要将表示分解为"跨任务共性部分"和"任务特异部分"。
@@ -24,44 +24,20 @@
 - **CCA (典型相关分析)**：max corr(W₁^T X, W₂^T Y)，提取两组变量的共享变异
 
 ## AI 模块形式
+
+```python
+z_shared = shared_encoder(X)
+z_private = private_encoder[task](X)
+z = shared_to_output(z_shared) + private_to_output(z_private)
+
+# 判别器最小化CE；梯度反转使共享编码器最大化它。
+L_domain = cross_entropy(domain_classifier(gradient_reverse(z_shared)), task)
+L_task = task_loss(task_head(z), target)
+L = L_task + lambda_adv * L_domain + lambda_decorr * decorrelation(z_shared, z_private)
 ```
-模块：SharedPrivateDecomposer
-输入：X ∈ R^{N×d}，任务标识 t ∈ {1,...,T}
+有限判别器预测不出任务，不证明任务独立。用更强留出探针、任务迁移及表示坍塌检查。私有分支预测任务标签是可选目标，可能只鼓励记忆任务ID，而非有用任务专属信息。
 
-方法1 - 加法分解（最常用）：
-  z_shared = E_shared(X)          // 共享编码器：MLP or Transformer block
-  z_private = E_private[t](X)     // 私有编码器：每个任务独立参数
-  z = z_shared + z_private        // 加法融合
-  // 训练目标：L_task(z, y) + λ₁·OrthLoss(z_shared, z_private)
-  // 正交性确保 shared 和 private 学到不同的东西
-
-方法2 - 门控分解（动态权重）：
-  z_shared = E_shared(X)
-  z_private = E_private[t](X)
-  gate = sigmoid(Linear(z_shared ⊕ z_private))  // 动态融合门
-  z = gate ⊙ z_shared + (1 - gate) ⊙ z_private
-  // 门控允许逐维度选择 shared/private 的贡献比例
-
-方法3 - 对抗分解（信息论代理）：
-  z_shared = E_shared(X)
-  z_private = E_private[t](X)
-  // Shared 应无法区分任务（对抗梯度）：
-  // ⚠ 符号正确性至关重要！原公式 L_adv = -CE 与 flip_gradient 形成双重符号反转：
-  //   判别器最小化 -CE → 变差；编码器（梯度反转后看到 +CE）→ 帮助判别器 → shared 变得更任务相关！
-  // 正确做法：L_adv = +CE，配合 flip_gradient：
-  //   判别器最小化 +CE → 学会从 shared 预测任务
-  //   编码器（梯度反转）看到 -CE → 最大化判别器损失 → shared 不含任务信息
-  task_pred = classifier(z_shared.flip_gradient())
-  L_adv = CE(task_pred, t)       // 判别器：最小化 CE 预测任务；编码器：梯度反转后最大化 CE，使 shared 任务无关
-  // Private 应能区分任务：
-  L_private = CE(classifier(z_private), t)
-  L = L_task + λ_adv·L_adv + λ_priv·L_private
-
-维度分配原则：
-  d_shared = d · T/(T+1)          // T 个任务时 shared 占大部分
-  d_private = d · 1/(T+1)         // 每个 private 占较小部分
-  // 或用 PCA 变异解释率动态分配
-```
+加法要求分支输出形状兼容；否则各自映射到共同输出维数或拼接。按参数/计算预算及任务消融选择共享/私有宽度，不存在通用 $dT/(T+1)$ 分配定律。非线性分支加去相关惩罚不会自动构成子空间直和分解。
 
 ## 可实现结构
 - **双编码器 + 融合层**：shared_encoder (大) + T 个 private_encoder (小) + fusion
@@ -70,14 +46,12 @@
 - **渐进扩展**：新任务时只增加 private 编码器，frozen shared 参数
 
 ## GPU 可行性
-- **张量化**：两个编码器前向为独立 GEMM 链，可并行执行
-- **GEMM 可映射**：shared/private 编码器各为标准 Transformer FFN（2×GEMM）
-- **复杂度**：shared O(N·d²) + T 个 private O(N·d²/T)，总 ≈ 2× 单编码器
-- **显存与 KV-Cache**：T 个 private 编码器参数全存储，T 大时需 LoRA 压缩
-- **低精度稳定**：加法/门控融合在 fp16 安全；对抗训练的梯度反转需 fp32
-- **并行与通信**：shared 和 private 编码器可分配到不同 GPU；多任务 batch 混合训练
-- **稀疏结构**：private 编码器可稀疏化（仅当前任务激活），T 个中仅激活 1 个
-- **算子融合**：加法融合 trivial；门控融合的 sigmoid→multiply→add 可融合
+
+- **D1/D2[~]**：共享/私有编码器是普通神经模块，成本由实际深度和宽度决定。
+- **D3/D4[~]**：若每 token 只用一个私有分支，成本为 $C_{shared}(X)+\sum_t C_{private,t}(X_t)$，且 $\sum_t|X_t|=N$，不是通用两倍稠密成本。除按需加载外需存全部私有参数；优化器状态也随任务数增长。
+- **D5[~]**：梯度反转是符号/尺度乘法，本身不强制 fp32；按 logits、归约和对抗稳定性作精度诊断。
+- **D6/D8[~]**：分支可在硬件上重叠，但收益取决于资源争用及传输成本；融合主要适用于小型组合操作。
+- **D7[~]**：只有跳过非活跃分支才节省条件执行工作；这不是稀疏权重存储。
 
 ## 论文表述方式
 "将多任务表示空间 R^d 分解为共享子空间 S 与任务私有子空间 P：共享分支通过对抗训练降低任务可识别性，私有分支通过正交/去相关正则减少与共享分支的线性重叠。信息互补与负迁移降低需通过任务间迁移矩阵、互信息/PID 代理和消融实验验证，不能仅由正交性自动保证。"

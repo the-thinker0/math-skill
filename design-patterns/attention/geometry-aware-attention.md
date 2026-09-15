@@ -1,72 +1,67 @@
 # 几何感知注意力 / Geometry-Aware Attention
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
+
+> 严谨性约定：[v] 表示限定前提下可核查的公式或计数；[~] 表示需实验的设计/实现。本原型不宣称已测 GPU 加速。
 
 ## 适用问题
-当 token/key 之间存在**已知的几何关系**（空间距离、流形测地距、层级结构、时序间隔）时，标准注意力的位置无关内积无法利用这些结构信息。几何感知注意力将**几何先验直接注入注意力权重计算**，使模型天然尊重底空间的度量结构。典型场景：3D 场景理解、分子构象、时序预测、层级文本结构（段落-句子-词）、知识图谱。
+输入有已知的空间、流形、树或时间关系时，可把几何作为显式 attention 偏置。标准注意力也可能从输入特征或位置编码中学到这些关系；增加偏置是一种归纳偏置选择，并不自动保证完整模型的几何不变/等变性。
 
 ## 数学思想来源
-- 透镜：[symmetry（对称透镜 — 度量不变性）, duality（对偶透镜 — 坐标系无关表达）]
-- 知识：[`../../knowledge-base/information-geometry/fisher-metric.md`（分布空间的几何度量）, `../../knowledge-base/probability/concentration-inequality.md`（几何约束下的浓度行为）]
+- 透镜：`../../lenses/symmetry.md`、`../../lenses/geometric.md`。
+- 知识：`../../knowledge-base/differential-geometry/geodesic.md`、`../../knowledge-base/lie-theory/equivariance.md`。
 
 ## 需要的数学知识
-- **度量空间与距离函数**：欧氏距离、测地距、树距离、Wasserstein 距离
-- **RBF / 核方法**：$k(x, y) = \exp(-d(x,y)^2 / 2\sigma^2)$，距离→相似度的转换
-- **位置编码的几何解释**：RoPE = 旋转群 $SO(2)$ 的作用（相对距离编码为旋转角度差）；ALiBi = 指数衰减的距离偏置
+- **距离到偏置**：-αδ 或 -δ²/(2σ²) 在 α≥0、σ>0 时随距离下降；任意 `MLP(δ)` 不保证单调。
+- **RBF 边界**：exp(-δ²/(2σ²)) 是正相似度，但任意度量/测地距不保证其 Gram 矩阵 PSD。作为 logit 偏置无须 PSD；若还用于核方法，则需另证。
+- **位置与群作用**：RoPE 的旋转块利用 R_iᵀR_j 的相对作用。共同左作用下 g_i^(-1)g_j 保持不变；在一般非交换群上不能任意换成 g_i g_j^(-1)。
+- **ALiBi**：给可见位置添加线性距离 logit 惩罚，指数衰减的是未归一化权重的偏置因子；内容分数仍可能使远处权重大于近处。
 
 ## AI 模块形式
 
-**核心思路**：在注意力分数中显式引入几何距离项，使远距离 token 的注意力天然衰减：
+$$O=\operatorname{softmax}_{j}\left(QK^T/\sqrt d+B+M\right)V,\quad B_{ij}=-\delta(i,j)^2/(2\sigma^2).$$
 
-$$\text{GeoAttn}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d}} + \text{GeoBias}(i, j)\right) V$$
+下面是单头稠密基线；Q、K、V 的 token 维可不同，distance 必须为 (m,n)。
 
-**方案 A：距离偏置注意力（通用度量空间）**：
 ```python
-# d_ij 为 token i 和 j 之间的几何距离（预计算或在线计算）
-# 可学习距离偏置函数
-distance_bias = MLP(d_ij)  # 或简单的 -α * d_ij
-scores = (Q @ K.T) / sqrt(d) + distance_bias
-attn = softmax(scores) @ V
+import math
+import torch
+
+def geometric_attention(Q, K, V, distance, sigma, allowed=None):
+    assert sigma > 0
+    assert distance.shape == (Q.shape[0], K.shape[0])
+    assert bool(torch.isfinite(distance).all()) and bool((distance >= 0).all())
+    scores = (Q.float() @ K.float().T) / math.sqrt(Q.shape[-1])
+    bias = -distance.float().square() / (2 * sigma * sigma)
+    scores = scores + bias  # 直接使用 log RBF，避免 exp 后再 log 的下溢/eps 偏差
+    if allowed is not None:
+        assert bool(allowed.any(dim=-1).all())
+        scores = scores.masked_fill(~allowed, -torch.inf)
+    return torch.softmax(scores, dim=-1) @ V.float()
 ```
 
-**方案 B：相对位置编码（RoPE / ALiBi 的几何推广）**：
-```python
-# 推广 RoPE：位置 → 群元素 g_i，相对位置 → g_i g_j^{-1}
-# 可学习任意度量空间上的相对位置偏置
-def geo_attention(Q, K, V, positions):
-    rel_pos = pairwise_difference(positions)       # (n, n, coord_dim)
-    geo_bias = geo_encoder(rel_pos)               # (n, n) 可学习映射
-    scores = (Q @ K.T) / sqrt(d) + geo_bias
-    return softmax(scores) @ V
-```
-
-**方案 C：流形感知注意力（非欧空间）**：
-```python
-# token 位于非欧流形（双曲空间、球面）时，用测地距替代欧氏距
-def manifold_attention(Q, K, V, manifold):
-    geodist = manifold.geodesic_distance_matrix(positions)  # (n, n)
-    geo_kernel = exp(-geodist^2 / (2 * sigma^2))  # RBF 核
-    scores = (Q @ K.T) / sqrt(d) + log(geo_kernel + eps)
-    return softmax(scores) @ V
-```
+- **欧氏坐标 [v]**：δ_ij=‖x_i−x_j‖₂ 对共同平移/正交变换不变；`MLP(x_i-x_j)` 一般只平移不变，不自动旋转不变。
+- **树距离 [v]**：无权树上 δ(i,j)=depth(i)+depth(j)−2depth(LCA(i,j))；LCA 深度本身不是距离。
+- **流形 [~]**：从显式 positions 参数计算相应测地距，再传给基线；一般流形没有全局坐标减法，cut locus 或重合点附近梯度也需检查。
+- **多维 RoPE [~]**：多个 SO(2) 旋转块形成 SO(2)^k 的块对角表示，嵌入 SO(2k)；这不等于任意 SO(2k) 旋转都保留所需相对位置性质。
 
 ## 可实现结构
-- **RoPE 扩展**：从 $SO(2)$ 旋转到更高维旋转群 $SO(2k)$，编码多维位置信息（2D 图像 patch、3D voxel）
-- **层级位置偏置**：树结构中用 LCA（最近公共祖先）深度作为距离，适合文档/代码的层级建模
-- **分子构象注意力**：3D 原子坐标 → 距离矩阵 → 几何偏置，用于分子 GNN 和蛋白质结构预测
+距离偏置、树位置偏置和分子距离特征可分别消融。若要求输出旋转等变，Value 的表示、内容得分、mask、非线性和输出映射也须兼容；只有距离项不变不够。
 
 ## GPU 可行性
-- **D1[v]**：距离矩阵和偏置矩阵均为稠密张量，逐元素运算
-- **D2[v]**：主体 $Q K^T$ 为标准 GEMM；几何偏置为加法，不阻断 GEMM
-- **D3[~]**：成对距离矩阵 $O(n^2)$ 构建和存储；但可用分块计算 + online softmax 避免物化完整矩阵
-- **D4[~]**：$n \times n$ 距离矩阵占用显存；可分块/流式计算（与 FlashAttention 兼容）
-- **D5[v]**：距离计算和偏置加法在 bf16 下稳定；RBF 的 exp 需注意上溢（clamp 距离）
-- **D6[v]**：距离计算和注意力可流水线并行，成对距离可分块并行
-- **D7[v]**：远距离偏置趋于 $-\infty$（softmax 后趋零），天然诱导结构化稀疏（局部注意力窗口）
-- **D8[v]**：几何偏置可融入 FlashAttention 的 online softmax 循环中（加在 $QK^T$ 之后、softmax 之前）
+- **D1/D2 [v]**：QK 和 AV 是 GEMM，偏置是加法。**[~]** 距离本身可能是归约、图算法或迭代求解，不能一律称为逐元素运算。
+- **D3 [v]**：s 维欧氏两两距离朴素成本 O(mns)，attention 为 O(mnd+mnd_v)；通用测地距另计求解成本。
+- **D4 [v]**：朴素距离/偏置矩阵各需 O(mn) 存储。**[~]** 只有距离可按 tile 在线生成，或有适当预计算访问方案时，才能避免全矩阵物化。
+- **D5 [~]**：大坐标差、球面 arccos、双曲 acosh、过小 σ 和平方均可能不稳；直接负平方避免多余 exp/log，但仍需有限值检查与 fp32 对照。
+- **D6 [~]**：tile/头可并行，复杂几何求解的依赖另测。
+- **D7 [v]**：很小的 softmax 权重不是实际稀疏计算。**[~]** 需显式窗口/块 mask 与对应稀疏 kernel 才可能节约运算。
+- **D8 [~]**：加法偏置在数学上兼容分块 online softmax，但任意偏置 MLP/测地距不必被现有 FlashAttention API 支持；需实测实现与反向。
 
 ## 论文表述方式
-"我们提出几何感知注意力，通过在注意力分数中显式注入几何距离偏置项，使模型天然尊重输入空间的度量结构，在仅增加少量几何偏置参数（固定偏置如 ALiBi 则零额外参数）的情况下将远距离 token 的注意力指数衰减，同时保持与 FlashAttention 的兼容性。"
+“我们用指定度量和非正单调偏置引入局部性，并区分偏置项的不变性与完整模块的等变性。报告不同距离尺度下的质量、距离构建与 attention 总成本，以及实际使用的 kernel 支持范围。”
 
 ## 风险
-- **几何先验与数据冲突**：若几何距离与语义相关性不一致（如文本中远距离但语义相关的 token），强几何偏置会伤害模型表达。需让偏置可学习且可被内容注意力覆盖。
-- **距离计算的非可微性**：某些距离（图最短路径、树 LCA 深度）不可微或计算复杂。需使用可微松弛（softmin 替代 min）或预计算距离矩阵。
+固定几何可能与任务相关性冲突；单调衰减可能压低必要的远程联系。离散图/树结构若不训练，无须为其强造可微松弛；只有对距离或结构求导时才需要明确的梯度/估计方案。任意可学习偏置取消了单调保证，应据实描述。
+
+## 来源
+[RoFormer](https://arxiv.org/abs/2104.09864)、[ALiBi](https://arxiv.org/abs/2108.12409)给出具体的位置机制；本文的任意几何扩展仍需独立证明和验证。
+
+度量与正定性的关系见 [Jayasumana 等](https://arxiv.org/abs/1412.0265)。

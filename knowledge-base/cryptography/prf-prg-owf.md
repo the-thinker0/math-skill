@@ -16,7 +16,7 @@
   $$\operatorname{Adv}^{\rm prg}_{G}(D)=\left|\Pr[D(G(U_n))=1]-\Pr[D(U_{\ell(n)})=1]\right|.$$
 - PRF 优势：
   $$\operatorname{Adv}^{\rm prf}_{F}(A)=\left|\Pr_{k}[A^{F_k}=1]-\Pr_{R}[A^{R}=1]\right|.$$
-- 存在性关系：OWF 存在当且仅当 PRG 存在；PRG 可经 GGM 构造 PRF。由 PRF 经 Feistel 可构造 PRP：经典 Luby--Rackoff 结论是 3 轮给出选择明文意义下的 PRP，4 轮给出允许正反向查询的强 PRP（具体界依赖查询数与分组长度）。
+- 存在性关系：OWF 存在当且仅当 PRG 存在；GGM 从 PRG 构造 PRF。经典 Luby–Rackoff 使用独立轮 PRF：三轮 Feistel 给前向查询 PRP，四轮给前向/逆向查询 strong PRP，界依赖查询数及半块长度。未经证明复用同一轮函数不继承该定理。
 - PRP/随机函数切换界的典型量级为生日界 $O(q^2/2^n)$；精确常数取决于采用的游戏和是否允许逆向查询，不能脱离版本固定写成唯一公式。
 
 ## 适用问题

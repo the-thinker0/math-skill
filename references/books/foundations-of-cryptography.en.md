@@ -1,112 +1,36 @@
 # Foundations of Cryptography
 
-> Oded Goldreich, *Foundations of Cryptography, Volume 1: Basic Tools*, Cambridge University Press, 2001. A theoretical foundation unified by **definition methodology and constructive reductions**.
+Oded Goldreich, *Foundations of Cryptography, Volume 1: Basic Tools*, Cambridge University Press, 2001, ISBN 978-0-521-79172-4. [Author contents, errata, and draft](https://www.wisdom.weizmann.ac.il/~oded/foc-vol1.html) (checked 2026-09-07).
 
-## Overview
+## When to read
 
-The book's central contribution is methodological: it replaces informal security intuition with explicit definitions, computational assumptions, and reductions. Classical efficient adversaries are commonly modeled as probabilistic polynomial-time algorithms, but PPT is a modeling convention—not the set of every practical attack. Quantum computation, nonuniform circuits, side channels, and concrete resources require additional models.
+Use for primitive existence, quantifiers, security definitions, and constructive reductions. **Volume 1 has Chapters 1–4**, plus appendices. Old references to Chapters 5/6/7/9 or Roman-numbered “original parts” were incorrect. Systematic encryption, signature, and protocol treatment belongs to Volume 2.
 
-Good cryptographic definitions formalize the intended intuition, exclude trivial constructions, permit constructions, and support reductions. The book develops implication and construction relations among primitives such as OWFs, PRGs, and PRFs.
+## Verified routes
 
-**Activation boundary:** This is a theory-and-meta-theorem reference, not a deployment manual. Many generic constructions establish existence but are too inefficient for practice. Use it for definitions, assumption dependencies, reductions, and impossibility boundaries; use implementation references for concrete systems.
-
-## Core Structures and Cross-Domain Boundaries
-
-| Theoretical structure | What transfers—and what does not |
+| Question | Volume 1 location |
 |---|---|
-| **Computational indistinguishability (§2.2)** | Defines “cannot be distinguished” relative to efficient distinguishers. It is not statistical closeness; an ML transfer must redefine the security parameter, distinguisher class, and sampling interface. |
-| **PPT and negligible functions (§2.1, §2.3)** | An asymptotic quantifier framework; deployment also needs explicit time, query, and success bounds. |
-| **OWF/PRG/PRF construction chain (Parts III, V)** | Deep existence and construction relations under standard definitions; not a proof of an ML boosting result. |
-| **Cryptographic reductions (§4.1)** | The reduction must preserve the adversary's input and success distribution; arbitrary distribution substitution invalidates the proof. |
-| **Hybrid arguments (§4.2)** | Bound a long transition by analyzable adjacent steps. The number of hybrids and each transition bound matter. |
-| **Weak-to-strong amplification (§4.3)** | Strengthens cryptographic properties while tracking loss; only a high-level analogy to boosting. |
-| **Simulation paradigm (§4.4, Part VI)** | Defines zero knowledge in a stated real/ideal experiment. The mere existence of an informal simulator does not imply training-data privacy or differential privacy. |
-| **Unpredictability and pseudorandomness (§4.5)** | Yao's next-bit characterization concerns binary distribution ensembles, efficient predictors, and a security parameter—not ordinary next-token uncertainty. |
-| **Goldreich–Levin hardcore bit (§5.1)** | Constructs a computationally unpredictable predicate from an OWF; it is not information-theoretically perfectly hidden. |
-| **Black-box vs non-black-box (§7.3)** | Classifies constructions and separation results; a black-box impossibility need not rule out non-black-box techniques. |
+| Probability and computation models | §§1.2–1.3 |
+| Strong/weak OWFs and amplification | §§2.2–2.3 |
+| Hard-core predicates | §2.5 |
+| Pseudorandom generation and constructions | Chapter 3, especially §§3.2–3.4 |
+| Pseudorandom functions | §3.6 |
+| Zero-knowledge definitions and NP constructions | §§4.2–4.4 |
 
-**Activation families:**
+## Definition and reduction checks
 
-- **Definitions:** OWF, PRG, PRF, zero knowledge, and commitments.
-- **Proof techniques:** reductions, hybrids, amplification, simulation, and unpredictability.
-- **Constructions:** OWF → hardcore predicate → PRG → PRF → commitments and zero knowledge.
-- **Meta-theory:** definition-driven research, primitive implication relations, black-box separations, and assumption minimization.
+- Specify input distribution, security parameter, uniform/nonuniform adversary, auxiliary input, and resources. A difficult learning objective is not automatically an average-case OWF.
+- OWF/PRG/PRF existence has equivalence results under standard definitions, but construction efficiency is not equivalent; do not declare every GGM use impractical.
+- A PRG can be statistically far from uniform yet computationally indistinguishable. Failure to train one discriminator proves nothing about all efficient distinguishers.
+- Multisample hybrids need the relevant independent efficient sampling assumptions. OWF amplification may use independent inputs, but a shared attacker's success events cannot simply be multiplied as independent.
+- Next-bit characterizations concern binary ensembles and specified computation models, not raw natural-language next-token accuracy.
 
-## Key Facts
+## Simulation and transfer boundaries
 
-- **Computational indistinguishability does not imply statistical closeness:** pseudorandom ensembles may have much smaller support than the uniform distribution while remaining computationally indistinguishable.
-- **Multi-sample lifting needs sampling assumptions:** for efficiently and independently sampled ensembles, a hybrid can lift one-sample indistinguishability to polynomially many samples.
-- **OWF existence and PRG existence are equivalent under standard formulations:** the HILL theorem supplies the difficult direction.
-- **Weak OWFs can be amplified:** a parallel construction is simple to state, but the inversion proof cannot assume independent adversarial success events.
-- **Yao's next-bit characterization:** a distinguisher for an output ensemble can be converted into a predictor for some next bit with a loss related to the output length.
-- **Goldreich–Levin:** for `g(x,r)=(f(x),r)`, the inner-product predicate `<x,r> mod 2` is hardcore under the stated OWF setting.
-- **GGM tree:** input bits select a path through repeated PRG expansion; evaluation computes one leaf on demand rather than storing an exponential function table.
-- **Zero knowledge is simulation with precise quantifiers:** the verifier class, auxiliary input, running time, and perfect/statistical/computational relation must be stated.
-- **Zero-knowledge class containments depend on definitions and assumptions:** do not compress conditional results about interactive proofs into an unconditional equality chain.
+Check verifier/simulator quantifiers, auxiliary input, runtime type, and statistical/computational distance. HVZK does not automatically cover malicious verifiers; parallel/concurrent composition depends on the protocol and definition. Zero knowledge or the mere existence of a simulator does not imply differential privacy.
 
-## Suitable Questions
+Use `axiomatization`, `probabilistic`, or `algorithmic` lenses as needed for definitions/reductions, without loading every lens or the GPU checklist. ML transfer requires a new experiment and functional constraints before reusing a theorem.
 
-- How should security, privacy, or unlearnability be formalized?
-- Does primitive A imply primitive B, and is the reduction black-box?
-- Which assumption is minimal, and can it be weakened to an OWF assumption?
-- How is a weak property amplified without an unjustified independence step?
-- What simulator and quantifier order are required by the claimed real/ideal guarantee?
-- Does a next-bit analogy define an encoding, ensemble, security parameter, and efficient predictor? Natural-language next-token metrics normally do not satisfy the theorem's premises.
-- Where is the boundary between computational privacy, information-theoretic leakage, and differential privacy?
+## Source lookup
 
-## Possible Design Inspiration
-
-1. **Goldreich–Levin as a construction lesson:** an ordinary hard-to-optimize ML mapping is not automatically an OWF.
-2. **GGM-style keyed expansion:** can inspire compact keyed generation or routing, but any pseudorandomness claim still needs the cryptographic interface and assumption.
-3. **Hybrid reasoning for drift analysis:** decompose a multi-step distribution change, while proving rather than assuming each transition bound.
-4. **Simulation for real/ideal definitions:** useful for structuring privacy claims, but it implies only the stated simulation notion and not DP automatically.
-5. **Weak-to-strong only as structural analogy:** cryptographic amplification and PAC boosting have different premises and conclusions.
-
-## Implementation and GPU Boundary
-
-The book primarily supplies definitions, theorems, and reductions—not GPU kernels.
-
-- Generic HILL/GGM constructions are chiefly existence results and are not default practical implementations.
-- Generic zero-knowledge constructions for NP may have large constants and round/prover costs; practical systems use specialized constructions with their own assumptions.
-- The Leftover Hash Lemma is an information-theoretic extraction tool; efficiency depends on the entropy parameters and hash family.
-- Reduction, hybrid, and simulation reasoning has no GPU acceptance requirement.
-- Goldreich–Levin is related to Hadamard/list-decoding structure, but that does not make an ML deployment automatically useful.
-
-Avoid implementing a generic existence construction as a production primitive, treating computational indistinguishability as a differentiable loss, or treating a classical PPT adversary as a quantum/side-channel model. Quantum security usually requires a QPT adversary and an explicit oracle-access model.
-
-## Relevant Thinking Lenses
-
-- **`axiomatization`:** definitions, consistency, independence, and explicit assumptions.
-- **`categorical`:** implication relations among primitives, without overclaiming universal properties.
-- **`algorithmic`:** reductions as algorithms; black-box vs non-black-box access.
-- **`probabilistic`:** negligible functions, indistinguishability, hybrids, and birthday bounds.
-- **`duality`:** information-theoretic vs computational security; adversary vs simulator.
-- **`perturbation`:** tracking losses in amplification.
-- **`local-to-global`:** adjacent hybrids to a whole chain; one sample to many under sampling assumptions.
-
-## Anti-Patterns
-
-- Treating a definition as a construction.
-- Assuming independent inversion events inside an amplification proof.
-- Applying a black-box separation result to every non-black-box construction.
-- Treating asymptotic security as a concrete fixed-parameter bound.
-- Equating honest-verifier zero knowledge with zero knowledge against arbitrary malicious verifiers.
-- Reusing the classical PPT model for quantum, side-channel, or nonuniform attackers without revision.
-- Citing meta-theorems before identifying the exact assumption and quantifier order.
-
-## Deep-Dive Entry
-
-> Oded Goldreich, *Foundations of Cryptography, Volume 1: Basic Tools*, Cambridge University Press, 2001. ISBN 978-0-521-79172-4.
->
-> Place `Foundations of Cryptography.pdf` under `math_book/` for targeted local full-text lookup.
-
-Useful sections:
-
-- **§2.1–2.4:** probability and computational indistinguishability.
-- **§2.5–2.6:** strong and weak one-way functions.
-- **§3:** pseudorandom generators and hardcore predicates.
-- **§4:** reductions, hybrids, amplification, simulation, and unpredictability.
-- **§5:** pseudorandom functions and the GGM tree.
-- **§6:** simulation and zero knowledge for NP.
-- **§7:** definition methodology and black-box/non-black-box results.
-- **§9:** assumptions and limitations.
+Start with the [PRF/PRG/OWF anchor](../../knowledge-base/cryptography/prf-prg-owf.en.md) and [reduction template](../../knowledge-base/cryptography/reduction-proof-template.en.md). For metatheorems or proofs, locate the original text through the author's contents, record the actual edition/section, and leave inaccessible claims unverified.

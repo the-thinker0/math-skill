@@ -4,7 +4,7 @@
 
 ## What Perspective It Offers
 
-This is a "player's" perspective — in environments where multiple decision-makers mutually influence one another, each participant's optimal action depends on others' actions, and others' optimal actions in turn depend on yours. It demands recursive depth of reasoning: "I think that you think that I think..." The core is not optimizing one's own payoff, but finding a stable state from which no one is willing to unilaterally deviate — the Nash equilibrium.
+This is a "player's" perspective — in environments where multiple decision-makers mutually influence one another, each participant's optimal action depends on others' actions, and others' optimal actions in turn depend on yours. It demands recursive depth of reasoning: "I think that you think that I think..." The core is not optimizing one's own payoff, but finding a strategy profile with no profitable unilateral deviation — a Nash equilibrium, which does not by itself ensure learning convergence or dynamical stability.
 
 ## What Problems It Is Suited to Diagnose
 
@@ -16,7 +16,7 @@ This is a "player's" perspective — in environments where multiple decision-mak
 ## What Problems It Is Not Suited For
 
 - Single-agent decision problems with no interaction with others — the variational lens is more appropriate
-- Purely cooperative problems where all participants share identical objectives — strategic analysis is unnecessary
+- Tasks directly optimized by one centralized controller; common-payoff multi-agent systems can still have coordination failures and information constraints
 - Deterministic problems where outcomes are uniquely determined by one's own actions — no others' responses are involved
 - Outcomes determined purely by luck, with no strategic choices available to any party
 - Cryptographic "attack games" — same word, different thing: those are challenger–adversary experiments for formalizing security definitions, not game theory; see `../knowledge-base/cryptography/attack-game-framework.en.md`
@@ -39,7 +39,7 @@ This is a "player's" perspective — in environments where multiple decision-mak
 1. **Identify players and strategy sets**: Who is making decisions? What can each choose? Omitting a key player is the most common error
 2. **Determine the game type**: Zero-sum / general-sum? Simultaneous / sequential? Complete / incomplete information? The type determines the method
 3. **Construct the payoff structure**: Write out the payoff matrix or payoff functions; verify completeness and accuracy
-4. **Solve for equilibrium**: Dominant strategies → pure-strategy Nash → mixed strategies → subgame perfection; rank multiple equilibria by Pareto dominance
+4. **Solve for equilibrium**: Dominant strategies → pure-strategy Nash → mixed strategies → subgame perfection; check Pareto dominance (generally only a partial order) and equilibrium-selection assumptions
 5. **Test stability and design mechanisms**: Is the equilibrium robust? If the equilibrium is undesirable, redesign the rules so that good outcomes become the self-interested choice
 
 ## Acceptance Criteria

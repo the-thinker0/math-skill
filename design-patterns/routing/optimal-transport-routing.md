@@ -1,5 +1,5 @@
 # Optimal Transport Routing（最优传输路由）
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
+> **证据标注**：[v] 有明确假设或记录验证支持；[~] 待验证的工程方案；[x] 在所述条件下不相容；[N/A] 不适用。伪代码用于定义算子，不是完整生产实现。
 
 ## 适用问题
 当需要将一组输入 token/样本 分配到一组专家/子模块，且追求全局最优的匹配代价时使用。
@@ -15,34 +15,32 @@
   ../../knowledge-base/probability/entropy.md（熵正则化、边际约束）
 
 ## 需要的数学知识
-- **离散最优传输**：min_{P∈Π(μ,ν)} ⟨C, P⟩ = Σ_{ij} C_{ij} P_{ij}
-  其中 Π(μ,ν) = {P ≥ 0 : P·1 = μ, P^T·1 = ν} 为边际约束耦合集
-- **熵正则化 Sinkhorn**：min ⟨C,P⟩ - ε·H(P) → P* = diag(u)·exp(-C/ε)·diag(v)
-  通过交替缩放行/列（Sinkhorn-Knopp）求解，收敛速度 O(1/ε²)
-- **Wasserstein-1 距离**：W_1(μ,ν) = min_{π∈Π} E_π[‖x-y‖] = sup_{‖f‖_L≤1} E_μ[f] - E_ν[f]
-  Kantorovich-Rubinstein 对偶，用于连续分布匹配
-- **Gromov-Wasserstein**：当源/目标空间维度不同时，min 结构保持的传输代价
+
+- $N$ 个 token、$K$ 个专家取概率边缘 $a_i=1/N$、$b_k\ge0$、$\sum_k b_k=1$。平衡 OT 施加的是**等式** $P\mathbf1=a$、$P^T\mathbf1=b$。
+- Sinkhorn 对正 Gibbs 核求解 $\min_{P\in\Pi(a,b)}\langle C,P\rangle-\epsilon H(P)$。有限迭代误差依赖成本范围、边缘、正则量及容差；没有脱离具体定理的通用 $O(1/\epsilon^2)$ 迭代数。
+- 容量上界 $c_k$ 对应 $\sum_i P_{ik}\le c_k/N$，需不等式/非平衡或容量约束形式。设 $b=c/\sum c$ 会约束归一化目标负载，不只是容量上界。
+- 即便软计划边缘可行，逐行 argmax/top-k 也可能超容量；硬可行性需容量感知舍入或最小费用流/分配步骤。
+- Gromov–Wasserstein 用于缺少共同度量对应时比较成对关系成本；仅坐标维数不同并不强制使用它。
 
 ## AI 模块形式
+
+```python
+C = -X @ E.T                         # N x K；明确成本尺度
+log_K = -C.float() / epsilon
+log_a = full((N,), -log(N))
+log_b = log(target_load_probs)       # 正的K维向量，和为1
+log_v = zeros(K)
+for _ in range(T):
+    log_u = log_a - logsumexp(log_K + log_v[None, :], dim=1)
+    log_v = log_b - logsumexp(log_K + log_u[:, None], dim=0)
+P = exp(log_u[:, None] + log_K + log_v[None, :])
+row_error = norm(P.sum(1) - exp(log_a), p=1)
+col_error = norm(P.sum(0) - exp(log_b), p=1)
+route_probs = P / exp(log_a)[:, None] # 专家条件权重，行和约为1
+soft_output = route_probs @ E
+hard_assignment = capacity_aware_round(P, integer_capacities)
 ```
-模块：OptimalTransportRouter
-输入：token 表示 X ∈ R^{N×d}，专家嵌入 E ∈ R^{K×d}，容量约束 cap ∈ R^K
-
-代价矩阵：C_{ik} = -sim(X_i, E_k)  或  ‖X_i - E_k‖²  (N×K)
-
-Sinkhorn 路由（熵正则化）：
-  K_mat = exp(-C / ε)              // Gibbs kernel, ε=0.05~0.1
-  for t = 1..T:                     // T=5~20 次迭代
-    u = a / (K_mat @ v)            // 行缩放，a = 1/N
-    v = b / (K_mat^T @ u)          // 列缩放，b = cap/sum(cap)
-  P = diag(u) @ K_mat @ diag(v)   // 最优传输计划（满足边际约束；仅当 N=K 且边际均匀时才是双随机矩阵）
-  assignment = argmax(P, dim=1)    // 硬分配（推理时）
-  // 训练时：weighted_features = P @ E  (软分配，可微)
-
-容量约束（b 向量）：
-  b_k = total_tokens / K           // 均匀分配
-  b_k = α·uniform + (1-α)·learned  // 学习非均匀分配
-```
+检查总整数容量及舍入可行性。平衡均匀边缘为 $b_k=1/K$，不是 $N/K$。方阵均匀边缘时是 $NP$ 双随机；$P$ 自身行列和为 $1/N$。小 $\epsilon$ 可逼近稀疏无正则计划，但只在适当缩放的方形分配问题中才是置换矩阵。
 
 ## 可实现结构
 - **Sinkhorn 层**：自定义 autograd Function，前向做 Sinkhorn 迭代，反向用隐函数定理求梯度
@@ -52,19 +50,17 @@ Sinkhorn 路由（熵正则化）：
 - **Batch OT**：每个 micro-batch 独立求解，并行化 Sinkhorn 迭代
 
 ## GPU 可行性
-- **张量化**：Sinkhorn 核心为矩阵向量乘法 K@v (N×K)·(K×1)，标准 GEMV
-- **GEMM 可映射**：C 的计算 X@E^T 为 GEMM (N×d)@(d×K)；Sinkhorn 迭代为 GEMV
-- **复杂度**：O(N·K·T) 其中 T=10~20，当 N=2048, K=64 时约 2.6M FLOPs，极小
-- **显存与 KV-Cache**：存储 C(N×K) 和 P(N×K)，N=2048,K=64 时约 1MB
-- **低精度稳定**：Sinkhorn 在 fp16 下 exp(-C/ε) 可能溢出，建议 log-domain + fp32
-- **并行与通信**：batch 维度独立；Sinkhorn 迭代为顺序依赖，但每次迭代的 matvec 高度并行
-- **稀疏结构**：ε→0 时 P 趋于稀疏（permutation matrix），可用 top-k 近似加速
-- **算子融合**：exp → matvec → division 的 Sinkhorn 单步可融合为 CUDA kernel
+
+- **D1/D2[~]**：成本构造用 GEMM；稳定 Sinkhorn 使用顺序依赖的行/列 log-sum-exp 归约。
+- **D3[~]**：成本 $O(NKd)$ 加迭代 $O(TNK)$ 及舍入成本；测量达到目标残差所需步数，不指定通用固定 $T$。
+- **D4[~]**：两个 fp32 $N\times K$ 阵需 $8NK$ 字节，尚未计中间步。展开反传可存 $O(TNK)$；隐式微分需要正则性与准确求解。
+- **D5[~]**：使用对数域 fp32，随 $\epsilon$ 减小监控边缘残差。
+- **D6[~]**：独立批次可并行；行列更新互相依赖。跨设备全局负载约束需要通信。
+- **D7/D8[~]**：稀疏近似及融合归约会改变实现，可能影响可行性；同时验证边缘及最终硬容量。
 
 ## 论文表述方式
-"将 token-to-expert 路由建模为熵正则化最优传输问题，通过 Sinkhorn-Knopp 算法在 T=10 次
-迭代内求得近似最优的传输计划矩阵。有限次迭代给出熵正则化问题的近似解（非精确全局最优），
-近似质量取决于迭代次数 T 和正则化参数 ε；同时通过边际约束 b 控制各专家的负载上限。"
+
+“我们求解边缘目标明确的熵正则传输松弛，报告有限迭代后的残差。容量感知舍入得到单独检查的硬分配；报告其成本增加、溢出、延迟及任务质量变化。”
 
 ## 风险
 - ε 过小导致 Sinkhorn 数值不稳定（exp 溢出），需用 log-domain 或增大 ε

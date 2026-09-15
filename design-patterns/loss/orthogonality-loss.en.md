@@ -1,5 +1,5 @@
 # Orthogonality Loss
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Evidence labels**: [v] supported by stated assumptions or recorded checks; [~] engineering proposal requiring validation; [x] incompatible under the stated conditions; [N/A] outside scope. Pseudocode specifies operators, not a production-ready implementation.
 
 ## Applicable Problems
 In multi-expert / multi-task settings, representations learned by submodules are highly overlapping and redundant, leading to poor parameter utilization. This loss is used when the $d$-dimensional feature space needs to be partitioned into $K$ non-interfering subspaces -- such as Shared-Private separation, MoE expert differentiation, and multi-task head decorrelation. Core objective: **ensure different modules see different things**.
@@ -15,29 +15,21 @@ In multi-expert / multi-task settings, representations learned by submodules are
 - **Off-Diagonal Elements of the Cosine Similarity Matrix**: $C_{ij} = |\langle w_i, w_j \rangle| / (\|w_i\|\|w_j\|)$, minimizing $\sum_{i \neq j} C_{ij}^2$
 
 ## AI Module Form
+
+```python
+# W_i: d x r, full column rank; QR fixes scale-collapse in an overlap penalty
+Q = [qr(W_i, mode='reduced').Q for W_i in W]
+L_overlap = sum(((Q[i].T @ Q[j])**2).sum() for i, j in pairs)
+
+# Softened overlap barrier, optional
+sigma = svdvals(Q_i.T @ Q_j).clamp(0, 1)
+L_barrier = -log((1 - sigma**2 + eps) / (1 + eps)).sum()
 ```
-Module: OrthogonalDiversityLoss
-Input: K feature matrices {W_k in R^{d x r}}_{k=1}^K (weights or features of K submodules)
-  // Note: Grassmann distance requires QR decomposition of W_i first to obtain orthonormal bases Q_i
+Without epsilon the barrier is zero at orthogonality and diverges at overlap. With epsilon it is finite at overlap; the normalized expression above remains zero at orthogonality. Epsilon does not resolve undefined singular-vector gradients at multiplicities; the Gram overlap loss avoids explicit singular vectors.
 
-Method 1 - Frobenius Orthogonal Regularization:
-  L_orth = Sum_{i<j} ||W_i^T W_j||_F^2
-  // Computation: O(K^2 * d * r^2), K typically <16 so cost is manageable
+Raw `||W_i.T @ W_j||_F**2` can vanish by shrinking either matrix to zero. Normalize/control variance or use orthonormal bases, and ensure $Kr\le d$ if exact mutual orthogonality is desired. Frobenius inner product $\operatorname{tr}(A^TB)=0$ alone does **not** imply orthogonal column spaces. A determinant diversity objective needs norm constraints to prevent unbounded scale growth.
 
-Method 2 - Subspace-overlap log barrier (based on principal angles):
-  sigma_k = singular values of SVD(Q_i^T Q_j) (= cos(theta_k), theta_k are principal angles)
-  // ⚠ Must first orthonormalize W_i, W_j: Q_i = qr(W_i).Q, Q_j = qr(W_j).Q
-  // Otherwise singular values may exceed 1, making -log(1-sigma^2+eps) undefined
-  // ⚠ Original formula sigma^2*(1-sigma^2) is wrong: penalty is 0 at BOTH sigma=0 (orthogonal) AND sigma=1 (complete overlap)!
-  // Fully overlapping subspaces receive zero penalty, defeating the orthogonality objective.
-  // Correct formula: log-barrier, 0 at sigma=0 and → +∞ as sigma→1
-  L_grass = Sum_{i<j} Sum_k -log(1 - sigma_k^2 + eps)  // = -Sum log(sin^2(theta_k)), 0 when orthogonal (theta=pi/2), →∞ when overlapping (theta→0)
-
-Method 3 - Efficient Normalized-Gram Decorrelation:
-  W_norm = column_normalize(concat([W_1,...,W_K]))       // without normalization this also penalizes norms, not only angles
-  G = W_norm^T * W_norm                                  // single GEMM
-  L_corr = ||G * (1 - I)||_F^2   // mask out diagonal, penalize off-diagonal elements
-```
+A normalized concatenated Gram penalty includes within-block decorrelation as well as between-block overlap; mask within-block terms if the intended loss is only inter-expert overlap.
 
 ## Implementable Architectures
 - **Embedded as nn.Module**: forward receives $K$ tensors and returns a scalar loss; supports direct .backward()

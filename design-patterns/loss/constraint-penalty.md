@@ -1,5 +1,5 @@
 # Constraint Penalty（约束惩罚损失）
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
+> **证据标注**：[v] 有明确假设或记录验证支持；[~] 待验证的工程方案；[x] 在所述条件下不相容；[N/A] 不适用。伪代码用于定义算子，不是完整生产实现。
 
 ## 适用问题
 当设计中有硬约束（如概率单纯形、正交性、容量限制、负载均衡）但需要端到端训练时使用。
@@ -23,52 +23,37 @@
   μ → 0 时逼近约束最优解
 
 ## AI 模块形式
+
+```python
+# 等式g(x)=0、不等式h(x)<=0；乘子是状态，不加入原始变量优化器。
+L_eq = dot(nu, g) + 0.5 * rho * (g**2).sum()
+L_ineq = ((relu(lam + rho*h)**2 - lam**2) / (2*rho)).sum()
+primal_loss = task_loss + L_eq + L_ineq
+# 执行所指定的原始变量内层更新，再无autograd地更新乘子：
+with no_grad():
+    nu += rho * equality_violation(x)
+    lam = clamp(lam + rho * inequality_violation(x), min=0)
 ```
-模块：ConstraintPenalty
-输入：约束违反量 g(x) ∈ R^m（等式约束），h(x) ∈ R^p（不等式约束）
+有限二次惩罚未必精确满足约束。ALM 收敛需相应正则性、求解精度及更新假设；按所选条件报告原始/对偶/KKT 残差。
 
-方法1 - 自适应罚函数（最常用）：
-  L_penalty = Σ_i ρ_i/2 · g_i(x)²  +  Σ_j ρ_j/2 · max(0, h_j(x))²
-  // ρ 动态更新：每个 epoch ρ_i *= γ（γ=2~10）直到约束满足
-  // 不同约束可有不同的 ρ，按违反程度自适应
+`softmax(logits/tau)` **参数化单纯形内部**，不是其 Euclidean 投影。Euclidean 单纯形投影为 $p_i=\max(v_i-\theta,0)$，选择 $\theta$ 使 $\sum_i p_i=1$。逐 token 均匀概率与专家总体负载平衡是不同约束。
 
-方法2 - 增广拉格朗日（ALM）：
-  L_ALM = λ^T · g(x) + ρ/2 · ‖g(x)‖²
-  // λ 为可学习参数（nn.Parameter），通过梯度上升更新：
-  λ.data += ρ * g(x).detach()   // 对偶上升步
-  // 比纯罚函数收敛快，避免 ρ → ∞
-  对不等式约束 h(x) ≤ 0：
-  L_ALM = Σ_j 1/(2ρ) · [max(0, λ_j + ρ·h_j(x))² - λ_j²]
-  // λ 更新：λ_j ← max(0, λ_j + ρ·h_j(x))
-  // 严格可行（λ_j + ρ·h_j(x) < 0）的约束不被惩罚
-
-方法3 - Softmax 投影到单纯形（负载均衡特例）：
-  p = softmax(logits / τ)           // 投影到 Δ^{K-1}
-  L_balance = ‖p - 1/K‖²            // 均匀性惩罚
-  // 或 Switch Transformer 的辅助损失：
-  L_aux = K · Σ_k f_k · P_k         // f_k = 分配比例, P_k = 平均概率
-
-方法4 - 正交约束投影：
-  W_proj = W · (W^T W)^{-1/2}       // 通过矩阵平方根反投影到 Stiefel 流形
-  // 或用 Cayley 变换参数化：W = (I-A)(I+A)^{-1} · W_0, A 为反对称矩阵
-```
+满列秩 $W\in\mathbb R^{d\times r}$、$d\ge r$ 时，极因子 $W(W^TW)^{-1/2}$ 的列正交归一。秩亏需明确补全/正则策略；加入 jitter 后仅近似正交。
 
 ## 可实现结构
-- **Loss Wrapper**：ConstraintLoss(base_loss, constraints, ρ_schedule)
-  forward 时计算 base_loss + Σ constraint.penalty()
-- **对偶变量管理**：等式乘子 λ 可用 nn.Parameter + 负学习率做梯度上升；不等式乘子必须保持 λ ≥ 0，建议用显式投影更新 `λ ← max(0, λ + ρ·h(x))` 或在 optimizer step 后 clamp
-- **warm-up 策略**：前 N 步只优化 base_loss，之后逐步激活约束惩罚
-- **约束监控**：每 step 记录 ‖g(x)‖ 用于可视化和自适应 ρ 调整
+
+- 损失封装分别记录任务与约束残差，明确尺度。
+- 乘子存 buffer 或独立上升优化器；避免未说明的负学习率与 `.data` 修改。
+- 按实测残差调惩罚系数，不机械快速增长。
+- 若每步都要求精确可行，应采用保持可行的构造。
 
 ## GPU 可行性
-- **张量化**：约束违反量为向量/矩阵运算，罚项为 element-wise 平方和
-- **GEMM 可映射**：负载均衡的 f_k, P_k 计算为 softmax + reduce_sum；正交约束为 matmul
-- **复杂度**：罚项计算 O(m) 或 O(m²)，远小于主网络前向，可忽略
-- **显存与 KV-Cache**：仅额外存储 λ (m 维) 和 ρ (m 维)，极小开销
-- **低精度稳定**：罚项为平方运算，fp16 安全；ALM 的 λ 更新建议 fp32 避免累积误差
-- **并行与通信**：各约束独立计算，可并行；多 GPU 时 λ 更新需 all-reduce g(x)
-- **稀疏结构**：max(0, h(x))² 在约束满足时梯度为零，天然稀疏激活
-- **算子融合**：constraint 计算 + 加权求和 + 与 base_loss 合并可融合为单 kernel
+
+- **D1/D2[~]**：标量惩罚是归约；约束本身可能需 GEMM、分解或网络计算。
+- **D3/D4[~]**：$m$ 个已算出的标量残差，惩罚成本 $O(m)$；但 $W\in\mathbb R^{d\times r}$ 的正交残差计算为 $O(dr^2)$、中间存储 $O(r^2)$。约束工作另计。
+- **D5[~]**：fp16 平方可溢出；以 fp32 累加惩罚/乘子，并统一约束尺度。
+- **D6[~]**：独立残差可并行；全局约束须归约后更新乘子，局部约束无需通信。
+- **D7/D8[~]**：满足不等式时惩罚梯度为0，不产生块稀疏前向计算。逐元素惩罚可融合，昂贵约束计算仍存在。
 
 ## 论文表述方式
 "采用增广拉格朗日法将硬约束 g(x)=0 转化为可微惩罚项 λ^Tg(x) + ρ/2‖g(x)‖²，

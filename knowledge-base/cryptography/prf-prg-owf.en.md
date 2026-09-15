@@ -16,7 +16,7 @@ These are asymptotic definitions for families indexed by a growing security para
   $$\operatorname{Adv}^{\rm prg}_{G}(D)=\left|\Pr[D(G(U_n))=1]-\Pr[D(U_{\ell(n)})=1]\right|.$$
 - PRF advantage:
   $$\operatorname{Adv}^{\rm prf}_{F}(A)=\left|\Pr_{k}[A^{F_k}=1]-\Pr_{R}[A^{R}=1]\right|.$$
-- Existence relations: OWFs exist iff PRGs exist; GGM constructs a PRF from a PRG. A PRF yields a PRP through Feistel: the classical Luby--Rackoff results give a PRP against forward queries with three rounds and a strong PRP against forward and inverse queries with four rounds, with concrete bounds depending on query count and block length.
+- Existence relations: OWFs exist iff PRGs exist; GGM constructs a PRF from a PRG. Classical Luby–Rackoff uses independent round PRFs: three Feistel rounds give a PRP against forward queries, four give a strong PRP against forward/inverse queries, with query/half-block-length-dependent bounds. Reusing one round function without a proof does not inherit this theorem.
 - PRP/random-function switching bounds have birthday order $O(q^2/2^n)$. Exact constants depend on the game and inverse-query access, so there is no context-free unique formula.
 
 ## Applicable Problems
@@ -50,9 +50,9 @@ These are asymptotic definitions for families indexed by a growing security para
 
 ## Further References
 
-- `../../references/books/foundations-of-cryptography.md`: OWF/PRG theory and GGM.
-- `../../references/books/applied-cryptography.md`: PRF/PRP games and switching arguments.
-- `../../references/books/introduction-to-modern-cryptography.md`: formal definitions and Feistel.
+- `../../references/books/foundations-of-cryptography.en.md`: OWF/PRG theory and GGM.
+- `../../references/books/applied-cryptography.en.md`: PRF/PRP games and switching arguments.
+- `../../references/books/introduction-to-modern-cryptography.en.md`: formal definitions and Feistel.
 
 ## Routing Extensions
 

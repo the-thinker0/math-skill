@@ -4,7 +4,7 @@
 
 ## Overview
 
-This is the authoritative reference for upgrading "linear algebra" to "matrix analysis": not just computing with matrices, but studying invariants under **similarity / unitary equivalence / congruence** transformations, canonical forms, eigenvalue location and perturbation, norm geometry, and positive-definite/nonnegative structures. For AI/ML/GPU, it is the **backbone closest to the hardware-level operators** in the v2 reading list -- GEMM, numerical stability, low-rank compression, and second-order optimization all trace their roots here.
+This is the authoritative reference for upgrading "linear algebra" to "matrix analysis": not just computing with matrices, but studying invariants under **similarity / unitary equivalence / congruence** transformations, canonical forms, eigenvalue location and perturbation, norm geometry, and positive-definite/nonnegative structures. For AI/ML/GPU, it is the **backbone closest to the hardware-level operators** in the reading list -- GEMM, numerical stability, low-rank compression, and second-order optimization all trace their roots here.
 
 Actual chapter map (from the table of contents):
 
@@ -26,16 +26,16 @@ Actual chapter map (from the table of contents):
 | Mathematical structure (chapter) | Transfer to ML / algorithms / Infra |
 |---|---|
 | **SVD / low-rank (Sec. 2.6, 7.4)** | The foundation of all low-rank compression: LoRA, PCA/whitening, Eckart-Young optimal low-rank approximation, KV-Cache low-rank reduction, weight compression |
-| **Spectrum and similarity invariants (Ch 1)** | Hessian/gradient covariance spectra, spectral radius determines stability of linear attention / SSM / RNN, trace = parameter counting / regularization |
+| **Spectrum and similarity invariants (Ch 1)** | Hessian/gradient covariance spectra, spectral radius characterizes asymptotic stability for a fixed linear recurrence; trace measures a matrix invariant or covariance energy, not a parameter count |
 | **Schur triangularization + normal matrices (Sec. 2.4-2.5)** | Foundation for numerical EVD algorithms (QR algorithm); normal <=> unitarily diagonalizable, the criterion for "well-behaved spectra" |
 | **Variational characterization Courant-Fischer (Sec. 4.2)** | Rayleigh quotients, spectral normalization, spectral clustering, PCA as min-max; largest singular value = operator norm |
 | **Eigenvalue perturbation Weyl/Bauer-Fike (Sec. 4.3, 6.3)** | Spectral shift bounds under quantization/low-precision/pruning, training perturbation robustness, stability certificates |
 | **Matrix norms + duality (Sec. 5.5-5.7)** | Spectral norm (gradient clipping / Lipschitz), Frobenius (weight decay), **nuclear norm = dual of spectral norm** (low-rank regularization) |
 | **Condition numbers (Sec. 5.8)** | Numerical stability diagnostics, preconditioning, why bf16 training diverges |
 | **Polar decomposition + Newton-Schulz (Sec. 7.3)** | Orthogonalizing gradients/weights (Muon optimizer, orthogonal initialization), computable with pure GEMM |
-| **Positive definiteness / PSD (Ch 7)** | Kernel methods, covariances, attention Gram matrices, second-order method preconditioners, Loewner partial order for matrix inequalities |
-| **Schur product theorem (Sec. 7.5)** | Hadamard products preserve PSD -- learnable kernel engineering, gating that does not destroy positive-definite structure |
-| **Perron-Frobenius / stochastic matrices (Ch 8)** | Row-stochastic attention mixing and collapse (over-smoothing), PageRank, graph propagation, spectral gap = expressivity |
+| **Positive definiteness / PSD (Ch 7)** | Kernel methods and covariances; Q Q^H is PSD, while Q K^H and row-softmax attention generally are not; Loewner order and PSD preconditioners |
+| **Schur product theorem (Sec. 7.5)** | Hadamard products of same-sized PSD factors remain PSD; arbitrary learned gating need not qualify |
+| **Perron-Frobenius / stochastic matrices (Ch 8)** | Row-stochastic attention mixing and collapse (over-smoothing), PageRank, graph propagation, mixing under explicit assumptions, not a direct measure of expressivity |
 
 The table above is organized into four **activation families** for convenient retrieval:
 
@@ -46,63 +46,51 @@ The table above is organized into four **activation families** for convenient re
 
 ## Key Bridging Facts (Activation Shorthand)
 
-When "activating" this book into algorithms, these are the most frequently used connecting facts -- memorizing them enables rapid navigation between structures:
-
-- **Condition number kappa_2(A) = sigma_max / sigma_min (Sec. 5.8)**: directly predicts how many orders of magnitude errors are amplified under bf16/fp8.
-- **SVD <=> eigendecomposition of A^H A and A A^H, sigma = sqrt(lambda) (Sec. 2.6, 7.4)**: singular values are the square roots of the Gram matrix eigenvalues.
-- **Spectral norm = sigma_max, Frobenius = sqrt(Sum sigma^2), nuclear norm = Sum sigma (Sec. 5.6)**: all three major matrix norms are determined entirely by singular values; spectral norm and nuclear norm are dual to each other.
-- **Normal matrices <=> unitarily diagonalizable (Sec. 2.5)**: the only class where "eigenvalue = singular value structure is well-conditioned"; for non-normal matrices one must look at pseudospectra.
-- **Positive definite <=> all eigenvalues > 0 <=> all leading principal minors > 0 (Sec. 7.1)**: the latter is a computable positive-definiteness test (Sylvester's criterion).
-- **Polar decomposition A = UP, P = (A^H A)^{1/2} (Sec. 7.3)**: Newton-Schulz iteration converges to the orthogonal factor U.
-- **Weyl perturbation bound |lambda_i(A+E) - lambda_i(A)| <= ||E||_2 (Sec. 4.3)**: one line gives the spectral shift upper bound for quantization/pruning.
-- **Row-stochastic matrix spectral radius = 1 (Sec. 8.7)**: the Perron root of attention is always 1; the spectral gap determines the collapse rate.
+- **Condition number:** for nonsingular A, kappa_2(A)=sigma_max/sigma_min. It enters perturbation bounds for specified problems such as Ax=b; actual error also depends on the perturbation direction, algorithm, and rounding. It does not predict training divergence by itself.
+- **Gram relation:** singular values are square roots of eigenvalues of A^H A. Explicitly forming this Gram matrix squares the 2-norm condition number for full-column-rank A; the identity does not justify computing every SVD through a Gram matrix.
+- **Unitarily invariant norms:** spectral norm = sigma_max, Frobenius norm = sqrt(sum sigma_i^2), nuclear norm = sum sigma_i. Spectral and nuclear norms are dual under the trace inner product.
+- **Normal matrices:** A is normal iff it is unitarily diagonalizable; its singular values are the **absolute values** of its eigenvalues, not generally the eigenvalues themselves. Hermitian PSD matrices have nonnegative eigenvalues, so equality holds there.
+- **Sylvester criterion:** for Hermitian A, positive definiteness is equivalent to positive eigenvalues and to positive leading principal minors. The Hermitian premise cannot be dropped.
+- **Polar decomposition:** for m>=n and full-column-rank A, A=UP with P=(A^H A)^(1/2) and U^H U=I. The standard iteration X_next=X(3I-X^H X)/2 converges to U in exact arithmetic when the scaled starting singular values lie in (0,sqrt(3)); near-singularity, modified polynomial iterations, and low precision require separate analysis.
+- **Weyl bound:** for Hermitian A and E with consistently ordered eigenvalues, |lambda_i(A+E)-lambda_i(A)|<=||E||_2. For diagonalizable nonnormal A, Bauer-Fike instead involves the eigenvector condition number; it is not the same indexwise bound.
+- **Stochastic operators:** a nonnegative row-stochastic matrix has spectral radius 1. Convergence of repeated application to a unique stationary limit additionally requires conditions such as irreducibility and aperiodicity. Varying, masked, residual, or nonnormal attention needs a separate product/transient analysis.
 
 ## Problem Types Suited for Activation
 
 - **Low-rank / compression**: where is the redundancy in attention, KV-Cache, weights, gradients? How low can the rank go? How to estimate the optimal approximation error from truncation (Eckart-Young)? Should low-rank regularization use the nuclear norm or explicit parameterization?
 - **Numerical stability**: why does low-precision (bf16/fp8) training diverge? How to monitor condition numbers and spectral radii online during training? Are there bounds on spectral shifts from quantization/pruning (Weyl, Bauer-Fike)? Which operators need reparameterization for stability?
-- **Spectral design**: the operator norms behind normalization (spectral normalization / BatchNorm); spectral radius constraints for recurrent / state-space models (SSM); spectral gap determines expressivity and separability.
-- **Second-order optimization**: PSD structure and negative curvature of Hessian / Fisher (inertia law for detecting saddle points); condition number improvement via preconditioners; Kronecker-factor approximations (K-FAC / Shampoo).
+- **Spectral design**: the operator norms behind normalization (spectral normalization / BatchNorm); spectral radius constraints for recurrent / state-space models (SSM); spectral gaps as one diagnostic under a specified operator model.
+- **Second-order optimization**: negative Hessian curvature and Fisher PSD structure (inertia law for detecting saddle points); condition number improvement via preconditioners; structured factors with different origins (K-FAC / Shampoo).
 - **Graphs / propagation**: stability and over-smoothing of message passing; mixing time of row-stochastic operators; Markov chain stationary distributions and spectral gaps.
 
 ## Possible Algorithmic Inspirations
 
-> Each item is tagged with the **eight-dimension touchpoint** (corresponding to the dimension numbers in `../gpu-friendly-math.en.md`) for direct entry into the GPU acceptance gate.
+> Use only the applicable dimensions in `../gpu-friendly-math.en.md`; the following are candidate constructions whose quality and cost must be measured.
 
-1. **Randomized numerical linear algebra (randomized NLA)**: using random projections + QR (Sec. 2.1) for randomized SVD, reducing the O(n^3) full decomposition to sub-quadratic, producing low-rank sketches of very large weights/activations. *Touchpoint: D2/D3 -- all GEMM, manageable complexity.*
-2. **Low-rank attention / KV compression**: using Eckart-Young (Sec. 7.4) to guarantee truncated SVD is the optimal low-rank approximation; using the **nuclear norm (dual of spectral norm, Sec. 5.5)** as low-rank regularization, projecting the KV-Cache into a low-dimensional subspace. *Touchpoint: D2/D4 -- GEMM chains + memory compression.*
-3. **Spectral normalization**: power iteration to estimate the largest singular value (operator norm, Sec. 5.6), constraining per-layer Lipschitz constants -- GANs/diffusion/stable training. *Touchpoint: D1/D6 -- matvec, but serial iteration requires blocking.*
-4. **Newton-Schulz orthogonalization (Muon-style)**: polar decomposition (Sec. 7.3) projects gradient matrices onto the nearest orthogonal matrix, with iterations involving only matrix multiplications -- currently the most GPU-friendly "second-order-flavored" update. *Touchpoint: D2/D6/D8 -- pure GEMM, fusible, bf16-stable.*
-5. **Preconditioning / Shampoo / K-FAC**: condition numbers (Sec. 5.8) diagnose ill-conditioning, using PSD Kronecker factors (Ch 7) to approximate the Hessian for preconditioning, rounding out ill-conditioned loss landscapes. *Touchpoint: D2/D5 -- small-matrix GEMM, watch precision for inverse operations.*
-6. **Gershgorin cheap spectral radius gate (Sec. 6.1)**: using the disc bound O(n^2) in the training loop to quickly estimate the spectral radius as a low-cost stability gate, without running a full EVD. *Touchpoint: D1/D3 -- per-row summation, extremely cheap.*
-7. **PSD kernel engineering (Schur product theorem, Sec. 7.5)**: composing multiple PSD kernels via Hadamard products, guaranteeing that learnable similarity matrices remain positive semidefinite. *Touchpoint: D1 -- element-wise tensor products, naturally friendly.*
-8. **Perron-Frobenius diagnostics (Sec. 8.2-8.5)**: treating row-stochastic attention as a Markov operator, using the spectral gap to quantify over-smoothing / rank collapse, guiding residual and temperature design. *Touchpoint: D1/D3 -- cheap spectral estimation, avoids deep-layer collapse.*
-9. **Blocked / communication-avoiding decompositions**: writing QR, Cholesky (Sec. 3.5) in blocked versions, replacing column-by-column elimination with GEMM, reducing communication rounds across devices. *Touchpoint: D2/D6 -- reforming serial recurrences into parallelism + overlap.*
+1. **Randomized low-rank approximation:** for dense A in R^(m x n), a basic Gaussian range finder with sketch width ell=r+p costs O(m n ell+(m+n)ell^2), before optional extra power passes. For square dense input this is O(n^2 ell), not subquadratic in n. QR and data movement remain part of the algorithm.
+2. **KV/weight compression:** truncated SVD minimizes rank-r reconstruction error in spectral and Frobenius norms. It does not directly minimize attention-output error or prove downstream accuracy; measure these separately and include factor construction/update costs.
+3. **Spectral normalization:** power iteration approximates the largest singular value. Finite-iteration estimates may underestimate it, so dividing by that estimate alone does not certify a strict Lipschitz bound. Account for convergence, residual error, and nonlinear layers.
+4. **Polar-style updates:** Newton-Schulz uses matrix products, but needs scaling and a specified stopping/error criterion. Check the orthogonality residual against an SVD reference on small matrices; a Muon-style finite polynomial update is not automatically an exact polar factor or stable in every bf16 case.
+5. **Structured preconditioners:** K-FAC approximates Fisher blocks; Shampoo accumulates gradient second-moment factors. Neither is generally an exact Hessian approximation. Include factor storage, matrix inverse/root updates, damping, and precision costs.
+6. **Gershgorin bounds:** max_i(|a_ii|+sum_(j!=i)|a_ij|) bounds the spectral radius at O(n^2) dense cost. It can be loose; failure to certify stability is not proof of instability.
+7. **PSD kernels:** Hadamard products preserve PSD when every same-sized factor is PSD. An arbitrary learned gate or QK^H score matrix need not meet this premise.
+8. **Propagation diagnostics:** inspect stationary modes, singular-value/transient behavior, and mixing for the actual sequence of attention/graph operators. A spectral gap alone neither certifies absence of collapse nor measures expressivity.
+9. **Blocked factorizations:** blocked QR/Cholesky can increase GEMM work and reduce communication, but panel factorizations and dependencies remain. Cholesky needs positive definiteness; semidefinite inputs may require pivoting or a different factorization.
 
 ## GPU Friendliness Warning
 
-> The scoring dimensions reference the **eight-dimension checklist** in `../gpu-friendly-math.en.md` (Tensorization / GEMM-mappability / Complexity / Memory / Low-precision / Parallelism / Sparsity / Operator fusion); definitions are not repeated here.
+> Dimensions are defined in `../gpu-friendly-math.en.md`; mathematical validity and kernel throughput are separate questions.
 
-**Natively friendly (math beautiful x GPU friendly):**
-- **Truncated SVD / low-rank**: expressed as GEMM chains (D2), compressing KV-Cache/weights (D4).
-- **Frobenius / spectral norms, Gram matrices, Hadamard products**: batched tensor algebra (D1, D2).
-- **Polar decomposition Newton-Schulz**: pure matrix-multiplication iteration (D2, D6, D8 fusible), robust under bf16.
-- **Gershgorin discs**: O(n^2) per-row summation (D1), cheap stability estimation.
-- **Well-conditioned PSD blocked Cholesky / Gram construction**: blocked form yields GEMM chains (D2), commonly used in kernel methods and covariance preconditioning.
+| Operation | Relevant cost and implementation checks |
+|---|---|
+| Low-rank factors | Applying factors may use GEMMs and reduce memory; obtaining/updating them has its own QR/SVD cost. |
+| Newton-Schulz | Matrix products parallelize within each iteration; iterations are sequential. Measure scaling, convergence, accumulation precision, and orthogonality error. |
+| Gram matrices and norms | Gram formation can be GEMM; storage is quadratic and conditioning can worsen. Frobenius norm is a reduction; spectral norm generally needs an iterative or factorization method. |
+| Dense EVD/SVD | Typical square dense cost is O(n^3); full decompositions remain reasonable for small matrices or amortized setup. Randomized methods trade exactness for rank-dependent work. |
+| QR/Cholesky | Blocking improves arithmetic intensity without eliminating dependencies; memory traffic and factorization shape matter. |
+| Ill-conditioned/non-normal input | Inspect residuals, singular values, and sensitivity. Reparameterization, damping, refinement, and higher precision are options; fp64 is not a universal remedy or requirement. |
 
-**Beautiful but not computable:**
-- **Jordan canonical form (Sec. 3.1)** -- the classic counter-example: eigenvalue multiplicities are extremely sensitive to perturbation, fundamentally unreliable under floating-point, **never use as a numerical tool** (violates D5 low-precision stability). Weyr form has the same issue.
-- **Full EVD / SVD at O(n^3)** -- blows up for large matrices (violates D3), must switch to randomized/iterative methods.
-- **Non-normal matrices (Sec. 2.5 and beyond)** -- eigenvalues do not reflect true behavior, pseudospectra are needed; spectral distortion under low precision (D5).
-- **Ill-conditioned / high condition number (Sec. 5.8)** -- catastrophic cancellation occurs, requiring fp64 for correctness, conflicting with bf16/fp8 training (D5).
-- **Serial dependencies in QR / Cholesky (Sec. 2.1, 3.5)** -- naive implementations are long serial recurrences (violates D6), requiring blocked / communication-avoiding variants.
-- **Serial iteration in power iteration** -- single-vector iteration has low parallelism; must be blocked (block / subspace iteration) to saturate SMs (D6).
-
-**Reform strategies (echoing the Make-It-Computable Toolkit in `../gpu-friendly-math.en.md`):**
-- Full EVD/SVD -> **randomized + truncated** to reduce complexity (D3);
-- Exact decompositions -> **blocked / GEMM-ified** to eliminate serial dependencies (D2/D6);
-- Ill-conditioned/non-normal -> **reparameterization + spectral normalization** to stabilize low precision (D5);
-- Non-computable canonical forms like Jordan -> retain only for **theoretical proofs**, numerically switch to Schur/SVD.
+Jordan/Weyr forms are useful theoretical classifications, but recovering exact Jordan structure from generic noisy floating-point data is ill-conditioned. Prefer Schur/SVD for numerical diagnostics; symbolic/exact-arithmetic problems are a different setting.
 
 ## Which Design Lens to Invoke
 
@@ -117,16 +105,14 @@ Used in conjunction with the design lenses in `../../lenses/`:
 
 ## Anti-patterns
 
-- **Using Jordan form as a numerical algorithm**: it is not computable under floating-point, only useful for theoretical analysis; do not put it into a kernel.
-- **Defaulting to full SVD/EVD**: in large-scale settings one should use randomized/truncated/iterative methods, otherwise O(n^3) will bog everything down.
-- **Looking only at eigenvalues while ignoring non-normality**: eigenvalues of non-normal matrices do not predict transient behavior; look at singular values / pseudospectra instead.
-- **Assuming all matrices are well-conditioned**: deploying bf16/fp8 without monitoring condition numbers, then debugging after divergence.
-- **Using the nuclear norm while forgetting it requires SVD**: the nuclear norm is an elegant low-rank regularizer, but its computation depends on SVD, requiring proximal/randomized techniques.
-- **Assuming exact positive definiteness numerically**: under floating-point, Gram/covariance matrices can lose positive definiteness; add jitter (diagonal perturbation) or use pivoted Cholesky.
-- **Using Frobenius norm as a low-rank regularizer**: Frobenius / weight decay suppresses "energy" not "rank"; for low rank, use the nuclear norm or explicit low-rank parameterization (e.g., LoRA).
-- **Discussing "eigenvalue magnitudes" for non-symmetric matrices**: when measuring energy/norm/stability margins, look at **singular values**; the modulus of eigenvalues of non-normal matrices is seriously misleading (transient growth far exceeds what the spectral radius predicts).
-- **Materializing the full O(n^2) Gram matrix**: attention/kernel matrices without blocking will blow up memory; use FlashAttention-style fusion + blocking (echoing GPU dimensions D4/D8).
-- **Stacking theorems without diagnosing the bottleneck**: first ask "is the algorithmic bottleneck spectral, low-rank, or stability," then select the structure; do not dump matrix theory upfront.
+- Dropping Hermitian/PSD/rank hypotheses from spectral inequalities or polar formulas.
+- Treating dense randomized SVD as subquadratic, or omitting sketch construction and QR costs.
+- Claiming bf16 stability from the presence of GEMM operations alone.
+- Confusing asymptotic eigenvalue stability with finite-time amplification of a nonnormal operator.
+- Treating Frobenius decay of W as direct rank control. Factorized penalties on U,V are a different objective and can be related to the nuclear norm.
+- Assuming every covariance estimate is strictly positive definite. Rank deficiency may be exact; jitter changes the problem and its magnitude must be reported.
+- Materializing all pairwise scores when the downstream computation could be tiled; conversely, claiming FlashAttention is a generic replacement for every kernel-matrix algorithm.
+- Quoting a spectral or reconstruction bound as a guarantee of task accuracy without a connecting argument.
 
 ## Deep Dive Entry
 
@@ -144,3 +130,7 @@ Actual chapters worth deep reading:
 - **Sec. 7.3-7.5 Polar/SVD & the Schur product theorem** -- the direct source for Muon orthogonalization and PSD kernel engineering.
 - **Sec. 6.1-6.3 Gershgorin discs & perturbation theorems** -- cheap spectral localization and perturbation robustness.
 - **Sec. 8.2-8.5 Perron-Frobenius theory** -- row-stochastic attention, graph propagation, over-smoothing analysis.
+
+## Verified Extension Sources
+
+[Higham: normal matrices](https://nhigham.com/2020/11/24/what-is-a-nonnormal-matrix/) and [Hermitian eigenvalue bounds](https://nhigham.com/2021/03/09/eigenvalue-inequalities-for-hermitian-matrices/) clarify the hypotheses above. [Halko, Martinsson & Tropp](https://arxiv.org/abs/0909.4061) cover randomized approximation; [Nakatsukasa & Higham](https://epubs.siam.org/doi/10.1137/110857544) analyze conditional stability of polar iterations. Modern optimizer connections are extensions beyond Horn–Johnson: [K-FAC](https://proceedings.mlr.press/v37/martens15.html), [Shampoo](https://proceedings.mlr.press/v80/gupta18a.html).

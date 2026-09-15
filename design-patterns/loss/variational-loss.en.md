@@ -1,11 +1,11 @@
 # Variational Loss
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Evidence labels**: [v] supported by stated assumptions or recorded checks; [~] engineering proposal requiring validation; [x] incompatible under the stated conditions; [N/A] outside scope. Pseudocode specifies operators, not a production-ready implementation.
 
 ## Applicable Problems
 When sampling from latent variable distributions is required to generate diverse outputs. Typical scenarios: (1) Expert selection introduces discrete latent variables $z$ that need end-to-end variational; (2) Representation spaces need to model uncertainty; (3) Generative routing requires sampling from posterior distributions $p(z|x)$; (4) Bayesian mixture of experts. Core objective: **model distributions rather than point estimates in latent space, enabling uncertainty awareness and diversity**.
 
 ## Mathematical Inspiration
-- Lenses: ../../lenses/probabilistic.en.md (variational inference and ELBO), ../../lenses/probabilistic.en.md (posterior and prior)
+- Lenses: ../../lenses/variational.en.md (variational inference and ELBO), ../../lenses/probabilistic.en.md (posterior and prior)
 - Knowledge: ../../knowledge-base/probability/entropy.en.md (KL divergence, variational families), ../../knowledge-base/probability/kl-divergence.en.md (ELBO derivation)
 
 ## Required Mathematical Knowledge
@@ -15,29 +15,30 @@ When sampling from latent variable distributions is required to generate diverse
 - **Gumbel-Softmax (Discrete Latent Variables)**: $z = \text{softmax}((\log \pi + g) / \tau)$, $g \sim \text{Gumbel}(0,1)$ -- continuous relaxation of discrete sampling
 
 ## AI Module Form
+
+```python
+# Gaussian VAE; beta_vae=1 gives the ordinary negative ELBO
+mu, logvar = encoder(x)
+z = mu + exp(0.5 * logvar) * randn_like(mu)
+KL = 0.5 * (mu**2 + exp(logvar) - 1 - logvar).sum(-1)
+recon_nll = -decoder_log_prob(x, z)
+loss = (recon_nll + beta_vae * KL).mean()
+
+# Relaxed categorical latent: this is pathwise differentiation, not automatically STE
+u = clamp(rand_like(logits), min=eps, max=1-eps)
+g = -log(-log(u))
+z_soft = softmax((logits + g) / tau, dim=-1)
+# Optional straight-through hard sample:
+z_hard = one_hot(argmax(z_soft, dim=-1), num_classes=K)
+z_st = z_hard - z_soft.detach() + z_soft
 ```
-Module: VariationalLoss
-Input: encoder outputs (mu, log_sigma^2) in R^{B x d_z}, reconstruction output x_hat in R^{B x d_x}, original input x
+A general beta-weighted objective is not automatically a lower bound on log evidence, and annealing does not guarantee avoidance of collapse. For categorical expert outputs of shape $B\times K\times d$, combine weights as `(z_soft[..., None] * expert_outputs).sum(dim=1)`; evaluating all experts has dense cost.
 
-Method 1 - Gaussian VAE Loss:
-  KL = -0.5 * sum(1 + log_sigma^2 - mu^2 - exp(log_sigma^2), dim=-1)   // closed form
-  recon = -log p(x|x_hat)  // MSE or BCE depending on data distribution
-  L_vae = recon + beta * KL    // beta-VAE controls disentanglement
-
-Method 2 - Gumbel-Softmax (discrete expert selection):
-  logits = encoder(x)  in R^{B x K}    // logits for K experts
-  g = -log(-log(uniform(B x K) + eps) + eps)   // Gumbel noise sampling
-  z_soft = softmax((logits + g) / tau)       // temperature tau annealed from 1.0 to 0.1
-  L_gumbel = CE(task_head(z_soft * features), y)  // straight-through estimator backprop
-
-Method 3 - Variational Information Bottleneck:
-  L_IB = I(X; Z) - beta * I(Z; Y)  // minimize information redundancy of Z about X, maximize predictive power of Z about Y
-  ~ E[-log q(y|z)] + beta * KL(q(z|x) || p(z))  // variational approximation (first term is prediction loss, second is compression penalty)
-```
+For VIB, `prediction_nll + beta_comp * KL` corresponds, after rescaling, to `I(X;Z) - beta_pred * I(Z;Y)` with `beta_pred = 1/beta_comp`. Do not reuse the same beta symbol for both inverse conventions.
 
 ## Implementable Architectures
 - **Dual-Head Encoder Output**: Linear(d, 2 * d_z) -> split -> (mu, log_sigma^2), sharing base parameters
-- **Beta Annealing Strategy**: Linearly increase beta from 0 to the target value to prevent KL collapse (posterior collapse)
+- **Beta Annealing Strategy**: Increasing beta from 0 may mitigate posterior collapse; validate it rather than treating it as a guarantee
 - **Free Bits**: Set a KL lower bound lambda per dimension, penalizing only the excess: $\sum \max(\text{KL}_j, \lambda)$
 - **IWAE Multi-Particle**: Use log-mean-exp over $K$ samples instead of single-sample ELBO for a tighter lower bound
 
@@ -48,11 +49,12 @@ Method 3 - Variational Information Bottleneck:
 - **Memory & KV-Cache**: Additional storage of mu and sigma^2, two $B \times d_z$ matrices; minimal overhead
 - **Low Precision Stability**: log/exp operations in KL are recommended in fp32; Gumbel softmax log-log requires fp32
 - **Parallelism & Communication**: The $K$ samples in multi-particle IWAE can be sampled and computed in parallel
-- **Sparse Structure**: Discrete latent variables (Gumbel) degenerate to one-hot as $\tau \to 0$, naturally sparse
+- **Sparse Structure**: The relaxed sample approaches one-hot as $\tau \to 0$, but finite-temperature execution is dense unless a hard dispatch mechanism skips inactive branches
 - **Operator Fusion**: The Linear layers for mu and sigma^2 can share a single GEMM followed by split; KL exp/sub/add can be fused
 
 ## Paper Phrasing
-"We adopt the variational inference framework, geometric expert selection as posterior inference over discrete latent variables $z$. End-to-end variational is achieved through Gumbel-Softmax relaxation, combined with a beta annealing strategy that effectively prevents posterior collapse. The ELBO lower bound converges at rate $O(\sqrt{d/n})$ with respect to latent variable dimensionality."
+
+“We use a stated variational family and the ordinary ELBO, or explicitly identify a beta-weighted surrogate. We report posterior-collapse diagnostics, reconstruction/prediction quality and sensitivity to latent dimension and sampling count; no universal ELBO convergence rate follows from dimensionality alone.”
 
 ## Risks
 - Posterior collapse: The KL term converges to 0 prematurely, causing latent variables to degenerate into prior samples and lose information

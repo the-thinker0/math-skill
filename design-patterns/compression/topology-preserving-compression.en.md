@@ -1,5 +1,5 @@
 # Topology-Preserving Compression
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Evidence labels**: [v] supported by stated assumptions or recorded checks; [~] engineering proposal requiring validation; [x] incompatible under the stated conditions; [N/A] outside scope. Pseudocode specifies operators, not a production-ready implementation.
 
 ## Target Problem
 Use when compressing representations while homologically preserving the intrinsic topological structure of the data (connected components, loops, cavities): latent-space compression (a toroidal manifold must not collapse into a line segment), knowledge distillation (student--teacher homological equivalence), 3D mesh simplification (genus invariance), KV-Cache semantic preservation (cluster structure must not collapse). Core objective: **compress dimensions or counts while constraining and measuring changes in the persistence diagram of persistent homology**.
@@ -9,56 +9,51 @@ Use when compressing representations while homologically preserving the intrinsi
 - Knowledge: ../../knowledge-base/topology/persistent-homology.en.md (persistent homology, Vietoris--Rips filtration, bottleneck distance), ../../knowledge-base/topology/euler-characteristic.en.md (Euler characteristic for rapid topological diagnostics), ../../knowledge-base/matrix-analysis/matrix-perturbation.en.md (Davis--Kahan subspace perturbation bound)
 
 ## Required Mathematical Background
-- **Stability Theorem of Persistent Homology**: $d_B(D(X), D(Y)) \leq d_{GH}(X, Y)$; the Hausdorff distance bounds the change in persistence diagrams
-- **Euler Characteristic Curve**: $\chi(\epsilon) = \sum_k (-1)^k \beta_k(\epsilon)$, richer in information than a single $\chi$, computable in $O(N^2)$
-- **Mapping Cylinder Isomorphism**: if $f: X \to Y$ is an $\epsilon$-isometry, then $f_*$ induces an isomorphism on features with persistence intervals $> 2\epsilon$
-- **Landmark Approximation**: build a witness complex on $m$ landmarks, $O(m^3)$ replacing $O(N^3)$
+
+- **State the filtration**: For finite metric spaces with Rips simplices defined by diameter $\le\epsilon$, fixed homology degree and field coefficients, $d_B(D_{VR}(X),D_{VR}(Y))\le2d_{GH}(X,Y)$. For tame sublevel functions on the same domain, $d_B(D(f),D(g))\le\|f-g\|_\infty$. Constants change with the filtration parameter convention. [Persistence stability for geometric complexes](https://arxiv.org/abs/1207.3885).
+- **What stability gives**: An $\eta$ bottleneck bound matches diagram points within $\eta$; a finite interval of lifetime $>2\eta$ cannot be matched to the diagonal. This is not a generic isomorphism of all features at one scale.
+- **Euler curve**: $\chi(\epsilon)=\sum_q(-1)^q c_q(\epsilon)$ must count simplices in every included dimension. Vertices minus edges gives the Euler characteristic of the graph-only complex, not of a full Rips complex with triangles and higher simplices.
+- **Complexity variable**: Reduction is worst-case $O(M^3)$ for $M$ simplices, not $O(N^3)$ for $N$ points. The number of Rips simplices can be exponential in $N$ if dimension is unbounded.
+- **Differentiability**: Hard thresholded Euler counts are piecewise constant with zero gradients almost everywhere. Smoothed indicators are surrogates; persistence landscapes/images still require differentiable birth/death computations and handling pairing changes.
 
 ## AI Module Specification
+
+```python
+# Option A: cheap graph-only smooth Euler surrogate; does NOT include filled triangles
+D_x, D_z = cdist(X, X), cdist(encoder(X), encoder(X))
+upper = strictly_upper_triangle_mask(N)
+for eps in eps_grid:
+    chi_x = N - sigmoid((eps - D_x) / temperature)[upper].sum()
+    chi_z = N - sigmoid((eps - D_z) / temperature)[upper].sum()
+    loss += (chi_x - chi_z)**2
+# Validate hard Betti/persistence diagnostics separately on sampled data.
 ```
-Module: TopologyPreservingCompressor
-Input: X ∈ R^{N×d}    Parameters: topological weight λ_topo, target dimension r < d
+For a fixed sparse/cubical complex, specify its cells, filtration, and smooth surrogate explicitly. For differentiable persistent homology, cap dimension and simplex count, use a library with verified input gradients, and compare birth/death and pairing changes against finite differences away from ties.
 
-Method 1 - Euler curve matching (most practical, differentiable):
-  Z = encoder(X)                              // R^{N×r}
-  D_orig = cdist(X, X); D_comp = cdist(Z, Z)  // N×N distance matrices
-  chi_orig = euler_curve(D_orig, eps_grid)      // |eps_grid|-dimensional vector
-  chi_comp = euler_curve(D_comp, eps_grid)
-  L_topo = ‖chi_orig - chi_comp‖_2²            // topological matching loss (differentiable)
-  L_total = L_recon + λ_topo · L_topo
-
-Method 2 - Persistent homology regularization (exact but expensive):
-  D_orig = persistent_homology(X, max_dim=1)    // H_0 + H_1 barcode
-  D_comp = persistent_homology(Z, max_dim=1)
-  // differentiable surrogate: persistence landscape/image
-  L_topo = ‖landscape(D_orig) - landscape(D_comp)‖_2²
-
-Method 3 - Topology monitoring + adaptive compression ratio (at inference time):
-  Z = compress(X, ratio=ρ)
-  if count_components(Z, τ) < 0.8 * count_components(X, τ):
-    ρ *= 1.2; Z = compress(X, ratio=ρ)          // topological collapse → reduce compression ratio
-```
+At inference, let $\rho$ mean **retained fraction**. If diagnostics fail, set $\rho\leftarrow\min(1,1.2\rho)$ and recompress; report the monitored dimensions, scales, and tolerance. An Euler match alone is not a topology-preservation certificate.
 
 ## Implementable Architectures
-- **Euler curve matching layer**: $\chi(\epsilon)$ requires only a distance matrix + threshold counting; the $\epsilon$ sweep is parallelizable
-- **Landmark sampler**: FPS (Farthest Point Sampling) in $O(Nm)$, guaranteeing coverage
-- **Topology-aware distillation**: the persistence image discrepancy between teacher and student representations serves as an auxiliary distillation objective
-- **Topological diagnostics dashboard**: real-time plotting of $\beta_0(\epsilon), \beta_1(\epsilon)$ curves during training
+
+- Sampled graph/cubical Euler diagnostics with a declared complex.
+- Landmark Rips/witness approximations with coverage and approximation error reported.
+- Teacher/student persistence losses with the same scale and metric conventions.
+- Separate cheap training surrogates from held-out topology and downstream-quality evaluation.
 
 ## GPU Feasibility
-- **D1[v]/D2[v]**: the distance matrix `cdist` is GEMM-dominated; $\chi(\epsilon)$ involves threshold counting + cumulative sum
-- **D3[~]**: full persistent homology $O(N^3)$ is infeasible; Euler curve $O(N^2 |\epsilon|)$ is feasible; Landmark $O(m^3)$
-- **D4[~]**: the $N \times N$ distance matrix requires chunking or landmark reduction for $N > 8K$
-- **D5[v]**: distance computation is stable in bf16 (positive-number addition); $\chi$ involves integer arithmetic with no precision concerns
-- **D6[v]**: each threshold in the $\epsilon$ sweep is independently parallel; landmark selection can be batch-parallelized
-- **D8[v]**: cdist + threshold + count can be fused to avoid materializing the large distance matrix
+
+- **D1/D2[~]**: Pairwise distances and smooth graph counts are tensor operations; higher-dimensional complex construction and reduction are irregular.
+- **D3[~]**: Dense distances cost $O(N^2d)$; graph-only threshold sweeps cost $O(N^2|\epsilon|)$. Higher-dimensional Euler/PH requires counting the actual simplices. FPS costs $O(Nmd)$ and is sequential over $m$ landmark choices.
+- **D4[~]**: A dense fp32 distance matrix uses $4N^2$ bytes (256 MiB at $N=8192$), before complexes or gradients. Cap simplex count, not only point count.
+- **D5[~]**: Squared-distance GEMM formulas can suffer cancellation; use fp32, check small/negative computed distances and threshold sensitivity.
+- **D6/D8[~]**: Thresholds can batch, but hard PH reduction and landmark selection have dependencies; any custom fusion needs profiling.
+- **D7[~]**: Sparse complexes help only when neighborhood structure and approximation conditions are controlled.
 
 ## Paper-Worthy Formulation
 "Grounded in the Bottleneck stability theorem of persistent homology, we build a computable topology-preserving regularizer via Euler-characteristic curves or landmark approximations. Bottleneck distance can bound persistence-diagram changes when the filtration-function perturbation is controlled; Euler curves are incomplete proxies and do not by themselves guarantee per-degree Betti-number deviations, so persistence / Betti-curve deviations should be measured."
 
 ## Risks
-- **Persistent homology computational bottleneck**: exact boundary matrix reduction is highly serial ($O(N^3)$), necessitating reliance on Euler curve or landmark approximations
-- **Information loss in the Euler curve**: $\chi = \sum(-1)^k \beta_k$ collapses multi-order Betti numbers into a single scalar; distinct topologies may share the same $\chi$
-- **Topology $\neq$ semantics**: topological preservation does not imply semantic preservation -- two semantically distinct spaces may be topologically isomorphic
-- **Scale parameter sensitivity**: the $\epsilon$ range for the filtration must be set manually and varies significantly across datasets
-- **Landmark sampling bias**: FPS may produce non-uniform coverage in high-dimensional spaces, leading to biased topological estimates
+
+- Equal Euler characteristics or diagrams do not imply homeomorphism or semantic equivalence.
+- Sampling, landmarks, scale choice and surrogate temperature can erase or create apparent features.
+- Long persistence is a robustness heuristic, not proof of meaningful signal; use null controls.
+- Exact PH may be dominated by complex size even when the distance matrix fits in memory.

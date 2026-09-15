@@ -8,10 +8,10 @@ Studies how the eigenvalues, singular values, and eigenspaces of a matrix $A$ ch
 
 - **Weyl eigenvalue perturbation bound** (Hermitian): $|\lambda_i(A+E) - \lambda_i(A)| \leq \|E\|_2$
 - **Bauer-Fike theorem** (diagonalizable matrices): $\min_j |\lambda_i(A+E) - \lambda_j(A)| \leq \kappa(V) \|E\|_2$, where $V$ is the eigenvector matrix
-- **Davis-Kahan $\sin\Theta$ theorem**: $\|\sin\Theta(\hat{U}, U)\|_2 \leq \frac{\|E\|_2}{\delta}$, where $\delta$ is the gap between the subspace and the rest of the spectrum
+- **Davis–Kahan (safe top-$k$ form)**: For Hermitian $A,\hat A=A+E$, descending eigenvalues and $\gamma=\lambda_k(A)-\lambda_{k+1}(A)>0$, if $\|E\|_2<\gamma/2$, their top-$k$ spaces satisfy $\|\sin\Theta(\hat U,U)\|_2\le2\|E\|_2/\gamma$. A constant-one form needs precisely defined cross-spectrum separation, not an unspecified gap.
 - **Singular value perturbation (Mirsky)**: $|\sigma_i(A+E) - \sigma_i(A)| \leq \|E\|_2$
 - **Geršgorin discs**: $\lambda_i(A) \in \bigcup_j \{z : |z - a_{jj}| \leq \sum_{k \neq j} |a_{jk}|\}$
-- **Condition number and relative error**: $\frac{|\delta x|}{|x|} \leq \kappa(A) \frac{\|\delta A\|}{\|A\|}$
+- **Linear-system perturbation**: If $Ax=b$, $(A+E)\hat x=b$, $A$ is invertible and $\kappa(A)\|E\|/\|A\|<1$, then $\|\hat x-x\|/\|x\|\le\kappa(A)(\|E\|/\|A\|)/(1-\kappa(A)\|E\|/\|A\|)$. The product without the denominator is only a first-order approximation.
 
 ## Applicable Problems
 
@@ -24,17 +24,17 @@ Studies how the eigenvalues, singular values, and eigenspaces of a matrix $A$ ch
 ## AI Design Translation
 
 - **Geršgorin cheap spectral radius monitoring**: Every $N$ steps in the training loop, compute $\rho_{\text{est}} = \max_j (|a_{jj}| + \sum_{k\neq j}|a_{jk}|)$ as an upper bound on the spectral radius, requiring only $O(n^2)$ row-wise absolute-value summation. Implemented as `torch.sum(torch.abs(A), dim=1)`, an elementwise + reduce operation, extremely cheap, and embeddable in the training loop as a stability gate.
-- **Spectral drift bound for quantization error**: $W_{\text{quant}} = W + E$, $\|E\|_2 \leq \epsilon$; by the Weyl theorem, $\sigma_i$ shifts by $\leq \epsilon$. For an $L$-layer network, output perturbation $\leq \prod_i (\sigma_1(W_i) + \epsilon) - \prod_i \sigma_1(W_i)$. This guides quantization precision selection: if $\sigma_{\min}(W)$ is close to $\epsilon$, that layer requires higher precision.
+- **Quantization perturbation**: Singular-value drift is at most $\|E\|_2$. For a bias-free composition of linear layers and 1-Lipschitz activations satisfying $\phi(0)=0$, one conservative output bound is $\|x\|[\prod_i(\|W_i\|_2+\|E_i\|_2)-\prod_i\|W_i\|_2]$. Biases, normalization, attention and residual branches need separate propagation terms.
 - **Davis-Kahan subspace stability**: The reliability of subspaces in PCA/LoRA is determined by the eigengap $\delta = \lambda_k - \lambda_{k+1}$. Larger $\delta$ yields a more stable truncated subspace; as $\delta \to 0$, the subspace becomes extremely sensitive to noise. This serves as a diagnostic tool for selecting the LoRA rank $r$: choose $r$ that maximizes $\delta_r$.
 - **Perturbation modeling for pruning**: Unstructured pruning = sparse perturbation $E$, $\|E\|_2 \leq \|E\|_F = \sqrt{\sum e_{ij}^2}$. The Weyl bound provides an upper bound on spectral drift, guiding the pruning ratio: maintain $\|E\|_2 / \sigma_1(W) < \tau$ (e.g., $\tau = 0.05$).
-- **Spectral regularization as a robustness certificate**: $\mathcal{L}_{\text{robust}} = \mathcal{L}_{\text{task}} + \lambda \max(0, \|E\|_2 - \epsilon)^2$, constraining spectral drift under perturbation. Combined with power iteration to estimate $\|E\|_2$, implemented as an additional loss term.
+- **Spectral robustness proxy**: Penalizing $\max(0,\|E\|_2-\epsilon)^2$ discourages a chosen perturbation. It does not certify the worst case over an adversarial set. Finite power iteration generally gives a lower estimate of the spectral norm; a certificate needs a valid upper bound and optimization/rounding error accounting.
 
 ## Engineering Feasibility
 
 - **Primary operations**: Geršgorin = elementwise abs + row-sum ($O(n^2)$); Weyl bound only requires $\|E\|_2$ (power iteration $O(n^2)$/step); Davis-Kahan requires eigengap (partial EVD, $O(n^2 k)$).
 - **GPU friendliness**: High. Geršgorin is pure elementwise + reduce; $\|E\|_2$ estimation is a matvec chain; eigengap uses the Lanczos algorithm (matmul + tridiagonal EVD). All operations support batching.
 - **Complexity**: Geršgorin $O(n^2)$; single power iteration $O(n^2)$; Lanczos $k$ steps $O(kn^2)$; full EVD $O(n^3)$ (should be avoided).
-- **Low precision**: The Weyl bound is itself Lipschitz; the estimation of $\|E\|_2$ under low precision has $\sim \sqrt{n} \cdot \text{eps}$ floating-point noise, which is typically negligible.
+- **Low precision**: Perturbation theorems concern exact matrices and norms; computed residuals/norm estimates have scale- and algorithm-dependent error. Use conservative upper bounds or fp32/fp64 checks when interpreting a stability certificate.
 
 ## Risks and Failure Conditions
 
@@ -51,7 +51,7 @@ Studies how the eigenvalues, singular values, and eigenspaces of a matrix $A$ ch
 
 ## Routing Extensions
 - If focusing on eigenvalue sensitivity -> `spectral-decomposition.en.md` (perturbation analysis of spectral decomposition)
-- If random perturbation bounds are involved -> `../probability/concentration-inequality.md` (random matrix concentration inequalities)
+- If random perturbation bounds are involved -> `../probability/concentration-inequality.en.md` (random matrix concentration inequalities)
 
 ## Extensible Directions
 - Pseudospectra: spectral sensitivity analysis for non-normal matrices

@@ -1,5 +1,5 @@
 # Information Bottleneck Loss（信息瓶颈损失）
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
+> **证据标注**：[v] 有明确假设或记录验证支持；[~] 待验证的工程方案；[x] 在所述条件下不相容；[N/A] 不适用。伪代码用于定义算子，不是完整生产实现。
 
 ## 适用问题
 当需要让表示 Z 在"保留任务相关信息"与"压缩输入冗余信息"之间取得最优平衡时使用。
@@ -13,59 +13,47 @@
   ../../knowledge-base/probability/entropy.md（互信息与条件熵）
 
 ## 需要的数学知识
-- **信息瓶颈目标**：min I(X;Z) - β·I(Z;Y)，压缩 X→Z 同时保留 Z 对 Y 的预测力
-- **互信息变分下界/上界**：
-  I(X;Z) ≤ E_{p(x,z)}[log q(z|x)] - E_{p(z)}[log q(z)]  (用上界估计压缩项)
-  I(Z;Y) ≥ E_{p(z,y)}[log q(y|z)] + H(Y)  (用下界估计预测项)
-- **CPC (Contrastive Predictive Coding)**：I(Z_t; Z_{t+k}) 的 InfoNCE 下界
-- **MINE (Mutual Information Neural Estimation)**：
-  I(X;Z) = sup_φ { E_{p(x,z)}[T_φ(x,z)] - log E_{p(x)p(z)}[exp(T_φ(x,z))] }  （Donsker-Varadhan 表示，T_φ 为神经网络 critic）
+
+- Markov 链 $Y-X-Z$ 下，经典 IB 最小化 $I(X;Z)-\beta_{pred}I(Z;Y)$。重缩放后为 $-I(Z;Y)+\beta_{comp}I(X;Z)$，其中 $\beta_{comp}=1/\beta_{pred}$。
+- 编码器 $q_\theta(z|x)$ 与参考先验 $r(z)$ 满足 $\mathbb E_x KL(q_\theta(z|x)\|r)=I(X;Z)+KL(q_\theta(z)\|r)\ge I(X;Z)$。
+- 预测解码器给出 $I(Z;Y)\ge H(Y)+\mathbb E\log q_\phi(y|z)$。交叉熵估计的是**正的**条件熵加近似误差。
+- 受限 critic 的 MINE/NWJ/InfoNCE 是 MI 下界/估计器，不是压缩惩罚的可靠上界。最小化宽松下界可能只把信息藏起来，并未降低真实 MI。神经 critic 的上确界等于真实 MI 还需函数族及优化条件。
+- 正交性控制线性重叠，不保证共享/私有统计独立。[Deep VIB 原论文](https://arxiv.org/abs/1612.00410)。
 
 ## AI 模块形式
+
+```python
+# 随机高斯瓶颈，期望通过 minibatch/采样近似
+mu, logvar = encoder(X)
+z = mu + exp(0.5 * logvar) * randn_like(mu)
+kl_upper = 0.5 * (mu**2 + exp(logvar) - 1 - logvar).sum(-1).mean()
+prediction_ce = cross_entropy(decoder(z), Y)
+loss = prediction_ce + beta_comp * kl_upper
+# beta_comp 越大压缩压力越强；beta_pred = 1 / beta_comp。
 ```
-模块：InformationBottleneckLoss
-输入：表示 Z ∈ R^{B×d}，输入 X（或其编码），标签 Y
+共享/私有分支分别使用随机编码器、预测目标及压缩权重。去相关项是附加代理目标，不是信息分解定理。确定性连续编码器的 $I(X;Z)$ 可为无穷大；引入噪声/量化或明确有限数据的信息模型。
 
-方法1 - VIB (Variational Information Bottleneck)：
-  // 压缩项上界：用变分近似 q(z) = N(0, I)
-  I_upper = KL(q(z|x) ‖ p(z))  // 标准 VAE 的 KL 项
-  // 预测项下界：用分类器/回归器 q(y|z)
-  I_lower = CE(q(y|z), y)  // 交叉熵 = -H(Y|Z) 的估计
-  L_IB = I_upper + β · I_lower
-  // β 控制压缩-预测权衡：β↑ 更激进压缩，β↓ 保留更多预测信息
-
-方法2 - 对比式互信息估计（无需分布假设）：
-  // 用 NWJ 估计器替代 KL
-  I_nwj(x;z) = E_{p(x,z)}[f(x,z)] - e^{-1} · E_{p(x)p(z)}[exp(f(x,z))]  // f 为判别网络，期望分别取 joint 和 product of marginals
-  L_IB_contrast = I_nwj(x;z) - β · InfoNCE(z, y)  // 两项均可微
-
-方法3 - Shared/Private IB 分解：
-  Z_s = enc_shared(x), Z_p = enc_private(x)
-  L = I(Z_s; X) + I(Z_p; X)           // 总压缩
-    - β₁ · I(Z_s; Y_common)            // Shared 保留公共信息
-    - β₂ · I(Z_p; Y_specific)          // Private 保留特异信息
-    + γ · OrthLoss(Z_s, Z_p)           // 正交性确保分解
-```
+若使用学习到的 MI critic，应先固定编码器最大化其下界，再作诊断。通过对抗 critic 最小化进行压缩仍是带优化间隙的启发式，不能把下界报告为压缩证书。
 
 ## 可实现结构
-- **双编码器架构**：enc_shared 和 enc_private 共享底层 trunk，分叉出各自 head
-- **互信息估计器**：小型 MLP 判别器 T(x,z) → scalar，与主网络交替优化
-- **β 调度**：训练初期 β=0（不压缩），随训练进行逐步增大到目标值
-- **梯度反转**：I(X;Z) 的梯度通过 z.flip_gradient() 反转，实现对抗式压缩
+
+- 双编码器加预测头，明确哪些标签定义“共享”与“私有”。
+- 可按任务从零预热 `beta_comp`；同时报告预测与 KL 曲线。
+- 用更丰富编码器族或留出似然诊断高斯后验失配。
+- MI critic 使用独立优化器；梯度反转符号须与所写极小极大目标一致。
 
 ## GPU 可行性
-- **张量化**：互信息估计器为标准 MLP → GEMM 链；KL 为 element-wise
-- **GEMM 可映射**：VIB 方法仅需 encoder GEMM + KL 计算；对比方法额外 1 次 GEMM 做 shuffle 负样本
-- **复杂度**：比标准网络多 1 个 KL 项 O(B·d) 或 1 个判别器前向 O(B·d²)，可接受
-- **显存与 KV-Cache**：需额外存储判别器参数（小型 MLP）和中间激活，<10MB
-- **低精度稳定**：MINE 估计器的 exp 运算在 fp16 下需 clip；VIB 的 KL 建议 fp32
-- **并行与通信**：判别器与主网络可并行前向，梯度通过共享表示层同步
-- **稀疏结构**：压缩后的 Z 维度可动态裁剪（自动相关性确定 ARD）
-- **算子融合**：encoder 前向 + KL 计算 + 判别器前向可部分融合
+
+- **D1/D2[~]**：编码器/解码器用 GEMM；对角高斯 KL 为逐元素运算加归约。
+- **D3/D4[~]**：KL 成本 $O(Bd_z)$、统计存储 $O(Bd_z)$。学习 critic 要另计实际网络和激活成本，没有通用显存上限。
+- **D5[~]**：exp/log 与 KL 归约在 fp32 计算，约束异常 log-variance，监控后验坍塌。
+- **D6[~]**：潜变量样本可批处理；解码器/critic 依赖编码器输出，交替更新是顺序依赖。
+- **D7[N/A]**：低 MI 或小 KL 不意味着张量零元素或可执行稀疏通道。
+- **D8[~]**：逐元素 KL 可融合；整个编码器/critic 融合需具体核和测量。
 
 ## 论文表述方式
-"基于信息瓶颈理论，将 Shared/Private 分解形式化为 min I(X;Z_s)+I(X;Z_p)-β₁I(Z_s;Y_c)-β₂I(Z_p;Y_s)，
-通过变分上下界替代互信息项实现端到端优化。IB 理论给出泛化误差的上界，但实际泛化还依赖于优化动态、数据分布、模型容量等因素。"
+
+“我们优化预测交叉熵与输入—表示互信息的变分上界，报告压缩权重口径、界间隙诊断、预测质量及后验族敏感性；该目标本身不构成泛化误差保证。”
 
 ## 风险
 - 互信息估计（MINE/NWJ）方差大，训练不稳定，需要大 batch 或 moving average

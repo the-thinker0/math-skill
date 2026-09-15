@@ -1,5 +1,5 @@
 # Graph Routing
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Evidence labels**: [v] supported by stated assumptions or recorded checks; [~] engineering proposal requiring validation; [x] incompatible under the stated conditions; [N/A] outside scope. Pseudocode specifies operators, not a production-ready implementation.
 
 ## Applicable Problems
 Use when there exists a known or learnable topological structure among modules/experts. Typical scenarios:
@@ -15,43 +15,36 @@ Core requirement: **leverage structural priors to constrain routing decisions an
   ../../knowledge-base/optimization/lagrangian-duality.en.md (variational on graphs, diffusion processes)
 
 ## Required Mathematical Background
-- **Graph Laplacian**: L = D - A (combinatorial) or L_sym = D^{-1/2} L D^{-1/2} (normalized)
-  Eigendecomposition L = U Lambda U^T provides the graph frequency-domain basis; low-frequency components correspond to smooth signals
-- **Graph Diffusion / Random Walk**: P = D^{-1} A is the transition matrix, P^t describes the distribution after t steps
-  PageRank: pi = alpha * P^T * pi + (1 - alpha) * v, balancing graph structure and prior preferences
-- **Graph Neural Network Message Passing**:
-  h_i^{(l+1)} = sigma(sum_{j in N(i)} W^{(l)} h_j^{(l)} / sqrt(d_i * d_j))
-  Equivalent to a single sparse matrix multiplication L_sym * H * W
-- **Min-Cut Spectral Clustering**: min cut(A, B) s.t. vol(A) = vol(B) => approximate solution given by the Fiedler vector of L
+
+- For symmetric nonnegative adjacency $A$, $L=D-A$ and $L_{sym}=I-D^{-1/2}AD^{-1/2}$. Specify isolated-node handling.
+- GCN smoothing uses normalized **adjacency** $S=\tilde D^{-1/2}(A+I)\tilde D^{-1/2}$, not $L_{sym}$ itself; $H'=\sigma(SHW)$.
+- A random walk uses $P=D^{-1}A$, with a dangling-node convention. A masked softmax can normalize learned edge logits; unmasked softmax makes absent edges positive and changes the graph.
+- Fiedler vectors solve a continuous relaxation of graph-cut objectives. Thresholding does not generally yield an exact balanced minimum cut or certify routing diversity.
+- A balanced binary decision tree visits $O(\log K)$ nodes per token, but generally stores $O(Kd)$ node parameters, not $O(d\log K)$.
 
 ## AI Module Form
+
+```python
+# A: nonnegative expert adjacency with explicit self-loops/dangling-node handling
+P = A / A.sum(-1, keepdim=True)
+route = softmax(X @ W_gate, dim=-1)  # probabilities, N x K
+for _ in range(t):
+    route = route @ P               # sparse diffusion without explicitly forming P**t
+
+A_tilde = A + eye(K)
+deg = A_tilde.sum(-1)
+S = deg[:, None]**(-0.5) * A_tilde * deg[None, :]**(-0.5)
+H1 = relu(S @ expert_embeddings @ W1)
+score = X @ (S @ H1 @ W2).T
+
+# Hard tree traversal: each token has its own visited node
+node = root_index_for_each_token(N)
+for level in range(tree_depth):
+    p_right = sigmoid((X * node_weights[node]).sum(-1) + node_bias[node])
+    take_right = p_right > 0.5
+    node = where(take_right, right_child[node], left_child[node])
 ```
-Module: GraphRouter
-Input: token representations X in R^{N x d}, expert graph G = (V, E) with |V| = K
-
-Method 1 - Graph Diffusion Routing (precomputed):
-  A in R^{K x K}   // expert adjacency matrix (predefined or learnable)
-  P = softmax(A / tau, dim=-1)   // normalized transition probabilities
-  P_t = matrix_power(P, t)       // t-step diffusion, t = 2 ~ 5
-  // routing score = initial score * diffusion matrix
-  score_init = X @ W_gate        // N x K, standard gate
-  score_final = score_init @ P_t // N x K, graph-diffusion smoothed
-  // A single GEMM (N x K) @ (K x K) incorporates graph structure
-
-Method 2 - GNN Routing (learnable graph structure):
-  H_0 = expert_embeddings        // K x d
-  H_1 = ReLU(L_norm @ H_0 @ W_1) // 1-layer GCN
-  H_2 = L_norm @ H_1 @ W_2      // 2-layer GCN
-  score = X @ H_2^T              // N x K routing scores
-  // Graph structure updated end-to-end via learnable parameterization of A
-
-Method 3 - Hierarchical Tree Routing (O(log K) complexity):
-  // Experts organized as a binary tree; each internal node is a binary classifier
-  for level in range(depth):      // depth = log2(K)
-    direction = sigmoid(X @ w_level + b_level)  // left/right subtree selection
-    path_prob *= direction         // accumulate path probability
-  // Total computation: O(N * d * log K) vs. O(N * d * K) for standard MoE
-```
+Hard traversal is conditional and nondifferentiable at decisions; use supervised routing, stochastic estimators or a declared relaxation. Evaluating every branch for differentiable soft routing generally loses the logarithmic inference cost.
 
 ## Implementable Structures
 - **Sparse adjacency matrix**: Use torch.sparse to store A; sparse matmul replaces dense operations
@@ -60,17 +53,17 @@ Method 3 - Hierarchical Tree Routing (O(log K) complexity):
 - **Hierarchical tree implementation**: Represented as a complete binary tree array with level-wise vectorization
 
 ## GPU Feasibility
-- **D1[v]**: GCN layers perform sparse matrix times dense matrix (SpMM), supported by both PyTorch and cuSPARSE
-- **D2[v]**: score_init @ P_t in Method 1 is standard GEMM (N x K) @ (K x K)
-- **D3[v]**: Method 1 O(N * K^2) diffusion + O(N * K * d) gate; Method 3 O(N * d * log K) significantly better than O(N * d * K)
-- **D4[v]**: A matrix stored sparsely at K x K; hierarchical tree parameters d x log K are negligible
-- **D5[v]**: Probability matrix P and softmax in fp16 require attention to normalization precision
-- **D6[v]**: GNN message passing can be batched in parallel; hierarchical tree nodes at the same level can be evaluated independently in parallel
-- **D7[v]**: Graph adjacency matrices are naturally sparse (degree << K); SpMM reduces from O(K^2) to O(K * avg_deg)
-- **D8[v]**: L_norm @ H @ W in GCN can be fused into a single sparse GEMM
+
+- **D1/D2[~]**: Gate GEMM plus sparse adjacency propagation; sparse GPU benefit depends on degree distribution and batching.
+- **D3[~]**: Gate $O(NdK)$ plus $t$ sparse diffusion steps $O(tN|E|)$; dense precomputed $P^t$ instead costs $O(NK^2)$ to apply and may densify. Hard balanced trees cost $O(Nd\log K)$ with irregular gathers.
+- **D4[~]**: Graph storage $O(|E|)$; general binary tree parameters $O(Kd)$. Count routing probabilities $O(NK)$ where materialized.
+- **D5[~]**: Accumulate probabilities in fp32; monitor drift of row sums and top-choice margins.
+- **D6[~]**: Tokens and same-depth nodes can batch, but traversal levels and diffusion rounds are sequential.
+- **D7/D8[~]**: Sparse propagation and dense feature GEMM are distinct operations; fusion and sparse crossover require concrete kernel measurements.
 
 ## Paper-Worthy Formulation
-"Leveraging hierarchical tree/graph topology among experts, we compress routing decisions from a flat O(N * K) search to O(N * log K) tree traversal or O(N * K * avg_deg) graph diffusion. Fiedler spectral analysis reveals that the graph's algebraic connectivity lambda_2 directly governs the diversity-coherence trade-off in routing."
+
+“We encode the declared expert graph with normalized adjacency diffusion or a conditional decision tree. We report traversal depth, visited experts, mixing behavior, graph ablations, actual compute and latency; spectral connectivity alone does not guarantee a diversity–coherence trade-off.”
 
 ## Risks
 - Incorrect graph structure priors can misguide routing toward suboptimal experts

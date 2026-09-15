@@ -55,3 +55,15 @@ Each domain has an `*/index.en.md` that lists: domain trigger signals, core anch
 | Information Geometry | `information-geometry/index.en.md` |
 | Algebraic Geometry | `algebraic-geometry/index.en.md` |
 | Cryptography | `cryptography/index.en.md` |
+
+## Assumptions and Diagnostics
+
+Before applying a formula, identify the object (matrix, operator, random variable, manifold or security experiment), its dimensions/domain, theorem assumptions, and whether the result is exact, approximate or heuristic. In particular:
+
+- Eigenvalues, singular values and singular subspaces have different perturbation conditions; finite iterations do not certify a spectral-norm upper bound.
+- A convex loss in outputs need not be convex in network parameters. State the algorithm, step size, constraint qualification and residual used for convergence claims.
+- Information upper/lower bounds and beta conventions must match the optimization direction; deterministic continuous encoders may have infinite MI.
+- FLOP estimates need batch/sequence/channel dimensions, factorization and update costs. Low-rank, low-entropy and algebraic sparsity do not automatically give GPU speedups.
+- Security reductions need the exact game, adversary resources and loss; approximate numerical evidence does not replace a proof.
+
+For concrete checks see `../references/worked-examples/query-aware-compression.en.md`, `../references/worked-examples/equivariance-check.en.md`, and `../references/worked-examples/security-reduction.en.md`. Load only the example needed for the current question.

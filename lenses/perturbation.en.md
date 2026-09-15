@@ -16,10 +16,10 @@ This is a "stress-tester's" perspective — for any mathematical object or syste
 
 ## Problems It Doesn't Fit
 
-- Problems where the perturbation itself is the object of study (e.g., butterfly effect in chaotic systems is a feature, not a defect)
+- Large perturbations outside the proved local neighborhood require continuation, piecewise analysis, or global bounds
 - Large-deformation or global structural analysis — perturbation theory only concerns local neighborhoods
-- Discrete combinatorial problems — perturbation theory relies on continuity assumptions
-- Adversarial-example or cryptographic security questions that demand attack games, security certificates, or reduction proofs — those belong to the cryptography domain (Domain Router decides); this lens only handles AI-domain robustness/sensitivity analysis
+- Discrete optimizers may jump; optimal values or solution stability under a gap condition can still be analyzed
+- Cryptographic indistinguishability/reduction guarantees need crypto anchors; Lipschitz and randomized-smoothing certificates remain AI mathematics
 
 ## Knowledge Domains It Routes To
 
@@ -39,7 +39,7 @@ This is a "stress-tester's" perspective — for any mathematical object or syste
 
 1. **Identify the perturbation source**: Does the perturbation occur in the input, parameters, or structure? What is its magnitude epsilon?
 2. **Compute sensitivity**: Derive the Jacobian or condition number — the ratio of output shift Delta to perturbation epsilon
-3. **Classify the perturbation**: Regular perturbation (expansion converges order by order) vs. singular perturbation (leading-order term changes)
+3. **Classify the perturbation**: Regular perturbation (typically a uniform asymptotic expansion on the relevant region, not necessarily a convergent series) vs. singular perturbation (leading-order term changes)
 4. **Establish perturbation bounds**: Use known theorems (Weyl, Davis-Kahan, Lipschitz constants) to provide rigorous upper bounds
 5. **Assess robustness**: Is the perturbation amplification within acceptable range? If not, what regularization is needed?
 

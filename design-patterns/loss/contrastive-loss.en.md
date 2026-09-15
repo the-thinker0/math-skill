@@ -1,5 +1,5 @@
 # Contrastive Loss
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Evidence labels**: [v] supported by stated assumptions or recorded checks; [~] engineering proposal requiring validation; [x] incompatible under the stated conditions; [N/A] outside scope. Pseudocode specifies operators, not a production-ready implementation.
 
 ## Applicable Problems
 When the model needs to learn "what is similar to what and what is different from what." Typical scenarios: (1) Different augmented views of the same input should be pulled closer (positive pairs), while different inputs should be pushed apart (negative pairs); (2) Shared representations should capture cross-task commonalities, while Private representations should distinguish task-specific features; (3) In the expert embedding space, similar inputs should be routed to the same expert. Core objective: **learn relative relationships rather than absolute values**.
@@ -16,48 +16,27 @@ When the model needs to learn "what is similar to what and what is different fro
 
 ## Alignment-Uniformity Framework
 
-Representation quality in contrastive learning decomposes into two independent objectives (Wang & Isola, 2020):
+For unit-normalized features, alignment and uniformity are useful population diagnostics:
+$$L_{align}=\mathbb E_{(x,x^+)}\|f(x)-f(x^+)\|^2,\qquad L_{uniform}=\log\mathbb E_{x,x'}e^{-t\|f(x)-f(x')\|^2},\ t>0.$$
+The infinite-negative analysis links contrastive objectives to these properties under its sampling and distributional assumptions. It does not guarantee exact uniformity for a finite batch, nor a universal threshold such as 1024 negatives. Temperature, positive construction, model capacity, and attainable distributions affect the trade-off. [Wang & Isola, original analysis](https://proceedings.mlr.press/v119/wang20k.html).
 
-- **Alignment**: Positive pairs should have similar representations
-  $L_{\text{align}} = \mathbb{E}_{(x, x^+)}[\|f(x) - f(x^+)\|^2]$
-- **Uniformity**: Representations should be uniformly distributed on the unit hypersphere $S^{d-1}$
-  $L_{\text{uniform}} = \log \mathbb{E}_{x, x'}[\exp(-2\|f(x) - f(x')\|^2)]$
+With one joint positive pair and $M-1$ iid negatives from the appropriate marginal, the population bound is $I(U;V)\ge\log M-\mathbb E[L_{NCE}]$. The loss itself is **not** the MI lower bound, and the bound concerns the variables forming the positive pair. It saturates at $\log M$; finite-sample estimator bias, hard-negative selection, dependent queues and critic restriction require separate treatment. More negatives do not guarantee a tighter realized estimate for a fixed learned critic. [CPC source](https://arxiv.org/abs/1807.03748).
 
-**InfoNCE and alignment-uniformity**: As $N \to \infty$ with appropriate temperature $\tau$, the InfoNCE loss asymptotically decomposes into alignment + uniformity. For finite $N$, InfoNCE provides a lower bound on $I(X;Z)$, with tightness increasing in $N$.
-
-**Conditions for uniformity to hold**:
-- Sufficiently large negative sample count $N$ (theory requires $N \to \infty$; in practice $N \geq 1024$ is typically sufficient)
-- Temperature $\tau$ not too large ($\tau \to \infty$ causes loss to degenerate to a constant, eliminating the uniformity-driving force)
-- Representation dimension $d$ sufficient to support the intrinsic dimension of the data
-
-**Conditions for uniformity to fail**:
-- Insufficient negatives $\rightarrow$ weak uniformity pressure; representations may cluster on a local region of the sphere
-- Representation collapse: all inputs map to the same (or few) points, trivially minimizing alignment but completely destroying uniformity
-- Temperature $\tau$ too large $\rightarrow$ softmax degenerates to uniform distribution, gradients vanish, no uniformity guarantee
-- Severe positive/negative imbalance within the batch without queue compensation
-
-**What can be guaranteed at most**: Under ideal conditions (sufficiently large $N$, appropriate $\tau$, no collapse), minimizing contrastive loss is equivalent to jointly maximizing positive-pair alignment and representation uniformity.
-
-**What cannot be guaranteed**: Optimality of learned representations for downstream tasks (uniformity $\neq$ task relevance); semantic-level alignment (only geometric-level positive-pair proximity is guaranteed).
+Alignment/uniformity do not guarantee downstream semantic usefulness. Report positive-pair distance, empirical uniformity, collapse indicators and downstream metrics alongside InfoNCE.
 
 ## AI Module Form
+
+```python
+anchors = normalize(encoder_q(x), dim=-1)
+positives = normalize(encoder_k(x_positive), dim=-1)
+negatives = queue.snapshot()               # read before inserting current positives
+positive_logits = (anchors * positives).sum(-1, keepdim=True)
+negative_logits = anchors @ negatives.T
+logits = cat([positive_logits, negative_logits], dim=-1) / tau
+loss = cross_entropy(logits.float(), zeros(B, dtype=long))
+queue.enqueue(positives.detach())          # stores O(M*d), it is not free memory
 ```
-Module: ContrastiveLoss
-Input: anchors z_a in R^{B x d}, positives z_p in R^{B x d}, negative pool z_n in R^{N x d}
-
-Core formula (InfoNCE + temperature scaling):
-  sim(q, k) = q^T k / (||q|| * ||k||)       // cosine similarity
-  logits_i = [sim(z_a_i, z_p_i)] (+) [sim(z_a_i, z_n_j)]_{j=1}^N  // concatenation
-  L_contrast = -1/B * Sum_i log( exp(logits_i[0]/tau) / Sum_j exp(logits_i[j]/tau) )
-
-Queue mechanism (MoCo style):
-  z_n = FIFO_queue.enqueue(z_p.detach())   // negative sample queue, capacity N >> B
-  // Queue stores encodings from historical batches, increasing negative count without additional memory
-
-Hard Negative Mining:
-  top-k indices = argsort(sim(z_a, z_n), descending=True)[:k]
-  z_n_hard = z_n[top-k indices]            // retain only the k hardest negatives
-```
+Exclude exact positives/self-pairs from the negative pool where required. Historical queues trade larger pools for staleness/dependence; they save repeated encoder work but consume memory. Hard-negative mining changes the sampling distribution, and finding hard negatives may still require scoring the full pool. If using sampled hard negatives, report the rule and do not silently retain the iid-marginal MI guarantee.
 
 ## Implementable Architectures
 - **Dual-Tower Encoder + Projection Head**: encoder -> projection_head (2-layer MLP) -> normalize -> loss
@@ -66,14 +45,13 @@ Hard Negative Mining:
 - **Multi-Granularity Contrast**: Apply contrastive objectives simultaneously at token-level, sequence-level, and expert-level
 
 ## GPU Feasibility
-- **D1[v]**: Similarity computation is $z_a @ z_n^T$ -- standard GEMM $(B \times d) @ (d \times N) = B \times N$
-- **D2[v]**: Core computation is 1-2 matrix multiplications, perfectly mapped to cuBLAS
-- **D3[v]**: $O(B \cdot N \cdot d)$ computation + $O(B \cdot N)$ storage for the logits matrix; approximately 64MB when B=256, N=65536
-- **D4[v]**: Negative sample queue occupies $N \cdot d \cdot 4$ bytes, approximately 65536 * 256 * 4 = 64MB, fixed overhead
-- **D5[v]**: Cosine similarity + softmax under fp16 requires caution for exp overflow; use log-sum-exp trick
-- **D6[v]**: On multiple GPUs, use all-gather to collect negatives from other GPUs to enlarge $N$ (MoCo v3 strategy)
-- **D7[v]**: After hard negative mining, only $k \ll N$ negatives are retained, effectively sparsifying the logits
-- **D8[v]**: L2-norm -> matmul -> scale -> log-softmax -> nll_loss can be fused
+
+- **D1/D2[~]**: Similarity uses $B\times d$ by $d\times M$ GEMM; normalization and cross-entropy add reductions.
+- **D3/D4[~]**: Similarity $O(BMd)$; materialized logits $O(BM)$ and queue $O(Md)$. At fp32, $B=256,M=65536$ logits use 64 MiB; a $65536\times256$ queue separately uses 64 MiB.
+- **D5[~]**: Use stable log-softmax/log-sum-exp with fp32 accumulation; tiny temperature amplifies score error and gradients.
+- **D6[~]**: Cross-device negatives require all-gather (and potentially its gradient communication); a momentum queue has a different communication profile.
+- **D7[~]**: Retaining hard negatives reduces downstream logits only after selection; full-pool search cost remains unless an approximate index is used.
+- **D8[~]**: Tiled similarity/cross-entropy can reduce memory, but a single fused kernel is not implied by writing the operator chain.
 
 ## Paper Phrasing
 "We employ temperature-scaled InfoNCE contrastive loss with a momentum encoder maintaining a negative-sample queue, optimizing proxies for positive-pair alignment and representation uniformity on the unit sphere. Mutual-information lower bounds and sampling-error rates depend on the negative-sample distribution, independence assumptions, and queue staleness; report ablations over queue size, temperature, negative-mining strategy, and downstream metrics."

@@ -29,26 +29,13 @@ Actual chapter map (ordered by dependency; chapter and section numbers verified 
 
 ## Core Structures Transferable to AI/Infra
 
-Each entry follows **geometric concept -> mathematical core -> AI transfer**, making it easy to plug directly into algorithm design.
-
-- **Riemannian metric g (S7.6 / S13.1) -> Natural gradient and information geometry.**
-  - Core: The metric tensor assigns an inner product <u,v>_g = u^T g v to the tangent space at each point, determining "what is close to what" and which direction counts as "steepest."
-  - Transfer: The natural metric on a family of probability distributions is the **Fisher information matrix (Fisher-Rao metric)**; parameter space is therefore not flat Euclidean but a curved manifold. The steepest-descent direction is not nabla L but **g^{-1} nabla L (natural gradient)**, which is invariant under reparameterization.
-- **Connection / covariant derivative (S12.1-S12.4) -> Parallel transport.**
-  - Core: Tangent spaces at different points cannot be directly added; a connection nabla specifies "how to carry a vector along a curve to another point without introducing extra rotation." The **Levi-Civita connection** is the unique one that is metric-compatible and torsion-free.
-  - Transfer: Correctly transporting **momentum / historical gradients / second-order state** on the parameter manifold is the origin of vector transport in Riemannian SGD/Adam.
-- **Curvature (S12.5 / S13.2 / S13.7) -> Optimization terrain (loss landscape).**
-  - Core: Curvature = how much a vector rotates after parallel transport around a small loop; it measures "whether the space is curved and whether paths are path-dependent," and is essentially the geometric avatar of the Hessian.
-  - Transfer: The curvature of the loss surface determines the condition number and sharpness; **Jacobi fields / Rauch comparison theorem (S13.7 / S13.11)** describe geodesic divergence-convergence, equivalent to stability vs. divergence of optimization trajectories.
-- **Geodesics and exponential map (S13.4) -> "Straight-line steps" on a manifold.**
-  - Core: Geodesics are locally shortest paths; the exponential map exp_p(v) maps a tangent vector v back to the endpoint of the corresponding shortest path on the manifold.
-  - Transfer: When doing **constrained optimization** on SPD matrices, Stiefel / Grassmann manifolds, exp_p is the exact version of a retraction; geodesic interpolation in latent space respects the data manifold better than Euclidean straight lines.
-- **Fiber bundles / principal bundles + G-connections (S6.8 / S12.12 / S9.8) -> Gauge equivariance.**
-  - Core: A principal G-bundle packages "the arbitrary choice of local coordinate system / frame" as a group action on fibers; a connection on the bundle = gauge field, curvature = field strength.
-  - Transfer: Physical quantities should not depend on the choice of local frame; this "gauge freedom" is precisely the inductive bias behind **gauge-equivariant CNNs (convolution on spheres / meshes / general manifolds)**; S9.8 uses Maxwell's equations to provide a concrete example of U(1) connection curvature.
-- **Lie groups and Lie algebras (S5) -> Continuous symmetry as prior.**
-  - Core: The exponential map exp: g -> G and the adjoint representation Ad provide the passage "infinitesimal generator -> finite transformation."
-  - Transfer: Encoding the symmetry group as a hard inductive bias of the network (equivariant layers, Lie-algebra-parameterized rotations / rigid-body transformations).
+- **Metric and differential**: a Riemannian metric g is a positive-definite inner product on each tangent space. The differential dL is a covector; grad_g L = g⁻¹dL is a vector. Fisher information gives such a metric for a regular identifiable statistical family, but may be singular in redundant parameterizations. A Fisher metric need not have nonzero curvature: a Gaussian location family with fixed covariance has a constant metric.
+- **Connections and transport**: a connection specifies covariant differentiation and parallel transport along a chosen curve. The Levi-Civita connection is uniquely metric-compatible and torsion-free. Optimizer momentum must be transported consistently; a practical vector transport satisfies the chosen method's requirements and need not equal exact parallel transport.
+- **Riemann curvature versus loss Hessian**: R(X,Y)Z = ∇_X∇_Y Z − ∇_Y∇_X Z − ∇_[X,Y]Z measures curvature of the connection. Hess_g L = ∇dL depends on a chosen objective as well. These are different tensors: Euclidean space has R=0 even for L(x)=‖x‖²/2 with Hessian I. Sharpness or an HVP does not measure the full Riemann tensor.
+- **Jacobi fields and optimization**: Jacobi fields and Rauch comparison concern variations of geodesics under curvature hypotheses. Gradient flow is generally not a geodesic; its stability requires analyzing its own linearized dynamics and objective Hessian. A geometric analogy is not an equivalence theorem.
+- **Geodesics and exponentials**: exp_p(v) is the point reached at unit time by the geodesic starting at p with velocity v, when it exists. Geodesics minimize distance on sufficiently short segments, not after arbitrary times or beyond the cut locus. In semi-Riemannian geometry they are not generally distance minimizers. A retraction agrees with the identity and tangent map at zero without necessarily following geodesics.
+- **Gauge structure**: principal bundles encode local frame choices; a connection transports representations between frames, and curvature describes its field strength. Intermediate features usually transform equivariantly under gauge changes; invariance is a separate requirement on an observable/readout.
+- **Lie groups**: exp: 𝔤→G and the adjoint connect infinitesimal coordinates to transformations. General Stiefel/Grassmann manifolds are homogeneous spaces, not Lie groups with their own matrix-group product. Choose the actual group action before claiming architectural equivariance.
 
 ## Problem Types Suited for Activation
 
@@ -60,43 +47,23 @@ Each entry follows **geometric concept -> mathematical core -> AI transfer**, ma
 
 ## Possible Algorithmic Inspirations
 
-- **Natural gradient / K-FAC**: Use the Fisher metric as preconditioner; update direction = F^{-1} nabla L rather than nabla L.
-  - Key engineering: K-FAC approximates the per-layer Fisher as a Kronecker product **F ~ A (x) B** (A from input activations, B from output gradients); inversion reduces to inverting two small matrices, and the preconditioner application becomes a small GEMM (see scorecard below).
-- **Information-geometric optimization**: View training as moving along Fisher-Rao geodesics on the distribution manifold.
-  - Mirror descent, Bregman divergences, and dual coordinates of exponential families are all special cases of this Hessian-metric framework; can be used to design optimizers insensitive to parameterization.
-- **Riemannian optimization**: SGD/Adam on SPD / Stiefel / Grassmann / hyperbolic manifolds.
-  - The toolkit of three: retraction (a cheap approximation of exp), vector transport (a discrete version of parallel transport), momentum on manifolds; commonly used in metric learning, orthogonality constraints, hierarchical structure embeddings.
-- **Gauge-equivariant CNN**: Introduce local gauge frames when convolving on manifolds / meshes.
-  - Use G-connections to align frames at neighboring points so that features are invariant to local coordinate choices; applicable to spherical signals, meshes, lattices, and other domains without global coordinates.
-- **Curvature regularization / geometric perspective on SAM**: Use Hessian-vector products to estimate curvature.
-  - Penalize sharp minima (flat-minima preference), or use Jacobi fields to characterize trajectory divergence, providing a geometric interpretation for sharpness-aware training.
-- **Geodesic interpolation and manifold augmentation**: Interpolate and sample along geodesics in latent / embedding space; respects the data manifold better than Euclidean straight lines; applicable to data augmentation and controllable generation.
+- **Natural gradient / K-FAC [~]**: solve Fv=dL or an appropriately regularized system. K-FAC approximates layer blocks by A⊗B; its approximation, damping and finite coordinate updates can break exact reparameterization invariance. Intrinsic natural-gradient flow is not generally a Fisher geodesic.
+- **Riemannian optimization [~]**: choose a metric, gradient, retraction and vector transport for SPD/Stiefel/Grassmann/hyperbolic parameters. Projection of an ambient Euclidean gradient is appropriate for an induced metric, not every metric.
+- **Gauge-equivariant layers [~]**: specify how input/output representations transform and constrain each map accordingly. Frame alignment alone does not prove invariance of every feature.
+- **Objective sharpness diagnostics [~]**: use HVPs or directional second derivatives to analyze the objective Hessian under an explicit norm/parameterization. Do not label them Riemann-curvature estimates; a claimed connection to generalization needs separate evidence.
+- **Geodesic interpolation [~]**: choose the metric and a minimizing branch, check cut-locus/nonuniqueness issues, and validate task quality. Respecting a modeled geometry alone does not guarantee better augmentation.
 
 ## GPU Friendliness Warning
 
-> Evaluate item by item using the **eight-dimension scorecard** from `../gpu-friendly-math.en.md`. The biggest pitfall in differential geometry is "inversion and materialization of metric / curvature matrices."
+Use `../gpu-friendly-math.en.md` only for implementation dimensions that affect the decision. These costs concern particular representations, not all geometric methods.
 
-- **D2/D3**: Inversion is the make-or-break line. Naive natural gradient requires inverting the N x N Fisher, where N is the parameter count (~10^9); O(N^3) inversion + O(N^2) memory means **immediate disqualification**.
-  - **Adaptable [v]**: **K-FAC** blocks F into a Kronecker product A (x) B, exploiting (A (x) B)^{-1} = A^{-1} (x) B^{-1}; only two small factors need inversion, and applying the preconditioner to the gradient **is a GEMM**. This is the affirmative answer to "can Kronecker factorization reduce to GEMM" -- yes, and this is the only form that can scale to a cluster.
-- **D4**: Do not materialize the full Hessian / full curvature tensor. The Riemann curvature tensor is order 4; full materialization blows up memory. Use **Hessian-vector products (HVP)** to extract curvature information in O(N) via a single backward pass, avoiding N x N.
-- **D5**: Fisher / metric matrices are often ill-conditioned. Inversion under bf16/fp16 catastrophically amplifies errors; **must add damping (Tikhonov, F + lambda I)** and keep inversion in fp32; otherwise it violates "low-precision stability."
-- **D6**: Parallel transport / geodesics are serial ODEs. Integrating the connection equation along a curve is a long serial recurrence with poor parallelism; in practice, one uses **single-step retractions / closed-form parallel transport** (analytic formulas exist for specific manifolds) instead of step-by-step integration.
-- **D1/D2**: Group convolution can be friendly, but continuous groups require caution. Discrete groups (e.g., C_n, octahedral group) admit group convolutions that expand into GEMM [v]; continuous Lie groups require discretization by sampling, and improper sampling can break equivariance + produce irregular gather/scatter (D7 Sparsity unfriendly).
+- **D2/D3/D4 [v]**: explicitly storing an N×N Fisher takes O(N²) space and a standard dense factorization costs O(N³). Prefer a solve to an explicit inverse. Alternatives include matrix-free Fisher-vector products with iterative solves, diagonal/block approximations, and Kronecker factors; factorization is not the only viable route.
+- **K-FAC [~]**: factors of sizes a×a and b×b need O(a²+b²) storage and dense factor decompositions cost O(a³+b³), plus statistics and preconditioning. The identity (A⊗B)⁻¹=A⁻¹⊗B⁻¹ requires invertible factors. Damping the full block by λI does not generally equal separately damping both factors.
+- **D4 [~]**: HVPs avoid materializing the loss Hessian and often cost a small number of gradient-like passes; cost depends on the model graph and saved activations, not a universal O(N) rule. An HVP is not the action of the rank-four Riemann tensor.
+- **D5 [~]**: examine conditioning and solver residuals, test precision against a higher-precision reference, and regularize when needed. Damping changes the operator/metric; fp32 alone is no guarantee of an accurate inverse.
+- **D1/D6/D7/D8 [~]**: closed-form transport, small groups, batching and fusion can be efficient. For continuous groups, sampling is only one route; representation constraints can provide exact equivariance without enumerating the group. Discretization or truncated representations need their own error analysis.
 
-**Natural gradient / K-FAC eight-dimension scorecard (worked example):**
-
-| D | Naive Natural Gradient (full Fisher inversion) | K-FAC (Kronecker factorization) |
-|-----------|------------------------------------------------|--------------------------------|
-| D1 | [x] explicit large-matrix inverse | [v] batched small-matrix algebra |
-| D2 | [x] N x N inversion, not GEMM-able | [v] A^{-1} (x) B^{-1} application = GEMM chain |
-| D3 | [x] O(N^3) | [v] two small factors, sub-cubic |
-| D4 | [x] materialize N x N | [v] store only two small factors |
-| D5 | [x] ill-conditioned, needs fp64 | [~] add damping + fp32 inversion, adaptable |
-| D6 | [~] single large inversion hard to parallelize | [v] per-layer factors independent, parallelizable |
-| D7 | -- | [v] block-diagonal structure |
-| D8 | [x] | [v] preconditioner can be fused into optimizer kernel |
-
-**Conclusion**: Riemannian / information-geometric methods **become GPU-feasible only when the metric is structurally factored (Kronecker / block-diagonal / low-rank)**; exact inversion and exact parallel transport are "beautiful but incomputable" and must be adapted or eliminated.
+Exact low-dimensional geometry can be tractable. Choose between analytic formulas, iterative solvers and approximations by measured cost and the required guarantee.
 
 ## Which Thinking Lens to Invoke
 
@@ -106,24 +73,16 @@ Each entry follows **geometric concept -> mathematical core -> AI transfer**, ma
 - **geometric**: Explicitly model parameter / data spaces as manifolds, then translate back to algorithms.
 - **topological**: Auxiliary -- de Rham cohomology / global invariants for conservation laws and integrability diagnostics.
 
-Recommended combination: First `symmetry` to establish the symmetry structure -> `variational` to arrive at natural gradient / Riemannian optimization -> `duality` to handle retractions -> pass through the `../gpu-friendly-math.en.md` acceptance gate.
+Recommended combination: First `symmetry` to establish the symmetry structure -> `variational` to arrive at natural gradient / Riemannian optimization -> `duality` to handle retractions -> check applicable implementation costs and risks with `../gpu-friendly-math.en.md`.
 
 ## Anti-patterns
 
-Each entry gives **anti-pattern -> correct approach**:
-
-- **Materializing and exactly inverting the full Fisher / full Hessian**: O(N^3) / O(N^2), infeasible on a cluster.
-  - Correct approach: First apply Kronecker / block-diagonal / low-rank factorization, then invert; without factorization, don't use natural gradient.
-- **Directly inverting ill-conditioned metric matrices in fp16**: Catastrophic cancellation, results are noise.
-  - Correct approach: Add damping F + lambda I, keep inversion in fp32, use CG / Woodbury for implicit solves when necessary.
-- **Step-by-step ODE integration for parallel transport / geodesics**: Serial recurrence kills parallelism.
-  - Correct approach: Use closed-form retractions / vector transport (analytic formulas exist for specific manifolds), replacing the recurrence with a single step.
-- **Blindly discretizing continuous groups**: Equivariance silently breaks, and irregular gather/scatter patterns are introduced.
-  - Correct approach: Choose discrete subgroups that can be exactly represented, or use quadrature / frequency-domain (spherical harmonics) schemes with provable error bounds.
-- **Forcing manifold structure for "geometric beauty"**: For the vast majority of tasks, Euclidean approximations suffice.
-  - Correct approach: Before introducing Riemannian machinery, first demonstrate experimentally that the Euclidean approach is genuinely ill-conditioned (condition number / convergence curves).
-- **Treating curvature regularization as a panacea**: Curvature estimation is itself expensive and noisy.
-  - Correct approach: First validate the benefit at small scale using HVPs, confirm the signal-to-noise ratio, then scale up.
+- Equating intrinsic Riemann curvature, objective Hessian and parameter-dependent sharpness. Specify which tensor and which metric each claim concerns.
+- Calling every natural-gradient update a geodesic or exactly reparameterization-invariant after arbitrary damping/discretization.
+- Treating all geodesics as global shortest paths, or using one Log branch across a cut locus.
+- Materializing a huge dense Fisher when only its action is needed; compare matrix-free solves and structured approximations.
+- Assuming a gauge-equivariant feature is invariant, or that continuous-group equivariance always requires sampling.
+- Using geometric language as performance evidence. Establish the baseline, mathematical guarantee, solver accuracy and measured cost separately.
 
 ## Deep-dive Entry
 

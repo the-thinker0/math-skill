@@ -4,6 +4,8 @@
 
 For non-smooth or non-differentiable objective functions $f(x) = g(x) + h(x)$ ($g$ smooth, $h$ possibly non-differentiable but "simple"), uses the proximal operator $\text{prox}_{\eta h}(v) = \arg\min_x \{h(x) + \frac{1}{2\eta}\|x - v\|^2\}$ in place of the gradient of $h$. Proximal methods encapsulate the non-differentiable part as a closed-form subproblem.
 
+**Scope of guarantees**: For proper closed convex $h$ and $\eta>0$, the proximal map is single-valued and its Moreau envelope is differentiable. ISTA/FISTA objective rates require convex $g$ with $L$-Lipschitz gradient, $\eta\le1/L$, existence of a minimizer, and suitably accurate prox solves; they are not generic rates for nonconvex neural networks.
+
 ## Core Formulas
 
 - Proximal operator: $\text{prox}_{\eta h}(v) = \arg\min_x \left\{h(x) + \frac{1}{2\eta}\|x - v\|^2\right\}$
@@ -27,16 +29,16 @@ For non-smooth or non-differentiable objective functions $f(x) = g(x) + h(x)$ ($
 
 - **Soft-thresholding for sparse training**: $\text{prox}_{\eta\lambda\|\cdot\|_1}(w) = \text{sign}(w) \odot \max(|w| - \eta\lambda, 0)$, implemented as `w.sign() * (w.abs() - eta * lam).clamp(min=0)`, pure elementwise, $O(d)$, zero additional memory. Applying soft-thresholding after each SGD update yields sparse weights.
 - **Singular value soft-thresholding for low-rank regularization**: $\text{prox}_{\eta\|\cdot\|_*}(W) = U(\Sigma - \eta)_+ V^H$. Requires SVD; for large matrices, approximate with randomized SVD: first perform randomized SVD to rank $r$, then apply elementwise soft-thresholding to $\Sigma$, and reconstruct. Core operations are matmul chains + elementwise.
-- **Group Lasso structured pruning**: $\text{prox}_{\eta\sum_g\|w_g\|_2}(w)_g = w_g \cdot \max(1 - \eta/\|w_g\|_2, 0)$. After grouping by channel/head, each group undergoes independent soft-thresholding (norm + elementwise scale), $O(d)$. Implemented as reshape + norm(dim) + clamp + mul.
-- **ADMM for distributed training**: $\min \sum_i f_i(x_i) + g(z)$ s.t. $x_i = z$. Each node independently updates $x_i$ (local SGD), the server updates $z = \text{prox}_{g/\rho}(\bar{x} + u)$ (aggregation + proximal), and $u$ is updated as the dual variable. More communication-efficient than all-reduce (only $x_i$ and $z$ need to be transmitted).
-- **Quantization proximal operator**: Models weight quantization as $\text{prox}(w) = \Delta \cdot \text{round}(w/\Delta)$, with backpropagation using the straight-through estimator (STE): $\partial \text{prox}/\partial w \approx 1$. Implemented as `w_q = (w / delta).round() * delta`; the forward pass is elementwise round + mul, the backward pass is identity.
+- **Nonoverlapping group lasso**: For disjoint groups, $\operatorname{prox}_{\eta\sum_g\|\cdot\|_2}(w)_g=(1-\eta/\|w_g\|)_+w_g$, defining zero output when $w_g=0$. Overlapping groups generally need a different solver; this independent block formula no longer applies.
+- **Consensus ADMM**: For $m$ workers minimizing $\sum_i f_i(x_i)+g(z)$ with $x_i=z$, the shared step is $z^+=\operatorname{prox}_{g/(m\rho)}(\frac1m\sum_i(x_i^++u_i))$, followed by $u_i^+=u_i+x_i^+-z^+$. The worker count matters in the prox scale; local SGD is an inexact inner solve requiring its own error control. Communication advantage over all-reduce is workload-dependent.
+- **Quantization projection**: $q(w)=\Delta\operatorname{round}(w/\Delta)$ projects onto a discrete uniform grid (a nonconvex indicator prox; ties need a rule). An STE can use `w + (q(w)-w).detach()`; plain `round` has zero derivative almost everywhere and does not automatically implement an identity backward.
 
 ## Engineering Feasibility
 
 - **Primary operations**: Most proximal operators are elementwise (soft-thresholding, clamp, group norm) or matmul + small SVD (nuclear norm). Gradient steps = standard backpropagation.
 - **GPU friendliness**: Extremely high. $\ell_1$ proximal = elementwise; group lasso proximal = reshape + norm + scale = elementwise; nuclear norm proximal = matmul + small SVD. FISTA's momentum term is also elementwise. ADMM's communication pattern is compatible with data parallelism.
 - **Complexity**: ISTA/FISTA per step = one gradient computation + one proximal operator ($O(d)$ elementwise); nuclear norm proximal = $O(nd^2)$ (reduced to $O(ndk)$ via randomized SVD); ADMM per node = local SGD + $O(d)$ communication.
-- **Low precision**: Elementwise proximal operators are stable under bf16 (no delicate numerical operations). SVD-based proximals must be computed in fp32. FISTA's momentum accumulation may lose precision under bf16; storing $y_k$ in fp32 is recommended.
+- **Low precision**: Threshold decisions can change with rounding near zero/thresholds; inspect sparsity patterns and optimization residuals. Accumulate norms/momentum in fp32 when necessary, and validate approximate nuclear-norm prox near the truncation threshold.
 
 ## Risks and Failure Conditions
 

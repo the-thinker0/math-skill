@@ -10,9 +10,9 @@ Transforms a constrained optimization problem (primal) into a maximization probl
 - Lagrangian: $L(x, \lambda, \nu) = f(x) + \sum_i \lambda_i g_i(x) + \sum_j \nu_j h_j(x)$
 - Dual function: $g(\lambda, \nu) = \inf_x L(x, \lambda, \nu)$ (pointwise infimum over $x$, naturally concave)
 - Weak duality: $d^* \leq p^*$ (dual optimum $\leq$ primal optimum, always holds)
-- Strong duality condition (Slater): convex problem + existence of a strictly feasible point $g_i(x_0) < 0 \implies d^* = p^*$
+- Slater sufficient condition: convex objective/inequalities, affine equalities, and a point in the relative interior of the objective domain satisfying the equalities and all nonlinear inequalities strictly imply strong duality (with the usual finite-optimum assumptions).
 - Complementary slackness: $\lambda_i^* g_i(x^*) = 0$ (at optimality, either the constraint is tight or the multiplier is zero)
-- Minimax equivalence: strong duality $\iff \min_x \max_{\lambda \geq 0} L = \max_{\lambda \geq 0} \min_x L$
+- Minimax values: use $\inf_x\sup_{\lambda\ge0,\nu}L$ and $\sup_{\lambda\ge0,\nu}\inf_xL$. Strong duality equates these values; replacing inf/sup with min/max also requires attainment.
 
 ## Applicable Problems
 
@@ -39,9 +39,9 @@ Transforms a constrained optimization problem (primal) into a maximization probl
 
 ## Risks and Failure Conditions
 
-- **Duality gap for non-convex problems**: Strong duality is only guaranteed for convex problems + Slater's condition. In non-convex neural network training, $d^* < p^*$ is common, and the dual solution does not yield a primal-feasible solution. Solution: for convex problems, augmented Lagrangian (with the exact penalty property when $\rho$ is sufficiently large, which can eliminate the duality gap); for non-convex problems, the duality gap may persist regardless of $\rho$, and the augmented Lagrangian only guarantees local convergence to KKT points -- alternatively, use SQP.
+- **Duality gap**: Convexity plus Slater is sufficient, not necessary, for strong duality. Augmented-Lagrangian algorithms need their own convergence assumptions; nonconvex neural-network inner solves do not automatically converge to KKT points or close a global duality gap.
 - **Dual variable oscillation**: Improper step sizes for gradient ascent on $\lambda$ can cause dual variable oscillation and primal infeasibility. Solution: use adaptive step sizes (Adam updates for $\lambda$) or an increasing $\rho$ schedule in the augmented Lagrangian.
-- **Numerical determination of complementary slackness**: $\lambda_i g_i(x) = 0$ can only be satisfied to $\sim 10^{-6}$ in floating point; strict complementary slackness is unattainable. This affects SVM support vector identification; a threshold must be set.
+- **Complementarity diagnostics**: Report scaled residuals for primal feasibility, dual feasibility, stationarity, and $\lambda_i g_i(x)$. Strict complementarity means $\lambda_i>0$ for active constraints; it is a structural property, not synonymous with exact floating-point equality or a fixed $10^{-6}$ tolerance.
 - **Mode collapse in minimax training**: The non-convex-non-concave game in GAN $\min\max$ leads to mode collapse or training instability. Additional regularization such as gradient penalty (WGAN-GP) or spectral normalization is required.
 
 ## Further References
@@ -53,7 +53,7 @@ Transforms a constrained optimization problem (primal) into a maximization probl
 ## Routing Extensions
 - If starting from the primal problem -> `constrained-optimization.en.md` (primal constrained optimization)
 - If strong duality conditions are needed -> `convex-optimization.en.md` (strong duality theorem for convex problems)
-- If the dual form of IB objective is involved -> `../probability/information-bottleneck.md` (variational dual of information bottleneck)
+- If the dual form of IB objective is involved -> `../probability/information-bottleneck.en.md` (variational dual of information bottleneck)
 
 ## Extensible Directions
 - Augmented Lagrangian: penalty-enhanced Lagrangian methods

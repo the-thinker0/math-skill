@@ -15,25 +15,25 @@ Decomposes a matrix into a linear combination of eigenvalue-eigenvector pairs. F
 
 ## Applicable Problems
 
-- Hessian spectral analysis: determining loss surface curvature (positive definite = local minimum, negative eigenvalues present = saddle point)
-- Gradient covariance spectrum: diagnosing training dynamics; the spectral radius determines stability
+- Hessian analysis: at a stationary point of a twice-differentiable loss, positive definiteness implies a strict local minimum; an indefinite Hessian implies a saddle. A negative eigenvalue alone may instead indicate a local maximum.
+- Gradient covariance spectra diagnose anisotropy; stability must be analyzed from the actual update operator, step size, and noise model.
 - Spectral normalization: constraining $\sigma_{\max}(W) \leq 1$ to stabilize GAN/diffusion model training
 - State space model (SSM) stability: spectral radius of the discretization matrix $< 1$ guarantees non-divergence
 - Graph neural networks: Laplacian spectral decomposition = Fourier basis on graphs
 
 ## AI Design Translation
 
-- **Power iteration for spectral radius / largest singular value estimation**: $u_{k+1} = Au_k / \|Au_k\|$, each step requiring only one matvec + norm, $O(n^2)$. Standard approach in spectral normalization (SN-GAN); built into PyTorch as `torch.nn.utils.spectral_norm`. Note: single-vector iteration has low parallelism; block iteration is needed for parallelization.
-- **Hessian-free optimization (HVP + CG)**: Without materializing the Hessian, computes $Hv$ via autodiff (one forward + one backward pass), then feeds it to CG to solve $Hd = -g$. The core operations are two backward passes (matvec), fully GPU-friendly.
-- **Kronecker-factored approximate curvature (K-FAC)**: Approximates the Hessian as $H \approx A \otimes B$ (Kronecker product), where each factor is a small matrix (on the order of the layer dimension), reducing inversion to small GEMM operations. Each layer is independent, naturally parallelizable.
+- **Power iteration**: $u\leftarrow Au/\|Au\|$ estimates a dominant eigenvector only with a strict dominant-magnitude eigenvalue and nonzero initial overlap. To estimate $\sigma_{\max}(W)$, alternate $u\leftarrow Wv/\|Wv\|$, $v\leftarrow W^Tu/\|W^Tu\|$ and use $u^TWv$; do not confuse this with the spectral radius of a non-normal matrix.
+- **Hessian-vector products**: Obtain an HVP with nested autodiff without materializing the Hessian. Standard CG requires a symmetric positive-definite operator; use damping with a suitable PSD curvature approximation, or a solver/trust-region method that explicitly handles negative curvature.
+- **K-FAC**: Approximate per-layer Fisher (or an explicitly specified generalized Gauss–Newton) block by $A\otimes B$. Dense $d\times d$ factor inversion is $O(d^3)$ with $O(d^2)$ storage, often amortized across updates; it is not an arbitrary Hessian factorization. [Original K-FAC paper](https://arxiv.org/abs/1503.05671).
 - **Spectral regularization loss**: $\mathcal{L}_{\text{spec}} = \max(0, \rho(A) - 1)^2$ or $\mathcal{L}_{\text{spec}} = \|\sigma_{\max}(W) - 1\|^2$, estimated via power iteration and added to the total loss. Implemented as an additional scalar loss term without affecting the main computational graph structure.
 - **Graph Fourier transform**: The eigendecomposition of the graph Laplacian $L = D - A$, $L = U\Lambda U^H$, provides the graph frequency domain basis. Spectral convolution in GCN = $U g(\Lambda) U^H x$, three matmul operations. For large-scale graphs, Chebyshev polynomial approximation avoids explicit decomposition.
 
 ## Engineering Feasibility
 
-- **Primary operations**: Full EVD is $O(n^3)$, but full decomposition is rarely needed in AI. Power iteration is $O(n^2)$/step matvec; K-FAC factors are $O(d^2)$ small-matrix inversions.
-- **GPU friendliness**: Medium to high (method-dependent). Power iteration / HVP = matvec = friendly; full EVD is infeasible for $n > 1000$. cuSOLVER provides `syevd` (symmetric EVD) and `gesvd` (SVD), but the $O(n^3)$ cost limits scalability.
-- **Low precision**: Hermitian matrix EVD is relatively stable under bf16 (eigenvalues are Lipschitz continuous, Weyl bound). Eigenvalues of non-normal matrices may be severely distorted under low precision; SVD should be used instead.
+- **Primary operations**: Full EVD costs $O(n^3)$ time and $O(n^2)$ storage; power iteration on a dense matrix costs $O(n^2)$ per step. Count K-FAC factor construction, cubic factor solves, and refresh frequency separately.
+- **GPU feasibility**: Matvecs and factorizations have GPU implementations, but throughput depends on matrix size, batching, precision and device. Benchmark the required spectrum rather than declaring full EVD impossible at a universal dimension cutoff.
+- **Low precision**: Weyl bounds control absolute eigenvalue error from a Hermitian input perturbation; they do not guarantee small relative error near zero, stable eigenvectors, or low-precision solver support. Accumulate Gram/Hessian quantities and run sensitive decompositions in fp32/fp64; test residuals and eigengaps.
 
 ## Risks and Failure Conditions
 
@@ -51,7 +51,7 @@ Decomposes a matrix into a linear combination of eigenvalue-eigenvector pairs. F
 ## Routing Extensions
 - If truncation approximation is needed -> `low-rank-approximation.en.md` (SVD-based low-rank approximation)
 - If used for attention mechanism design -> `spectral-attention` (design pattern layer)
-- If spectral concentration bounds are needed -> `../probability/concentration-inequality.md` (concentration inequalities for random matrix spectra)
+- If spectral concentration bounds are needed -> `../probability/concentration-inequality.en.md` (concentration inequalities for random matrix spectra)
 
 ## Extensible Directions
 - SVD variants (truncated / randomized SVD): fast decomposition for large-scale matrices

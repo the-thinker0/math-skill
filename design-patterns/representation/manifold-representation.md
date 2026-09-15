@@ -1,5 +1,5 @@
 # Manifold Representation（流形表示）
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
+> **证据标注**：[v] 有明确假设或记录验证支持；[~] 待验证的工程方案；[x] 在所述条件下不相容；[N/A] 不适用。伪代码用于定义算子，不是完整生产实现。
 
 ## 适用问题
 当输入数据虽然在高维空间中，但实际分布在低维流形上时使用。典型场景：
@@ -26,37 +26,23 @@
   用于在切空间中做线性运算后映射回流形
 
 ## AI 模块形式
+
+```python
+# chart混合：局部仿射近似，不自动构成几何图册
+z = zeros(N, d)
+for k in range(K):
+    z += gate(X)[:, k:k+1] * (X @ W[k].T + bias[k])
+# 若各chart坐标不同，混合前先对齐/坐标过渡。
+
+# Euclidean度量Stiefel更新：W形状D x r，W.T @ W = I
+G = euclidean_gradient(loss, W)
+M = W.T @ G
+grad_R = G - W @ ((M + M.T) / 2)
+W_next = qr(W - learning_rate * grad_R, mode='reduced').Q
 ```
-模块：ManifoldRepresentation
-输入：X ∈ R^{N×D}（高维输入），目标流形维度 d << D
+`G - W @ (W.T @ G)` 是水平 Grassmann 投影，不是一般 Stiefel 梯度；它丢失框架内部旋转。
 
-方法1 - 局部线性嵌入（Chart-based）：
-  // 将 d 维流形分成 K 个局部区域，每个区域用线性投影
-  assignments = cluster(X, K)         // 将输入分配到 K 个局部区域
-  for k in range(K):
-    z_k = W_k @ X[assignments==k] + b_k  // 局部线性投影 d×D → d×d
-  // 等效为 MoE：K 个"chart expert"各负责流形一个局部
-  z = Σ_k g_k(x) · (W_k @ x + b_k)   // g_k 为 chart 分配权重
-
-方法2 - 测地线保持损失（全局结构保持）：
-  // 保持高维空间的测地线距离在低维表示中不变
-  D_high = geodesic_distance(X, k_nn=10)   // k-NN 图上最短路
-  D_low = pairwise_distance(Z)              // 低维表示的欧氏距离
-  L_geo = ‖D_high - D_low‖_F² / N²         // Sammon mapping
-  // 或用 t-SNE 式 KL 散度：
-  p_ij = exp(-D_high²/2σ²) / Σ  // 高维亲和度
-  q_ij = 1/(1+D_low²) / Σ        // 低维 t 分布亲和度
-  L_tsne = KL(P ‖ Q)
-
-方法3 - 黎曼优化（直接在流形上优化）：
-  // 参数约束在 Stiefel/Grassmann 流形上
-  W ∈ St(d, r)  i.e. W^T W = I_r           // 正交约束
-  // Riemannian SGD：
-  grad_euclidean = ∇f(W)
-  grad_riemannian = grad_euclidean - W @ (W^T @ grad_euclidean)  // 投影到切空间
-  W = retract(W, -lr · grad_riemannian)     // 缩回映射到流形
-  // retract 可用 QR 分解或 Cayley 变换实现
-```
+测地应力 `mean((D_graph-D_latent)**2)` 是无权 metric stress，不是 Sammon 加权应力。应在连通采样图上估图距离并明确度量；弯曲流形未必能在内在维数的 Euclidean 坐标中全局保距。稀疏 Laplacian 正则 $\operatorname{tr}(Z^TLZ)$ 是边平滑惩罚，单独使用允许坍塌到常数表示。
 
 ## 可实现结构
 - **Chart MoE**：K 个局部线性投影 + softmax 门控 → 天然与 MoE 框架集成
@@ -66,21 +52,21 @@
 - **自适应 d**：不同区域的局部维度不同，用 PCA 局部估计
 
 ## GPU 可行性
-- **D1[v]**：局部线性投影为 GEMM (d×D)@(D×N)；图拉普拉斯正则为 SpMM
-- **D2[v]**：Chart MoE 的 K 个线性投影为 batched GEMM (K×d×D)@(D×N)
-- **D3[~]**：k-NN 构建 O(N·D·log N) 需 FAISS；流形正则 O(N²) 需采样近似
-- **D4[v]**：K 个 chart 参数 K·d·D 通常 <10MB；k-NN 图 N·k·4 bytes
-- **D5[~]**：距离计算和 exp 在 fp16 下需注意数值范围；黎曼 retract 建议 fp32
-- **D6[v]**：K 个 chart 独立计算，完美并行；k-NN 搜索用 FAISS GPU 加速
-- **D7[v]**：k-NN 图天然稀疏，流形正则 L 为稀疏矩阵，SpMM 加速
-- **D8[v]**：chart 内的 matmul+bias+activation 可融合；门控 softmax+weighted-sum 可融合
+
+- **D1/D2[~]**：局部投影用 GEMM；稀疏 Laplacian 损失用 SpMM/边差分。
+- **D3[~]**：暴力精确 k-NN 为 $O(N^2D)$；近似索引的构建、查询及召回权衡依赖方法/数据。稀疏 Laplacian 损失为 $O(|E|d)$，并非必然 $O(N^2)$。全对测地距离另有潜在大成本。
+- **D4[~]**：chart 权重存 $O(KdD)$ 个数；稀疏边需端点与权重，$O(Nk_{nn})$。不存在通用10 MB上限。
+- **D5[~]**：距离与 QR 用 fp32；监控正交性、邻域召回及断连分量。
+- **D6/D8[~]**：chart 投影可批处理；路由及索引构造另有开销。对完整编码/路由/正则工作 profiling。
+- **D7[~]**：稀疏图正则保持所选边集，不保证未知流形拓扑。
 
 ## 论文表述方式
 "基于流形假设将 D 维 token 表示建模为低内在维度结构，
 通过 K 个局部坐标卡（Chart MoE）实现分段近似，并用图拉普拉斯正则鼓励局部邻域一致性。嵌入误差或测地线保持只在采样密度、流形光滑性、图构造和估计器假设满足时才有理论界，实际应报告邻域保持、重构误差和下游指标。"
 
 ## 风险
-- 内在维度 d* 估计不准确导致过度压缩或维度浪费
-- k-NN 图构建在大规模数据下计算代价高，需采样或近似
-- 流形正则的 N² 复杂度限制 batch size，需 mini-batch 采样
-- 局部 chart 边界处表示不连续，需重叠区域和平滑过渡
+
+- 流形假设及内在维数需要证据；局部 PCA 可能混淆噪声与曲率。
+- chart 混合需要重叠及坐标一致性；平滑 gate 本身不构成有效过渡映射。
+- 邻域错误或断连图扭曲图测地距离。
+- 平滑项应配合任务/重建或方差约束，防止坍塌。

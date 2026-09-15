@@ -29,7 +29,7 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 
 ## AI 设计翻译
 - **知识蒸馏 Loss**：$\mathcal{L} = (1-\alpha) \cdot CE(y, q_s) + \alpha \cdot T^2 \cdot D_{KL}(p_t \| q_s)$，其中 $T$ 为温度参数
-- **VAE 正则项**：$D_{KL}(q_\phi(z|x) \| p(z))$，通常取 $p(z) = \mathcal{N}(0, I)$，解析可算
+- **VAE 正则**：编码器与先验都属于适当高斯族时，$KL(q_\phi(z|x)\|p(z))$ 有常见闭式；仅先验高斯不保证解析 KL。
 - **PPO / RLHF**：$D_{KL}(\pi_\theta \| \pi_{\text{ref}})$ 作为策略偏离参考策略的惩罚项
 
 ## 工程可行性
@@ -42,7 +42,7 @@ $$D_{KL}(p \| q) = H(p, q) - H(p)$$
 
 ## 风险与失效条件
 - **支持集不匹配**：若某处 $p(x)>0$ 而 $q(x)=0$，则 $D_{KL}(p\|q)=\infty$。softmax 的精确数学输出为正，但有限精度下可能下溢；可在 log-space 计算，是否使用 smoothing 取决于建模目标而非硬性要求。
-- **梯度方差大**：在 RL（PPO/RLHF）中，KL 估计依赖采样，高方差可导致训练不稳定。常用 clip + 线性近似 $\mathbb{E}[\log p - \log q]$ 替代精确 KL。
+- **采样语义**：定义良好时 $\mathbb E_p[\log p-\log q]=KL(p\|q)$ 是精确恒等式；Monte Carlo 估计含采样误差且可为负。从其他策略采样需适当重要性加权或另行推导估计器；裁剪改变目标/偏差。
 
 ## 深入参考
 - 蒸馏稿：`../../references/books/` 暂无专用信息论蒸馏稿

@@ -1,5 +1,5 @@
 # Leverage Score Selection（杠杆分数选择）
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
+> **证据标注**：[v] 有明确假设或记录验证支持；[~] 待验证的工程方案；[x] 在所述条件下不相容；[N/A] 不适用。伪代码用于定义算子，不是完整生产实现。
 
 ## 适用问题
 当需要从大规模矩阵中选取最有代表性的行/列/token，并希望在下游线性代数任务中获得可检验误差界时使用：KV-Cache token 选择、数据 coreset 构建、Nyström landmark 采样、分布式梯度压缩。核心诉求：**基于子空间投影的统计杠杆分数做采样，在矩阵采样理论假设下以高概率逼近全量计算**。
@@ -9,63 +9,51 @@
 - 知识：../../knowledge-base/matrix-analysis/low-rank-approximation.md（随机化 SVD、核范数）、../../knowledge-base/matrix-analysis/projection.md（投影矩阵对角元 = 杠杆分数）、../../knowledge-base/probability/concentration-inequality.md（Bernstein 矩阵浓度界）
 
 ## 需要的数学知识
-- **统计杠杆分数**：$\ell_i = \|(V_k V_k^T)_i\|^2 = (V_k V_k^T)_{ii}$，第 $i$ 行在 rank-$k$ 子空间的投影能量；$\sum_i \ell_i = k$
-- **杠杆分数采样界**：在最小二乘/子空间嵌入设定和独立重加权采样条件下，以 $p_i = \ell_i / k$ 采样 $s = O(k \log k / \epsilon^2)$ 行可得到 $(1+\epsilon)$ 近似（Drineas-Mahoney 类结果）
-- **Bernstein 矩阵界**：采样后 $\|\hat{A}^T \hat{A} - A^T A\|_2 \leq \epsilon \|A\|_F^2$，概率 $\geq 1-\delta$
-- **快速近似**：$\tilde{\ell}_i = \|(A\Omega)_i\|^2$（$\Omega$ 随机高斯），避免完整 SVD，$O(Ndk)$
-- **DPP 扩展**：行列式点过程 $P(S) \propto \det(L_S)$ 在杠杆分数基础上增加多样性保证
+
+- $A$ 的正交归一秩 $k$ **左**基 $U_k\in\mathbb R^{N\times k}$，行杠杆分数为 $\ell_i=\|U_k[i,:]\|_2^2=(U_kU_k^T)_{ii}$，且 $\sum_i\ell_i=k$。右奇异向量给出列杠杆分数。
+- 从 $p_i\ge\beta\ell_i/k$ 独立有放回采样，按 $1/\sqrt{s p_i}$ 缩放行，在标准矩阵集中条件下 $s=O(k\log(k/\delta)/(\beta\epsilon^2))$ 可嵌入这个固定子空间。仅保持低秩基不意味着对任意响应向量的完整最小二乘相对误差保证。
+- 原始 sketch 行范数 $\|(A\Omega)_i\|^2$ 是 sketch 能量，不是杠杆分数：先正交化值域。若目标恰为秩 $k$，QR 后还需小投影 SVD 截断。
+- 确定性 top-s 不继承独立随机采样定理。DPP 采样由 PSD 主子阵行列式定义，任意邻居惩罚启发式不是 DPP 采样。
 
 ## AI 模块形式
+
+```python
+Omega = randn(d, k + oversampling)
+Q = qr(A @ Omega, mode='reduced').Q
+U_small, singular_values, Vh = svd(Q.T @ A, full_matrices=False)
+U_k = Q @ U_small[:, :k]
+leverage = (U_k**2).sum(-1)
+probs = leverage / leverage.sum()
+indices = multinomial(probs, s, replacement=True)
+weights = 1 / sqrt(s * probs[indices])
+A_sampled = A[indices] * weights[:, None]
 ```
-模块：LeverageScoreSelector
-输入：A ∈ R^{N×d}    参数：采样数 s << N，秩参数 k
+以精确小例检查数值秩、基正交性及嵌入残差。确定性 token 逐出可用 `topk(leverage, s)`，但这是注意力启发式；上述行重加权本身不会保持 softmax token 语义。
 
-方法1 - 随机投影杠杆分数（在线/大规模）：
-  Omega = randn(d, k+p)                       // 随机矩阵，p=5 过采样
-  Q = qr(A @ Omega)[0]                        // N×(k+p)，GEMM + QR
-  leverage = sum(Q ** 2, dim=1)               // N 维，逐行平方和
-  indices = topk(leverage, s)                 // 确定性选 top-s
-  A_selected = A[indices]
-
-方法2 - 精确杠杆分数（离线/小矩阵）：
-  U_k = svd(A)[:k][0]                         // 截断 SVD 左奇异向量
-  leverage = sum(U_k ** 2, dim=1)             // 精确 rank-k 杠杆分数
-  probs = leverage / leverage.sum()
-  indices = multinomial_sample(N, s, probs)    // 概率采样 + 重加权
-  weights = 1 / sqrt(s * probs[indices])
-
-方法3 - KV-Cache 滑动窗口驱逐：
-  每 M 步更新 Q = qr(K_cache @ Omega)[0]
-  leverage = sum(Q ** 2, dim=1)
-  驱逐 leverage 最低的 token（对子空间贡献最小）
-
-方法4 - DPP 贪心多样化选择：
-  scores = leverage.clone(); L = A @ A^T       // PSD 核矩阵
-  for _ in range(s):
-    idx = argmax(scores); selected.append(idx)
-    scores -= α * |L[:, idx]|                   // 惩罚已选 token 的邻居
-```
+多样性选择应使用实际 DPP/k-DPP 采样器或明确的贪心 log-det 算法。若使用杠杆分数加相似性惩罚，标为“多样性启发式”，与均匀/随机/注意力分数基线比较。
 
 ## 可实现结构
-- **随机投影杠杆层**：1 次 GEMM + 1 次 QR 即得近似杠杆分数，$O(Ndk)$
-- **KV-Cache 驱逐策略**：按杠杆分数排序驱逐；理论界主要来自矩阵子空间近似，迁移到 attention 质量需单独验证
-- **Coreset 构建器**：杠杆分数采样 + 重要性重加权，在相应采样假设下控制经验风险近似误差
-- **DPP 贪心扩展**：杠杆分数 + 互斥惩罚，兼顾重要性与多样性
+
+- 明确线代任务中的独立重加权行采样。
+- 作为单独实测注意力启发式的确定性逐出。
+- 离线精确杠杆分数用于验证在线近似。
+- DPP/log-det 多样性方法各自使用相应采样或优化保证。
 
 ## GPU 可行性
-- **D1[v]/D2[v]**：$A\Omega$ 为 GEMM；QR 有 cuSOLVER；杠杆分数 = elementwise 逐行平方和
-- **D3[v]**：$O(Ndk)$ 远优于 $O(Nd^2)$ 完整 SVD；top-s 选择 $O(N \log s)$
-- **D4[v]**：$\Omega$ 仅 $d \times k$（KB 级）；$Q$ 与 $A$ 同尺寸但可分批计算
-- **D5[~]**：QR 建议 fp32（小矩阵 $k+p$ 列，开销可忽略）；杠杆分数可回 bf16
-- **D6[v]**：$A\Omega$ 的 GEMM 高度并行；top-s 可用 radix sort 并行
-- **D8[v]**：$A\Omega$ + QR + row-norm² 可融合避免物化中间矩阵
+
+- **D1/D2[~]**：sketch 与小投影 SVD 使用 GEMM 加 QR/SVD；QR 不是纯 matmul。
+- **D3[~]**：sketch 宽度 $r=k+p$ 时，含 $O(Ndr)$ sketch/投影、$O(Nr^2)$ QR 及 $O(dr^2)$ 小 SVD。加速需 $r\ll\min(N,d)$ 及摊销。
+- **D4[~]**：存储 $N\times r$ 的 $Q$、$d\times r$ 的 $\Omega$ 与 $r\times d$ 投影矩阵。逐批独立 QR 不构成全局正交基；分块须用正确 streaming/TSQR 算法。
+- **D5[~]**：使用 fp32/fp64 QR/SVD，检查秩亏附近残差。
+- **D6/D8[~]**：归约及分解引入同步；算子可用不证明端到端融合已实现。
+- **D7[N/A]**：低秩子空间结构不意味着因子元素稀疏。
 
 ## 论文表述方式
 "采用统计杠杆分数作为 token/行选择的重要性度量：通过随机投影在 $O(Ndk)$ 内近似 rank-$k$ 子空间杠杆分数，并在独立重加权采样、有效秩诊断和目标为子空间/最小二乘近似的前提下，使用 Drineas-Mahoney 类界选择样本数。对 KV-cache eviction，仍需报告 attention/output 误差与任务指标。"
 
 ## 风险
-- **秩参数 $k$ 选择**：杠杆分数依赖 rank-$k$ 子空间，$k$ 选错导致采样偏差；需先诊断有效秩
-- **采样方差**：概率采样引入方差，低概率行偶尔被选中产生大权重噪声；可改用确定性 top-s
-- **杠杆分数 vs. 语义重要性不一致**：度量的是子空间贡献，不一定反映语义；可与 attention score 加权融合
-- **DPP 贪心次优**：精确 DPP 采样 $O(N^3)$，贪心近似可能漏掉全局最优子集
-- **动态数据过时**：streaming 场景下杠杆分数随数据漂移，需定期重算或增量更新
+
+- 秩选择及基近似影响分数；报告尾能量与 sketch 残差。
+- 大重要性权重增加采样方差；切换确定性选择会改变定理适用性。
+- 谱重要性未必等于语义重要性；检查罕见检索 token。
+- 流式基漂移需刷新，刷新成本计入解码延迟。

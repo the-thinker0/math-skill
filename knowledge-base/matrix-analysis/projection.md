@@ -9,7 +9,7 @@
 - 若 $A$ 满列秩且列空间为 $\mathcal{S}$，投影矩阵为 $P = A(A^HA)^{-1}A^H$；一般情形用 Moore--Penrose 伪逆写成 $P=AA^\dagger$
 - 若 $A$ 列正交归一（$A^HA = I$），则 $P = AA^H$
 - 若 $Q$ 是子空间的正交基，则：$\|v-Q Q^Hv\|^2=\|v\|^2-\|Q^Hv\|^2$
-- Courant-Fischer 变分刻画：$\lambda_k = \max_{\dim(S)=k} \min_{x \in S, \|x\|=1} x^HAx$
+- Courant–Fischer（Hermitian $A$、特征值降序）：$\lambda_k=\max_{\dim S=k}\min_{x\in S,\|x\|=1}x^HAx$。
 - 正交补投影：$P^\perp = I - P$
 
 ## 适用问题
@@ -24,7 +24,7 @@
 - **Linear 层的低秩瓶颈分析**：截断 SVD $W_k=U_k\Sigma_kV_k^H$ 是矩阵范数下的最佳秩-$k$ 逼近，可存为两个因子以把参数量从 $O(mn)$ 降到 $O(k(m+n))$；这不等于说 $W_k$ 本身是投影算子
 - **Attention 头的子空间映射**：Q/K/V 通常只是学习到的线性映射；只有满足幂等与 Hermitian 条件时才是正交投影。多头实现仍可用 batched GEMM，但“不同头对应正交子空间”需要额外约束与验证
 - **Projection Head（对比学习）**：SimCLR/MoCo 的 projection head 是 MLP；末端 $L_2$ normalization 把非零向量径向归一到单位球面，但它不是线性投影，也不是投到凸集的欧氏最近点映射
-- **梯度投影 / 正交梯度下降 (OGD)**：在持续学习中，将新任务梯度投影到旧任务梯度空间的正交补，避免灾难性遗忘；需维护基矩阵 $G$ 并计算 $(I - G(G^TG)^{-1}G^T)\nabla$，核心是两次 matmul
+- **梯度投影（持续学习）**：旧梯度正交存储基为 $Q$ 时，取 $g_{new}^\perp=g_{new}-Q(Q^Tg_{new})$。它消除沿所存方向的一阶分量；有限步长、遗漏方向及模型非线性使其不能保证无遗忘。
 
 ## 工程可行性
 

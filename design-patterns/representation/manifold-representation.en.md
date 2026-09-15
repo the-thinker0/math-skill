@@ -1,5 +1,5 @@
 # Manifold Representation
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Evidence labels**: [v] supported by stated assumptions or recorded checks; [~] engineering proposal requiring validation; [x] incompatible under the stated conditions; [N/A] outside scope. Pseudocode specifies operators, not a production-ready implementation.
 
 ## Applicable Problems
 Use when input data resides in a high-dimensional space but is actually distributed on a low-dimensional manifold. Typical scenarios:
@@ -26,37 +26,23 @@ Core requirement: **leverage the low-dimensional manifold structure of data to i
   Used to perform linear operations in the tangent space and map back to the manifold
 
 ## AI Module Form
+
+```python
+# Chart mixture: local affine approximations, not automatically a geometric atlas
+z = zeros(N, d)
+for k in range(K):
+    z += gate(X)[:, k:k+1] * (X @ W[k].T + bias[k])
+# If chart coordinates differ, align/transition them before blending.
+
+# Euclidean-metric Stiefel update: W in R^{D x r}, W.T @ W = I
+G = euclidean_gradient(loss, W)
+M = W.T @ G
+grad_R = G - W @ ((M + M.T) / 2)
+W_next = qr(W - learning_rate * grad_R, mode='reduced').Q
 ```
-Module: ManifoldRepresentation
-Input: X in R^{N x D} (high-dimensional input), target manifold dimension d << D
+`G - W @ (W.T @ G)` is the horizontal Grassmann projection, not the general Stiefel gradient; it loses within-frame rotations.
 
-Method 1 - Local Linear Embedding (Chart-based):
-  // Partition the d-dimensional manifold into K local regions, each with a linear projection
-  assignments = cluster(X, K)          // assign inputs to K local regions
-  for k in range(K):
-    z_k = W_k @ X[assignments==k] + b_k  // local linear projection
-  // Equivalent to MoE: K "chart experts" each responsible for one manifold patch
-  z = sum_k g_k(x) * (W_k @ x + b_k)   // g_k is the chart assignment weight
-
-Method 2 - Geodesic Preservation Loss (global structure preservation):
-  // Preserve geodesic distances from high-dimensional space in the low-dimensional representation
-  D_high = geodesic_distance(X, k_nn=10)   // shortest paths on k-NN graph
-  D_low = pairwise_distance(Z)              // Euclidean distances in low-dim representation
-  L_geo = ||D_high - D_low||_F^2 / N^2     // Sammon mapping
-  // Or t-SNE-style KL divergence:
-  p_ij = exp(-D_high^2 / (2 sigma^2)) / sum  // high-dim affinity
-  q_ij = 1 / (1 + D_low^2) / sum             // low-dim t-distribution affinity
-  L_tsne = KL(P || Q)
-
-Method 3 - Riemannian Optimization (optimize directly on the manifold):
-  // Parameters constrained to Stiefel/Grassmann manifold
-  W in St(d, r) i.e. W^T W = I_r          // orthogonality constraint
-  // Riemannian SGD:
-  grad_euclidean = nabla f(W)
-  grad_riemannian = grad_euclidean - W @ (W^T @ grad_euclidean)  // project to tangent space
-  W = retract(W, -lr * grad_riemannian)    // retraction mapping back to manifold
-  // retract can be implemented via QR decomposition or Cayley transform
-```
+Geodesic stress `mean((D_graph-D_latent)**2)` is unweighted metric stress, not Sammon's weighted stress. Estimate graph distances on a connected sampled graph and state the metric; curved manifolds need not admit globally distance-preserving Euclidean coordinates of the intrinsic dimension. Sparse Laplacian regularization $\operatorname{tr}(Z^TLZ)$ is an edge-smoothness penalty and by itself admits collapsed constant representations.
 
 ## Implementable Structures
 - **Chart MoE**: K local linear projections + softmax gating => natural integration with the MoE framework
@@ -66,20 +52,20 @@ Method 3 - Riemannian Optimization (optimize directly on the manifold):
 - **Adaptive d**: Local dimensionality varies across regions; estimate locally via PCA
 
 ## GPU Feasibility
-- **D1[v]**: Local linear projections are GEMM (d x D) @ (D x N); graph Laplacian regularization is SpMM
-- **D2[v]**: K linear projections in Chart MoE form a batched GEMM (K x d x D) @ (D x N)
-- **D3[~]**: k-NN construction O(N * D * log N) requires FAISS; manifold regularization O(N^2) requires sampling approximation
-- **D4[v]**: K chart parameters K * d * D typically < 10 MB; k-NN graph N * k * 4 bytes
-- **D5[~]**: Distance computations and exp in fp16 require attention to numerical range; Riemannian retract recommended in fp32
-- **D6[v]**: K charts computed independently, perfectly parallel; k-NN search accelerated with FAISS GPU
-- **D7[v]**: k-NN graph is naturally sparse; manifold regularization L is a sparse matrix, enabling SpMM acceleration
-- **D8[v]**: Matmul + bias + activation within a chart can be fused; gating softmax + weighted-sum can be fused
+
+- **D1/D2[~]**: Local projections use GEMM; sparse Laplacian loss uses SpMM/edge differences.
+- **D3[~]**: Brute-force exact k-NN costs $O(N^2D)$; approximate indexing has method/data-dependent build, query and recall trade-offs. Sparse Laplacian loss costs $O(|E|d)$, not inherently $O(N^2)$. All-pairs geodesics have a separate potentially large cost.
+- **D4[~]**: Chart weights store $O(KdD)$ numbers; sparse edges need endpoints and weights, $O(Nk_{nn})$. No universal 10 MB bound applies.
+- **D5[~]**: fp32 distances and QR; monitor orthogonality, neighborhood recall and disconnected components.
+- **D6/D8[~]**: Chart projections can batch; routing and index construction add overhead. Profile complete encode/routing/regularization work.
+- **D7[~]**: Sparse graph regularization preserves the chosen edge set, not a guarantee of the unknown manifold topology.
 
 ## Paper-Worthy Formulation
 "Based on the manifold hypothesis, we model D-dimensional token representations as a low-intrinsic-dimensional structure, approximate it with K local coordinate charts (Chart MoE), and use graph-Laplacian regularization to encourage local-neighborhood consistency. Embedding-error or geodesic-preservation bounds require assumptions on sampling density, manifold smoothness, graph construction, and estimator choice; in practice report neighborhood preservation, reconstruction error, and downstream metrics."
 
 ## Risks
-- Inaccurate intrinsic dimension d* estimation leads to over-compression or dimension waste
-- k-NN graph construction is computationally expensive at large scale, requiring sampling or approximation
-- The N^2 complexity of manifold regularization limits batch size, necessitating mini-batch sampling
-- Discontinuities at local chart boundaries require overlapping regions and smooth transitions
+
+- The manifold hypothesis and intrinsic dimension require evidence; local PCA may confuse noise with curvature.
+- Chart mixtures require overlap and coordinate consistency; smooth gates alone do not create valid transition maps.
+- Neighborhood errors or disconnected graphs distort graph geodesics.
+- Pair smoothness with a task/reconstruction or variance constraint to avoid collapse.

@@ -2,7 +2,7 @@
 
 ## Minimal Definition
 
-Optimal transport studies how to move one probability distribution into another at minimal total cost: given a cost function $c(x, y)$, minimize $\int c\, d\pi$ over couplings $\pi \in \Pi(\mu, \nu)$ with prescribed marginals. The optimal value defines the **Wasserstein distance** — a metric between distributions that respects the geometry of the base space and, unlike KL, does not require overlapping supports.
+Optimal transport minimizes a cost over couplings with prescribed marginals. For a base metric $d$, $p\ge1$, and probability measures with finite $p$-th moments, the $p$-th root of the optimal cost for $c=d^p$ defines the Wasserstein-$p$ metric. An arbitrary cost or entropy-regularized OT objective is not automatically a distance.
 
 ## Core Formulas
 
@@ -10,7 +10,7 @@ Optimal transport studies how to move one probability distribution into another 
 - **Wasserstein-$p$ distance**: $W_p(\mu, \nu) = \left(\inf_{\pi \in \Pi(\mu,\nu)} \int \|x - y\|^p d\pi\right)^{1/p}$
 - **Dual form**: $W_1(\mu, \nu) = \sup_{\|f\|_{\text{Lip}} \leq 1} \mathbb{E}_\mu[f] - \mathbb{E}_\nu[f]$ (Kantorovich–Rubinstein), the theoretical source of the WGAN critic
 - **Entropic regularization (Sinkhorn)**: $\min_{\pi \in \Pi} \langle C, \pi \rangle - \epsilon H(\pi)$, with solution $\pi^* = \operatorname{diag}(u)\, e^{-C/\epsilon}\, \operatorname{diag}(v)$, solved by alternating row/column scaling at $O(n^2)$ per round
-- **Displacement interpolation (McCann)**: the Wasserstein geodesic $\mu_t = ((1-t)\,\mathrm{id} + tT)_\# \mu$ — the "straight line" between distributions is uniform per-particle motion
+- **Displacement interpolation**: In Euclidean quadratic OT, if an optimal map $T$ exists (e.g. an absolutely continuous source with finite second moment), $\mu_t=((1-t)\mathrm{id}+tT)_\#\mu$ is a $W_2$ geodesic. Without a map, use an optimal coupling $\pi$ and push it forward by $(x,y)\mapsto(1-t)x+ty$.
 
 ## Applicable Problems
 
@@ -35,23 +35,23 @@ Optimal transport studies how to move one probability distribution into another 
 
 ## Risks and Failure Conditions
 
-- **Bias–compute trade-off in $\epsilon$**: large $\epsilon$ is fast but biased away from true OT (entropic bias); small $\epsilon$ converges slowly and is numerically unstable. The Sinkhorn divergence removes the bias but is not the true $W$
-- **Sample-complexity curse**: empirical estimates of $W_p$ degrade exponentially with dimension ($n^{-1/d}$); systematic bias of mini-batch estimates in high dimensions is non-negligible
+- **Regularization bias**: Sinkhorn divergence removes entropic self-interaction terms, but finite-epsilon values remain different from unregularized Wasserstein distance. It does not remove sampling, solver or all entropic bias.
+- **Sample complexity**: High-dimensional empirical Wasserstein rates can be as slow as $n^{-1/d}$ in common regimes, with rates depending on $p$, moments and support dimension. Achieving a fixed small error can require exponentially many samples in dimension; the error itself is not “exponential in dimension.”
 - **Unbalanced/partial transport**: standard OT requires equal total mass on both sides; real data has outliers — use unbalanced OT (KL-relaxed marginals) or partial OT
 - **WGAN's Lipschitz constraint is only an approximate dual**: weight clipping / gradient penalty are heuristic enforcements of 1-Lipschitz, not the exact dual
 
 ## Further References
 
-- Distilled book: `../../references/books/optimization-ml.md` (duality and convex optimization foundations; OT proper is beyond that book's scope)
+- Distilled book: `../../references/books/optimization-ml.en.md` (duality and convex optimization foundations; OT proper is beyond that book's scope)
 - Peyré & Cuturi. *Computational Optimal Transport*. NOW, 2019 (standard reference for Sinkhorn and numerics)
 - Villani. *Optimal Transport: Old and New*. Springer, 2009 (theory monograph)
 - Santambrogio. *Optimal Transport for Applied Mathematicians*. Birkhäuser, 2015
 
 ## Routing Extensions
 
-- For duality theory -> `../optimization/lagrangian-duality.md` (Kantorovich duality is LP duality)
-- For understanding entropic regularization -> `entropy.md` (role of the $-\epsilon H(\pi)$ term)
-- For comparing distribution divergences -> `kl-divergence.md` (support/geometry differences between KL and Wasserstein)
+- For duality theory -> `../optimization/lagrangian-duality.en.md` (Kantorovich duality is LP duality)
+- For understanding entropic regularization -> `entropy.en.md` (role of the $-\epsilon H(\pi)$ term)
+- For comparing distribution divergences -> `kl-divergence.en.md` (support/geometry differences between KL and Wasserstein)
 - For routing design -> `../../design-patterns/routing/optimal-transport-routing.en.md` (OT routing prototype for MoE)
 
 ## Extensible Directions

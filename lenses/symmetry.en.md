@@ -1,10 +1,10 @@
 # Symmetry Lens
 
-> Seek the invariant amid change — every symmetry corresponds to a conserved quantity, and every invariant is a key to simplifying the problem
+> Seek the invariant amid change — conservation laws require dynamical and action-based assumptions, and every invariant is a key to simplifying the problem
 
 ## What Perspective It Offers
 
-Symmetry is a way of "finding what remains unchanged under transformations": when confronting a complex system, first ask, "Under what transformations do which properties of the system remain invariant?" Invariants are the core tool for simplification — they distinguish only between orbits (equivalence classes), not between elements within the same orbit. A complete set of invariants can embed the entire space into a simpler quotient space, achieving a full classification. Noether's theorem tells us that every continuous symmetry necessarily corresponds to a conservation law.
+Symmetry is a way of "finding what remains unchanged under transformations": when confronting a complex system, first ask, "Under what transformations do which properties of the system remain invariant?" Invariants are the core tool for simplification — they distinguish only between orbits (equivalence classes), not between elements within the same orbit. Complete invariants can distinguish orbits, but the quotient map is generally not an embedding and the quotient need not be a smooth manifold. Noether's theorem links differentiable continuous symmetries of an action to conserved quantities along Euler–Lagrange solutions; neural-network equivariance alone does not imply conservation laws.
 
 ## What Problems It Is Suited to Diagnose
 
@@ -24,7 +24,7 @@ Symmetry is a way of "finding what remains unchanged under transformations": whe
 
 - `lie-theory/group-action`: Group actions, the orbit-stabilizer theorem, and Burnside's lemma — the algebraic foundations of symmetry
 - **lie-theory**: Lie groups, Lie algebras, and Noether's theorem — continuous symmetries and conservation laws
-- `lie-theory/lie-group`: Galois groups and solvable groups — algebraic criteria for the solvability of equations
+- `../references/books/abstract-algebra.en.md`: Galois and solvable groups; finite Galois theory is not Lie group theory
 
 ## What AI Designs It May Inspire
 
@@ -35,10 +35,10 @@ Symmetry is a way of "finding what remains unchanged under transformations": whe
 ## Reasoning Protocol
 
 1. **Identify the Transformation Group**: List the candidate transformations of the system, organize them into a candidate group, and verify closure, associativity, identity, and inverses
-2. **Find Invariants**: For finite groups, use the Reynolds operator; for continuous groups, use Lie algebra generator equations
+2. **Find Invariants**: Average over finite groups when the group order is invertible in the field; use normalized Haar averaging for compact groups. Lie algebra generators only test the identity component; check disconnected components separately
 3. **Simplify Using Invariants**: Work on the quotient space X/G, replacing constrained variables with invariants
 4. **Orbit Classification**: Use the orbit-stabilizer theorem and assess the completeness of the invariant set
-5. **Check for Symmetry Breaking**: Identify G → H breaking patterns and analyze Goldstone modes
+5. **Check for Symmetry Breaking**: Identify G → H breaking patterns and discuss Goldstone modes only when the relevant field-theoretic assumptions hold
 
 ## Acceptance Criteria
 

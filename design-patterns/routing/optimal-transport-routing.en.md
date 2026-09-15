@@ -1,5 +1,5 @@
 # Optimal Transport Routing
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Evidence labels**: [v] supported by stated assumptions or recorded checks; [~] engineering proposal requiring validation; [x] incompatible under the stated conditions; [N/A] outside scope. Pseudocode specifies operators, not a production-ready implementation.
 
 ## Applicable Problems
 Use when a set of input tokens/samples must be assigned to a set of experts/sub-modules while pursuing globally optimal matching cost.
@@ -13,34 +13,32 @@ Core requirement: **globally optimal assignment, rather than greedy per-point de
   ../../knowledge-base/probability/entropy.en.md (entropy regularization, marginal constraints)
 
 ## Required Mathematical Background
-- **Discrete Optimal Transport**: min_{P in Pi(mu,nu)} <C, P> = sum_{ij} C_{ij} P_{ij}
-  where Pi(mu,nu) = {P >= 0 : P * 1 = mu, P^T * 1 = nu} is the set of couplings with marginal constraints
-- **Entropy-Regularized Sinkhorn**: min <C,P> - eps * H(P) => P* = diag(u) * exp(-C/eps) * diag(v)
-  Solved by alternating row/column scaling (Sinkhorn-Knopp), convergence rate O(1/eps^2)
-- **Wasserstein-1 Distance**: W_1(mu,nu) = min_{pi in Pi} E_pi[||x-y||] = sup_{||f||_L <= 1} E_mu[f] - E_nu[f]
-  Kantorovich-Rubinstein duality, used for continuous distribution matching
-- **Gromov-Wasserstein**: When source/target spaces have different dimensions, minimizes the structure-preserving transport cost
+
+- For $N$ tokens and $K$ experts, choose probability marginals $a_i=1/N$, $b_k\ge0$, $\sum_k b_k=1$. Balanced OT enforces **equalities** $P\mathbf1=a$, $P^T\mathbf1=b$.
+- Sinkhorn solves $\min_{P\in\Pi(a,b)}\langle C,P\rangle-\epsilon H(P)$ with a positive Gibbs kernel. Finite iteration error depends on cost range, marginals, regularization and tolerance; there is no universal $O(1/\epsilon^2)$ iteration count without a specified theorem.
+- A capacity upper bound $c_k$ corresponds to $\sum_i P_{ik}\le c_k/N$, requiring an inequality-constrained/unbalanced or capacitated formulation. Setting $b=c/\sum c$ instead enforces normalized target loads, not just capacities.
+- Rowwise argmax/top-k can violate capacities even when the soft plan satisfies its marginals. Use capacity-aware rounding or a min-cost-flow/assignment step for hard feasibility.
+- Gromov–Wasserstein compares pairwise relational costs when spaces lack a common metric correspondence; differing coordinate dimension alone does not force its use.
 
 ## AI Module Form
+
+```python
+C = -X @ E.T                         # N x K; scale costs explicitly
+log_K = -C.float() / epsilon
+log_a = full((N,), -log(N))
+log_b = log(target_load_probs)       # positive K-vector summing to 1
+log_v = zeros(K)
+for _ in range(T):
+    log_u = log_a - logsumexp(log_K + log_v[None, :], dim=1)
+    log_v = log_b - logsumexp(log_K + log_u[:, None], dim=0)
+P = exp(log_u[:, None] + log_K + log_v[None, :])
+row_error = norm(P.sum(1) - exp(log_a), p=1)
+col_error = norm(P.sum(0) - exp(log_b), p=1)
+route_probs = P / exp(log_a)[:, None] # conditional expert weights, about row-sum 1
+soft_output = route_probs @ E
+hard_assignment = capacity_aware_round(P, integer_capacities)
 ```
-Module: OptimalTransportRouter
-Input: token representations X in R^{N x d}, expert embeddings E in R^{K x d}, capacity constraint cap in R^K
-
-Cost matrix: C_{ik} = -sim(X_i, E_k)  or  ||X_i - E_k||^2  (N x K)
-
-Sinkhorn routing (entropy-regularized):
-  K_mat = exp(-C / eps)              // Gibbs kernel, eps = 0.05 ~ 0.1
-  for t = 1..T:                       // T = 5 ~ 20 iterations
-    u = a / (K_mat @ v)              // row scaling, a = 1/N
-    v = b / (K_mat^T @ u)            // column scaling, b = cap / sum(cap)
-  P = diag(u) @ K_mat @ diag(v)     // optimal transport plan (satisfies marginal constraints; doubly stochastic only when N = K with uniform marginals)
-  assignment = argmax(P, dim=1)      // hard assignment (at inference)
-  // At training: weighted_features = P @ E  (soft assignment, differentiable)
-
-Capacity constraint (b vector):
-  b_k = total_tokens / K             // uniform allocation
-  b_k = alpha * uniform + (1 - alpha) * learned  // learned non-uniform allocation
-```
+Check total integer capacity and rounding feasibility. Balanced uniform marginals give $b_k=1/K$, not $N/K$. For square uniform marginals, $NP$ is doubly stochastic; $P$ itself has row/column sums $1/N$. Small $\epsilon$ may approach a sparse unregularized plan, but a permutation occurs only in the appropriately scaled square assignment setting.
 
 ## Implementable Structures
 - **Sinkhorn layer**: Custom autograd Function; forward pass performs Sinkhorn iterations, backward pass uses the implicit function theorem for gradients
@@ -50,17 +48,17 @@ Capacity constraint (b vector):
 - **Batch OT**: Solve independently per micro-batch, parallelize Sinkhorn iterations
 
 ## GPU Feasibility
-- **Tensorization**: Sinkhorn core is matrix-vector multiplication K @ v of shape (N x K) * (K x 1), standard GEMV
-- **GEMM-mappable**: Computation of C via X @ E^T is GEMM (N x d) @ (d x K); Sinkhorn iterations are GEMV
-- **Complexity**: O(N * K * T) where T = 10 ~ 20; for N = 2048, K = 64 approximately 2.6M FLOPs, negligible
-- **Memory & KV-Cache**: Storing C (N x K) and P (N x K); for N = 2048, K = 64 approximately 1 MB
-- **Low-precision stability**: Sinkhorn in fp16 may cause exp(-C/eps) overflow; log-domain + fp32 recommended
-- **Parallelism & Communication**: Batch dimension is independent; Sinkhorn iterations have sequential dependencies, but each iteration's matvec is highly parallel
-- **Sparse structure**: As eps -> 0, P approaches sparsity (permutation matrix); top-k approximation can be used for acceleration
-- **Operator fusion**: The exp -> matvec -> division pipeline in a single Sinkhorn step can be fused into a CUDA kernel
+
+- **D1/D2[~]**: Cost construction uses GEMM; stable Sinkhorn uses sequential row/column log-sum-exp reductions.
+- **D3[~]**: Cost $O(NKd)$ plus iterations $O(TNK)$ and rounding cost; measure iterations needed for the target residual, not a fixed universal $T$.
+- **D4[~]**: Two fp32 $N\times K$ matrices use $8NK$ bytes before saved iterates. Unrolled backprop may store $O(TNK)$; implicit differentiation needs regularity and accurate solves.
+- **D5[~]**: Use log-domain fp32 and monitor marginal residuals as $\epsilon$ shrinks.
+- **D6[~]**: Independent batches parallelize; row and column updates depend on each other. Global load constraints across devices require communication.
+- **D7/D8[~]**: Sparse approximations and fused reductions change implementation and may change feasibility; validate both marginals and final hard capacities.
 
 ## Paper-Worthy Formulation
-"We formulate token-to-expert routing as an entropy-regularized optimal transport problem, obtaining an approximate transport plan via the Sinkhorn-Knopp algorithm within T = 10 iterations. Finite Sinkhorn iterations yield an approximate solution to the entropy-regularized problem (not the exact global optimum); approximation quality depends on the iteration count T and regularization parameter eps. Marginal constraints b control the load upper bound per expert."
+
+“We solve an entropy-regularized transport relaxation with declared marginal targets and report residuals after finite iterations. Capacity-aware rounding provides the separately checked hard assignment; we report its cost increase, overflow, latency, and task-quality effects.”
 
 ## Risks
 - Excessively small eps causes numerical instability in Sinkhorn (exp overflow); requires log-domain or increasing eps

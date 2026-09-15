@@ -10,7 +10,7 @@
 - 截断 SVD（最优秩-$k$ 逼近）：$A_k = U_k \Sigma_k V_k^H$
 - Eckart-Young 误差：$\|A - A_k\|_F = \sqrt{\sum_{i=k+1}^r \sigma_i^2}$，$\|A - A_k\|_2 = \sigma_{k+1}$
 - 随机化 SVD：$A \approx Q(Q^HA)$，$Q$ 为 $A\Omega$（$\Omega$ 随机高斯）的 QR 分解之 $Q$ 因子
-- 有效秩：$r_{\text{eff}}(A) = \|A\|_F^2 / \|A\|_2^2 = \sum \sigma_i^2 / \sigma_1^2$
+- 稳定秩（$A\ne0$）：$r_s(A)=\|A\|_F^2/\|A\|_2^2$。它不同于熵有效秩 $\exp(-\sum_i p_i\log p_i)$，其中 $p_i=\sigma_i/\sum_j\sigma_j$；使用时明确口径。
 - 核范数（秩的凸松弛）：$\|A\|_* = \sum \sigma_i$，是谱范数的对偶
 
 ## 适用问题
@@ -27,14 +27,14 @@
 - **随机化 SVD 算子**：对大矩阵 $A \in \mathbb{R}^{m \times n}$，先采样 $Y = A\Omega$（$\Omega \in \mathbb{R}^{n \times (k+p)}$ 随机高斯），QR 分解 $Y = QR$，再算 $B = Q^HA$（小矩阵 $O(k \times n)$），对 $B$ 做 SVD。总复杂度 $O(mnk)$ 而非 $O(mn^2)$，核心操作全是 matmul。
 - **KV-Cache 低秩化**：维护 $K$ 的低秩因子形式 $K \approx U_k \Sigma_k V_k^H$（存储 $U_k \in \mathbb{R}^{L \times k}$ 和 $\Sigma_k V_k^H \in \mathbb{R}^{k \times d}$，共 $O(Lk + kd)$ 而非 $O(Ld)$）。每新到 token 做增量 PCA 或 streaming SVD 更新。**注意**：对标准 softmax attention，低秩因子不能当作 $k$ 个压缩 token；softmax 仍在长度 $L$ 上归一化。但可用因子化计算 $qK^T = (q(\Sigma_k V_k^H)^T)U_k^T$，避免物化 $L \times d$ 重构，并将 QK 内维从 $d$ 降到 $k$。仅在线性注意力中，且压缩 $\phi(K)^T V$、$\phi(K)^T\mathbf{1}$ 等可加统计量时，历史状态才可真正从 $L$ 降至 $k$ 个统计因子。
 - **核范数正则化**：$\mathcal{L} = \mathcal{L}_{\text{task}} + \lambda \|W\|_*$ 促进低秩解。但核范数计算需完整 SVD（$O(n^3)$），替代方案：(1) 用截断 SVD 近似；(2) 因子化 $\|W\|_* = \min_{W=UV^H} \frac{1}{2}(\|U\|_F^2 + \|V\|_F^2)$ 转为对 $U, V$ 的 Frobenius 正则。
-- **梯度低秩压缩 (分布式训练)**：对梯度矩阵 $G \in \mathbb{R}^{m \times n}$ 做 top-$k$ SVD 后传输因子，all-reduce 通信量从 $O(mn)$ 降到 $O(k(m+n))$（若 $m \approx n \approx d$，即 $O(d^2) \to O(kd)$）。用随机化 SVD 在每卡本地算，再合并。
+- **分布式梯度压缩**：每 worker 秩 $k$ 因子有 $O(k(m+n))$ 个数，但不能分别求和独立 SVD 因子来得到梯度之和。需兼容的共享 sketch 协议、因子 all-gather 后再压缩，或其他明确聚合方案；计入聚合及误差反馈。
 
 ## 工程可行性
 
 - **主要操作**：matmul + 小矩阵 SVD。LoRA 前向 = 两次 matmul；随机化 SVD = 若干次 matmul + 一次 thin QR + 小矩阵 SVD，典型复杂度 $O(mnk)$（还依赖 oversampling、power iteration 和谱间隙）；Lanczos/随机化截断 SVD 通常远低于完整 SVD，但不能简单写成完整 SVD 的 $O(k/n)$ 倍。
 - **GPU 友好度**：极高。LoRA 前向/反向全是 tensor core matmul；随机化 SVD 的主要开销也是 matmul。小矩阵 SVD 有 cuSOLVER 的 batched 实现。
-- **复杂度**：LoRA 前向 $O(dk)$ per sample vs. $O(d^2)$ 全秩；随机化 SVD $O(mnk)$；完整 SVD $O(\min(m^2n, mn^2))$。
-- **显存**：LoRA 存储 $O(dr)$ vs. $O(d^2)$；KV-Cache 低秩因子存储 $O(Lk + kd)$ vs. $O(Ld)$。
+- **复杂度**：LoRA **更新分支**每样本 $O(dr)$，但冻结稠密基础层仍需 $O(d^2)$。合并消除分支开销，不消除基础矩阵。随机 SVD 还含 QR 与小 SVD；完整矩形 SVD 为 $O(\min(m^2n,mn^2))$。
+- **显存**：LoRA 可训练参数/优化器状态为 $O(dr)$，冻结基础权重仍为 $O(d^2)$。KV 每个压缩矩阵存储 $O(Lk+kd)$，另计基更新、近期 token 缓冲及元数据。
 
 ## 风险与失效条件
 

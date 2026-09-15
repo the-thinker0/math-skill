@@ -2,61 +2,54 @@
 
 ## 最小定义
 
-曲率度量流形"弯不弯"以及"路径依不依赖"。Riemann 曲率张量 $R(X,Y)Z = \nabla_X\nabla_Y Z - \nabla_Y\nabla_X Z - \nabla_{[X,Y]}Z$ 描述向量绕无穷小平行四边形平行移动一圈后的偏转。截面曲率 $K(\sigma)$ 是其最简标量提取。
+采用 $R(X,Y)Z=\nabla_X\nabla_YZ-\nabla_Y\nabla_XZ-\nabla_{[X,Y]}Z$。Riemann 曲率描述联络的局部路径依赖；损失函数 Hessian 描述二阶变化，两者不是同一个对象。欧氏空间的 Riemann 曲率为零，损失 Hessian 仍可非零。
 
 ## 核心公式
 
-- Riemann 曲率张量：$R^l_{ijk} = \partial_i \Gamma^l_{jk} - \partial_j \Gamma^l_{ik} + \Gamma^l_{im}\Gamma^m_{jk} - \Gamma^l_{jm}\Gamma^m_{ik}$
-- Ricci 曲率（缩并）：$R_{ij} = \sum_k R^k_{ikj}$
-- 标量曲率：$S = \sum_{ij} g^{ij} R_{ij}$
-- 截面曲率：$K(X,Y) = \frac{\langle R(X,Y)Y, X\rangle}{\|X\|^2\|Y\|^2 - \langle X,Y\rangle^2}$
-- Jacobi 方程：$\frac{D^2 J}{dt^2} + R(J, \dot\gamma)\dot\gamma = 0$（描述测地线的发散/汇聚）
-- Hessian-vector product：$Hv = \nabla(\nabla L \cdot v)$，$O(N)$ 估计曲率信息
+- 定义分量为 $R(\partial_i,\partial_j)\partial_k=R^l_{ijk}\partial_l$：
+  $R^l_{ijk}=\partial_i\Gamma^l_{jk}-\partial_j\Gamma^l_{ik}+\Gamma^l_{im}\Gamma^m_{jk}-\Gamma^l_{jm}\Gamma^m_{ik}$。
+- 此约定下 $\operatorname{Ric}_{jk}=\sum_i R^i_{ijk}$，$S=g^{jk}\operatorname{Ric}_{jk}$。
+- $K(X,Y)=\langle R(X,Y)Y,X\rangle/(\|X\|^2\|Y\|^2-\langle X,Y\rangle^2)$，要求 $X,Y$ 线性无关。
+- 沿测地线的 Jacobi 场：$D_t^2J+R(J,\dot\gamma)\dot\gamma=0$。
+- 对固定 $v$ 和二次可微标量损失，$Hv=\nabla(\nabla L\cdot v)$。若 $\mathbb E[vv^T]=I$，则 $\mathbb E[v^THv]=\operatorname{tr}H$；这是 Hessian 迹，不是标量曲率。
 
 ## 适用问题
 
-- 损失地形分析：曲率决定条件数与尖锐度，尖锐极小 vs 平坦极小的区分
-- 优化轨迹稳定性：Jacobi 场描述相邻优化轨迹的发散/汇聚
-- 泛化性诊断：平坦极小（低曲率）往往泛化更好
-- 流形学习：数据流形的曲率指导隐空间维数和度量选择
+- 流形几何：比较测地线、分析局部曲率与所选度量。
+- 优化诊断：用 Hessian 的 Rayleigh 商、谱与 HVP 分析损失局部敏感性；明确坐标和尺度。
+- 泛化研究：检验尖锐度是否与独立测试误差相关，不能从平坦性单独推出泛化。
 
 ## AI 设计翻译
 
-- **曲率正则化（SAM 的几何视角）**：用 Hessian-vector product 估计 $\max_v v^T H v$，惩罚尖锐极小，偏好 flat minima
-- **HVP-based 诊断器**：$\|Hv\|/\|v\|$ 作为 loss landscape 曲率的廉价代理，用于学习率自适应和早停
-- **Jacobi 场轨迹监控**：跟踪两条相邻优化轨迹的距离变化，$J''(t) + R(J,\dot\gamma)\dot\gamma = 0$ 的离散版，检测发散/收敛
-- **Ricci-flow 启发式图重连**：用离散 Ricci 曲率指导图/注意力结构的动态调整（负曲率边=瓶颈，需增连）
+- **HVP 诊断**：在 $\|v\|=1$ 下估计 $v^THv$；最大 Rayleigh 商为最大特征值，不能省略单位范数约束。
+- **SAM 类启发**：参数邻域内的最坏损失与 Hessian 可在局部展开下联系；SAM 不等同于最小化 Riemann 曲率。
+- **轨迹稳定性**：梯度流的线性化由损失 Hessian 控制；只有测地线变分才直接使用 Jacobi 方程。
+- **图重连**：离散 Ricci 曲率可作瓶颈候选指标，须指定离散定义并比较任务效果，不以负值自动判定增边。
 
 ## 工程可行性
 
-GPU 友好度：曲率的核心难点是"不能物化全张量"。
-- **Riemann 张量**：4 阶，$n^4$ 个分量，物化即爆显存，**禁止显式计算**
-- **Hessian-vector product (HVP)**：通过 Pearlmutter 算法，一次前向 + 一次反向即可得到 $Hv$，$O(N)$ 时间 $O(N)$ 显存，GPU 友好
-- **Ricci/标量曲率的 Monte Carlo 估计**：随机采样方向 $v$，$\mathbb{E}[v^T H v] = \text{tr}(H)$，用 Hutchinson 估计，GPU 友好
-- **Jacobi 场**：需要沿轨迹积分二阶 ODE，串行递推，GPU 不友好；工程上用离散差分近似
-- 低精度：HVP 中的二阶导在 fp16 下噪声大，需 fp32 累加
+- Riemann 张量完整存储为 $O(n^4)$，Hessian 为 $O(N^2)$；低维几何可显式计算，大模型优先收缩量或矩阵作用。
+- HVP 可通过混合模式自动微分获得，成本通常与常数次梯度计算同阶；应按计算图成本与激活量估算，不能只按参数数 $N$ 宣称 $O(N)$。
+- Hutchinson 估计使用独立 Rademacher/标准高斯方向；报告采样数与方差，使用固定单位向量时需重新检查归一化因子。
+- fp32 累加、方向归一化与有限差分步长需要验证；提高精度不是任意病态问题的保证。
 
 ## 风险与失效条件
 
-- **物化全 Riemann/Hessian 张量**：$O(N^2)$~$O(N^4)$ 显存，$N \sim 10^9$ 时不可能
-- **曲率估计信噪比低**：HVP 的 Monte Carlo 估计方差大，小 batch 下信号可能被噪声淹没
-- **把曲率正则当万能药**：曲率估计本身昂贵（每次需额外前向+反向），收益不确定时需先小规模验证
-- **离散近似误差**：用有限差分近似 Jacobi 场/HVP 时，步长选择敏感——太大截断误差大，太小浮点抵消
+- 曲率张量符号约定不同会改变 Ricci 收缩；同一推导不可混用。
+- Hessian 迹、最大特征值与流形标量曲率不可互换。
+- 重参数化可改变欧氏尖锐度；比较模型需固定坐标和尺度。
+- 数值 HVP、有限样本迹估计只提供计算证据，不是全局收敛或泛化证明。
 
 ## 深入参考
 
-- 蒸馏稿：../../references/books/differential-geometry.md（Ch 12 §12.5/§12.10 Curvature, Ch 13 §13.2 Riemann Curvature, §13.7 Jacobi Fields, §13.11 Rauch Comparison）
-- 原书：Jeffrey M. Lee, *Manifolds and Differential Geometry*, §13.2 Riemann Curvature Tensor, §13.7 Jacobi Fields
-
+- [微分几何书稿](../../references/books/differential-geometry.md)：联络、Riemann 曲率与 Jacobi 场。
+- [Pearlmutter, Fast Exact Multiplication by the Hessian](https://www.bcl.hamilton.ie/~barak/papers/nc-hessian.pdf)：自动微分 HVP。
 
 ## 路由扩展
-- 若需要局部几何分析 → `metric-tensor.md`（度量决定局部曲率）
-- 若需要全局拓扑分析 → `../topology/persistent-homology.md`（持续同调捕捉全局拓扑）
-- 若涉及曲率对稳定性的影响 → `../matrix-analysis/matrix-perturbation.md`（曲率导致的扰动放大）
+
+- 度量与联络：`metric-tensor.md`、`connection.md`。
+- 优化与谱敏感性：`../matrix-analysis/matrix-perturbation.md`。
 
 ## 可扩展方向
-- 截面/Ricci/标量曲率（sectional / Ricci / scalar curvature）：不同维度的曲率概念
-- Gauss-Bonnet 定理：曲率与拓扑不变量的关系
-- 比较定理（Toponogov, Bishop-Gromov）：曲率约束下的几何比较
-- 曲率流（curvature flow）：平均曲率流与 Ricci 流
-- Cartan-Hadamard 定理：非正曲率流形的全局结构
+
+比较几何、Gauss–Bonnet、曲率流与坐标不变的尖锐度诊断，均需相应条件。

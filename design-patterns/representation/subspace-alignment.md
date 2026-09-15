@@ -1,5 +1,5 @@
 # Subspace Alignment（子空间对齐）
-> **严谨性声明**：本文件中涉及复杂度、显存、FlashAttention 融合、Tensor Core、KV-Cache 压缩的结论均标注为「[v] 已验证 / [~] 可改造需验证 / [x] 不可行」。未标注的视为理论可行，需工程验证。
+> **证据标注**：[v] 有明确假设或记录验证支持；[~] 待验证的工程方案；[x] 在所述条件下不相容；[N/A] 不适用。伪代码用于定义算子，不是完整生产实现。
 
 ## 适用问题
 当两个或多个表示空间需要对齐到共同的子空间时使用。典型场景：
@@ -15,70 +15,49 @@
   ../../knowledge-base/differential-geometry/manifold.md（Grassmann 距离、测地线）
 
 ## 需要的数学知识
-- **正交 Procrustes 问题**：min_{W∈O(d)} ‖AW - B‖_F²
-  闭合解：W* = UV^T，其中 USV^T = SVD(A^T B)
-- **CCA (典型相关分析)**：max_W₁,W₂ tr(W₁^T Σ_XY W₂) s.t. W₁^T Σ_XX W₁ = I
-  解为广义特征值问题或 SVD(Σ_XX^{-1/2} Σ_XY Σ_YY^{-1/2})
-- **Grassmann 流形上的距离**：Gr(d, r) = {r 维子空间 ⊂ R^d}
-  两点（子空间）的距离由主角度 θ_i 决定：d_G(U,V) = √(Σ θ_i²)
-  cos(θ_i) = σ_i(U^T V)（U^T V 的奇异值）
-- **子空间追踪 (Subspace Tracking)**：在线更新子空间基
-  Oja 规则：W_{t+1} = W_t + η(x_t x_t^T W_t - W_t diag(W_t^T x_t x_t^T W_t))
+
+- 方形正交 Procrustes 假设配对 $A,B\in\mathbb R^{N\times d}$、$W\in O(d)$；$A^TB=U\Sigma V^T$ 时，$W^*=UV^T$ 最小化 $\|AW-B\|_F^2$。源/目标维数不同时需另行指定矩形约束或先投影到共同维数。
+- CCA 需要**两个**约束 $W_X^T\Sigma_{XX}W_X=I$ 与 $W_Y^T\Sigma_{YY}W_Y=I$；样本须中心化并正则奇异协方差。
+- 主角满足 $\cos\theta_i=\sigma_i(Q_X^TQ_Y)$，其中正交基需位于**同一环境空间**。最大化余弦之和是代理目标，不等于平方测地距离 $\sum_i\theta_i^2$。
+- Grassmann/Oja 子空间更新使用 $G=(I-WW^T)xx^TW$ 并重新正交化；只减对角归一化项可能让多个分量坍塌到同一方向。
 
 ## AI 模块形式
+
+```python
+# 配对且同维的Procrustes
+A0, B0 = A - A.mean(0), B - B.mean(0)  # 可选平移对齐，明确声明
+assert A0.shape == B0.shape
+U, s, Vh = svd(A0.T @ B0, full_matrices=False)
+W = U @ Vh
+loss_align = ((A0 @ W - B0)**2).sum() / N
+
+# 两模态先投影到r维并中心化，再进行Deep CCA
+F, G = center(encoder_A(A)), center(encoder_B(B))
+Sxx, Syy = F.T @ F / N + ridge*eye(r), G.T @ G / N + ridge*eye(r)
+Sxy = F.T @ G / N
+T = inverse_sqrt(Sxx) @ Sxy @ inverse_sqrt(Syy)
+loss_cca = -svdvals(T)[:k].sum()  # 求和，不对向量作矩阵trace
 ```
-模块：SubspaceAligner
-输入：源表示 A ∈ R^{N×d_a}，目标表示 B ∈ R^{N×d_b}（配对数据）
+完整白化需协方差信息；逐坐标均值/方差归一化仅是对角归一化。CCA 相关性和 Grassmann 角度在适当白化空间有关，但一般不是可互换目标。
 
-方法1 - 线性 Procrustes 对齐（最常用）：
-  // 找最优线性变换 W 使 A@W ≈ B
-  M = A^T @ B                       // d_a × d_b，一次 GEMM
-  U, S, V^T = SVD(M)                // 奇异值分解
-  W* = U @ V^T                      // d_a × d_b 最优正交变换
-  // 可微版本：将 W 参数化为 nn.Parameter，用 SGD 优化
-  L_align = ‖A @ W - B‖_F² / N     // 对齐损失
+专家输出 $X_i\in\mathbb R^{N\times d_i}$ 的左奇异向量比较样本空间子空间，要求相同配对样本；右奇异向量比较特征空间子空间，要求共同特征维数。明确所需对象。
 
-方法2 - 深度 CCA（非线性子空间对齐）：
-  f_A = MLP_A(A)                    // R^{d_a} → R^r（非线性投影）
-  f_B = MLP_B(B)                    // R^{d_b} → R^r
-  Σ_AA = f_A^T @ f_A / N + λI       // r×r 自协方差
-  Σ_BB = f_B^T @ f_B / N + λI
-  Σ_AB = f_A^T @ f_B / N            // r×r 互协方差
-  T = Σ_AA^{-1/2} @ Σ_AB @ Σ_BB^{-1/2}  // 白化互相关
-  L_cca = -tr(SVD(T).S[:k])         // 最大化前 k 个典型相关的和
-  // 等效于最小化 Grassmann 距离
-
-方法3 - 子空间角度正则（多专家输出对齐）：
-  // 多个专家的输出应对齐到同一子空间
-  U_k = SVD(expert_k_output)[0][:, :r]  // 各专家输出的 r 维主成分
-  for i, j in expert_pairs:
-    cos_angles = SVD(U_i^T @ U_j).S    // 主角度的余弦
-    L_subspace = -mean(cos_angles)       // 最大化主角度余弦 → 最小化角度
-  // 或使用 Grassmann 距离：
-  L_grass = sum(angles²)                 // angles = arccos(cos_angles)
-
-在线子空间追踪（推理时适配）：
-  // 测试时新样本到来，增量更新对齐矩阵
-  W_new = W_old + η · (x_new @ (y_new^T - x_new^T @ W_old))  // Oja-like
-  // 无需重新 SVD，O(d²) 在线更新
-```
+在线 `W += eta * outer(x, y - x @ W)` 是无约束最小二乘 SGD，不是 Oja 或保持正交的 Procrustes；需要正交约束时应投影/回缩。
 
 ## 可实现结构
-- **对齐层 (AlignmentLayer)**：nn.Linear(d_a, d_b, bias=False) 初始化为 Procrustes 解
-- **白化层**：用 running mean/variance 做在线白化，避免每步计算 Σ^{-1/2}
-- **CCA 替代方案**：用 Barlow Twins 式的冗余减少损失替代 CCA（避免矩阵逆）
-  L_BT = ‖C - I‖_F² 其中 C = corr(f_A, f_B)
-- **分块 SVD**：大规模时用 randomized SVD 近似，精度足够且更快
+
+- 共同维数的正交对齐，初始化后仍保留约束。
+- 正则化完整白化，或明确命名的对角近似。
+- Barlow Twins 类相关惩罚是替代目标，不保证 CCA 最优性。
+- 随机谱近似以残差及主角验证。
 
 ## GPU 可行性
-- **D1[v]**：A^T@B 为标准 GEMM (d×N)@(N×d)；SVD 有 cuSOLVER 实现
-- **D2[v]**：Procrustes 核心 1 次 GEMM + 1 次 SVD；CCA 2 次 GEMM + 1 次 SVD
-- **D3[v]**：GEMM O(N·d²)；SVD O(d³)（d 通常 <1024，可接受）；在线追踪 O(d²)
-- **D4[v]**：存储协方差矩阵 d×d（~4MB for d=1024），不增加 KV-Cache
-- **D5[~]**：SVD 强烈建议 fp32；白化的矩阵逆需 fp32 + ε 正则化
-- **D6[v]**：多专家对的子空间角度计算独立并行；CCA 的 GEMM 高度并行
-- **D7[~]**：当源/目标表示稀疏时，协方差矩阵 Σ 稀疏，可用稀疏 SVD
-- **D8[~]**：白化 (mean-sub → cov → inv_sqrt → transform) 可部分融合
+
+- **D1/D2[~]**：交叉协方差用 GEMM；CCA 另需两个协方差估计、逆平方根及 SVD。
+- **D3/D4[~]**：共同宽度 $d$ 时，含 $O(Nd^2)$ 统计、$O(d^3)$ 分解及 $O(d^2)$ 存储；无约束在线 SGD 为 $O(d^2)$，回缩另有成本。
+- **D5[~]**：使用 fp32/fp64、ridge 及残差检查。角度公式内加 epsilon 不能解决特征基不可辨识。
+- **D6/D8[~]**：独立配对可批处理；协方差归约及分解阶段有依赖，实际融合须 profiling。
+- **D7[N/A]**：稀疏特征一般不意味着稀疏协方差；选稀疏求解器前检查协方差。
 
 ## 论文表述方式
 "基于正交 Procrustes 理论求得源-目标表示间的最优等距映射 W*=UV^T（USV^T=SVD(A^TB)），

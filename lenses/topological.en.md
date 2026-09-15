@@ -4,12 +4,12 @@
 
 ## What Perspective It Offers
 
-Topology is a way of "ignoring precise measurements and focusing only on qualitative structure": when exact distances do not matter, topology captures the essential structure — connectedness, the number of holes, and dimension. A donut and a coffee cup are topologically equivalent because each has exactly one hole. The core insight is that shape matters more than size; invariants that survive continuous deformation are the truly robust properties. Cohomology (especially Čech cohomology) can also detect whether "local fragments can be assembled into a globally consistent object."
+Topology is a way of "ignoring precise measurements and focusing only on qualitative structure": when exact distances do not matter, topology captures the essential structure — connectedness, the number of holes, and dimension. Idealized donut and handled-cup models can admit a homeomorphism; equal hole counts alone do not prove homeomorphism for general spaces. The core insight is that shape matters more than size; homeomorphisms and homotopy equivalences preserve their respective invariants; robustness to point-cloud noise requires separate filtration/stability assumptions. Cohomology (especially Čech cohomology) can also detect whether "local fragments can be assembled into a globally consistent object."
 
 ## What Problems It Is Suited to Diagnose
 
 - Qualitative classification — not "how large" or "how far," but "is it connected?" and "how many holes does it have?"
-- Robustness analysis — topological invariants guarantee that properties do not vanish under continuous perturbation
+- Robustness analysis requires a specified homeomorphism/homotopy equivalence or persistence stability hypothesis; arbitrary continuous maps or data perturbations can change topology
 - Data whose shape standard statistics cannot capture — clusters, voids, and ring-like structures
 - Detecting global consistency obstructions — whether local fragments can be assembled into a globally consistent object
 
@@ -36,7 +36,7 @@ Topology is a way of "ignoring precise measurements and focusing only on qualita
 2. **Compute Topological Invariants**: Euler characteristic, connected components, fundamental group, homology groups, and Betti numbers
 3. **Classify Using Invariants**: Equal χ alone does not determine the surface type (it must be combined with orientability); equal π₁ is necessary but far from sufficient for homotopy equivalence (higher homology/homotopy groups are also needed)
 4. **Construct a Topological Model**: Build a filtration from a point cloud, a graph from a network, or a phase space from a dynamical system
-5. **Verify Equivalence**: Attempt to construct an explicit homeomorphism or homotopy; check whether all invariants match
+5. **Verify Equivalence**: Construct a homeomorphism or a homotopy equivalence (two maps with appropriate composition homotopies); a single homotopy or matching selected invariants does not prove equivalence
 
 ## Acceptance Criteria
 

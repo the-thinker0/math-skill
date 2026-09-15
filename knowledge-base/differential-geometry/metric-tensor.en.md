@@ -14,7 +14,7 @@ The metric tensor $g$ is a positive-definite symmetric bilinear form $g_p: T_pM 
 
 ## Applicable Problems
 
-- Parameter space is non-flat and non-Euclidean: the natural metric on families of probability distributions is the Fisher information matrix
+- Fisher information gives a metric for regular identifiable families, but can be singular and need not have nonzero Riemann curvature; a fixed-covariance Gaussian location family is flat.
 - Slow optimization convergence: poor conditioning arises from metric mismatch, remedied by preconditioning with the natural gradient $g^{-1}\nabla L$
 - Distance/similarity must adapt to data geometry: metric learning is essentially learning a $g$
 - Volume computation and density estimation: $\sqrt{\det g}$ gives the volume form on the manifold
@@ -22,8 +22,8 @@ The metric tensor $g$ is a positive-definite symmetric bilinear form $g_p: T_pM 
 ## AI Design Translation
 
 - **Natural gradient / K-FAC optimizer**: $F^{-1}\nabla L$ where $F$ is the Fisher metric; K-FAC uses the Kronecker factorization $F \approx A \otimes B$ to reduce inversion to two small matrix inversions, and the preconditioning reduces to a GEMM chain
-- **Learnable metric layer**: Parameterize $g = L^T L$ (Cholesky) to learn a task-specific Riemannian metric for metric learning and contrastive learning
-- **Information-geometric regularization**: Replace Euclidean $\|d\theta\|^2$ with the Fisher-Rao distance $\|d\theta\|_F^2 = d\theta^T F d\theta$, making regularization invariant to reparameterization
+- **Learnable metric layer**: $g=L^TL+\epsilon I$ with $\epsilon>0$ is positive definite; $L^TL$ alone is only semidefinite when $L$ is rank deficient.
+- **Information-geometric regularization**: $d\theta^TFd\theta$ is a local tangent quadratic form, not the exact Fisher-Rao distance between arbitrary points. Tensor transformation preserves it; finite coordinate differences or approximate Fishers need not preserve exact invariance.
 - **Fisher-aware learning rate scheduling**: Use $\|g^{-1}\nabla L\|_g$ as the "geometrically correct" gradient norm to guide learning rate selection
 
 ## Engineering Feasibility
@@ -33,13 +33,13 @@ GPU friendliness depends on the structure of the metric:
 - **Kronecker-factored** $g = A \otimes B$: $(A\otimes B)^{-1} = A^{-1}\otimes B^{-1}$, small matrix inversions + GEMM chain, the core trick of K-FAC, GPU-feasible
 - **Block-diagonal metric**: per-block independent inversion, batched small matrix operations, GPU-friendly
 - **Full dense metric**: $n \times n$ matrix inversion $O(n^3)$ + memory $O(n^2)$; with parameter count $N \sim 10^9$, this is immediately ruled out
-- Low-precision risk: the Fisher matrix is often ill-conditioned; inversion under fp16 catastrophically amplifies errors -- **must add damping $F + \lambda I$ and invert in fp32**
+- Low-precision risk: inspect conditioning and solver residuals and compare precision choices; damp or raise precision as needed. Damping changes the operator, and fp32 alone does not ensure a reliable solve.
 
 ## Risks and Failure Conditions
 
-- **Ill-conditioned metric matrix**: The condition number of the Fisher matrix can exceed $10^6$; low-precision inversion results are entirely noise
-- **Materializing the full metric matrix**: An $N \times N$ matrix ($N \sim 10^9$) requires $\sim 4$ PB of memory, making materialization impossible
-- **Metric-task mismatch**: The Fisher metric assumes the probabilistic model is correct; under model misspecification, the natural gradient can perform worse than SGD
+- **Ill-conditioned metric matrix**: precision and conditioning jointly control solve error; redundant parameterizations may produce rank-deficient Fishers. Handle definiteness and identifiability explicitly.
+- **Materializing the full metric matrix**: An $N \times N$ matrix ($N \sim 10^9$) requires $\sim 4$ EB of memory, making materialization impossible
+- **Metric-task mismatch**: Fisher information is defined under the model distribution without requiring that the model equal the true distribution. Misspecification or a different objective can affect its optimization value.
 - **Dynamic metric update overhead**: The Fisher matrix changes with the parameters; statistical noise from re-estimation at each step may offset preconditioning benefits
 
 ## Further References
@@ -51,8 +51,8 @@ GPU friendliness depends on the structure of the metric:
 
 
 ## Routing Extensions
-- If the metric comes from Fisher information -> `../information-geometry/natural-gradient.md` (natural gradient under Fisher metric)
-- If Riemannian gradient computation is needed -> `../optimization/riemannian-optimization.md` (metric determines gradient direction)
+- If the metric comes from Fisher information -> `../information-geometry/natural-gradient.en.md` (natural gradient under Fisher metric)
+- If Riemannian gradient computation is needed -> `../optimization/riemannian-optimization.en.md` (metric determines gradient direction)
 - If curvature analysis is needed -> `curvature.en.md` (metric determines curvature tensor)
 
 ## Extensible Directions

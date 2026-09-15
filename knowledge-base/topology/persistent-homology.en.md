@@ -2,7 +2,7 @@
 
 ## Minimal Definition
 
-Persistent homology tracks how the homology groups $H_k$ of a topological space change across different scales $\epsilon$: as $\epsilon$ increases from 0, topological features (connected components, holes, voids) are "born" at some scale and "die" at a larger scale. Features with long persistence are intrinsic topological structure; short-lived ones are noise. The output is a barcode or persistence diagram.
+Persistent homology tracks how the homology groups $H_k$ of a topological space change across different scales $\epsilon$: as $\epsilon$ increases from 0, topological features (connected components, holes, voids) are "born" at some scale and "die" at a larger scale. Long persistence suggests cross-scale structure, but long bars are not automatically signal or short bars noise without a sampling/noise model. The output is a barcode or persistence diagram.
 
 ## Core Formulas
 
@@ -10,8 +10,8 @@ Persistent homology tracks how the homology groups $H_k$ of a topological space 
 - Vietoris-Rips complex: $VR_\epsilon = \{\sigma \subseteq X \mid d(x_i, x_j) \leq \epsilon, \forall x_i, x_j \in \sigma\}$
 - Persistent homology groups: $H_k^{i,j} = \text{im}(H_k(K_i) \to H_k(K_j))$
 - Persistence diagram: $D_k = \{(b_l, d_l)\}$, where $b_l$ is the birth scale and $d_l$ is the death scale
-- Bottleneck distance: $d_B(D, D') = \inf_\gamma \sup_x \|x - \gamma(x)\|_\infty$
-- Persistence landscape: $\lambda_k(t) = \sup\{m \mid \text{rank } H_k^{t-m, t+m} \geq k\}$
+- Bottleneck distance: $d_B(D,D')=\inf_\gamma\sup_x\|x-\gamma(x)\|_\infty$; matchings include the diagonal with infinite multiplicity. Fix a coefficient field and conventions for essential intervals.
+- For fixed homological degree $h$, landscape layer $j\ge1$ is $\lambda_j^{(h)}(t)=\sup\{u\ge0:\operatorname{rank}H_h^{t-u,t+u}\ge j\}$, with empty supremum set to 0. Degree and landscape order are distinct.
 
 ## Applicable Problems
 
@@ -22,29 +22,24 @@ Persistent homology tracks how the homology groups $H_k$ of a topological space 
 
 ## AI Design Translation
 
-- **Topological regularization loss**: $L_{\text{topo}} = d_B(D_{\text{latent}}, D_{\text{data}})$, forcing the persistence diagram of the latent space to match that of the data, preserving topology
+- **Persistence-diagram regularization**: $L_{topo}=d_B(D_{latent},D_{data})$ encourages agreement for selected homology degrees/filtrations, not full topological or semantic equivalence.
 - **Persistence diagram featurization layer**: Convert the persistence diagram into a fixed-dimension vector (persistence image/landscape/silhouette) as input for downstream classification/regression
-- **Topology-aware clustering**: Use the persistence intervals of $H_0$ to automatically determine the number of clusters; long-lived connected components correspond to true clusters
-- **Latent space topology monitoring**: Compute $H_1$ (holes) of the latent space during training in real time to detect topological collapse (all holes disappear = posterior collapse)
+- **Topology-aware clustering**: Use the persistence intervals of $H_0$ to automatically determine the number of clusters; long-lived components are candidate clusters requiring sampling/scale validation
+- **Latent topology monitoring**: track H₁ features of a specified filtration. Disappearing loops do not establish VAE posterior collapse, which requires checking latent usage and posterior/prior behavior.
 
 ## Engineering Feasibility
 
-Limited GPU friendliness, which is the main bottleneck for deploying persistent homology:
-- **Distance matrix computation**: $O(n^2)$, batched pairwise distances, GPU-friendly
-- **Vietoris-Rips construction**: Combinatorial explosion; the VR complex on $n$ points has up to $2^n$ simplices; in practice, truncated to 2-skeleton, $O(n^3)$ worst case
-- **Boundary matrix reduction (core algorithm)**: Column reduction analogous to Gaussian elimination, **highly serial**, standard algorithm cannot be parallelized
-- **GPU-accelerated reduction algorithms**: e.g., Ripser's clearing optimization + GPU-based reduction (Emerald, etc.) can achieve 10--100x speedup, but still far from GEMM-level parallelism
-- **Differentiable alternatives**: The persistence map is differentiable almost everywhere with respect to point positions (non-differentiable points form a measure-zero exceptional set of filtration-value degeneracies/reorderings); persistence images/landscapes give smooth vectorizations, while the barcode's discrete matching structure (bottleneck matching) is not smooth
-- Complexity: exact computation is worst-case $O(n^3)$ (2-skeleton VR); large point clouds ($n > 10^4$) require subsampling
+Let $n$ count points and $M$ count constructed simplices. A 2-skeleton may have $M=O(n^3)$; this bounds construction size, not total persistence runtime. Classical general boundary reduction can take $O(M^3)$ time and $O(M^2)$ memory. Sparsity, clearing, and specialized methods can greatly reduce practical cost.
+
+Parallel/GPU methods exist but depend on complex and data; no unsupported 10–100x speedup. Report truncation degree, $M$, nonzero counts, and measured resources. Almost-everywhere differentiability requires a fixed finite complex and appropriate filtration parameterization. Landscapes are piecewise linear, not generally smooth; matchings, ties, and degeneracies need gradient/proxy conventions.
 
 ## Risks and Failure Conditions
 
-- **Seriality of boundary matrix reduction**: The core algorithm is inherently serial, with GPU parallelism far below that of GEMM, making it infeasible for large-scale data
-- **Combinatorial explosion**: The number of simplices in the VR complex grows exponentially with dimension; truncation to 2--3 dimensions is mandatory
-- **Correct statement of differentiability**: The persistence map is differentiable almost everywhere, so differentiable topological layers (differentiable TopoLoss-style) are valid; non-differentiability occurs at filtration-value degeneracies/reorderings and in the discrete structure of bottleneck matchings. Use smooth proxies such as landscapes/images when end-to-end gradients are needed
-- **Subjectivity of scale selection**: The scale range and truncation threshold for the filtration must be chosen manually
-- **Topology is not geometry**: Persistent homology captures only topological invariants, losing metric information (distances, angles), which may be insufficient to distinguish different datasets
-- **Subsampling bias**: Large datasets must be subsampled, and persistence diagrams from different subsamples may differ significantly
+- Samples, coefficient field, distance, and scale range affect results; persistence retains scale/metric information rather than discarding all geometry.
+- Matching diagrams does not establish homeomorphism, semantic equivalence, or absence of mode collapse.
+- Noise robustness needs stability assumptions; long bars do not automatically represent truth.
+- Record subsampling/landmarks and truncation; no universal infeasibility threshold at $n>10^4$.
+- Euler curves or sampled proxies may be cheaper diagnostics, but describe the information lost.
 
 ## Further References
 
@@ -57,12 +52,12 @@ Limited GPU friendliness, which is the main bottleneck for deploying persistent 
 ## Routing Extensions
 - If topological invariant computation is needed -> `euler-characteristic.en.md` (Euler characteristic as alternating sum of Betti numbers)
 - If 1-dimensional topology analysis is needed -> `fundamental-group.en.md` (fundamental group captures loop structure)
-- If used for information-preserving compression -> `../probability/information-bottleneck.md` (topology-preserving information compression)
+- If used for information-preserving compression -> `../probability/information-bottleneck.en.md` (topology-preserving information compression)
 
 ## Extensible Directions
 - Simplicial complex types (Cech, Vietoris-Rips, alpha): advantages and disadvantages of different constructions
 - Sheaf theory: local-to-global consistent data structures
-- Mapper algorithm: visualization and clustering based on persistent homology
+- Mapper: a summary built from a filter, cover and local clustering; not a graph directly computed from persistent homology.
 - Topological data analysis (TDA): complete TDA methodology
 - Persistence image / landscape: vectorized representations of persistence diagrams
 - Multiparameter persistence: homology with multi-scale filtrations

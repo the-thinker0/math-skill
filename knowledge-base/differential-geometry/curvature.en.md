@@ -2,61 +2,54 @@
 
 ## Minimal Definition
 
-Curvature measures whether a manifold "bends" and whether "paths are path-dependent." The Riemann curvature tensor $R(X,Y)Z = \nabla_X\nabla_Y Z - \nabla_Y\nabla_X Z - \nabla_{[X,Y]}Z$ describes the deflection of a vector after parallel transport around an infinitesimal parallelogram. The sectional curvature $K(\sigma)$ is its simplest scalar extraction.
+Use $R(X,Y)Z=\nabla_X\nabla_YZ-\nabla_Y\nabla_XZ-\nabla_{[X,Y]}Z$. Riemann curvature describes local path dependence of a connection; a loss Hessian describes second derivatives of a function. They are different objects: Euclidean space has zero Riemann curvature even when a loss Hessian is nonzero.
 
 ## Core Formulas
 
-- Riemann curvature tensor: $R^l_{ijk} = \partial_i \Gamma^l_{jk} - \partial_j \Gamma^l_{ik} + \Gamma^l_{im}\Gamma^m_{jk} - \Gamma^l_{jm}\Gamma^m_{ik}$
-- Ricci curvature (contraction): $R_{ij} = \sum_k R^k_{ikj}$
-- Scalar curvature: $S = \sum_{ij} g^{ij} R_{ij}$
-- Sectional curvature: $K(X,Y) = \frac{\langle R(X,Y)Y, X\rangle}{\|X\|^2\|Y\|^2 - \langle X,Y\rangle^2}$
-- Jacobi equation: $\frac{D^2 J}{dt^2} + R(J, \dot\gamma)\dot\gamma = 0$ (describes divergence/convergence of geodesics)
-- Hessian-vector product: $Hv = \nabla(\nabla L \cdot v)$, $O(N)$ estimation of curvature information
+- Define components by $R(\partial_i,\partial_j)\partial_k=R^l_{ijk}\partial_l$:
+  $R^l_{ijk}=\partial_i\Gamma^l_{jk}-\partial_j\Gamma^l_{ik}+\Gamma^l_{im}\Gamma^m_{jk}-\Gamma^l_{jm}\Gamma^m_{ik}$.
+- With this convention, $\operatorname{Ric}_{jk}=\sum_i R^i_{ijk}$ and $S=g^{jk}\operatorname{Ric}_{jk}$.
+- $K(X,Y)=\langle R(X,Y)Y,X\rangle/(\|X\|^2\|Y\|^2-\langle X,Y\rangle^2)$ for linearly independent $X,Y$.
+- Jacobi fields along geodesics satisfy $D_t^2J+R(J,\dot\gamma)\dot\gamma=0$.
+- For fixed $v$ and a twice-differentiable scalar loss, $Hv=\nabla(\nabla L\cdot v)$. If $\mathbb E[vv^T]=I$, then $\mathbb E[v^THv]=\operatorname{tr}H$. This is the Hessian trace, not scalar curvature.
 
 ## Applicable Problems
 
-- Loss landscape analysis: curvature determines conditioning and sharpness, distinguishing sharp minima from flat minima
-- Optimization trajectory stability: Jacobi fields describe the divergence/convergence of neighboring optimization trajectories
-- Generalization diagnostics: flat minima (low curvature) tend to generalize better
-- Manifold learning: the curvature of the data manifold guides latent space dimension and metric selection
+- Manifold geometry: compare geodesics and analyze local curvature for a specified metric.
+- Optimization diagnostics: use Hessian Rayleigh quotients, spectra, and HVPs for local loss sensitivity; specify coordinates and scale.
+- Generalization research: test associations between sharpness and independent test error; flatness alone proves no generalization guarantee.
 
 ## AI Design Translation
 
-- **Curvature regularization (geometric perspective on SAM)**: Use Hessian-vector products to estimate $\max_v v^T H v$, penalizing sharp minima and preferring flat minima
-- **HVP-based diagnostic**: $\|Hv\|/\|v\|$ as a cheap proxy for loss landscape curvature, used for learning rate adaptation and early stopping
-- **Jacobi field trajectory monitoring**: Track the distance evolution between two neighboring optimization trajectories, the discrete analog of $J''(t) + R(J,\dot\gamma)\dot\gamma = 0$, to detect divergence/convergence
-- **Ricci-flow-inspired graph rewiring**: Use discrete Ricci curvature to guide dynamic adjustment of graph/attention structure (negative-curvature edges indicate bottlenecks that need additional connections)
+- **HVP diagnostics:** estimate $v^THv$ with $\|v\|=1$; the maximum Rayleigh quotient is the largest eigenvalue. The norm constraint is essential.
+- **SAM-inspired analysis:** neighborhood worst-case loss can relate to Hessians via local expansion; SAM does not minimize Riemann curvature.
+- **Trajectory stability:** gradient-flow linearization involves the loss Hessian; the Jacobi equation directly applies to geodesic variations.
+- **Graph rewiring:** discrete Ricci curvature may suggest bottleneck candidates; specify its discrete definition and measure task outcomes rather than automatically adding edges with negative curvature.
 
 ## Engineering Feasibility
 
-GPU friendliness: the core difficulty of curvature is that "the full tensor cannot be materialized."
-- **Riemann tensor**: 4th order, $n^4$ components, materializing it exhausts memory -- **explicit computation is prohibited**
-- **Hessian-vector product (HVP)**: Via Pearlmutter's algorithm, one forward pass + one backward pass yields $Hv$, $O(N)$ time and $O(N)$ memory, GPU-friendly
-- **Monte Carlo estimation of Ricci/scalar curvature**: Randomly sample directions $v$, $\mathbb{E}[v^T H v] = \text{tr}(H)$, using Hutchinson's estimator, GPU-friendly
-- **Jacobi fields**: Require integrating a second-order ODE along a trajectory, serial recurrence, GPU-unfriendly; in practice, discrete finite-difference approximations are used
-- Low precision: second-order derivatives in HVP are noisy under fp16, requiring fp32 accumulation
+- Dense Riemann tensors require $O(n^4)$ storage and Hessians $O(N^2)$. Explicit low-dimensional geometry is viable; large models favor contractions or matrix actions.
+- Mixed-mode autodiff computes HVPs at costs typically comparable to a constant number of gradient evaluations. Use computation-graph cost and activation memory, not parameter count alone, to estimate complexity.
+- Hutchinson estimation uses independent Rademacher/standard Gaussian directions; report sample count and variance. Unit-vector sampling requires a different normalization factor.
+- Validate fp32 accumulation, direction normalization, and finite-difference steps. Higher precision does not solve arbitrary ill-conditioning.
 
 ## Risks and Failure Conditions
 
-- **Materializing the full Riemann/Hessian tensor**: $O(N^2)$ to $O(N^4)$ memory, impossible when $N \sim 10^9$
-- **Low signal-to-noise ratio in curvature estimation**: Monte Carlo estimation of HVP has high variance; with small batches, the signal may be drowned in noise
-- **Treating curvature regularization as a panacea**: Curvature estimation itself is expensive (requiring additional forward and backward passes); benefits should be validated at small scale first when uncertain
-- **Discrete approximation errors**: When using finite differences to approximate Jacobi fields/HVP, the step size is sensitive -- too large causes truncation error, too small causes floating-point cancellation
+- Curvature sign conventions change Ricci contractions; do not mix conventions.
+- Hessian trace, largest eigenvalue, and manifold scalar curvature are not interchangeable.
+- Reparameterization can change Euclidean sharpness; fix coordinates and scales in comparisons.
+- Numerical HVPs and finite-sample trace estimates are computational evidence, not global convergence or generalization proofs.
 
 ## Further References
 
-- Distillation notes: ../../references/books/differential-geometry.en.md (Ch 12 Section 12.5/Section 12.10 Curvature, Ch 13 Section 13.2 Riemann Curvature, Section 13.7 Jacobi Fields, Section 13.11 Rauch Comparison)
-- Original text: Jeffrey M. Lee, *Manifolds and Differential Geometry*, Section 13.2 Riemann Curvature Tensor, Section 13.7 Jacobi Fields
-
+- [Differential geometry notes](../../references/books/differential-geometry.en.md): connections, Riemann curvature, and Jacobi fields.
+- [Pearlmutter, Fast Exact Multiplication by the Hessian](https://www.bcl.hamilton.ie/~barak/papers/nc-hessian.pdf): autodiff HVPs.
 
 ## Routing Extensions
-- If local geometric analysis is needed -> `metric-tensor.en.md` (metric determines local curvature)
-- If global topological analysis is needed -> `../topology/persistent-homology.md` (persistent homology captures global topology)
-- If curvature's effect on stability is involved -> `../matrix-analysis/matrix-perturbation.md` (curvature-induced perturbation amplification)
+
+- Metrics and connections: `metric-tensor.en.md`, `connection.en.md`.
+- Optimization and spectral sensitivity: `../matrix-analysis/matrix-perturbation.en.md`.
 
 ## Extensible Directions
-- Sectional / Ricci / scalar curvature: curvature concepts at different dimensions
-- Gauss-Bonnet theorem: relationship between curvature and topological invariants
-- Comparison theorems (Toponogov, Bishop-Gromov): geometric comparison under curvature constraints
-- Curvature flow: mean curvature flow and Ricci flow
-- Cartan-Hadamard theorem: global structure of non-positively curved manifolds
+
+Comparison geometry, Gauss–Bonnet, curvature flows, and coordinate-invariant sharpness diagnostics require their own hypotheses.

@@ -1,5 +1,5 @@
 # Shared-Private Decomposition
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Evidence labels**: [v] supported by stated assumptions or recorded checks; [~] engineering proposal requiring validation; [x] incompatible under the stated conditions; [N/A] outside scope. Pseudocode specifies operators, not a production-ready implementation.
 
 ## Applicable Problems
 Use in multi-task/multi-domain learning when representations need to be decomposed into a "cross-task common component" and a "task-specific component."
@@ -24,44 +24,20 @@ Core requirement: **explicitly separate commonality from individuality to preven
 - **CCA (Canonical Correlation Analysis)**: max corr(W_1^T X, W_2^T Y), extracting shared variation between two sets of variables
 
 ## AI Module Form
+
+```python
+z_shared = shared_encoder(X)
+z_private = private_encoder[task](X)
+z = shared_to_output(z_shared) + private_to_output(z_private)
+
+# Discriminator minimizes CE; gradient reversal makes the shared encoder maximize it.
+L_domain = cross_entropy(domain_classifier(gradient_reverse(z_shared)), task)
+L_task = task_loss(task_head(z), target)
+L = L_task + lambda_adv * L_domain + lambda_decorr * decorrelation(z_shared, z_private)
 ```
-Module: SharedPrivateDecomposer
-Input: X in R^{N x d}, task identifier t in {1, ..., T}
+A finite discriminator's failure to predict the task does not prove task independence. Evaluate stronger held-out probes, task-transfer performance and representation collapse. Private-label prediction is optional and can encourage mere task-ID memorization instead of useful task-specific information.
 
-Method 1 - Additive Decomposition (most common):
-  z_shared = E_shared(X)           // shared encoder: MLP or Transformer block
-  z_private = E_private[t](X)      // private encoder: independent parameters per task
-  z = z_shared + z_private         // additive fusion
-  // Training objective: L_task(z, y) + lambda_1 * OrthLoss(z_shared, z_private)
-  // Orthogonality ensures shared and private learn different information
-
-Method 2 - Gated Decomposition (dynamic weighting):
-  z_shared = E_shared(X)
-  z_private = E_private[t](X)
-  gate = sigmoid(Linear(z_shared + z_private))  // dynamic fusion gate
-  z = gate * z_shared + (1 - gate) * z_private
-  // Gating allows per-dimension selection of shared/private contribution ratios
-
-Method 3 - Adversarial Decomposition (information-theoretic proxy):
-  z_shared = E_shared(X)
-  z_private = E_private[t](X)
-  // Shared should be indistinguishable across tasks (adversarial gradient):
-  // ⚠ Sign correctness is critical! Original formula L_adv = -CE with flip_gradient creates a double sign reversal:
-  //   Discriminator minimizes -CE → gets worse at prediction; Encoder (sees +CE after reversal) → helps discriminator → shared becomes MORE task-specific!
-  // Correct approach: L_adv = +CE, combined with flip_gradient:
-  //   Discriminator minimizes +CE → learns to predict task from shared
-  //   Encoder (gradient reversed) sees -CE → maximizes discriminator loss → shared becomes task-independent
-  task_pred = classifier(z_shared.flip_gradient())
-  L_adv = CE(task_pred, t)        // Discriminator: minimize CE to predict task; Encoder: sees -CE after reversal, maximizes CE, making shared task-independent
-  // Private should be discriminative across tasks:
-  L_private = CE(classifier(z_private), t)
-  L = L_task + lambda_adv * L_adv + lambda_priv * L_private
-
-Dimension Allocation Principle:
-  d_shared = d * T / (T + 1)      // With T tasks, shared occupies the majority
-  d_private = d * 1 / (T + 1)     // Each private occupies a smaller portion
-  // Or dynamically allocate based on PCA variance explained ratio
-```
+Branch outputs must have compatible shapes for addition; otherwise map each to a common output dimension or concatenate. Choose shared/private latent widths from a parameter/compute budget and task ablations; there is no universal $dT/(T+1)$ allocation law. Learned nonlinear branches with a decorrelation penalty do not automatically define a direct-sum subspace decomposition.
 
 ## Implementable Structures
 - **Dual encoder + fusion layer**: shared_encoder (large) + T private_encoders (small) + fusion
@@ -70,14 +46,12 @@ Dimension Allocation Principle:
 - **Progressive expansion**: For new tasks, only add private encoders with frozen shared parameters
 
 ## GPU Feasibility
-- **Tensorization**: Two encoder forward passes are independent GEMM chains, executable in parallel
-- **GEMM-mappable**: Shared/private encoders are each standard Transformer FFNs (2x GEMM)
-- **Complexity**: Shared O(N * d^2) + T private encoders O(N * d^2 / T), total approximately 2x a single encoder
-- **Memory & KV-Cache**: All T private encoder parameters stored; LoRA compression needed when T is large
-- **Low-precision stability**: Additive/gated fusion is safe in fp16; adversarial training gradient reversal requires fp32
-- **Parallelism & Communication**: Shared and private encoders can be assigned to different GPUs; multi-task batches mixed for training
-- **Sparse structure**: Private encoders can be sparsified (only the current task's is activated); only 1 out of T activated
-- **Operator fusion**: Additive fusion is trivial; gated fusion sigmoid -> multiply -> add can be fused
+
+- **D1/D2[~]**: Shared/private encoders are ordinary neural modules; their costs follow the actual depth and width.
+- **D3/D4[~]**: If token $i$ uses one private branch, cost is $C_{shared}(X)+\sum_t C_{private,t}(X_t)$ with $\sum_t|X_t|=N$, not a universal twice-dense cost. Store all private parameters unless loaded on demand; optimizer state also grows with task count.
+- **D5[~]**: Gradient reversal is sign/scale multiplication and does not inherently require fp32; use precision diagnostics for logits, reductions and adversarial stability.
+- **D6/D8[~]**: Branches may overlap on hardware, but resource contention and transfer costs determine benefit. Fusion applies mainly to small combination operations.
+- **D7[~]**: Conditional private-branch execution saves work only if inactive branches are skipped; it is not sparse weight storage.
 
 ## Paper-Worthy Formulation
 "We decompose the multi-task representation space R^d into a shared subspace S and task-private subspaces P: the shared branch reduces task identifiability through adversarial training, while the private branches use orthogonality / decorrelation regularization to reduce linear overlap with S. Information complementarity and reduced negative transfer must be validated with task-transfer matrices, mutual-information / PID proxies, and ablations; they are not automatically guaranteed by orthogonality alone."

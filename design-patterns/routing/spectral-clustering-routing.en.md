@@ -1,5 +1,5 @@
 # Spectral Clustering Routing
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Evidence labels**: [v] supported by stated assumptions or recorded checks; [~] engineering proposal requiring validation; [x] incompatible under the stated conditions; [N/A] outside scope. Pseudocode specifies operators, not a production-ready implementation.
 
 ## Applicable Problems
 Use when routing needs to be based on the intrinsic similarity structure of tokens/samples. Typical scenarios:
@@ -15,63 +15,34 @@ Core requirement: **discover the intrinsic cluster structure of data for routing
   ../../knowledge-base/differential-geometry/manifold.en.md (manifold learning, graph cuts)
 
 ## Required Mathematical Background
-- **Spectral Clustering (Ng-Jordan-Weiss)**:
-  1. Construct similarity graph W_{ij} = exp(-||x_i - x_j||^2 / (2 sigma^2))
-  2. Compute normalized Laplacian L_sym = I - D^{-1/2} W D^{-1/2}
-  3. Extract the k smallest eigenvectors U_k in R^{N x k}
-  4. Apply k-means to the rows of U_k to obtain k clusters
-- **Nystrom Approximation**: When N is too large for the full W matrix, sample m << N points
-  W approximately C * W_m^{-1} * C^T, reducing eigendecomposition to m x m
-- **Spectral Relaxation Continuation**: Discrete cluster assignment => continuous eigenvectors => differentiable routing
-  Use softmax(U_k * W_proj) instead of hard k-means assignment
-- **Power Iteration Acceleration**: Full eigendecomposition is unnecessary; only the $k$ **smallest** eigenvectors of Laplacian $L$ are needed
-  ⚠ Power iteration naturally finds the **largest** eigenvectors, so it cannot be applied directly to $L$!
-  Correct approaches: (1) apply power iteration to the similarity matrix $W$ (or normalized $D^{-1/2}WD^{-1/2}$)
-  to find its largest eigenvectors (corresponding to $L$'s smallest); (2) use Lanczos on $L$ with which='SM';
-  (3) shifted inverse iteration $(L - \sigma I)^{-1}$
-  Lanczos/Arnoldi iteration O(N^2 * k * iter) or randomized SVD O(N^2 * k)
+
+- For symmetric nonnegative affinities $W$, form $S=D^{-1/2}WD^{-1/2}$ and $L=I-S$. The smallest algebraic eigenvalues of $L$ correspond to largest **algebraic** eigenvalues of $S$, not generally those of raw $W$.
+- Ng–Jordan–Weiss row-normalizes the selected eigenvector matrix before k-means. Degenerate zero-degree nodes need an explicit convention.
+- Plain power iteration targets largest magnitude. For potentially indefinite $S$, use a suitable shift such as $(I+S)/2$ or a solver requesting the largest algebraic eigenvalues; do not use unqualified SVD as an eigenvalue-order substitute.
+- Eigenvectors carry sign and repeated-eigenspace rotation ambiguity. A learned linear map on raw eigenvectors is not automatically invariant to this choice; use projectors, alignment, invariant features or stable stored bases.
+- Nyström for a normalized kernel must use normalized cross-affinities and the eigenvalues of $S$, namely $1-\lambda_j(L)$; near-zero denominators require truncation.
 
 ## AI Module Form
+
+```python
+# Fixed landmarks X_ref; frozen reference graph and normalization
+W_ref = rbf_affinity(X_ref, X_ref)
+d_ref = W_ref.sum(-1)
+S_ref = W_ref / sqrt(d_ref[:, None] * d_ref[None, :])
+lam, U = largest_algebraic_eigenpairs(S_ref, K)
+keep = abs(lam) > eigenvalue_tolerance
+lam, U = lam[keep], U[:, keep]
+centers = kmeans(row_normalize(U), K)
+
+W_cross = rbf_affinity(X_new, X_ref)
+d_new = W_cross.sum(-1)          # extension degree convention, reference degrees frozen
+S_cross = W_cross / sqrt(d_new[:, None] * d_ref[None, :])
+embedding = (S_cross @ U) / lam[None, :]
+assignment = nearest_center(row_normalize(embedding), centers)
 ```
-Module: SpectralClusterRouter
-Input: X in R^{N x d}, number of clusters K
+This is an extension of the **frozen reference** normalized kernel; inserting all new points and recomputing full graph degrees gives a different operator. Compare held-out extensions against a recomputed small graph.
 
-Method 1 - Online Spectral Clustering Routing (periodic updates during training):
-  // Update cluster centers every M steps; use nearest neighbor at inference
-  W = exp(-(cdist(X_sample, X_sample)**2) / (2 sigma^2))  // m x m RBF similarity
-  L = I - D^{-1/2} W D^{-1/2}                         // normalized Laplacian
-  U_k = eigsh(L, k=K, which='SM')                     // K smallest eigenvectors
-  centers = kmeans(U_k, K)                             // K cluster centers
-  // Routing: embed new tokens into spectral space and assign
-  // ⚠ X @ W_proj is just a learnable linear projection, NOT Nystrom extension!
-  // True Nystrom extension: v_new = (1/λ) * W(x_new, X_sample) @ v, where v is eigenvector, λ is eigenvalue
-  proj_nystrom = (1/λ_k) * W_new_sample @ U_k    // Nystrom extension: similarity from x_new to m samples × eigenvectors
-  proj = X @ W_proj                               // alternative: learnable linear projection (not Nystrom, but end-to-end trainable)
-  assignment = argmin(cdist(proj_nystrom, centers))  // nearest center assignment
-
-Method 2 - Differentiable Spectral Routing (end-to-end):
-  // Use softmax relaxation instead of hard assignment
-  sim_matrix = X @ X^T                                 // N x N (or sampled m x m)
-  A = exp(sim_matrix / tau)                            // similarity graph (learnable tau)
-  D_inv_sqrt = diag(1 / sqrt(sum(A, dim=1) + eps))
-  L_norm = I - D_inv_sqrt @ A @ D_inv_sqrt             // normalized Laplacian
-  // ⚠ Power iteration finds largest eigenvectors, but spectral clustering needs L_norm's smallest!
-  // Apply power iteration to the normalized similarity matrix: its largest eigenvectors = L_norm's smallest
-  W_norm = D_inv_sqrt @ A @ D_inv_sqrt                 // = I - L_norm
-  U_k = power_iteration_approx(W_norm, K, steps=5)    // N x K (W_norm's largest eigvecs = L_norm's smallest)
-  // Soft assignment
-  cluster_logits = U_k @ W_cluster                     // N x K (learnable projection)
-  route_probs = softmax(cluster_logits / tau_route)     // soft routing probabilities
-
-Method 3 - Anchor Spectral Clustering (large-scale):
-  anchors = kmeans_pp(X, m)                             // m anchor points, m << N
-  Z = exp(-(cdist(X, anchors)**2) / (2 sigma^2))        // N x m RBF affinity matrix
-  L_anchor = I - D_z^{-1/2} Z^T Z D_z^{-1/2}            // m x m Laplacian
-  U_k = eigsh(L_anchor, K)                             // m x K eigenvectors
-  // Nystrom extension: Z @ U_k extends anchor eigenvectors to all N points (non-learnable part)
-  embedding_nystrom = Z @ U_k                          // N x K Nystrom extension embedding
-  route = embedding_nystrom @ W_proj                   // N x K routing scores after learnable projection
-```
+**Anchor graph alternative**: For nonnegative $Z\in\mathbb R^{N\times m}$ with nonzero row/column sums, set $B=D_{row}^{-1/2}ZD_{col}^{-1/2}$. Compute leading eigensystem $(V,\Lambda)$ of $B^TB$; the point eigenvectors of $BB^T$ are $U=BV\Lambda^{-1/2}$ on retained positive eigenvalues. Row-normalize $U$ before clustering. This explicitly defines a normalized bipartite operator rather than treating unnormalized $ZV$ as an exact Nyström extension.
 
 ## Implementable Structures
 - **Periodic offline clustering**: Every N_step steps, collect token representations => offline spectral clustering => update routing table
@@ -80,20 +51,20 @@ Method 3 - Anchor Spectral Clustering (large-scale):
 - **Progressive training**: Early stage uses k-means coarse routing => mid-stage spectral clustering refinement => late-stage fine-tuning of routing network
 
 ## GPU Feasibility
-- **Tensorization**: Similarity matrix X @ X^T is GEMM; Laplacian construction is element-wise + diagonal matrix operations
-- **GEMM-mappable**: Z^T @ Z in Method 3 is GEMM (m x N) @ (N x m); Z @ U_k is GEMM (N x m) @ (m x K)
-- **Complexity**: Full spectral clustering O(N^2 * K) does not scale; Nystrom O(N * m * K + m^3); power iteration O(N^2 * K * T)
-- **Memory & KV-Cache**: N x N similarity matrix exceeds 64 MB when N > 4096; sampling-based dimensionality reduction is essential
-- **Low-precision stability**: Eigendecomposition recommended in fp32; exp(-dist/sigma^2) in fp16 requires distance clipping
-- **Parallelism & Communication**: Power iteration matvec is highly parallel; k-means assign + update steps can be batch-parallelized
-- **Sparse structure**: k-NN graph replaces the fully connected graph; W sparsity is about $1-k_{\text{nn}}/N$, enabling SpMM acceleration
-- **Operator fusion**: Diagonal scaling in D^{-1/2} @ A @ D^{-1/2} can be fused; cdist + exp + normalize can be fused
+
+- **D1/D2[~]**: Affinity construction and normalization are tensor operations; eigensolvers include global reductions and orthogonalization.
+- **D3[~]**: Dense affinities cost $O(N^2d)$; block iterations $O(TN^2K)$ plus orthogonalization. Forming an anchor Gram costs $O(Nm^2)$, its full EVD $O(m^3)$, extension $O(NmK)$, in addition to $O(Nmd)$ affinities.
+- **D4[~]**: An fp32 dense $N^2$ matrix uses $4N^2$ bytes (64 MiB at $N=4096$). Anchor storage is $O(Nm+m^2)$ unless streamed.
+- **D5[~]**: Compute eigenspaces in fp32/fp64, report eigengaps and residuals, and avoid differentiating arbitrary bases across multiplicities.
+- **D6/D7[~]**: k-NN sparsity can help, but graph construction and nearest-neighbor recall have separate costs; fixed iteration count does not certify convergence.
+- **D8[~]**: Elementwise affinity scaling may fuse; eigensolver and global k-means stages retain dependencies.
 
 ## Paper-Worthy Formulation
 "We implement routing through a continuous relaxation of spectral clustering: construct the normalized Laplacian of the token similarity graph, use Nystrom / anchor approximations plus power iteration to avoid a full O(N^3) eigendecomposition, and express the main work as GEMM, matvecs, and k-means. Normalized Cut can be reported as a clustering-quality metric, but approximation ratios depend on graph-model, sampling, and solver assumptions and should not be claimed unconditionally."
 
 ## Risks
-- The memory and computation cost of the N x N similarity matrix does not scale for long sequences; sampling or k-NN sparsification is mandatory
-- Eigendecomposition is non-differentiable (gradients undefined when eigenvalues coincide); end-to-end training requires relaxation or stop-gradient
-- The number of clusters K must be specified a priori, and re-clustering is needed when K changes
-- The bandwidth parameter sigma is sensitive to clustering quality: too small causes isolated points, too large causes cluster merging
+
+- Kernel bandwidth, disconnected components and zero degrees can change the inferred cluster count.
+- Eigenvector derivatives become unstable near repeated eigenvalues; invariant subspace quantities may remain well-defined if their boundary gap stays open.
+- Re-clustering can permute expert labels; align labels/bases before updating a trained router.
+- Report exact-small-graph versus approximate routing disagreement, extension error, latency and downstream quality.

@@ -1,5 +1,5 @@
 # Equivariant Split
-> **Rigor disclaimer**: Claims about complexity, memory, FlashAttention fusion, Tensor Core, and KV-Cache compression are marked as [v] verified / [~] retrofittable (needs validation) / [x] infeasible. Unmarked claims are theoretically possible but require engineering validation.
+> **Evidence labels**: [v] supported by stated assumptions or recorded checks; [~] engineering proposal requiring validation; [x] incompatible under the stated conditions; [N/A] outside scope. Pseudocode specifies operators, not a production-ready implementation.
 
 ## Applicable Problems
 Use when the input possesses symmetries (e.g., permutations, rotations, translations) and the representation should preserve or reflect those symmetries.
@@ -10,56 +10,31 @@ Typical scenarios: (1) Token permutation equivariance -- representation should c
 Core requirement: **encode symmetry priors into network architecture to reduce learning burden and improve generalization**.
 
 ## Mathematical Inspiration
-- Lenses: ../../lenses/geometric.en.md (group actions, invariant/equivariant maps), ../../lenses/probabilistic.en.md (symmetry and information redundancy)
-- Knowledge: ../../knowledge-base/matrix-analysis/projection.en.md (group representation theory, irreducible representations),
-  ../../knowledge-base/differential-geometry/manifold.en.md (Lie groups, homogeneous spaces)
+
+- Lenses: `../../lenses/symmetry.en.md`, `../../lenses/categorical.en.md`.
+- Knowledge: `../../knowledge-base/lie-theory/representation.en.md`, `../../knowledge-base/lie-theory/equivariance.en.md`.
 
 ## Required Mathematical Background
-- **Group Action and Equivariance**: A map f is equivariant with respect to group G if and only if f(g * x) = g * f(x) for all g in G
-  Invariance is a special case of equivariance (g * f(x) = f(x), i.e., the trivial representation)
-- **Schur's Lemma and Irreducible Representation Decomposition**:
-  Any finite group representation decomposes as a direct sum of irreducible representations: V = direct_sum_i m_i * V_i
-  Equivariant linear maps are diagonal/block-diagonal between irreducible components
-- **Peter-Weyl Theorem**: Functions on a compact group decompose as a series of irreducible representation matrix elements
-  f(x) = sum_rho sum_{ij} c_{rho,ij} * rho_{ij}(g) (generalized Fourier expansion)
-- **Steerable Feature Spaces**: Features are organized according to irreducible representations of the group;
-  under the action of duality g, each component transforms via the corresponding representation matrix: f_i -> sum_j rho_{ij}(g) f_j
+
+- Start from a specified representation $\rho:G\to GL(V)$, not just a group name and feature dimension. For finite groups over characteristic zero and continuous finite-dimensional representations of compact groups, complete reducibility supplies an irrep basis.
+- In that basis, $V=\bigoplus_\lambda \mathbb C^{m_\lambda}\otimes V_\lambda$, with complex-linear equivariant maps $\bigoplus_\lambda W_\lambda\otimes I_{\dim V_\lambda}$. Channel multiplicities can mix; inequivalent irreps cannot mix through a linear intertwiner. Real representations need the appropriate real commutant.
+- Arbitrarily slicing learned features is not an irrep decomposition. Obtain/change to the basis from the known action or design features with declared types from the start.
+- Every nonlinearity, normalization, bias and residual must respect types. Elementwise ReLU on a rotating vector is generally not rotation-equivariant.
 
 ## AI Module Form
+
+```python
+# Known representation rho, and basis_change diagonalizes its isotypic blocks
+X_typed = X @ basis_change
+Y_blocks = []
+for block, multiplicity_map in typed_blocks(X_typed):
+    # block shape N x multiplicity x irrep_dimension
+    Y_blocks.append(mix_multiplicity_only(block, multiplicity_map))
+Y = concatenate_typed_blocks(Y_blocks) @ inverse_output_basis
 ```
-Module: EquivariantSplit
-Input: X in R^{N x d}, symmetry group G (e.g., S_n permutation group, Z_n cyclic group, SO(3) rotation group)
+For token sets $X\in\mathbb R^{N\times d}$, `X.mean(dim=0, keepdim=True)` is permutation-invariant and may be broadcast back to an equivariant token output. Raw per-token “content” remains permutation-equivariant, not invariant. A fixed absolute positional assignment or causal mask changes the allowed symmetry.
 
-Method 1 - Split feature dimensions by irreducible representations:
-  // Decompose d-dimensional features by irreducible representations of the group
-  irreps = decompose(G, d)  // [(d_1, rho_1), (d_2, rho_2), ...] where sum d_i = d
-  X_split = split(X, [d_1, d_2, ...], dim=-1)  // split by irreducible components
-  // Process each component independently with equivariant layers:
-  for (X_i, rho_i) in zip(X_split, irreps):
-    Y_i = EquivariantLinear(X_i, rho_i)  // weights constrained by Schur's lemma
-  Y = concat(Y_i, dim=-1)                // reassemble
-
-Method 2 - Positional equivariant split (Token permutation group S_n):
-  // Transformer self-attention is naturally permutation equivariant (without positional encoding)
-  // Explicitly introduce controllable permutation equivariance:
-  X_content = X[:, :d_content]            // permutation-invariant content part
-  X_position = X[:, d_content:]           // position-dependent part
-  // Content part uses permutation-invariant pooling:
-  z_inv = mean(X_content, dim=1)          // global invariant features
-  // Position part uses equivariant operations:
-  z_equiv = Attention(X_position, X_position, X_position)  // permutation equivariant
-  output = z_equiv + MLP(z_inv).unsqueeze(1)  // broadcast invariant signal back
-
-Method 3 - Group convolution / group pooling:
-  // Features defined on group G: f: G -> R^c
-  // Group convolution: (f * psi)(g) = sum_{h in G} f(h) * psi(h^{-1} g)
-  // Group pooling: pool over orbits of subgroup H < G
-  // Implemented as matrix multiplication (group multiplication table -> sparse permutation matrices)
-  for g in generators(G):
-    X_g = permutation_matrix(g) @ X       // group generator action
-    features_g = Linear(X_g)              // equivariant processing with shared weights
-  output = aggregate(features_g)          // aggregate along group dimension
-```
+Finite-group convolution uses all required group-indexed features and the group multiplication rule. Applying shared linear maps only to generator-transformed inputs and averaging is **not** a generic exact group convolution/equivariance construction. Use the full finite-group symmetrization in `../attention/equivariant-attention.en.md` as a reference, or a proven generator-constrained parameterization.
 
 ## Implementable Structures
 - **e3nn / lie_learn integration**: Use existing libraries for SO(3)/SE(3) irreducible representations and spherical harmonics
@@ -68,14 +43,12 @@ Method 3 - Group convolution / group pooling:
 - **Symmetry augmentation**: Apply random group elements g in G to inputs during training (data augmentation) to encourage equivariance
 
 ## GPU Feasibility
-- **Tensorization**: Processing irreducible components is batched GEMM; group convolution is sparse GEMM or batched matmul
-- **GEMM-mappable**: Each block of EquivariantLinear is an independent GEMM (N x d_i) @ (d_i x d_i_out), batchable
-- **Complexity**: Same order as standard networks (Schur constraints actually reduce parameters); group convolution incurs an extra |G| factor
-- **Memory & KV-Cache**: Group convolution requires storing |G| copies of features; significant memory pressure when |G| is large
-- **Low-precision stability**: Spherical harmonics Y_l^m computations involve factorials and square roots; fp32 recommended
-- **Parallelism & Communication**: Irreducible components are independent, perfectly parallel; different g in group convolution can be parallelized
-- **Sparse structure**: Permutation matrices in group convolution are extremely sparse (exactly one nonzero per row/column); SpMM is efficient
-- **Operator fusion**: Split -> batched matmul -> concat can be fused; group pooling scatter + reduce can be fused
+
+- **D1/D2[~]**: Typed linear maps are batched channel GEMMs; general tensor products and CG coefficients add non-GEMM work.
+- **D3/D4[~]**: Costs depend on irrep dimensions, multiplicities and product paths. Explicit group-indexed features can add a $|G|$ factor; parameter sharing alone does not determine runtime.
+- **D5[~]**: Compute sensitive harmonics/normalizations in fp32 and test whole-module equivariance at the target precision.
+- **D6/D8[~]**: Independent blocks can batch; small blocks may underutilize the GPU, and typed nonlinear interactions couple blocks.
+- **D7[~]**: Permutations are usually gathers, not a reason to materialize sparse permutation matrices; representation sparsity does not imply fast sparse attention.
 
 ## Paper-Worthy Formulation
 "Leveraging Schur's lemma from group representation theory, we decompose the d-dimensional feature space into a direct sum of irreducible representations of the symmetry group G, with each component processed by equivariance-constrained linear layers. Under the assumed group action this enforces equivariance and reduces learnable degrees of freedom; the exact parameter savings depend on the representation decomposition and channel multiplicities. Generalization gains must be measured on tasks with the corresponding symmetry and should not be stated as an unconditional O(1/sqrt(|G|)) rate."

@@ -4,12 +4,12 @@
 
 ## What Perspective It Offers
 
-Axiomatization is not "proving things," but rather a stance of disciplined skepticism: every theoretical system rests on a set of implicit or explicit assumptions, and laying all of these assumptions bare — examining them one by one — is far more likely to reveal fundamental problems than inspecting the conclusions alone. If the premises are wrong, no conclusion, however elegant, can stand. This perspective turns the "taken for granted" into an object requiring verification.
+Axiomatization is not "proving things," but rather a stance of disciplined skepticism: every theoretical system rests on a set of implicit or explicit assumptions, and laying all of these assumptions bare — examining them one by one — is far more likely to reveal fundamental problems than inspecting the conclusions alone. False premises invalidate that justification; a conclusion might still be true for other reasons and needs separate verification. This perspective turns the "taken for granted" into an object requiring verification.
 
 ## What Problems It Is Suited to Diagnose
 
 - Whether the assumptions of a paper or theory are self-consistent, and whether undeclared implicit premises exist
-- Whether two ostensibly equivalent sets of premises are genuinely independent (i.e., whether redundant axioms are present)
+- Whether a premise follows from the others (redundancy), and whether two sets of premises are equivalent
 - Whether a formal system is decidable, and whether undecidable propositions exist within it
 - After axiomatizing an operator or structure and identifying its invariants, checking consistency and completeness
 
@@ -22,9 +22,9 @@ Axiomatization is not "proving things," but rather a stance of disciplined skept
 
 ## Which Knowledge Domains It Routes To
 
-- formal logic (no KB card yet, use critic): The choice among first-order, second-order, and constructive logic is the foundational decision in axiomatization
-- set theory (no KB card yet, use critic): ZFC/ZF as the background axiomatic system and the host for relative consistency proofs
-- model theory (no KB card yet, use critic): Model existence proves consistency; categoricity determines structural uniqueness
+- formal logic (no KB card yet, verify through the Knowledge Gap Protocol): The choice among first-order, second-order, and constructive logic is the foundational decision in axiomatization
+- set theory (no KB card yet, verify through the Knowledge Gap Protocol): ZFC/ZF as the background axiomatic system and the host for relative consistency proofs
+- model theory (no KB card yet, verify through the Knowledge Gap Protocol): Model existence proves consistency; categoricity determines structural uniqueness
 
 ## What AI Designs It May Inspire
 
@@ -38,11 +38,11 @@ Axiomatization is not "proving things," but rather a stance of disciplined skept
 2. **Specify the Language**: Declare the formal language (first-order, second-order, or constructive) and state the rationale for the choice
 3. **Consistency Check**: Construct a model or carry out a relative consistency proof to confirm the axiom set is non-contradictory
 4. **Independence Check**: For each axiom, attempt to construct a model in which it fails while all others hold
-5. **Completeness Assessment**: Determine whether the axiom set suffices to derive all significant results in the target domain, and annotate decidability
+5. **Sufficiency for the Target**: Check whether the assumptions imply the requested result. Formal completeness and decidability are separate metamathematical questions; analyze them only when relevant
 
 ## Acceptance Criteria
 
-- Every axiom has an explicit verdict on consistency, independence, and completeness (none left unresolved)
+- Distinguish proved, refuted, unresolved, and unchecked claims; identify the metatheory for consistency results. Failure to find a contradiction is not a consistency proof, and independence or decidability questions may remain unresolved
 - Implicit assumptions have been made explicit
 - The consequences of axiom modifications have been analyzed
 - An overall evaluative conclusion about the theoretical system has been provided

@@ -1,72 +1,54 @@
-# 层上同调 / Sheaf Cohomology
+# 层上同调 (Sheaf Cohomology)
 
 ## 最小定义
-层 $\mathcal{F}$ 是给拓扑空间每个开集 $U$ 赋一个代数结构（群/环/向量空间）$\mathcal{F}(U)$ 并满足局部到整体粘合规则的对象。具体地：
-- **局部截面**：$\mathcal{F}(U)$ 是 $U$ 上的"局部解"集合
-- **粘合公理（sheaf axiom）**：若 $\{U_i\}$ 是 $U$ 的开覆盖，且 $s_i\in\mathcal{F}(U_i)$ 在交叠 $U_i\cap U_j$ 上一致，则存在唯一 $s\in\mathcal{F}(U)$ 限制到每个 $U_i$ 为 $s_i$
 
-层上同调 $H^i(X,\mathcal{F})$ 度量比“截面粘合公理”更细的局部到整体障碍——例如扩张类、主丛分类或高阶粘合问题。一阶上同调 $H^1$ 是最常用的障碍诊断量；Čech 上同调用开覆盖的交并复形计算，是工程上最常用的近似形式。
+层 $\mathcal F$ 给开集配截面与限制映射；在重叠处相容的局部截面能唯一黏合。对阿贝尔群层，$H^i(X,\mathcal F)=R^i\Gamma(X,\mathcal F)$ 是全局截面函子的右导出函子。当前局部数据是否受阻由具体障碍类决定，不能只看承载它的群是否非零。
 
 ## 核心公式
-- **层条件**（粘合公理）：$\mathcal{F}(U)\to\prod_i\mathcal{F}(U_i)\rightrightarrows\prod_{i,j}\mathcal{F}(U_i\cap U_j)$ 是等化子
-- **Čech 复形**：$C^p(\mathcal{U},\mathcal{F})=\prod_{i_0<\cdots<i_p}\mathcal{F}(U_{i_0\cdots i_p})$，微分 $d^p:C^p\to C^{p+1}$ 由限制映射构成
-- **上同调群**：$H^i(X,\mathcal{F})=\ker d^i/\mathsf{im}\,d^{i-1}$
-- **$H^1=0$ 的含义**：对许多扩张、主丛或粘合障碍问题，$H^1$ 刻画局部数据能否升成全局对象。注意：真层本身已由粘合公理保证“交叠一致的截面 ⇒ 唯一全局截面”，因此不能把 $H^1=0$ 笼统写成任意“局部一致 ⇒ 全局一致”的充要条件；工程诊断应先写清所测障碍对应哪一类上同调问题。
-- **谱序列（Leray）**：$E_2^{p,q}=H^p(\mathcal{U},\mathcal{H}^q)$ 收敛到 $H^{p+q}(X,\mathcal{F})$，计算高阶上同调
-- **与 de Rham 上同调关系**：$H^i_{\mathsf{dR}}(X)\cong H^i(X,\Omega_X^{\bullet})$，de Rham 上同调是层上同调的特例
-- **消失定理**（Cartan Theorem A/B、Serre）：仿射簇上凝聚层的 $H^i=0$（$i>0$）；投影空间上线丛 $\mathcal{O}(d)$ 的 $H^i$ 在某些 $d$ 范围消失
+
+- Čech 复形：$C^p(\mathcal U,\mathcal F)=\prod_{i_0<\cdots<i_p}\mathcal F(U_{i_0\cdots i_p})$，$\delta^{p+1}\delta^p=0$。
+- 固定覆盖的上同调是 $\check H^p(\mathcal U,\mathcal F)=\ker\delta^p/\operatorname{im}\delta^{p-1}$，不能无条件写成 $H^p(X,\mathcal F)$。覆盖的所有非空有限交对该层无高阶上同调时，可用 Leray 覆盖定理比较。
+- 连续映射 $f:X\to Y$ 的 Leray 谱序列：$E_2^{p,q}=H^p(Y,R^qf_*\mathcal F)\Rightarrow H^{p+q}(X,\mathcal F)$。
+- 通常的光滑流形上，$H^k_{\mathrm{dR}}(M)\cong H^k(M,\underline{\mathbb R})\cong\mathbb H^k(M,\Omega_M^\bullet)$；$\mathbb H$ 是复形的超上同调，非某一张微分形式层的普通上同调。
+- 仿射概形上的拟凝聚层无高阶上同调；Cartan B 是 Stein 空间上凝聚解析层的结论，不混用背景范畴。
 
 ## 适用问题
-- 诊断"局部数据一致但全局存在障碍"的结构：
-  - **多视图特征对齐**：各视图局部对齐一致，但全局对齐失败——$H^1$ 度量对齐障碍
-  - **多模态融合不一致性**：各模态局部信息一致，全局融合存在矛盾
-  - **分布式训练的全局一致性**：各节点局部梯度一致，但全局聚合存在障碍
-  - **表示空间中的拓扑障碍**：特征空间的"洞"或"环"影响下游任务
-- 模型诊断：检测表示空间是否存在结构性障碍（非平凡 $H^1$）
-- 知识图谱推理：实体关系的局部一致 vs 全局矛盾
+
+- 区分局部残差、全局截面空间与特定提升/平凡化问题的障碍。
+- 为多视角、图上数据建立明确的 stalk、限制映射与一致性方程。
+- 有限维胞腔层可用线性代数；一般层论需要额外的可计算表示。
 
 ## AI 设计翻译
-- **层上同调作为"局部到整体障碍诊断器"**：把多视图 / 多模态 / 多节点局部一致性建模为层截面，$H^1$ 作为融合失败的形式化度量
-- **H¹ 作为多视图融合一致性度量**：对多视图特征定义层，计算 Čech 上同调，$H^1=0$ 表示可融合，$H^1\ne 0$ 表示存在障碍
-- **持续层上同调（persistent sheaf cohomology）**：结合持续同调与层上同调，作为表示空间的拓扑诊断
-- 对应设计模式见 `../../design-patterns/compression/topology-preserving-compression.md`、`../../design-patterns/representation/shared-private-decomposition.md`；无对应模式时标为"临时设计翻译"。
+
+- **一致性代理**：图上向量 $x\in C^0$ 的能量 $\|\delta^0x\|^2$ 为零等价于它是所选模型的全局截面。这不等于 $H^1=0$。
+- **给定边数据的可解性**：$\delta^0x=b$ 有解需 $b\in\operatorname{im}\delta^0$。若 $\delta^1b=0$，其障碍类为 $[b]\in H^1$；即使 $H^1\ne0$，具体 $[b]$ 仍可能为零。
+- **最小反例**：常值实系数的环图有非零 $H^1$，但 $b=0$ 可由常值节点特征解决。因此“群非零⇒当前融合失败”不成立。
+- 作为模型诊断时需先验证数据与层结构的对应；结构一致不能证明语义或事实正确。
 
 ## 工程可行性
-层上同调 GPU 友好度挑战很大：
-- **D1[x]**：精确 Čech 上同调需要构造开覆盖 + 计算高阶交并复形，非张量化
-- **D2[x]**：边界矩阵约化高度串行，不可 GEMM 化
-- **D3[x]**：精确 Čech 上同调 $O(N^3)$ 起步，$N$ 为开覆盖规模；高阶上同调 $O(N^{p+3})$
-- **D4[~]**：可降维到 landmark 采样 $O(m^3)$，$m\ll N$；但仍非 GPU 友好
-- **D5[v]**：整数运算（边界矩阵）无精度问题；浮点近似可 bf16
-- **D6[x]**：约化算法高度串行；landmark 选择可并行
-- **D7[~]**：稀疏边界矩阵可 CSR 存储；SpMM 有效但约化仍串行
-- **D8[x]**：边界矩阵约化不可融合
-**关键改造**：用 landmark 采样 $O(m^3)$ 替代全量 $O(N^3)$；用持续同调的近似版本；用 Euler curve 作代理；**精确同调不应塞进训练循环**，只作为诊断或正则项。
+
+- 令 $n_p=\dim C^p$，实系数有限复形可通过稀疏乘法、SVD/QR 或线性求解分析；复杂度依矩阵形状、非零元数、秩与容差，不单由覆盖集数量决定。
+- 计算 $\|\delta x\|^2$ 通常远便宜于求整个上同调。可微正则项与离散秩判定不是同一计算。
+- 有限域消元、整数 Smith 标准型与实数秩估计的代价/数值语义不同；整数也有溢出与位复杂度。
+- 实系数近零奇异值会使 Betti 数估计不稳定；bf16 不可默认用于秩/零空间认证。
 
 ## 风险与失效条件
-- **精确同调不可算**：$O(N^3)$ 串行算法在 $N>10^4$ 时不可行，必须依赖近似
-- **Čech 近似依赖覆盖选择**：开覆盖的选取影响结果，不同覆盖给出不同 $H^i$；landmark 选择可能引入偏差
-- **层结构错误参数化导致上同调失真**：若层 $\mathcal{F}$ 的截面定义错误，$H^i$ 失去诊断意义
-- **$H^1=0$ 不保证高阶无障碍**：$H^1=0$ 只保证局部解可全局粘合，但 $H^2$ 及以上可能有障碍
-- **Euler curve 信息退化**：$\chi=\sum(-1)^k\beta_k$ 把多阶压成单值，不同拓扑可共享同一 $\chi$
-- **拓扑 ≠ 语义**：拓扑保持不等于语义保持；两个语义不同的空间可能拓扑同构
-- **上同调基域选择敏感**：$\mathbb{Z}$ 系数 vs $\mathbb{R}$ 系数 vs $\mathbb{F}_p$ 系数给出不同的 torsion 信息
+
+- 检查 $\delta^2=0$、覆盖/胞腔定义及系数域后再谈上同调。
+- 覆盖近似和 landmark 采样需要误差分析；高阶交集可能组合爆炸。
+- $H^1=0$ 只消除所对应的一阶障碍类，不是任意局部到全局问题的充要条件。
+- 改变系数可丢失挠信息；一致性残差、上同调与真值不可互换。
 
 ## 深入参考
-- 蒸馏稿：`../../references/books/algebraic-geometry-rising-sea.md`
-- 原书：Ravi Vakil, *The Rising Sea: Foundations of Algebraic Geometry*, Ch 18-22（层与上同调）
-- 原书：Robin Hartshorne, *Algebraic Geometry*, Ch III（Cohomology）
+
+- [书稿](../../references/books/algebraic-geometry-rising-sea.md)。
+- [Stacks: Čech 与层上同调比较](https://stacks.math.columbia.edu/tag/01FP)、[de Rham 复形](https://stacks.math.columbia.edu/tag/0FL6)、[H¹ 与 torsor](https://stacks.math.columbia.edu/tag/02FQ)。
 
 ## 路由扩展
-- 若需要局部到整体 → `../../lenses/local-to-global.md`（局部性质拼接为全局）
-- 若需要拓扑诊断 → `../topology/persistent-homology.md`（持续同调、Betti 数）
-- 若需要范畴论语言 → `../../lenses/categorical.md`（层是范畴论的核心构造）
-- 若需要欧拉示性数 → `../topology/euler-characteristic.md`（快速拓扑诊断代理）
+
+- 局部到整体：`../../lenses/local-to-global.md`。
+- 拓扑诊断：`../topology/persistent-homology.md`。
 
 ## 可扩展方向
-- 导出函子（derived functors）：$\mathsf{Ext}^i$、$\mathsf{Tor}_i$ 作为导出函子
-- 谱序列（spectral sequences）：Leray、Grothendieck、Atiyah-Hirzebruch
-- Hodge 分解（Hodge decomposition）：$\mathbb{C}$ 上的代数簇上同调分解
-- D-模（D-modules）：层上的微分算子理论
-- 皮卡群（Picard group）：线丛的同构类群，$H^1(X,\mathcal{O}^{\times})$
-- 持续层上同调（persistent sheaf cohomology）：持续同调与层上同调的结合
+
+持续胞腔层、Hodge 分解、Picard 群和高阶障碍；升级前先给具体数学对象与计算表示。
