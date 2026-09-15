@@ -1,0 +1,178 @@
+{
+  "seed": 20260907,
+  "python": "3.13.5",
+  "numpy": "2.2.6",
+  "device": "CPU",
+  "norm": "infinity",
+  "q": 0.7,
+  "eps": 1e-06,
+  "trained_nonlinear": {
+    "train_samples": 256,
+    "test_samples": 128,
+    "dimension": 4,
+    "training_steps": 600,
+    "unroll_steps": 40,
+    "gradient_finite_difference_abs_error": 2.0190654703711175e-12,
+    "initial_test_mse": 0.05910012039639695,
+    "final_test_mse": 1.8604555499906427e-12,
+    "actual_matrix_inf_norm": 0.5999977597388076,
+    "all_certified": true,
+    "max_error_to_high_precision_reference": 4.4514689889751935e-07,
+    "max_reported_bound": 9.912707932731764e-07,
+    "max_error_over_own_bound": 0.47682816633379016,
+    "update_calls_min_median_max": [
+      9,
+      12.0,
+      15
+    ],
+    "num_distinct_call_counts": 7,
+    "pairwise_separation_ratio_min": 0.9304644540014435,
+    "theoretical_exact_ratio_lower_bound": 0.5882352941176471,
+    "min_finite_tolerance_separation_slack": 0.0660633383838924,
+    "state_variance_mean": 0.7388253225947217,
+    "training_history": [
+      {
+        "step": 0,
+        "train_mse": 0.05529080094019034
+      },
+      {
+        "step": 50,
+        "train_mse": 0.005778386399404603
+      },
+      {
+        "step": 100,
+        "train_mse": 0.0006507554960994981
+      },
+      {
+        "step": 150,
+        "train_mse": 7.492903020166251e-05
+      },
+      {
+        "step": 200,
+        "train_mse": 9.31447587032008e-06
+      },
+      {
+        "step": 250,
+        "train_mse": 1.2124974275468634e-06
+      },
+      {
+        "step": 300,
+        "train_mse": 1.6197838197785536e-07
+      },
+      {
+        "step": 350,
+        "train_mse": 2.2035544530504742e-08
+      },
+      {
+        "step": 400,
+        "train_mse": 3.04392777439843e-09
+      },
+      {
+        "step": 450,
+        "train_mse": 4.264338760730544e-10
+      },
+      {
+        "step": 500,
+        "train_mse": 6.054156717295932e-11
+      },
+      {
+        "step": 550,
+        "train_mse": 8.704745668361685e-12
+      },
+      {
+        "step": 599,
+        "train_mse": 1.316266626321188e-12
+      }
+    ],
+    "convergence_max_active_bound_trace": [
+      4.321177656349915,
+      1.5289477046396847,
+      0.3062381982444887,
+      0.09191944565277757,
+      0.029563307888868698,
+      0.009045667641434477,
+      0.0027958856989296803,
+      0.000893302742933181,
+      0.00028129905846422754,
+      9.156367265459689e-05,
+      3.0976733824776094e-05,
+      1.0963050093385864e-05,
+      3.892639680591613e-06,
+      1.38380495719644e-06,
+      4.91952084809751e-07
+    ],
+    "A": [
+      [
+        0.28000010577906215,
+        0.1299995615723092,
+        -0.06999983116094893,
+        0.060000311539322705
+      ],
+      [
+        -0.09999824396950945,
+        0.2999979157545353,
+        0.14000101020951294,
+        0.06000058980524995
+      ],
+      [
+        0.049999359737952685,
+        -0.1199993816758091,
+        0.30999952128905073,
+        0.07999983660913973
+      ],
+      [
+        0.10999878364629588,
+        0.06000144681001743,
+        -0.08000082807083564,
+        0.28999921595766975
+      ]
+    ],
+    "b": [
+      0.12999991803571426,
+      -0.09000074842197849,
+      0.07000028634931173,
+      -0.10999943295845738
+    ]
+  },
+  "linear_analytic": {
+    "max_error_to_numpy_solve": 4.847365900895184e-07,
+    "max_error_over_own_bound": 0.5287213260969787,
+    "all_certified": true,
+    "update_calls_min_median_max": [
+      14,
+      16.0,
+      17
+    ]
+  },
+  "initialization_check": {
+    "max_errors": [
+      4.5227796288682676e-07,
+      4.67851598517921e-07,
+      4.189085284211913e-07
+    ]
+  },
+  "failure_no_input": {
+    "all_certified": true,
+    "state_coordinate_spread": 0.0,
+    "test_task_mse": 0.7424989792500432,
+    "max_reported_bound": 6.812714781201378e-07
+  },
+  "failure_no_contraction": {
+    "matrix_inf_norm": 1.05,
+    "first_residual": 0.2,
+    "residual_after_100_calls": 25.0478586373913,
+    "state_norm_after_100_calls": 522.0050313852154,
+    "certificate_routine_rejected_bad_matrix": true
+  },
+  "near_one_and_cap": {
+    "q": 0.99,
+    "certified_call_count": 1147,
+    "certified_actual_error": 9.952518848777014e-07,
+    "raw_residual_rule_call_count": 689,
+    "raw_residual_rule_actual_error": 9.931477959200519e-05,
+    "cap_100_certified": false,
+    "cap_100_last_evaluated_bound": 0.036972963764972354
+  },
+  "elapsed_seconds": 0.9147949521429837,
+  "all_checks_passed": true
+}

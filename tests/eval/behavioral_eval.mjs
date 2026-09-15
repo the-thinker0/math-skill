@@ -1,165 +1,150 @@
 #!/usr/bin/env node
-// math-skill behavioral eval harness (v3.3.7)
-//
-// Tier-2 eval: runs manifest cases through a REAL agent and applies
-// deterministic judges that need no second LLM:
-//   - every case: answer must be non-trivial;
-//   - scenario E (should-not-trigger): output must NOT cite skill material
-//     (lenses/, knowledge-base/, design-patterns/, math-critic);
-//   - domain=ai: output must not cite cryptography anchors or crypto books;
-//   - domain=crypto: output must not cite design-patterns/;
-//   - lang=zh: CJK ratio of the output must exceed ZH_CJK_RATIO.
-// Conclusion-quality judgments stay in the Tier-3 paper files (human review).
-//
-// Usage:
-//   MATH_SKILL_EVAL_CMD='claude -p "{prompt}"' node tests/eval/behavioral_eval.mjs
-//   MATH_SKILL_EVAL_CMD='codex exec "{prompt}"' node tests/eval/behavioral_eval.mjs --only should-not-trigger
-//
-// Without MATH_SKILL_EVAL_CMD this prints SKIP and exits 0, so it is safe to
-// wire into CI before an agent runtime is attached. The {prompt} placeholder
-// is spliced at the argv level (no shell), so $, backticks and quotes inside
-// prompts cannot break out of the command template.
-
-import { readFileSync } from 'node:fs';
-import { spawnSync } from 'node:child_process';
+// Tier 2 requires a trusted runtime adapter that observes file/tool events.
+// Final-answer path mentions and model self-reports are NOT read traces.
+import { runCaptured } from './process-lib.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { ROOT, validateSuite, resolveArtifact, isolationProblem } from './eval-lib.mjs';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const TEMPLATE = process.env.MATH_SKILL_EVAL_CMD;
-
-// Args: --only <source-substring>  --limit <n>  --timeout-ms <n>
-const args = process.argv.slice(2);
-function argValue(name) {
-  const i = args.indexOf(name);
-  return i >= 0 ? args[i + 1] : undefined;
-}
-const ONLY = argValue('--only') || '';
-const LIMIT = Number(argValue('--limit') || Infinity);
-const TIMEOUT_MS = Number(argValue('--timeout-ms') || 180000);
-
-const MIN_ANSWER_CHARS = 30;
-const ZH_CJK_RATIO = 0.05;
-const FORBIDDEN_IF_NOT_TRIGGERED = ['lenses/', 'knowledge-base/', 'design-patterns/', 'math-critic'];
-const FORBIDDEN_FOR_AI = [
-  'knowledge-base/cryptography',
-  'cryptography/applied-cryptography',
-  'applied-cryptography.md',
-  'foundations-of-cryptography',
-  'introduction-to-modern-cryptography',
-];
-const FORBIDDEN_FOR_CRYPTO = ['design-patterns/'];
-
-function parseTemplate(tpl) {
-  const tokens = [];
-  let cur = '';
-  let hasToken = false;
-  let isPromptSlot = false;
-  const flush = () => {
-    if (hasToken) tokens.push(isPromptSlot ? { promptSlot: true, prefix: cur } : cur);
-    cur = '';
-    hasToken = false;
-    isPromptSlot = false;
-  };
-  for (let i = 0; i < tpl.length; i++) {
-    const ch = tpl[i];
-    if (ch === ' ') { flush(); continue; }
-    hasToken = true;
-    if (ch === '\'') {
-      const j = tpl.indexOf('\'', i + 1);
-      if (j < 0) throw new Error('unbalanced single quote in MATH_SKILL_EVAL_CMD');
-      let k = i + 1;
-      while (k < j) {
-        if (tpl.startsWith('{prompt}', k)) { isPromptSlot = true; k += 8; } else { cur += tpl[k]; k += 1; }
+export function parseArgs(args) {
+  const options = { only: '', limit: Infinity, timeout: 180000, requireRuntime: false };
+  const seen = new Set();
+  for (let i = 0; i < args.length; i++) {
+    const flag = args[i];
+    if (seen.has(flag)) throw new Error(`duplicate option: ${flag}`);
+    seen.add(flag);
+    if (flag === '--require-runtime') { options.requireRuntime = true; continue; }
+    if (!['--only', '--limit', '--timeout-ms'].includes(flag)) throw new Error(`unknown option: ${flag}`);
+    const value = args[++i];
+    if (value === undefined || value.startsWith('--') || !value.trim()) throw new Error(`missing value for ${flag}`);
+    if (flag === '--only') options.only = value;
+    else {
+      if (!/^[1-9]\d*$/.test(value) || !Number.isSafeInteger(Number(value)) || Number(value) > 2147483647) {
+        throw new Error(`${flag} requires a positive integer <= 2147483647`);
       }
-      i = j;
-      continue;
+      options[flag === '--limit' ? 'limit' : 'timeout'] = Number(value);
     }
-    if (ch === '"') {
-      let j = i + 1;
-      while (j < tpl.length && tpl[j] !== '"') {
-        if (tpl.startsWith('{prompt}', j)) { isPromptSlot = true; j += 8; continue; }
-        if (tpl[j] === '\\') { cur += tpl[j + 1]; j += 2; } else { cur += tpl[j]; j += 1; }
-      }
-      i = j;
-      continue;
-    }
-    if (ch === '\\') { cur += tpl[i + 1]; i += 1; continue; }
-    if (tpl.startsWith('{prompt}', i)) { isPromptSlot = true; i += 7; continue; }
-    cur += ch;
   }
-  flush();
+  return options;
+}
+
+// This is argv tokenization, never shell execution. Prefer the JSON argv env
+// variable for Windows paths and complex arguments. Placeholders retain suffixes.
+export function parseTemplate(template) {
+  const tokens = [];
+  let current = '', quote = null, started = false;
+  for (let i = 0; i < template.length; i++) {
+    const ch = template[i];
+    if (quote) {
+      if (ch === quote) quote = null;
+      else if (quote === '"' && ch === '\\' && ['"', '\\'].includes(template[i + 1])) current += template[++i];
+      else current += ch;
+    } else if (/\s/.test(ch)) {
+      if (started) tokens.push(current);
+      current = ''; started = false;
+    } else if (ch === '"' || ch === "'") { quote = ch; started = true; }
+    else if (ch === '\\') {
+      if (i + 1 === template.length) throw new Error('trailing escape in command template');
+      current += template[++i]; started = true;
+    } else { current += ch; started = true; }
+  }
+  if (quote) throw new Error('unbalanced quote in command template');
+  if (started) tokens.push(current);
   return tokens;
 }
 
-function buildArgv(tokens, prompt) {
-  return tokens.map((t) => (t && t.promptSlot ? t.prefix + prompt : t));
+export function configuredArgv(env) {
+  const json = env.MATH_SKILL_EVAL_ARGV;
+  const template = env.MATH_SKILL_EVAL_CMD;
+  if (json !== undefined && template !== undefined) throw new Error('set only MATH_SKILL_EVAL_ARGV or MATH_SKILL_EVAL_CMD');
+  if (json === undefined && template === undefined) return null;
+  const tokens = json !== undefined ? JSON.parse(json) : parseTemplate(template);
+  if (!Array.isArray(tokens) || tokens.length < 2 || tokens.some((t) => typeof t !== 'string') || !tokens[0].trim()) {
+    throw new Error('runtime command must be an argv array with an executable and arguments');
+  }
+  if (tokens[0].includes('{prompt}') || !tokens.slice(1).some((t) => t.includes('{prompt}'))) {
+    throw new Error('runtime arguments must contain {prompt}; executable must not');
+  }
+  return tokens;
 }
 
-const cjkCount = (s) => (s.match(/\p{Script=Han}/gu) || []).length;
+export const buildArgv = (tokens, prompt) => tokens.map((token) => token.split('{prompt}').join(prompt));
 
-function judge(c, output) {
-  const trimmed = output.trim();
-  if (trimmed.length < MIN_ANSWER_CHARS) return `answer too short (${trimmed.length} chars)`;
-  if (!c.trigger) {
-    for (const bad of FORBIDDEN_IF_NOT_TRIGGERED) {
-      if (trimmed.includes(bad)) return `scenario E cited skill material: "${bad}"`;
-    }
+export function judge(c, result, root = ROOT) {
+  if (!result || typeof result !== 'object' || Array.isArray(result)) return 'adapter output must be a JSON object';
+  if (result.case_id !== c.id) return `adapter case_id must equal ${c.id}`;
+  if (typeof result.answer !== 'string' || result.answer.trim().length < 30) return 'missing or too-short answer';
+  const trace = result.trace;
+  if (!trace || trace.complete !== true || !['tool-events', 'file-access'].includes(trace.source) || !Array.isArray(trace.loaded_files)) {
+    return 'complete file-access/tool-events trace required; answer text or self-report is not loading evidence';
   }
-  if (c.domain === 'ai') {
-    for (const bad of FORBIDDEN_FOR_AI) {
-      if (trimmed.includes(bad)) return `pure-AI case cited crypto material: "${bad}"`;
-    }
+  const loaded = [];
+  for (const file of trace.loaded_files) {
+    try {
+      const artifact = resolveArtifact(root, file, { fileOnly: true });
+      const problem = isolationProblem(c.domain, artifact.rel);
+      if (problem) return problem;
+      loaded.push(artifact.rel);
+    } catch (err) { return `invalid trace path: ${err.message}`; }
   }
-  if (c.domain === 'crypto') {
-    for (const bad of FORBIDDEN_FOR_CRYPTO) {
-      if (trimmed.includes(bad)) return `pure-crypto case cited AI design patterns: "${bad}"`;
-    }
+  // A positive trigger needs observed skill content, even if the response hides
+  // internal paths as instructed. may_load lists examples, not a required route.
+  if (c.trigger && !loaded.some((p) => /^(?:lenses|knowledge-base|design-patterns|references|agents)\//.test(p) || /^SKILL(?:\.en)?\.md$/.test(p))) {
+    return 'trigger expected but no skill content was observed';
   }
-  if (c.lang === 'zh') {
-    const ratio = cjkCount(trimmed) / Math.max(trimmed.length, 1);
-    if (ratio < ZH_CJK_RATIO) return `lang=zh but CJK ratio ${(ratio * 100).toFixed(1)}% < ${ZH_CJK_RATIO * 100}%`;
-  }
+  if (loaded.includes('SKILL.md') && loaded.includes('SKILL.en.md')) return 'both language entries were loaded';
   return null;
 }
 
-function main() {
-  if (!TEMPLATE || !TEMPLATE.includes('{prompt}')) {
-    console.log('SKIP: set MATH_SKILL_EVAL_CMD (template containing {prompt}) to run behavioral eval.');
-    console.log('Example: MATH_SKILL_EVAL_CMD=\'claude -p "{prompt}"\' node tests/eval/behavioral_eval.mjs');
-    process.exit(0);
-  }
-  const tokens = parseTemplate(TEMPLATE);
-  const lines = readFileSync(path.join(ROOT, 'tests', 'eval', 'cases.jsonl'), 'utf8')
-    .split(/\r?\n/).filter((l) => l.trim() && !l.trim().startsWith('//'));
-  const cases = lines.map((l) => JSON.parse(l)).filter((c) => c.source.includes(ONLY)).slice(0, LIMIT);
-
-  let pass = 0;
-  let fail = 0;
-  for (const c of cases) {
-    process.stdout.write(`[${c.id}] ${c.source} ... `);
-    const res = spawnSync(tokens[0], buildArgv(tokens.slice(1), c.prompt), {
-      cwd: ROOT,
-      encoding: 'utf8',
-      timeout: TIMEOUT_MS,
-      maxBuffer: 16 * 1024 * 1024,
-    });
-    if (res.error) {
-      fail += 1;
-      console.log(`FAIL (${res.error.message})`);
-      continue;
-    }
-    const problem = judge(c, `${res.stdout || ''}\n${res.stderr || ''}`);
-    if (problem) {
-      fail += 1;
-      console.log(`FAIL (${problem})`);
-    } else {
-      pass += 1;
-      console.log('PASS');
-    }
-  }
-  console.log(`behavioral eval: ${pass} passed, ${fail} failed, ${cases.length} total`);
-  process.exit(fail > 0 ? 1 : 0);
+// Language is a review signal, not a reliable language classifier or pass gate.
+export function languageWarning(c, answer) {
+  const prose = answer.replace(/```[\s\S]*?```/g, '').replace(/\$\$[\s\S]*?\$\$/g, '');
+  const han = (prose.match(/\p{Script=Han}/gu) || []).length;
+  const latin = (prose.match(/[A-Za-z]/g) || []).length;
+  if (c.lang === 'zh' && han === 0) return 'expected Chinese prose; manual language review needed';
+  if (c.lang === 'en' && han > latin) return 'expected English prose; manual language review needed';
+  return null;
 }
 
-main();
+export function runCase(c, tokens, timeout, root = ROOT) {
+  const res = runCaptured(tokens[0], buildArgv(tokens.slice(1), c.prompt), {
+    cwd: root, encoding: 'utf8', timeout, maxBuffer: 16 * 1024 * 1024,
+    env: { ...process.env, MATH_SKILL_EVAL_CASE_ID: c.id, MATH_SKILL_EVAL_ROOT: root, MATH_SKILL_EVAL_TIMEOUT_MS: String(timeout) },
+    shell: false, killSignal: 'SIGKILL',
+  });
+  if (res.error) return { problem: `runtime error: ${res.error.message}` };
+  if (res.signal || res.status !== 0) return { problem: `runtime exited with ${res.signal ? `signal ${res.signal}` : `status ${res.status}`}` };
+  let result;
+  try { result = JSON.parse(res.stdout); } catch { return { problem: 'stdout must be one adapter JSON object (stderr is diagnostics only)' }; }
+  return { problem: judge(c, result, root), warning: typeof result?.answer === 'string' ? languageWarning(c, result.answer) : null };
+}
+
+export function main(args = process.argv.slice(2), env = process.env) {
+  try {
+    const options = parseArgs(args);
+    const { cases: allCases, errors } = validateSuite();
+    if (errors.length) throw new Error(`manifest validation failed: ${errors.join('; ')}`);
+    const cases = allCases.filter((c) => c.source.includes(options.only)).slice(0, options.limit);
+    if (!cases.length) throw new Error('no cases selected; check --only');
+    const tokens = configuredArgv(env);
+    if (!tokens) {
+      console.log('SKIP: no runtime adapter configured. No behavioral checks were performed.');
+      console.log('Set MATH_SKILL_EVAL_ARGV or MATH_SKILL_EVAL_CMD; see tests/eval/README.md for the observed-trace contract.');
+      return options.requireRuntime ? 1 : 0;
+    }
+    let failed = 0;
+    for (const c of cases) {
+      const { problem, warning } = runCase(c, tokens, options.timeout);
+      if (problem) failed++;
+      console.log(`[${c.id}] ${problem ? `FAIL (${problem})` : 'PASS (observed isolation/activation only)'}`);
+      if (warning) console.log(`[${c.id}] REVIEW: ${warning}`);
+    }
+    console.log(`behavioral eval: ${cases.length - failed} passed, ${failed} failed, ${cases.length} total; semantic quality requires human review`);
+    return failed ? 1 : 0;
+  } catch (err) {
+    console.error(`behavioral eval: ${err.message}`);
+    return 1;
+  }
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) process.exitCode = main();

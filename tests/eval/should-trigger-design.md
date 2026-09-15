@@ -1,6 +1,6 @@
 # Eval: Should Trigger — Design (Scenario B)
 
-These prompts SHOULD trigger the minimal design route: lenses → anchors → optional design prototypes → compact review. The full critic is reserved for an explicitly comprehensive or paper-grade review.
+These prompts SHOULD trigger mechanism construction. Start from the user objective and available information; use the construction workbench when the formulation is unclear or existing patterns are insufficient. Lenses and prototypes are optional aids, not mandatory stages. The full critic is reserved for an explicitly comprehensive or paper-grade review.
 
 ## Test Cases
 
@@ -13,8 +13,11 @@ These prompts SHOULD trigger the minimal design route: lenses → anchors → op
 ## Expected Behavior
 
 - Activator diagnoses Scenario B (mechanism design)
-- Selects 1–2 relevant lenses
-- Loads relevant knowledge cards
+- Formalizes desired behavior, available information, and hard constraints
+- Uses relevant mathematical resources; prototypes do not restrict the construction space
 - Produces one primary design; alternatives only when a decisive tradeoff warrants them
 - For operator/training/inference implementation, evaluates only decision-relevant GPU dimensions and quantifies the main cost; unrelated dimensions are `N/A`
-- Outputs a conclusion-first proposal with an implementation sketch and falsification/ablation plan
+- Instantiates theorem objects and conditions in actual tensors, parameterizations, or solver residuals
+- Outputs a conclusion-first mechanism with implementation and discriminating validation
+- When execution is requested and available, runs a candidate-specific small check and revises failures; planning-only requests remain plans
+- Mathematical construction quality needs semantic review; routing/trace checks alone do not establish it

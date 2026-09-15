@@ -44,6 +44,11 @@ These prompts should NOT load content from unrelated domains. Pure AI should not
 
 - "用 hashing 做特征哈希" → "hashing" sounds crypto but is actually ML feature hashing; Domain Router judges as AI, loads AI design-patterns, does NOT load crypto books.
 
+### Edge case 3: Mathematical certificates are not cryptographic security
+
+- "证明随机平滑分类器的 L2 鲁棒性证书，不涉及密码学原语" → classify as AI verification; identify the smoothing distribution, probability/confidence statement and norm radius before accepting the certificate.
+- "Does a Lipschitz robustness certificate make this adversarial classifier cryptographically secure?" → classify as AI verification; distinguish perturbation robustness from a cryptographic security game without loading unrelated crypto material.
+
 ## Key Assertions
 
 - Domain Router rule 4 ("no pollution when not cross-domain") is enforced

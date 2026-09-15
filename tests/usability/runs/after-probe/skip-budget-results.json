@@ -1,0 +1,25 @@
+{
+  "purpose": "Equal local hidden errors can have different output consequences",
+  "local_inf_errors": [
+    0.001,
+    0.001
+  ],
+  "output_inf_errors": [
+    1.0,
+    0.001
+  ],
+  "global_lipschitz_bounds": [
+    1.0,
+    1.0
+  ],
+  "hidden_threshold_skip": [
+    true,
+    true
+  ],
+  "output_budget_skip": [
+    false,
+    true
+  ],
+  "important_limitation": "Output errors are oracle quantities in this diagnostic. A deployed predictor sees pre-decision state only; this experiment does not validate that predictor.",
+  "all_checks_passed": true
+}
